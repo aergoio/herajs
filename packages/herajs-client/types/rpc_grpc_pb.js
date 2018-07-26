@@ -1,0 +1,351 @@
+// GENERATED CODE -- DO NOT EDIT!
+
+'use strict';
+var grpc = require('grpc');
+var rpc_pb = require('./rpc_pb.js');
+var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
+var blockchain_pb = require('./blockchain_pb.js');
+var account_pb = require('./account_pb.js');
+var node_pb = require('./node_pb.js');
+
+function serialize_types_Account(arg) {
+  if (!(arg instanceof account_pb.Account)) {
+    throw new Error('Expected argument of type types.Account');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Account(buffer_arg) {
+  return account_pb.Account.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_AccountList(arg) {
+  if (!(arg instanceof account_pb.AccountList)) {
+    throw new Error('Expected argument of type types.AccountList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_AccountList(buffer_arg) {
+  return account_pb.AccountList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Block(arg) {
+  if (!(arg instanceof blockchain_pb.Block)) {
+    throw new Error('Expected argument of type types.Block');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Block(buffer_arg) {
+  return blockchain_pb.Block.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_BlockHeaderList(arg) {
+  if (!(arg instanceof rpc_pb.BlockHeaderList)) {
+    throw new Error('Expected argument of type types.BlockHeaderList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockHeaderList(buffer_arg) {
+  return rpc_pb.BlockHeaderList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_BlockchainStatus(arg) {
+  if (!(arg instanceof rpc_pb.BlockchainStatus)) {
+    throw new Error('Expected argument of type types.BlockchainStatus');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockchainStatus(buffer_arg) {
+  return rpc_pb.BlockchainStatus.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_CommitResultList(arg) {
+  if (!(arg instanceof rpc_pb.CommitResultList)) {
+    throw new Error('Expected argument of type types.CommitResultList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_CommitResultList(buffer_arg) {
+  return rpc_pb.CommitResultList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Empty(arg) {
+  if (!(arg instanceof rpc_pb.Empty)) {
+    throw new Error('Expected argument of type types.Empty');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Empty(buffer_arg) {
+  return rpc_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_ListParams(arg) {
+  if (!(arg instanceof rpc_pb.ListParams)) {
+    throw new Error('Expected argument of type types.ListParams');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ListParams(buffer_arg) {
+  return rpc_pb.ListParams.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_PeerList(arg) {
+  if (!(arg instanceof rpc_pb.PeerList)) {
+    throw new Error('Expected argument of type types.PeerList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_PeerList(buffer_arg) {
+  return rpc_pb.PeerList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Personal(arg) {
+  if (!(arg instanceof rpc_pb.Personal)) {
+    throw new Error('Expected argument of type types.Personal');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Personal(buffer_arg) {
+  return rpc_pb.Personal.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_SingleBytes(arg) {
+  if (!(arg instanceof rpc_pb.SingleBytes)) {
+    throw new Error('Expected argument of type types.SingleBytes');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_SingleBytes(buffer_arg) {
+  return rpc_pb.SingleBytes.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_State(arg) {
+  if (!(arg instanceof blockchain_pb.State)) {
+    throw new Error('Expected argument of type types.State');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_State(buffer_arg) {
+  return blockchain_pb.State.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Tx(arg) {
+  if (!(arg instanceof blockchain_pb.Tx)) {
+    throw new Error('Expected argument of type types.Tx');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Tx(buffer_arg) {
+  return blockchain_pb.Tx.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_TxList(arg) {
+  if (!(arg instanceof blockchain_pb.TxList)) {
+    throw new Error('Expected argument of type types.TxList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_TxList(buffer_arg) {
+  return blockchain_pb.TxList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_VerifyResult(arg) {
+  if (!(arg instanceof rpc_pb.VerifyResult)) {
+    throw new Error('Expected argument of type types.VerifyResult');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_VerifyResult(buffer_arg) {
+  return rpc_pb.VerifyResult.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+
+// need option "--proto_path= .... /bitbucket.org/cloudwallet/argo-alpha/proto" when protoc generate output
+//
+// BlockService serves APIs that aergosvr provides.
+// Some methods optionally contains context path if it is also provided by REST API.
+var AergoRPCServiceService = exports.AergoRPCServiceService = {
+  blockchain: {
+    path: '/types.AergoRPCService/Blockchain',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.BlockchainStatus,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_BlockchainStatus,
+    responseDeserialize: deserialize_types_BlockchainStatus,
+  },
+  // option (google.api.http) = {
+  //   get: "/blockchain"
+  // };
+  listBlockHeaders: {
+    path: '/types.AergoRPCService/ListBlockHeaders',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.ListParams,
+    responseType: rpc_pb.BlockHeaderList,
+    requestSerialize: serialize_types_ListParams,
+    requestDeserialize: deserialize_types_ListParams,
+    responseSerialize: serialize_types_BlockHeaderList,
+    responseDeserialize: deserialize_types_BlockHeaderList,
+  },
+  getBlock: {
+    path: '/types.AergoRPCService/GetBlock',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.Block,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_Block,
+    responseDeserialize: deserialize_types_Block,
+  },
+  // option (google.api.http) = {
+  //   get: "/blocks/{blockHash}"
+  // };    
+  getTX: {
+    path: '/types.AergoRPCService/GetTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.Tx,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_Tx,
+    responseDeserialize: deserialize_types_Tx,
+  },
+  // option (google.api.http) = {
+  //   get: "/transactions/{value}"
+  // };    
+  getBlockTX: {
+    path: '/types.AergoRPCService/GetBlockTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.Tx,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_Tx,
+    responseDeserialize: deserialize_types_Tx,
+  },
+  commitTX: {
+    path: '/types.AergoRPCService/CommitTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.TxList,
+    responseType: rpc_pb.CommitResultList,
+    requestSerialize: serialize_types_TxList,
+    requestDeserialize: deserialize_types_TxList,
+    responseSerialize: serialize_types_CommitResultList,
+    responseDeserialize: deserialize_types_CommitResultList,
+  },
+  // option (google.api.http) = {
+  //   post: "/transactions"
+  //   body: "transaction"
+  // };    
+  getState: {
+    path: '/types.AergoRPCService/GetState',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.State,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_State,
+    responseDeserialize: deserialize_types_State,
+  },
+  createAccount: {
+    path: '/types.AergoRPCService/CreateAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  getAccounts: {
+    path: '/types.AergoRPCService/GetAccounts',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: account_pb.AccountList,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_AccountList,
+    responseDeserialize: deserialize_types_AccountList,
+  },
+  lockAccount: {
+    path: '/types.AergoRPCService/LockAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  unlockAccount: {
+    path: '/types.AergoRPCService/UnlockAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  signTX: {
+    path: '/types.AergoRPCService/SignTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.Tx,
+    responseType: blockchain_pb.Tx,
+    requestSerialize: serialize_types_Tx,
+    requestDeserialize: deserialize_types_Tx,
+    responseSerialize: serialize_types_Tx,
+    responseDeserialize: deserialize_types_Tx,
+  },
+  verifyTX: {
+    path: '/types.AergoRPCService/VerifyTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.Tx,
+    responseType: rpc_pb.VerifyResult,
+    requestSerialize: serialize_types_Tx,
+    requestDeserialize: deserialize_types_Tx,
+    responseSerialize: serialize_types_VerifyResult,
+    responseDeserialize: deserialize_types_VerifyResult,
+  },
+  getPeers: {
+    path: '/types.AergoRPCService/GetPeers',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.PeerList,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_PeerList,
+    responseDeserialize: deserialize_types_PeerList,
+  },
+};
+
+exports.AergoRPCServiceClient = grpc.makeGenericClientConstructor(AergoRPCServiceService);
