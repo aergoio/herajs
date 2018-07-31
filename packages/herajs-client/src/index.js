@@ -56,11 +56,11 @@ class Aergo {
 
     getBlock (hashOrNumber) {
         return new Promise((resolve, reject) => {
-            if (typeof hashOrNumber === 'string') {
+            /*if (typeof hashOrNumber === 'string') {
                 hashOrNumber = fromHexString(hashOrNumber);
-            } else {
+            } else if( hashOrNumber.constructor === Uint8Array) {
                 hashOrNumber = new Uint8Array([hashOrNumber]);
-            }
+            }*/
             const singleBytes = new SingleBytes();
             singleBytes.setValue(hashOrNumber);
             this.client.getBlock(singleBytes, (err, result) => {

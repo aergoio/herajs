@@ -2470,7 +2470,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
      */
     proto.types.BlockchainStatus.toObject = function (includeInstance, msg) {
       var obj = {
-        bestBlockHash: jspb.Message.getFieldWithDefault(msg, 1, ""),
+        bestBlockHash: msg.getBestBlockHash_asB64(),
         bestHeight: jspb.Message.getFieldWithDefault(msg, 2, 0)
       };
 
@@ -2507,7 +2507,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
       var field = reader.getFieldNumber();
       switch (field) {
         case 1:
-          var value = /** @type {string} */reader.readString();
+          var value = /** @type {!Uint8Array} */reader.readBytes();
           msg.setBestBlockHash(value);
           break;
         case 2:
@@ -2541,9 +2541,9 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
    */
   proto.types.BlockchainStatus.serializeBinaryToWriter = function (message, writer) {
     var f = undefined;
-    f = message.getBestBlockHash();
+    f = message.getBestBlockHash_asU8();
     if (f.length > 0) {
-      writer.writeString(1, f);
+      writer.writeBytes(1, f);
     }
     f = message.getBestHeight();
     if (f !== 0) {
@@ -2552,15 +2552,37 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   };
 
   /**
-   * optional string best_block_hash = 1;
-   * @return {string}
+   * optional bytes best_block_hash = 1;
+   * @return {!(string|Uint8Array)}
    */
   proto.types.BlockchainStatus.prototype.getBestBlockHash = function () {
-    return (/** @type {string} */jspb.Message.getFieldWithDefault(this, 1, "")
+    return (/** @type {!(string|Uint8Array)} */jspb.Message.getFieldWithDefault(this, 1, "")
     );
   };
 
-  /** @param {string} value */
+  /**
+   * optional bytes best_block_hash = 1;
+   * This is a type-conversion wrapper around `getBestBlockHash()`
+   * @return {string}
+   */
+  proto.types.BlockchainStatus.prototype.getBestBlockHash_asB64 = function () {
+    return (/** @type {string} */jspb.Message.bytesAsB64(this.getBestBlockHash())
+    );
+  };
+
+  /**
+   * optional bytes best_block_hash = 1;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getBestBlockHash()`
+   * @return {!Uint8Array}
+   */
+  proto.types.BlockchainStatus.prototype.getBestBlockHash_asU8 = function () {
+    return (/** @type {!Uint8Array} */jspb.Message.bytesAsU8(this.getBestBlockHash())
+    );
+  };
+
+  /** @param {!(string|Uint8Array)} value */
   proto.types.BlockchainStatus.prototype.setBestBlockHash = function (value) {
     jspb.Message.setField(this, 1, value);
   };
@@ -4988,12 +5010,6 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
 var rpc_grpc_pb_1 = rpc_grpc_pb.AergoRPCServiceService;
 var rpc_grpc_pb_2 = rpc_grpc_pb.AergoRPCServiceClient;
 
-var fromHexString = function fromHexString(hexString) {
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
-        return parseInt(byte, 16);
-    }));
-};
-
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -5240,11 +5256,11 @@ var Aergo = function () {
             var _this3 = this;
 
             return new Promise(function (resolve, reject) {
-                if (typeof hashOrNumber === 'string') {
+                /*if (typeof hashOrNumber === 'string') {
                     hashOrNumber = fromHexString(hashOrNumber);
-                } else {
+                } else if( hashOrNumber.constructor === Uint8Array) {
                     hashOrNumber = new Uint8Array([hashOrNumber]);
-                }
+                }*/
                 var singleBytes = new rpc_pb_4();
                 singleBytes.setValue(hashOrNumber);
                 _this3.client.getBlock(singleBytes, function (err, result) {

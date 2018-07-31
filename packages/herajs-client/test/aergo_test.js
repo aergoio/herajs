@@ -45,8 +45,8 @@ describe('Aergo', () => {
             aergo.blockchain().then((response) => {
                 bestBlockHash = response.getBestBlockHash();
                 bestBlockNumber = response.getBestHeight();
-                assert.isString(bestBlockHash);
-                assert.equal(bestBlockHash.length, 64);
+                assert.typeOf(bestBlockHash, 'Uint8Array');
+                assert.equal(bestBlockHash.length, 32);
                 assert.isNumber(response.getBestHeight());
                 done();
             });

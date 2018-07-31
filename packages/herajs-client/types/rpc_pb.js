@@ -76,7 +76,7 @@ proto.types.BlockchainStatus.prototype.toObject = function(opt_includeInstance) 
  */
 proto.types.BlockchainStatus.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bestBlockHash: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    bestBlockHash: msg.getBestBlockHash_asB64(),
     bestHeight: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
@@ -115,7 +115,7 @@ proto.types.BlockchainStatus.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setBestBlockHash(value);
       break;
     case 2:
@@ -151,9 +151,9 @@ proto.types.BlockchainStatus.prototype.serializeBinary = function() {
  */
 proto.types.BlockchainStatus.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getBestBlockHash();
+  f = message.getBestBlockHash_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
@@ -169,15 +169,39 @@ proto.types.BlockchainStatus.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional string best_block_hash = 1;
- * @return {string}
+ * optional bytes best_block_hash = 1;
+ * @return {!(string|Uint8Array)}
  */
 proto.types.BlockchainStatus.prototype.getBestBlockHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
-/** @param {string} value */
+/**
+ * optional bytes best_block_hash = 1;
+ * This is a type-conversion wrapper around `getBestBlockHash()`
+ * @return {string}
+ */
+proto.types.BlockchainStatus.prototype.getBestBlockHash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBestBlockHash()));
+};
+
+
+/**
+ * optional bytes best_block_hash = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBestBlockHash()`
+ * @return {!Uint8Array}
+ */
+proto.types.BlockchainStatus.prototype.getBestBlockHash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBestBlockHash()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
 proto.types.BlockchainStatus.prototype.setBestBlockHash = function(value) {
   jspb.Message.setField(this, 1, value);
 };
