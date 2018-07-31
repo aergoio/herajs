@@ -55,16 +55,16 @@ describe('Aergo', () => {
 
     describe('getBlock()', () => {
         it('should return block info by hash', (done) => {
-            aergo.getBlock(bestBlockHash).then((response) => { // eslint-disable-line no-unused-vars
+            aergo.getBlock(bestBlockHash).then((response) => {
+                assert.equal(response.getHeader().getBlockno(), bestBlockNumber);
                 done();
             });
         });
         it('should return block info by number', (done) => {
-            // TODO
-            done();
-            /*aergo.getBlock(bestBlockNumber).then((response) => {
+            aergo.getBlock(bestBlockNumber).then((response) => {
+                assert.deepEqual(response.getHash(), bestBlockHash);
                 done();
-            }).catch(done);*/
+            });
         });
     });
 });

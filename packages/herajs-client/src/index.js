@@ -1,6 +1,6 @@
 import { Empty, SingleBytes, TxList, TxBody, Tx, CommitStatus } from '../types/rpc_pb.js';
 import { AergoRPCServiceClient } from '../types/rpc_grpc_pb.js';
-import { fromHexString } from './utils.js';
+import { fromHexString, fromNumber } from './utils.js';
 
 import grpc from 'grpc';
 import Base58 from 'base-58';
@@ -56,11 +56,12 @@ class Aergo {
 
     getBlock (hashOrNumber) {
         return new Promise((resolve, reject) => {
-            /*if (typeof hashOrNumber === 'string') {
+            if (typeof hashOrNumber === 'string') {
                 hashOrNumber = fromHexString(hashOrNumber);
-            } else if( hashOrNumber.constructor === Uint8Array) {
-                hashOrNumber = new Uint8Array([hashOrNumber]);
-            }*/
+            } else
+            if (typeof hashOrNumber === 'number') {
+                hashOrNumber = fromNumber(hashOrNumber);
+            }
             const singleBytes = new SingleBytes();
             singleBytes.setValue(hashOrNumber);
             this.client.getBlock(singleBytes, (err, result) => {
@@ -120,6 +121,8 @@ class Aergo {
         return true;
     }
 }
+
+
 
 function transactionToTx(tx) {
     const msgtxbody = new TxBody();
