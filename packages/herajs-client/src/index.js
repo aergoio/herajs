@@ -1,6 +1,7 @@
 import { Empty, SingleBytes, TxList, TxBody, Tx, CommitStatus } from '../types/rpc_pb.js';
 import { AergoRPCServiceClient } from '../types/rpc_grpc_pb.js';
 import { fromHexString, fromNumber } from './utils.js';
+import promisify from './promisify';
 
 import grpc from 'grpc';
 import Base58 from 'base-58';
@@ -29,77 +30,37 @@ class Aergo {
     }
 
     blockchain () {
-        return new Promise((resolve, reject) => {
-            const empty = new Empty();
-            this.client.blockchain(empty, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+        const empty = new Empty();
+        return promisify(this.client.blockchain, this.client)(empty);
     }
 
     getTransaction () {
-        return new Promise((resolve, reject) => {
-            const singleBytes = new SingleBytes();
-            this.client.getTX(singleBytes, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+        const singleBytes = new SingleBytes();
+        return promisify(this.client.getTX, this.client)(singleBytes);
     }
 
     getBlock (hashOrNumber) {
-        return new Promise((resolve, reject) => {
-            if (typeof hashOrNumber === 'string') {
-                hashOrNumber = fromHexString(hashOrNumber);
-            } else
-            if (typeof hashOrNumber === 'number') {
-                hashOrNumber = fromNumber(hashOrNumber);
-            }
-            const singleBytes = new SingleBytes();
-            singleBytes.setValue(hashOrNumber);
-            this.client.getBlock(singleBytes, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+        if (typeof hashOrNumber === 'string') {
+            hashOrNumber = fromHexString(hashOrNumber);
+        } else
+        if (typeof hashOrNumber === 'number') {
+            hashOrNumber = fromNumber(hashOrNumber);
+        }
+        const singleBytes = new SingleBytes();
+        singleBytes.setValue(hashOrNumber);
+        return promisify(this.client.getBlock, this.client)(singleBytes);
     }
 
     getBlockTransactionCount () {
-        return new Promise((resolve, reject) => {
-            const singleBytes = new SingleBytes();
-            this.client.getTX(singleBytes, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+        const singleBytes = new SingleBytes();
+        return promisify(this.client.getTX, this.client)(singleBytes);
     }
 
     verifyTransaction (tx) {
-        return new Promise((resolve, reject) => {
-            this.client.verifyTX(transactionToTx(tx), (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+        return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
     }
 
-    sendTransaction (tx) {
+    sendTransaction (tx) {        
         return new Promise((resolve, reject) => {
             const txs = new TxList();
             txs.addTxs(transactionToTx(tx), 0);
