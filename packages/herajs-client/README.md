@@ -1,5 +1,7 @@
 # herajs - Javascript client framework for aergo
 
+[![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
+
 Supported platforms: Node.js
 
 Roadmap:
