@@ -52,7 +52,7 @@ async function main() {
     performance.mark('C');
     
     // Print tx ids
-    for (let tx of signedTransactions) {
+    for (const tx of signedTransactions) {
         console.log(tx.nonce, tx.id);
     }
 

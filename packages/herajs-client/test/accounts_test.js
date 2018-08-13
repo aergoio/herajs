@@ -95,11 +95,12 @@ describe('Aergo.Accounts', () => {
         });
     });
 
-    describe('signTX(),sendTX()Perf', () => {
-        it('should not timeout, synchronous sign-send', async () => {
+    describe('signTX(),sendTX()Multiple', () => {
+        it('should not timeout', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
-            for (let i = 1; i <= 1000; i++) {
+            const promises = [];
+            for (let i = 1; i <= 20; i++) {
                 const testtx = {
                     nonce: i,
                     from: address,
@@ -107,12 +108,16 @@ describe('Aergo.Accounts', () => {
                     amount: i,
                     payload: null,
                 };
-                const signedtx = await aergo.accounts.signTransaction(testtx);
-                assert.equal(signedtx.sign.length, 65);
-                const txhash = await aergo.sendTransaction(signedtx);
-                assert.typeOf(txhash, 'Uint8Array');
-                assert.equal(txhash.length, 32);
+                promises.push(new Promise((resolve, reject) => {
+                    aergo.accounts.signTransaction(testtx).then((signedtx) => {
+                        aergo.sendTransaction(signedtx).then((txhash) => {
+                            assert.equal(txhash.length, 32);
+                            resolve();
+                        }).catch(reject);
+                    }).catch(reject);
+                }));
             }
-        }).timeout(10000);
+            await Promise.all(promises);
+        }).timeout(100000);
     });
 });
