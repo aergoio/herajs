@@ -5,13 +5,12 @@ before_install:
   - export PATH=./node_modules/.bin:$PATH
   - nvm install 8
   - go get -t github.com/Masterminds/glide
-  - AERGO_VERSION=`cat "package.json" | python -c "import sys, json; print json.load(sys.stdin)['aergo']['version']"` 
-  - touch glide.yaml
-  - glide get github.com/aergoio/aergo#${AERGO_VERSION}
-  - cd ${GOPATH}/aergoio/aergo && make deps && make aergosvr
+  - AERGO_VERSION=`cat "package.json" | python -c "import sys, json; print json.load(sys.stdin)['aergo']['version']"`
+  - go get -d github.com/aergoio/aergo || true
+  - cd ${GOPATH}/src/github.com/aergoio/aergo && git checkout ${AERGO_VERSION} && make deps && make aergosvr
   - cd ${TRAVIS_BUILD_DIR}
 install:
   - npm install
 script:
-  - ${GOPATH}/aergoio/aergo/bin/aergosvr >/dev/null 2>&1 &
+  - ${GOPATH}/src/github.com/aergoio/aergo/bin/aergosvr >/dev/null 2>&1 &
   - npm test
