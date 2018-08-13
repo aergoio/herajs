@@ -2,6 +2,9 @@
 
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
 
+Tested with aergo server version
+[672d2b8baebfde473bf163c94a9b6c85e9e82b5a](https://github.com/aergoio/aergo/tree/672d2b8baebfde473bf163c94a9b6c85e9e82b5a)
+
 Supported platforms: Node.js
 
 Roadmap:

@@ -28,6 +28,9 @@
     "crypto-js": "^3.1.9-1",
     "grpc": "^1.13.1"
   },
+  "aergo": {
+    "version": "672d2b8baebfde473bf163c94a9b6c85e9e82b5a"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
