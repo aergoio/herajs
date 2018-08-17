@@ -1,9 +1,4 @@
-/*
-Run this with
-./node_modules/.bin/babel-node test/perf/transactions.js
-*/
 
-import Aergo from '../../src';
 import {toHexString} from '../../src/utils';
 import { performance, PerformanceObserver } from 'perf_hooks';
 
@@ -13,13 +8,11 @@ const obs = new PerformanceObserver((items) => {
 });
 obs.observe({ entryTypes: ['measure'] });
 
-const aergo = new Aergo();
-
-async function main() {
+export async function main(aergo) {
     const createdAddress = await aergo.accounts.create('testpass');
     const address = await aergo.accounts.unlock(createdAddress, 'testpass');
 
-    const numberOfTx = 500;
+    const numberOfTx = 1000;
 
     // Create transactions
     const transactions = Array.from({length: numberOfTx}).map((u, i) => ({
@@ -60,5 +53,3 @@ async function main() {
     performance.measure('Transaction commit', 'B', 'C');
     console.log(`${numberOfTx} tx`);
 }
-
-main();

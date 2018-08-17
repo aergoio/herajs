@@ -4,6 +4,7 @@
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
+  "browser": "dist/herajs.min.js",
   "scripts": {
     "test": "npm run lint && mocha --require babel-core/register",
     "dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-esm",
@@ -23,15 +24,17 @@
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
     "@types/google-protobuf": "^3.2.7",
-    "google-protobuf": "^3.6.0",
     "base-58": "0.0.1",
     "crypto-js": "^3.1.9-1",
-    "grpc": "^1.13.1"
+    "google-protobuf": "^3.6.0",
+    "grpc": "^1.13.1",
+    "grpc-web-client": "^0.6.2"
   },
   "aergo": {
-    "version": "672d2b8baebfde473bf163c94a9b6c85e9e82b5a"
+    "version": "72515ab9da56b94c5b0476038311bb9a48bdf292"
   },
   "devDependencies": {
+    "@types/rollup-plugin-json": "^3.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
@@ -50,6 +53,8 @@
     "rollup-plugin-node-globals": "^1.2.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-progress": "^0.4.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "ts-protoc-gen": "^0.7.6",
     "uglify-js": "^3.4.5"
   }
 }

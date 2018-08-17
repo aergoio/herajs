@@ -5,7 +5,8 @@ const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const json = require('rollup-plugin-json');
 const builtins = require('rollup-plugin-node-builtins');
-const globals = require('rollup-plugin-node-globals');
+//const typescript = require('rollup-plugin-typescript');
+//const globals = require('rollup-plugin-node-globals');
 const progress = require('rollup-plugin-progress');
 const version = process.env.VERSION || require('../package.json').version;
 
@@ -23,43 +24,69 @@ const external = [
     'google-protobuf',
     'google-protobuf/google/protobuf/timestamp_pb.js',
     'base-58',
+    'grpc-web-client'
 ];
 
+// Treating these as external as they are runtime requirements for node only
+const webExternal = [
+    'http',
+    'https',
+    'url'
+]
+
 const builds = {
-    // Runtime+compiler CommonJS build (CommonJS)
-    'web-full-cjs': {
-        entry: resolve('src/index.js'),
+    // CommonJS build (CommonJS)
+    'node-cjs': {
+        entry: resolve('src/platforms/node/index.js'),
         dest: resolve('dist/herajs.common.js'),
         format: 'cjs',
         banner,
         external
     },
-    // Runtime+compiler CommonJS build (ES Modules)
-    'web-full-esm': {
-        entry: resolve('src/index.js'),
+    // CommonJS build (ES Modules)
+    'node-esm': {
+        entry: resolve('src/platforms/node/index.js'),
         dest: resolve('dist/herajs.esm.js'),
         format: 'es',
         banner,
         external
     },
-    /*
-    // Runtime+compiler development build (Browser)
-    'web-full-dev': {
-        entry: resolve('src/index.js'),
+    // Development build (Web, for browser or node)
+    'web-dev': {
+        entry: resolve('src/platforms/web/index.js'),
         dest: resolve('dist/herajs.js'),
         format: 'umd',
         env: 'development',
-        banner
+        banner,
+        plugins: [
+            node_resolve({
+                jsnext: true,
+                main: true,
+                browser: true,
+                preferBuiltins: false
+            }),
+        ],
+        context: 'window',
+        external: webExternal
     },
-    // Runtime+compiler production build  (Browser)
-    'web-full-prod': {
-        entry: resolve('src/index.js'),
+    // Production build (Web, for browser or node)
+    'web-prod': {
+        entry: resolve('src/platforms/web/index.js'),
         dest: resolve('dist/herajs.min.js'),
         format: 'umd',
         env: 'production',
-        banner
+        banner,
+        plugins: [
+            node_resolve({
+                jsnext: true,
+                main: true,
+                browser: true,
+                preferBuiltins: false
+            }),
+        ],
+        context: 'window',
+        external: webExternal
     },
-    */
 };
 
 function genConfig (name) {
@@ -71,23 +98,19 @@ function genConfig (name) {
 
     const config = {
         input: opts.entry,
-        external: opts.external,
+        external: opts.external || [],
         plugins: [
 
             commonjs({
-                include: [ 'types/**'  ], // "node_modules/**", 
+                include: [ 'node_modules/**', 'types/**'  ],
                 namedExports
             }),
 
-            /*node_resolve({
-        jsnext: true,
-        preferBuiltins: false
-      }),*/
-
             json(),
 
-            //globals(),
             //builtins(),
+
+            //typescript(),
 
             babel({
                 babelrc: false,
@@ -107,7 +130,8 @@ function genConfig (name) {
             format: opts.format,
             banner: opts.banner,
             name: 'herajs'
-        }
+        },
+        context: opts.context || 'undefined'
     };
 
     Object.defineProperty(config, '_name', {

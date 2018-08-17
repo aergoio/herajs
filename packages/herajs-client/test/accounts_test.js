@@ -118,6 +118,6 @@ describe('Aergo.Accounts', () => {
                 }));
             }
             await Promise.all(promises);
-        }).timeout(100000);
+        }).timeout(10000);
     });
 });

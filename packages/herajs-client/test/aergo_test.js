@@ -1,4 +1,7 @@
-import { assert } from 'chai';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
+const assert = chai.assert;
 
 import Aergo from '../src';
 
@@ -13,11 +16,8 @@ describe('Aergo invalid config', () => {
     });
 
     describe('blockchain()', () => {
-        it('should return disconnected error', (done) => {
-            invalidAergo.blockchain().catch((err) => {
-                assert.equal(err.code, 14);
-                done();
-            });
+        it('should return disconnected error', async () => {
+            return assert.isRejected(invalidAergo.blockchain(), Error, '14 UNAVAILABLE: Name resolution failure');
         });
     });
 
@@ -30,7 +30,7 @@ describe('Aergo invalid config', () => {
 });
 
 describe('Aergo', () => {
-    const aergo = new Aergo(); //default connect to 127.0.0.1:7845
+    const aergo = new Aergo(); //default connect to 127.0.0.1:7844
     let bestBlockHash;
     let bestBlockNumber;
 

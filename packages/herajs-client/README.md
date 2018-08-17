@@ -3,15 +3,13 @@
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
 
 Tested with aergo server version
-[672d2b8baebfde473bf163c94a9b6c85e9e82b5a](https://github.com/aergoio/aergo/tree/672d2b8baebfde473bf163c94a9b6c85e9e82b5a)
+[72515ab9da56b94c5b0476038311bb9a48bdf292](https://github.com/aergoio/aergo/tree/72515ab9da56b94c5b0476038311bb9a48bdf292)
 
-Supported platforms: Node.js
+This package supports both Node.js and Web platforms, but there is a difference in the handling of the GRPC connections. While the Node.js version uses the standard GRPC protocol over HTTP2, the Web version uses the GRPC-WEB extension, which wraps GRPC requests in standard HTTP requests. This results in the Node.js version having a significant performance advantage.
 
 Roadmap:
 
-- Continuous integration
 - Publish on NPM
-- Browser support
 - Typescript support
 
 ## Usage
@@ -23,12 +21,16 @@ npm install https://github.com/aergoio/herajs
 You can import the module both as CommonJS (require) and ES module (import).
 
 ```javascript
-import {Aergo} from herajs;
-let aergo = new Aergo();
+import {AergoClient} from 'herajs';
+let aergo = new AergoClient();
 aergo.accounts.get().then((accounts) => {
     console.log(accounts);
 });
 ```
+
+Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import {AergoClient} from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. An example of how to do this with Webpack will be provided shortly.
+
+You can also directly import the pre-built bundle in HTML using `<script src="herajs/dist/herajs.min.js"></script>` and use the global `herajs` variable.
 
 ## Development Setup
 
