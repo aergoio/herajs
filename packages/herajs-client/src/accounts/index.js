@@ -1,5 +1,6 @@
 import { Personal, Empty, Account, TxBody, Tx } from '../../types/rpc_pb.js';
 import Base58 from 'base-58';
+import { txToTransaction } from '../transactions/utils.js';
 
 class Accounts {
     constructor (aergo) {
@@ -107,7 +108,7 @@ class Accounts {
 
             this.client.signTX(msgtx, (err, signedtx) => {
                 if (err == null) {
-                    resolve(convertToTransaction(signedtx));
+                    resolve(txToTransaction(signedtx));
                 } else {
                     reject(err);
                 }
@@ -116,16 +117,6 @@ class Accounts {
     }
 }
 
-function convertToTransaction(tx) {
-    const transaction = {};
-    transaction.hash = tx.getHash();
-    transaction.nonce = tx.getBody().getNonce();
-    transaction.from = Base58.encode(tx.getBody().getAccount());
-    transaction.to = Base58.encode(tx.getBody().getRecipient());
-    transaction.amount = tx.getBody().getAmount();
-    transaction.payload = tx.getBody().getPayload();
-    transaction.sign = tx.getBody().getSign();
-    return transaction;
-}
+
 
 export default Accounts;

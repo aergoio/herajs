@@ -74,7 +74,7 @@ describe('Aergo.Accounts', () => {
     });
 
     describe('sendTransaction()', () => {
-        it('should send signed transaction', async () => {
+        it('should sign, commit, and retrieve transaction', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
             assert.equal(address, createdAddress);
@@ -85,11 +85,17 @@ describe('Aergo.Accounts', () => {
                 amount: 123,
                 payload: null,
             };
+            // Tx is signed and submitted correctly
             const tx = await aergo.accounts.signTransaction(testtx);
             const txhash = await aergo.sendTransaction(tx);
-            // Tx is submitted correctly
-            assert.typeOf(txhash, 'Uint8Array');
-            assert.equal(txhash.length, 32);
+            assert.typeOf(txhash, 'string');
+            assert.equal(txhash.length, 64);
+
+            // Tx can be retrieved again
+            const tx2 = await aergo.getTransaction(txhash);
+            assert.equal(tx2.hash, tx.hash);
+            assert.equal(tx2.amount, tx.amount);
+
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendTransaction(tx));
         });
@@ -111,7 +117,7 @@ describe('Aergo.Accounts', () => {
                 promises.push(new Promise((resolve, reject) => {
                     aergo.accounts.signTransaction(testtx).then((signedtx) => {
                         aergo.sendTransaction(signedtx).then((txhash) => {
-                            assert.equal(txhash.length, 32);
+                            assert.equal(txhash.length, 64);
                             resolve();
                         }).catch(reject);
                     }).catch(reject);
