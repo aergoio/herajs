@@ -38,7 +38,7 @@ export async function main(aergo) {
     // Commit transactions
     await Promise.all(signedTransactions.map(signedtx => (
         aergo.sendTransaction(signedtx).then((txid) => {
-            signedtx.id = toHexString(txid);
+            signedtx.id = txid;
         })
     )));
 
