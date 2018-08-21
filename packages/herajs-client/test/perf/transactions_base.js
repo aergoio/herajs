@@ -1,5 +1,5 @@
 
-import {toHexString} from '../../src/utils';
+/* eslint no-console: 0 */
 import { performance, PerformanceObserver } from 'perf_hooks';
 
 const obs = new PerformanceObserver((items) => {
