@@ -17,8 +17,8 @@ AergoRPCService.NodeState = {
   service: AergoRPCService,
   requestStream: false,
   responseStream: false,
-  requestType: rpc_pb.Empty,
-  responseType: rpc_pb.NodeStatus
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.SingleBytes
 };
 
 AergoRPCService.Blockchain = {

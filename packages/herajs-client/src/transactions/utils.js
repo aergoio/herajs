@@ -12,6 +12,7 @@ export function transactionToTx(tx) {
         msgtxbody.setPayload(tx.payload);
     }
     msgtxbody.setSign(tx.sign);
+    msgtxbody.setType(tx.type);
     const msgtx = new rpcTypes.Tx();
     msgtx.setHash(fromHexString(tx.hash));
     msgtx.setBody(msgtxbody);
@@ -28,5 +29,6 @@ export function txToTransaction(tx) {
     transaction.amount = tx.getBody().getAmount();
     transaction.payload = tx.getBody().getPayload();
     transaction.sign = tx.getBody().getSign();
+    transaction.type = tx.getBody().getType();
     return transaction;
 }

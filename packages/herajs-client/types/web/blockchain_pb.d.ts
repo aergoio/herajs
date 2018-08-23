@@ -146,9 +146,6 @@ export class Tx extends jspb.Message {
   getBody(): TxBody | undefined;
   setBody(value?: TxBody): void;
 
-  getSize(): number;
-  setSize(value: number): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Tx.AsObject;
   static toObject(includeInstance: boolean, msg: Tx): Tx.AsObject;
@@ -163,7 +160,6 @@ export namespace Tx {
   export type AsObject = {
     hash: Uint8Array | string,
     body?: TxBody.AsObject,
-    size: number,
   }
 }
 
@@ -200,6 +196,9 @@ export class TxBody extends jspb.Message {
   getSign_asB64(): string;
   setSign(value: Uint8Array | string): void;
 
+  getType(): TxType;
+  setType(value: TxType): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TxBody.AsObject;
   static toObject(includeInstance: boolean, msg: TxBody): TxBody.AsObject;
@@ -220,6 +219,7 @@ export namespace TxBody {
     limit: number,
     price: number,
     sign: Uint8Array | string,
+    type: TxType,
   }
 }
 
@@ -305,5 +305,10 @@ export namespace State {
     nonce: number,
     balance: number,
   }
+}
+
+export enum TxType {
+  NORMAL = 0,
+  GOVERNANCE = 1,
 }
 

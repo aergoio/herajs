@@ -11,8 +11,8 @@ type AergoRPCServiceNodeState = {
   readonly service: typeof AergoRPCService;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof rpc_pb.Empty;
-  readonly responseType: typeof rpc_pb.NodeStatus;
+  readonly requestType: typeof rpc_pb.SingleBytes;
+  readonly responseType: typeof rpc_pb.SingleBytes;
 };
 
 type AergoRPCServiceBlockchain = {
@@ -176,13 +176,13 @@ export class AergoRPCServiceClient {
 
   constructor(serviceHost: string, options?: ServiceClientOptions);
   nodeState(
-    requestMessage: rpc_pb.Empty,
+    requestMessage: rpc_pb.SingleBytes,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError, responseMessage: rpc_pb.NodeStatus|null) => void
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
   ): void;
   nodeState(
-    requestMessage: rpc_pb.Empty,
-    callback: (error: ServiceError, responseMessage: rpc_pb.NodeStatus|null) => void
+    requestMessage: rpc_pb.SingleBytes,
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
   ): void;
   blockchain(
     requestMessage: rpc_pb.Empty,

@@ -96,17 +96,6 @@ function deserialize_types_ListParams(buffer_arg) {
   return rpc_pb.ListParams.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_types_NodeStatus(arg) {
-  if (!(arg instanceof rpc_pb.NodeStatus)) {
-    throw new Error('Expected argument of type types.NodeStatus');
-  }
-  return new Buffer(arg.serializeBinary());
-}
-
-function deserialize_types_NodeStatus(buffer_arg) {
-  return rpc_pb.NodeStatus.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_types_PeerList(arg) {
   if (!(arg instanceof rpc_pb.PeerList)) {
     throw new Error('Expected argument of type types.PeerList');
@@ -205,12 +194,12 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     path: '/types.AergoRPCService/NodeState',
     requestStream: false,
     responseStream: false,
-    requestType: rpc_pb.Empty,
-    responseType: rpc_pb.NodeStatus,
-    requestSerialize: serialize_types_Empty,
-    requestDeserialize: deserialize_types_Empty,
-    responseSerialize: serialize_types_NodeStatus,
-    responseDeserialize: deserialize_types_NodeStatus,
+    requestType: rpc_pb.SingleBytes,
+    responseType: rpc_pb.SingleBytes,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_SingleBytes,
+    responseDeserialize: deserialize_types_SingleBytes,
   },
   blockchain: {
     path: '/types.AergoRPCService/Blockchain',
