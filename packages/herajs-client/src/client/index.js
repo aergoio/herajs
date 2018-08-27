@@ -35,10 +35,31 @@ class AergoClient {
         return promisify(this.client.blockchain, this.client)(empty);
     }
 
-    getTransaction (txid) {
+    //get transaction information in the aergo node. 
+    //if transaction is in the block return result with block hash and index.
+    getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(fromHexString(txid));
-        return promisify(this.client.getTX, this.client)(singleBytes).then(txToTransaction);
+        singleBytes.setValue(txhash);
+        return new Promise((resolve, reject) => {
+            this.client.getTX(singleBytes, (err, result) => {
+                if (err) {
+                    this.client.getBlockTX(singleBytes, (err, result) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            const res = {};
+                            res.block = result.getTxidx();
+                            res.tx = txToTransaction(result.getTx());
+                            resolve(res);
+                        }
+                    });
+                } else {
+                    const res = {};
+                    res.tx = txToTransaction(result);
+                    resolve(res);
+                }
+            });
+        });
     }
 
     getBlock (hashOrNumber) {
@@ -74,7 +95,7 @@ class AergoClient {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(toHexString(result.getResultsList()[0].getHash()));
+                    resolve(result.getResultsList()[0].getHash_asB64());
                 }
             });
         });
@@ -84,9 +105,5 @@ class AergoClient {
         return true;
     }
 }
-
-
-
-
 
 export default AergoClient;

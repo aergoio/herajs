@@ -8,7 +8,15 @@ import Aergo from '../src';
 
 describe('Aergo.Accounts', () => {
     const aergo = new Aergo(); //default connect to 127.0.0.1:7845
-    let testAddress = '2a4b7eNT4nX5d76RbT6tq9u4PvNx';
+    const transactionHashLength = 44;
+    let testAddress = 'INVALIDADDRESS';
+    beforeEach(async ()=>{
+        const created = await aergo.accounts.create('testpass');
+        const unlocked = await aergo.accounts.unlock(created, 'testpass');
+        assert.equal(created, unlocked);
+        testAddress = unlocked;
+    });
+
     describe('create()', () => {
         it('should return created base58 encoded address', (done) => {
             aergo.accounts.create('testpass').then((address) => {
@@ -47,12 +55,6 @@ describe('Aergo.Accounts', () => {
     });
 
     describe('signTX()', () => {
-        it('unlocked account for sign', (done) => {
-            aergo.accounts.unlock(testAddress, 'testpass').then((address) => {
-                assert.isString(address);
-                done();
-            });
-        });
 
         it('should return tx which has a unlocked account sign', (done) => {
             const testtx = {
@@ -66,10 +68,10 @@ describe('Aergo.Accounts', () => {
                 .then((result) => {
                     assert.equal(testtx.nonce, result.nonce);
                     assert.equal(testtx.from, result.from);
-                    assert.typeOf(result.sign, 'Uint8Array');
-                    assert.equal(result.sign.length, 65);
-                    done();
-                });
+                    assert.typeOf(result.sign, 'string');
+                    assert.equal(result.sign.length, 88); //raw byte length 65
+                })
+                .finally(done);
         });
     });
 
@@ -89,12 +91,12 @@ describe('Aergo.Accounts', () => {
             const tx = await aergo.accounts.signTransaction(testtx);
             const txhash = await aergo.sendTransaction(tx);
             assert.typeOf(txhash, 'string');
-            assert.equal(txhash.length, 64);
+            assert.equal(txhash.length, transactionHashLength);
 
             // Tx can be retrieved again
             const tx2 = await aergo.getTransaction(txhash);
-            assert.equal(tx2.hash, tx.hash);
-            assert.equal(tx2.amount, tx.amount);
+            assert.equal(tx2.tx.hash, tx.hash);
+            assert.equal(tx2.tx.amount, tx.amount);
 
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendTransaction(tx));
@@ -117,7 +119,7 @@ describe('Aergo.Accounts', () => {
                 promises.push(new Promise((resolve, reject) => {
                     aergo.accounts.signTransaction(testtx).then((signedtx) => {
                         aergo.sendTransaction(signedtx).then((txhash) => {
-                            assert.equal(txhash.length, 64);
+                            assert.equal(txhash.length, transactionHashLength);
                             resolve();
                         }).catch(reject);
                     }).catch(reject);

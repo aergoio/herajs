@@ -67,4 +67,33 @@ describe('Aergo', () => {
             });
         });
     });
+    
+    describe('getTransaction()', () => {
+        it('should return transaction info by hash', async() => {
+            const testtx = {
+                'hash':'AtVRaJ1rXJgRIi4kphMxedI5OtYHm9B4cF+2mKf2zUI=',
+                'nonce':1,
+                'from':'3MAzNsu49uafhpq8rrNJWTTkvStD',
+                'to':'2pFvu7PWU2jRFMCKv5zcgrX6NqKb',
+                'amount':25000,
+                'payload':null,
+                'limit':100,
+                'price':1,
+                'sign':'IElAcPQEPbCMhVUSoRtCQIcdMIckkE4A2OvofhR61D6XRvAAyp1tUWWGWXFdtmwkrVI4kF1epexkvD0o1kDM7g4=',
+                'type':10
+            };
+            //send transaction to get
+            //const txhash = await aergo.sendTransaction(testtx);
+            //get transaction
+            /*
+            aergo.getTransaction(testtx.hash)
+                .then((result) => {
+                    assert.equal(result.tx.hash, testtx.hash);
+                    done();
+                });
+            */
+            const result = await aergo.getTransaction(testtx.hash);
+            assert.equal(result.tx.hash, testtx.hash);
+        });
+    });
 });

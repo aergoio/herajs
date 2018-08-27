@@ -10,8 +10,14 @@ const fromNumber = (d) => {
     return arr;
 };
 
+const fromB64String = (str) => {
+    const arr = new Uint8Array(8);
+    return arr;
+};
+
 export {
     fromHexString,
     toHexString,
-    fromNumber
+    fromNumber,
+    fromB64String,
 };
