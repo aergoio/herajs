@@ -67,6 +67,21 @@ describe('Aergo', () => {
             });
         });
     });
+
+    describe('getState()', () => {
+        let testaddress;
+        beforeEach(async ()=>{
+            testaddress = await aergo.accounts.create('testpass');
+        });
+
+        it('should return state info by account address', (done) => {
+            aergo.getState(testaddress).then((response) => {
+                assert.equal(response.getNonce(), 0);
+                assert.equal(response.getBalance(), 0);
+                done();
+            });
+        });
+    });
     
     describe('getTransaction()', () => {
         let testtx;

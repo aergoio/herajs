@@ -74,9 +74,10 @@ class AergoClient {
         return promisify(this.client.getBlock, this.client)(singleBytes);
     }
 
-    getBlockTransactionCount () {
+    getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        return promisify(this.client.getTX, this.client)(singleBytes);
+        singleBytes.setValue(address);
+        return promisify(this.client.getState, this.client)(singleBytes);
     }
 
     verifyTransaction (tx) {
