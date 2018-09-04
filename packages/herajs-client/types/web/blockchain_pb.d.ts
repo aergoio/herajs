@@ -59,6 +59,9 @@ export class BlockHeader extends jspb.Message {
   getTxsroothash_asB64(): string;
   setTxsroothash(value: Uint8Array | string): void;
 
+  getConfirms(): number;
+  setConfirms(value: number): void;
+
   getPubkey(): Uint8Array | string;
   getPubkey_asU8(): Uint8Array;
   getPubkey_asB64(): string;
@@ -86,6 +89,7 @@ export namespace BlockHeader {
     timestamp: number,
     blocksroothash: Uint8Array | string,
     txsroothash: Uint8Array | string,
+    confirms: number,
     pubkey: Uint8Array | string,
     sign: Uint8Array | string,
   }
@@ -278,16 +282,21 @@ export namespace TxInBlock {
 }
 
 export class State extends jspb.Message {
-  getAccount(): Uint8Array | string;
-  getAccount_asU8(): Uint8Array;
-  getAccount_asB64(): string;
-  setAccount(value: Uint8Array | string): void;
-
   getNonce(): number;
   setNonce(value: number): void;
 
   getBalance(): number;
   setBalance(value: number): void;
+
+  getCodehash(): Uint8Array | string;
+  getCodehash_asU8(): Uint8Array;
+  getCodehash_asB64(): string;
+  setCodehash(value: Uint8Array | string): void;
+
+  getStorageroot(): Uint8Array | string;
+  getStorageroot_asU8(): Uint8Array;
+  getStorageroot_asB64(): string;
+  setStorageroot(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): State.AsObject;
@@ -301,9 +310,116 @@ export class State extends jspb.Message {
 
 export namespace State {
   export type AsObject = {
-    account: Uint8Array | string,
     nonce: number,
     balance: number,
+    codehash: Uint8Array | string,
+    storageroot: Uint8Array | string,
+  }
+}
+
+export class Receipt extends jspb.Message {
+  getContractaddress(): Uint8Array | string;
+  getContractaddress_asU8(): Uint8Array;
+  getContractaddress_asB64(): string;
+  setContractaddress(value: Uint8Array | string): void;
+
+  getStatus(): string;
+  setStatus(value: string): void;
+
+  getRet(): string;
+  setRet(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Receipt.AsObject;
+  static toObject(includeInstance: boolean, msg: Receipt): Receipt.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Receipt, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Receipt;
+  static deserializeBinaryFromReader(message: Receipt, reader: jspb.BinaryReader): Receipt;
+}
+
+export namespace Receipt {
+  export type AsObject = {
+    contractaddress: Uint8Array | string,
+    status: string,
+    ret: string,
+  }
+}
+
+export class FnArgument extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FnArgument.AsObject;
+  static toObject(includeInstance: boolean, msg: FnArgument): FnArgument.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FnArgument, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FnArgument;
+  static deserializeBinaryFromReader(message: FnArgument, reader: jspb.BinaryReader): FnArgument;
+}
+
+export namespace FnArgument {
+  export type AsObject = {
+    name: string,
+  }
+}
+
+export class Function extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  clearArgumentsList(): void;
+  getArgumentsList(): Array<FnArgument>;
+  setArgumentsList(value: Array<FnArgument>): void;
+  addArguments(value?: FnArgument, index?: number): FnArgument;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Function.AsObject;
+  static toObject(includeInstance: boolean, msg: Function): Function.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Function, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Function;
+  static deserializeBinaryFromReader(message: Function, reader: jspb.BinaryReader): Function;
+}
+
+export namespace Function {
+  export type AsObject = {
+    name: string,
+    argumentsList: Array<FnArgument.AsObject>,
+  }
+}
+
+export class ABI extends jspb.Message {
+  getVersion(): string;
+  setVersion(value: string): void;
+
+  getLanguage(): string;
+  setLanguage(value: string): void;
+
+  clearFunctionsList(): void;
+  getFunctionsList(): Array<Function>;
+  setFunctionsList(value: Array<Function>): void;
+  addFunctions(value?: Function, index?: number): Function;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ABI.AsObject;
+  static toObject(includeInstance: boolean, msg: ABI): ABI.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ABI, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ABI;
+  static deserializeBinaryFromReader(message: ABI, reader: jspb.BinaryReader): ABI;
+}
+
+export namespace ABI {
+  export type AsObject = {
+    version: string,
+    language: string,
+    functionsList: Array<Function.AsObject>,
   }
 }
 

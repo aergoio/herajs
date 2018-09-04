@@ -60,6 +60,24 @@ type AergoRPCServiceGetBlockTX = {
   readonly responseType: typeof blockchain_pb.TxInBlock;
 };
 
+type AergoRPCServiceGetReceipt = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.SingleBytes;
+  readonly responseType: typeof blockchain_pb.Receipt;
+};
+
+type AergoRPCServiceGetABI = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.SingleBytes;
+  readonly responseType: typeof blockchain_pb.ABI;
+};
+
 type AergoRPCServiceCommitTX = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -149,6 +167,8 @@ export class AergoRPCService {
   static readonly GetBlock: AergoRPCServiceGetBlock;
   static readonly GetTX: AergoRPCServiceGetTX;
   static readonly GetBlockTX: AergoRPCServiceGetBlockTX;
+  static readonly GetReceipt: AergoRPCServiceGetReceipt;
+  static readonly GetABI: AergoRPCServiceGetABI;
   static readonly CommitTX: AergoRPCServiceCommitTX;
   static readonly GetState: AergoRPCServiceGetState;
   static readonly CreateAccount: AergoRPCServiceCreateAccount;
@@ -228,6 +248,24 @@ export class AergoRPCServiceClient {
   getBlockTX(
     requestMessage: rpc_pb.SingleBytes,
     callback: (error: ServiceError, responseMessage: blockchain_pb.TxInBlock|null) => void
+  ): void;
+  getReceipt(
+    requestMessage: rpc_pb.SingleBytes,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.Receipt|null) => void
+  ): void;
+  getReceipt(
+    requestMessage: rpc_pb.SingleBytes,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.Receipt|null) => void
+  ): void;
+  getABI(
+    requestMessage: rpc_pb.SingleBytes,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.ABI|null) => void
+  ): void;
+  getABI(
+    requestMessage: rpc_pb.SingleBytes,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.ABI|null) => void
   ): void;
   commitTX(
     requestMessage: blockchain_pb.TxList,

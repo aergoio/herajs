@@ -66,6 +66,24 @@ AergoRPCService.GetBlockTX = {
   responseType: blockchain_pb.TxInBlock
 };
 
+AergoRPCService.GetReceipt = {
+  methodName: "GetReceipt",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Receipt
+};
+
+AergoRPCService.GetABI = {
+  methodName: "GetABI",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.ABI
+};
+
 AergoRPCService.CommitTX = {
   methodName: "CommitTX",
   service: AergoRPCService,
@@ -269,6 +287,50 @@ AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage,
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetBlockTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetReceipt, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetABI, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

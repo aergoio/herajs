@@ -11,9 +11,13 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+goog.exportSymbol('proto.types.ABI', null, global);
 goog.exportSymbol('proto.types.Block', null, global);
 goog.exportSymbol('proto.types.BlockBody', null, global);
 goog.exportSymbol('proto.types.BlockHeader', null, global);
+goog.exportSymbol('proto.types.FnArgument', null, global);
+goog.exportSymbol('proto.types.Function', null, global);
+goog.exportSymbol('proto.types.Receipt', null, global);
 goog.exportSymbol('proto.types.State', null, global);
 goog.exportSymbol('proto.types.Tx', null, global);
 goog.exportSymbol('proto.types.TxBody', null, global);
@@ -327,6 +331,7 @@ proto.types.BlockHeader.toObject = function(includeInstance, msg) {
     timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
     blocksroothash: msg.getBlocksroothash_asB64(),
     txsroothash: msg.getTxsroothash_asB64(),
+    confirms: jspb.Message.getFieldWithDefault(msg, 6, 0),
     pubkey: msg.getPubkey_asB64(),
     sign: msg.getSign_asB64()
   };
@@ -386,10 +391,14 @@ proto.types.BlockHeader.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTxsroothash(value);
       break;
     case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setConfirms(value);
+      break;
+    case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setPubkey(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSign(value);
       break;
@@ -457,17 +466,24 @@ proto.types.BlockHeader.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getConfirms();
+  if (f !== 0) {
+    writer.writeUint64(
+      6,
+      f
+    );
+  }
   f = message.getPubkey_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      7,
       f
     );
   }
   f = message.getSign_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      7,
+      8,
       f
     );
   }
@@ -622,16 +638,31 @@ proto.types.BlockHeader.prototype.setTxsroothash = function(value) {
 
 
 /**
- * optional bytes pubKey = 6;
- * @return {!(string|Uint8Array)}
+ * optional uint64 confirms = 6;
+ * @return {number}
  */
-proto.types.BlockHeader.prototype.getPubkey = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+proto.types.BlockHeader.prototype.getConfirms = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {number} value */
+proto.types.BlockHeader.prototype.setConfirms = function(value) {
+  jspb.Message.setField(this, 6, value);
 };
 
 
 /**
- * optional bytes pubKey = 6;
+ * optional bytes pubKey = 7;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.BlockHeader.prototype.getPubkey = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * optional bytes pubKey = 7;
  * This is a type-conversion wrapper around `getPubkey()`
  * @return {string}
  */
@@ -642,7 +673,7 @@ proto.types.BlockHeader.prototype.getPubkey_asB64 = function() {
 
 
 /**
- * optional bytes pubKey = 6;
+ * optional bytes pubKey = 7;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getPubkey()`
@@ -656,21 +687,21 @@ proto.types.BlockHeader.prototype.getPubkey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setPubkey = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setField(this, 7, value);
 };
 
 
 /**
- * optional bytes sign = 7;
+ * optional bytes sign = 8;
  * @return {!(string|Uint8Array)}
  */
 proto.types.BlockHeader.prototype.getSign = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
- * optional bytes sign = 7;
+ * optional bytes sign = 8;
  * This is a type-conversion wrapper around `getSign()`
  * @return {string}
  */
@@ -681,7 +712,7 @@ proto.types.BlockHeader.prototype.getSign_asB64 = function() {
 
 
 /**
- * optional bytes sign = 7;
+ * optional bytes sign = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSign()`
@@ -695,7 +726,7 @@ proto.types.BlockHeader.prototype.getSign_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setSign = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setField(this, 8, value);
 };
 
 
@@ -2142,9 +2173,10 @@ proto.types.State.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.State.toObject = function(includeInstance, msg) {
   var f, obj = {
-    account: msg.getAccount_asB64(),
-    nonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    balance: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    balance: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    codehash: msg.getCodehash_asB64(),
+    storageroot: msg.getStorageroot_asB64()
   };
 
   if (includeInstance) {
@@ -2182,16 +2214,20 @@ proto.types.State.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setAccount(value);
-      break;
-    case 2:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setNonce(value);
       break;
-    case 3:
+    case 2:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setBalance(value);
+      break;
+    case 3:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setCodehash(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setStorageroot(value);
       break;
     default:
       reader.skipField();
@@ -2222,23 +2258,289 @@ proto.types.State.prototype.serializeBinary = function() {
  */
 proto.types.State.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAccount_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      1,
-      f
-    );
-  }
   f = message.getNonce();
   if (f !== 0) {
     writer.writeUint64(
-      2,
+      1,
       f
     );
   }
   f = message.getBalance();
   if (f !== 0) {
     writer.writeUint64(
+      2,
+      f
+    );
+  }
+  f = message.getCodehash_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      3,
+      f
+    );
+  }
+  f = message.getStorageroot_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional uint64 nonce = 1;
+ * @return {number}
+ */
+proto.types.State.prototype.getNonce = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.types.State.prototype.setNonce = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional uint64 balance = 2;
+ * @return {number}
+ */
+proto.types.State.prototype.getBalance = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.types.State.prototype.setBalance = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional bytes codeHash = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.State.prototype.getCodehash = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes codeHash = 3;
+ * This is a type-conversion wrapper around `getCodehash()`
+ * @return {string}
+ */
+proto.types.State.prototype.getCodehash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getCodehash()));
+};
+
+
+/**
+ * optional bytes codeHash = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getCodehash()`
+ * @return {!Uint8Array}
+ */
+proto.types.State.prototype.getCodehash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getCodehash()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.State.prototype.setCodehash = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional bytes storageRoot = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.State.prototype.getStorageroot = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes storageRoot = 4;
+ * This is a type-conversion wrapper around `getStorageroot()`
+ * @return {string}
+ */
+proto.types.State.prototype.getStorageroot_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getStorageroot()));
+};
+
+
+/**
+ * optional bytes storageRoot = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getStorageroot()`
+ * @return {!Uint8Array}
+ */
+proto.types.State.prototype.getStorageroot_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getStorageroot()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.State.prototype.setStorageroot = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.Receipt = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.Receipt, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.Receipt.displayName = 'proto.types.Receipt';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.Receipt.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.Receipt.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.Receipt} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Receipt.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    contractaddress: msg.getContractaddress_asB64(),
+    status: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    ret: jspb.Message.getFieldWithDefault(msg, 3, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.Receipt}
+ */
+proto.types.Receipt.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.Receipt;
+  return proto.types.Receipt.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.Receipt} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.Receipt}
+ */
+proto.types.Receipt.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setContractaddress(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStatus(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRet(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.Receipt.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.Receipt.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.Receipt} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Receipt.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getContractaddress_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      1,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getRet();
+  if (f.length > 0) {
+    writer.writeString(
       3,
       f
     );
@@ -2247,71 +2549,630 @@ proto.types.State.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes account = 1;
+ * optional bytes contractAddress = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.types.State.prototype.getAccount = function() {
+proto.types.Receipt.prototype.getContractaddress = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes account = 1;
- * This is a type-conversion wrapper around `getAccount()`
+ * optional bytes contractAddress = 1;
+ * This is a type-conversion wrapper around `getContractaddress()`
  * @return {string}
  */
-proto.types.State.prototype.getAccount_asB64 = function() {
+proto.types.Receipt.prototype.getContractaddress_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getAccount()));
+      this.getContractaddress()));
 };
 
 
 /**
- * optional bytes account = 1;
+ * optional bytes contractAddress = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getAccount()`
+ * This is a type-conversion wrapper around `getContractaddress()`
  * @return {!Uint8Array}
  */
-proto.types.State.prototype.getAccount_asU8 = function() {
+proto.types.Receipt.prototype.getContractaddress_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getAccount()));
+      this.getContractaddress()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.types.State.prototype.setAccount = function(value) {
+proto.types.Receipt.prototype.setContractaddress = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
 /**
- * optional uint64 nonce = 2;
- * @return {number}
+ * optional string status = 2;
+ * @return {string}
  */
-proto.types.State.prototype.getNonce = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.types.Receipt.prototype.getStatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {number} value */
-proto.types.State.prototype.setNonce = function(value) {
+/** @param {string} value */
+proto.types.Receipt.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
 /**
- * optional uint64 balance = 3;
- * @return {number}
+ * optional string ret = 3;
+ * @return {string}
  */
-proto.types.State.prototype.getBalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.types.Receipt.prototype.getRet = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {number} value */
-proto.types.State.prototype.setBalance = function(value) {
+/** @param {string} value */
+proto.types.Receipt.prototype.setRet = function(value) {
   jspb.Message.setField(this, 3, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.FnArgument = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.FnArgument, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.FnArgument.displayName = 'proto.types.FnArgument';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.FnArgument.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.FnArgument.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.FnArgument} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.FnArgument.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.FnArgument}
+ */
+proto.types.FnArgument.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.FnArgument;
+  return proto.types.FnArgument.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.FnArgument} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.FnArgument}
+ */
+proto.types.FnArgument.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.FnArgument.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.FnArgument.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.FnArgument} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.FnArgument.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.types.FnArgument.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.types.FnArgument.prototype.setName = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.Function = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Function.repeatedFields_, null);
+};
+goog.inherits(proto.types.Function, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.Function.displayName = 'proto.types.Function';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.Function.repeatedFields_ = [2];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.Function.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.Function.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.Function} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Function.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    argumentsList: jspb.Message.toObjectList(msg.getArgumentsList(),
+    proto.types.FnArgument.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.Function}
+ */
+proto.types.Function.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.Function;
+  return proto.types.Function.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.Function} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.Function}
+ */
+proto.types.Function.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 2:
+      var value = new proto.types.FnArgument;
+      reader.readMessage(value,proto.types.FnArgument.deserializeBinaryFromReader);
+      msg.addArguments(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.Function.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.Function.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.Function} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Function.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getArgumentsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      2,
+      f,
+      proto.types.FnArgument.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.types.Function.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.types.Function.prototype.setName = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * repeated FnArgument arguments = 2;
+ * @return {!Array.<!proto.types.FnArgument>}
+ */
+proto.types.Function.prototype.getArgumentsList = function() {
+  return /** @type{!Array.<!proto.types.FnArgument>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.types.FnArgument, 2));
+};
+
+
+/** @param {!Array.<!proto.types.FnArgument>} value */
+proto.types.Function.prototype.setArgumentsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+
+/**
+ * @param {!proto.types.FnArgument=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.types.FnArgument}
+ */
+proto.types.Function.prototype.addArguments = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.FnArgument, opt_index);
+};
+
+
+proto.types.Function.prototype.clearArgumentsList = function() {
+  this.setArgumentsList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.ABI = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.ABI.repeatedFields_, null);
+};
+goog.inherits(proto.types.ABI, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.ABI.displayName = 'proto.types.ABI';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.ABI.repeatedFields_ = [3];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.ABI.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.ABI.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.ABI} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.ABI.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    version: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    language: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    functionsList: jspb.Message.toObjectList(msg.getFunctionsList(),
+    proto.types.Function.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.ABI}
+ */
+proto.types.ABI.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.ABI;
+  return proto.types.ABI.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.ABI} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.ABI}
+ */
+proto.types.ABI.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVersion(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLanguage(value);
+      break;
+    case 3:
+      var value = new proto.types.Function;
+      reader.readMessage(value,proto.types.Function.deserializeBinaryFromReader);
+      msg.addFunctions(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.ABI.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.ABI.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.ABI} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.ABI.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getVersion();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getLanguage();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getFunctionsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      proto.types.Function.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional string version = 1;
+ * @return {string}
+ */
+proto.types.ABI.prototype.getVersion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.types.ABI.prototype.setVersion = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional string language = 2;
+ * @return {string}
+ */
+proto.types.ABI.prototype.getLanguage = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.types.ABI.prototype.setLanguage = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * repeated Function functions = 3;
+ * @return {!Array.<!proto.types.Function>}
+ */
+proto.types.ABI.prototype.getFunctionsList = function() {
+  return /** @type{!Array.<!proto.types.Function>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.types.Function, 3));
+};
+
+
+/** @param {!Array.<!proto.types.Function>} value */
+proto.types.ABI.prototype.setFunctionsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.types.Function=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.types.Function}
+ */
+proto.types.ABI.prototype.addFunctions = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.Function, opt_index);
+};
+
+
+proto.types.ABI.prototype.clearFunctionsList = function() {
+  this.setFunctionsList([]);
 };
 
 

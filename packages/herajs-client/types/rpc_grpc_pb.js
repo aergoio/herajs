@@ -8,6 +8,17 @@ var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');
 
+function serialize_types_ABI(arg) {
+  if (!(arg instanceof blockchain_pb.ABI)) {
+    throw new Error('Expected argument of type types.ABI');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ABI(buffer_arg) {
+  return blockchain_pb.ABI.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_Account(arg) {
   if (!(arg instanceof account_pb.Account)) {
     throw new Error('Expected argument of type types.Account');
@@ -116,6 +127,17 @@ function serialize_types_Personal(arg) {
 
 function deserialize_types_Personal(buffer_arg) {
   return rpc_pb.Personal.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Receipt(arg) {
+  if (!(arg instanceof blockchain_pb.Receipt)) {
+    throw new Error('Expected argument of type types.Receipt');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Receipt(buffer_arg) {
+  return blockchain_pb.Receipt.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_SingleBytes(arg) {
@@ -264,6 +286,28 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_TxInBlock,
     responseDeserialize: deserialize_types_TxInBlock,
+  },
+  getReceipt: {
+    path: '/types.AergoRPCService/GetReceipt',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.Receipt,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_Receipt,
+    responseDeserialize: deserialize_types_Receipt,
+  },
+  getABI: {
+    path: '/types.AergoRPCService/GetABI',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.ABI,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_ABI,
+    responseDeserialize: deserialize_types_ABI,
   },
   commitTX: {
     path: '/types.AergoRPCService/CommitTX',
