@@ -2,17 +2,18 @@
 /* eslint no-console: 0 */
 import { performance, PerformanceObserver } from 'perf_hooks';
 
+const numberOfTx = 5000;
+
 const obs = new PerformanceObserver((items) => {
     const entry = items.getEntries()[0];
-    console.log(`${entry.name}: ${entry.duration}ms`);
+    const tps = Math.round(numberOfTx / entry.duration * 1000);
+    console.log(`${entry.name}: ${entry.duration}ms (${tps} tps)`);
 });
 obs.observe({ entryTypes: ['measure'] });
 
 export async function main(aergo) {
     const createdAddress = await aergo.accounts.create('testpass');
     const address = await aergo.accounts.unlock(createdAddress, 'testpass');
-
-    const numberOfTx = 1000;
 
     // Create transactions
     const transactions = Array.from({length: numberOfTx}).map((u, i) => ({
