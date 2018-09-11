@@ -150,6 +150,15 @@ type AergoRPCServiceVerifyTX = {
   readonly responseType: typeof rpc_pb.VerifyResult;
 };
 
+type AergoRPCServiceQueryContract = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof blockchain_pb.Query;
+  readonly responseType: typeof rpc_pb.SingleBytes;
+};
+
 type AergoRPCServiceGetPeers = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -157,6 +166,15 @@ type AergoRPCServiceGetPeers = {
   readonly responseStream: false;
   readonly requestType: typeof rpc_pb.Empty;
   readonly responseType: typeof rpc_pb.PeerList;
+};
+
+type AergoRPCServiceGetVotes = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.SingleBytes;
+  readonly responseType: typeof blockchain_pb.VoteList;
 };
 
 export class AergoRPCService {
@@ -177,7 +195,9 @@ export class AergoRPCService {
   static readonly UnlockAccount: AergoRPCServiceUnlockAccount;
   static readonly SignTX: AergoRPCServiceSignTX;
   static readonly VerifyTX: AergoRPCServiceVerifyTX;
+  static readonly QueryContract: AergoRPCServiceQueryContract;
   static readonly GetPeers: AergoRPCServiceGetPeers;
+  static readonly GetVotes: AergoRPCServiceGetVotes;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -339,6 +359,15 @@ export class AergoRPCServiceClient {
     requestMessage: blockchain_pb.Tx,
     callback: (error: ServiceError, responseMessage: rpc_pb.VerifyResult|null) => void
   ): void;
+  queryContract(
+    requestMessage: blockchain_pb.Query,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
+  ): void;
+  queryContract(
+    requestMessage: blockchain_pb.Query,
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
+  ): void;
   getPeers(
     requestMessage: rpc_pb.Empty,
     metadata: grpc.Metadata,
@@ -347,6 +376,15 @@ export class AergoRPCServiceClient {
   getPeers(
     requestMessage: rpc_pb.Empty,
     callback: (error: ServiceError, responseMessage: rpc_pb.PeerList|null) => void
+  ): void;
+  getVotes(
+    requestMessage: rpc_pb.SingleBytes,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.VoteList|null) => void
+  ): void;
+  getVotes(
+    requestMessage: rpc_pb.SingleBytes,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.VoteList|null) => void
   ): void;
 }
 

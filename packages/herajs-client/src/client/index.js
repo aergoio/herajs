@@ -79,6 +79,19 @@ class AergoClient {
         singleBytes.setValue(address);
         return promisify(this.client.getState, this.client)(singleBytes);
     }
+    getTransactionCount(address) {
+        return new Promise((resolve, reject) => {
+            const singleBytes = new rpcTypes.SingleBytes();
+            singleBytes.setValue(address);
+            this.client.getState(singleBytes, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result.getNonce());
+                }
+            });
+        });
+    }
 
     verifyTransaction (tx) {
         return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));

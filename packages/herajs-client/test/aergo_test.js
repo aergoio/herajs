@@ -83,6 +83,20 @@ describe('Aergo', () => {
         });
     });
     
+    describe('getTransactionCount()', () => {
+        let testaddress;
+        beforeEach(async ()=>{
+            testaddress = await aergo.accounts.create('testpass');
+        });
+
+        it('should return state info by account address', (done) => {
+            aergo.getTransactionCount(testaddress).then((response) => {
+                assert.equal(response, 0);
+                done();
+            });
+        });
+    });
+
     describe('getTransaction()', () => {
         let testtx;
         beforeEach(async ()=>{

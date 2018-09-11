@@ -195,13 +195,13 @@ export class TxBody extends jspb.Message {
   getPrice(): number;
   setPrice(value: number): void;
 
+  getType(): TxType;
+  setType(value: TxType): void;
+
   getSign(): Uint8Array | string;
   getSign_asU8(): Uint8Array;
   getSign_asB64(): string;
   setSign(value: Uint8Array | string): void;
-
-  getType(): TxType;
-  setType(value: TxType): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TxBody.AsObject;
@@ -222,8 +222,8 @@ export namespace TxBody {
     payload: Uint8Array | string,
     limit: number,
     price: number,
-    sign: Uint8Array | string,
     type: TxType,
+    sign: Uint8Array | string,
   }
 }
 
@@ -347,6 +347,54 @@ export namespace Receipt {
   }
 }
 
+export class Vote extends jspb.Message {
+  getCandidate(): Uint8Array | string;
+  getCandidate_asU8(): Uint8Array;
+  getCandidate_asB64(): string;
+  setCandidate(value: Uint8Array | string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Vote.AsObject;
+  static toObject(includeInstance: boolean, msg: Vote): Vote.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Vote, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Vote;
+  static deserializeBinaryFromReader(message: Vote, reader: jspb.BinaryReader): Vote;
+}
+
+export namespace Vote {
+  export type AsObject = {
+    candidate: Uint8Array | string,
+    amount: number,
+  }
+}
+
+export class VoteList extends jspb.Message {
+  clearVotesList(): void;
+  getVotesList(): Array<Vote>;
+  setVotesList(value: Array<Vote>): void;
+  addVotes(value?: Vote, index?: number): Vote;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VoteList.AsObject;
+  static toObject(includeInstance: boolean, msg: VoteList): VoteList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: VoteList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VoteList;
+  static deserializeBinaryFromReader(message: VoteList, reader: jspb.BinaryReader): VoteList;
+}
+
+export namespace VoteList {
+  export type AsObject = {
+    votesList: Array<Vote.AsObject>,
+  }
+}
+
 export class FnArgument extends jspb.Message {
   getName(): string;
   setName(value: string): void;
@@ -420,6 +468,34 @@ export namespace ABI {
     version: string,
     language: string,
     functionsList: Array<Function.AsObject>,
+  }
+}
+
+export class Query extends jspb.Message {
+  getContractaddress(): Uint8Array | string;
+  getContractaddress_asU8(): Uint8Array;
+  getContractaddress_asB64(): string;
+  setContractaddress(value: Uint8Array | string): void;
+
+  getQueryinfo(): Uint8Array | string;
+  getQueryinfo_asU8(): Uint8Array;
+  getQueryinfo_asB64(): string;
+  setQueryinfo(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Query.AsObject;
+  static toObject(includeInstance: boolean, msg: Query): Query.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Query, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Query;
+  static deserializeBinaryFromReader(message: Query, reader: jspb.BinaryReader): Query;
+}
+
+export namespace Query {
+  export type AsObject = {
+    contractaddress: Uint8Array | string,
+    queryinfo: Uint8Array | string,
   }
 }
 

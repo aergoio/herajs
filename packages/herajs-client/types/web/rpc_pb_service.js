@@ -156,6 +156,15 @@ AergoRPCService.VerifyTX = {
   responseType: rpc_pb.VerifyResult
 };
 
+AergoRPCService.QueryContract = {
+  methodName: "QueryContract",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Query,
+  responseType: rpc_pb.SingleBytes
+};
+
 AergoRPCService.GetPeers = {
   methodName: "GetPeers",
   service: AergoRPCService,
@@ -163,6 +172,15 @@ AergoRPCService.GetPeers = {
   responseStream: false,
   requestType: rpc_pb.Empty,
   responseType: rpc_pb.PeerList
+};
+
+AergoRPCService.GetVotes = {
+  methodName: "GetVotes",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.VoteList
 };
 
 exports.AergoRPCService = AergoRPCService;
@@ -524,11 +542,55 @@ AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, met
   });
 };
 
+AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.QueryContract, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
 AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetPeers, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetVotes, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

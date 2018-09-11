@@ -31,7 +31,7 @@
     "grpc-web-client": "^0.6.2"
   },
   "aergo": {
-    "version": "ccec232c0ed5a7d85fc2ee2a1dddbc775b2d1eed"
+    "version": "4d2be60dc4d1368f3df74b6f2bc477f9826037a7"
   },
   "devDependencies": {
     "@types/rollup-plugin-json": "^3.0.0",

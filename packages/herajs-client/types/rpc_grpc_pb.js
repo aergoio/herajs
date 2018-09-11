@@ -129,6 +129,17 @@ function deserialize_types_Personal(buffer_arg) {
   return rpc_pb.Personal.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_Query(arg) {
+  if (!(arg instanceof blockchain_pb.Query)) {
+    throw new Error('Expected argument of type types.Query');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Query(buffer_arg) {
+  return blockchain_pb.Query.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_Receipt(arg) {
   if (!(arg instanceof blockchain_pb.Receipt)) {
     throw new Error('Expected argument of type types.Receipt');
@@ -204,6 +215,17 @@ function serialize_types_VerifyResult(arg) {
 
 function deserialize_types_VerifyResult(buffer_arg) {
   return rpc_pb.VerifyResult.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_VoteList(arg) {
+  if (!(arg instanceof blockchain_pb.VoteList)) {
+    throw new Error('Expected argument of type types.VoteList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_VoteList(buffer_arg) {
+  return blockchain_pb.VoteList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -401,6 +423,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_VerifyResult,
     responseDeserialize: deserialize_types_VerifyResult,
   },
+  queryContract: {
+    path: '/types.AergoRPCService/QueryContract',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.Query,
+    responseType: rpc_pb.SingleBytes,
+    requestSerialize: serialize_types_Query,
+    requestDeserialize: deserialize_types_Query,
+    responseSerialize: serialize_types_SingleBytes,
+    responseDeserialize: deserialize_types_SingleBytes,
+  },
   getPeers: {
     path: '/types.AergoRPCService/GetPeers',
     requestStream: false,
@@ -411,6 +444,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Empty,
     responseSerialize: serialize_types_PeerList,
     responseDeserialize: deserialize_types_PeerList,
+  },
+  getVotes: {
+    path: '/types.AergoRPCService/GetVotes',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.VoteList,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_VoteList,
+    responseDeserialize: deserialize_types_VoteList,
   },
 };
 
