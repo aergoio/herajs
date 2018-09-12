@@ -1,6 +1,6 @@
 import Base58 from 'base-58';
 import rpcTypes from '../client/types.js';
-import { toHexString, fromHexString, fromB64String } from '../utils.js';
+import { toHexString, fromHexString } from '../utils.js';
 
 /*
 tansaction = {
@@ -27,7 +27,6 @@ export function transactionToTx(tx) {
     msgtxbody.setSign(tx.sign);
     msgtxbody.setType(tx.type);
     const msgtx = new rpcTypes.Tx();
-    //msgtx.setHash(fromHexString(tx.hash));
 
     if (tx.hash != null) {
         msgtx.setHash(tx.hash);
@@ -39,7 +38,6 @@ export function transactionToTx(tx) {
 
 export function txToTransaction(tx) {
     const transaction = {};
-    //transaction.hash = toHexString(tx.getHash());
     transaction.hash = tx.getHash_asB64();
     transaction.nonce = tx.getBody().getNonce();
     transaction.from = Base58.encode(tx.getBody().getAccount());

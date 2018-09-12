@@ -1,8 +1,9 @@
 import Accounts from '../accounts';
 import rpcTypes from './types.js';
-import { toHexString, fromHexString, fromNumber } from '../utils.js';
+import { fromHexString, fromNumber, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { transactionToTx, txToTransaction } from '../transactions/utils.js';
+import Base58 from 'base-58';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -35,27 +36,27 @@ class AergoClient {
         return promisify(this.client.blockchain, this.client)(empty);
     }
 
-    //get transaction information in the aergo node. 
-    //if transaction is in the block return result with block hash and index.
+    // Get transaction information in the aergo node. 
+    // if transaction is in the block return result with block hash and index.
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(txhash);
         return new Promise((resolve, reject) => {
-            this.client.getTX(singleBytes, (err, result) => {
+            this.client.getBlockTX(singleBytes, (err, result) => {
                 if (err) {
-                    this.client.getBlockTX(singleBytes, (err, result) => {
+                    this.client.getTX(singleBytes, (err, result) => {
                         if (err) {
                             reject(err);
                         } else {
                             const res = {};
-                            res.block = result.getTxidx();
-                            res.tx = txToTransaction(result.getTx());
+                            res.tx = txToTransaction(result);
                             resolve(res);
                         }
                     });
                 } else {
                     const res = {};
-                    res.tx = txToTransaction(result);
+                    res.block = result.getTxidx();
+                    res.tx = txToTransaction(result.getTx());
                     resolve(res);
                 }
             });
@@ -76,21 +77,14 @@ class AergoClient {
 
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(address);
+        singleBytes.setValue(Base58.decode(address));
         return promisify(this.client.getState, this.client)(singleBytes);
     }
-    getTransactionCount(address) {
-        return new Promise((resolve, reject) => {
-            const singleBytes = new rpcTypes.SingleBytes();
-            singleBytes.setValue(address);
-            this.client.getState(singleBytes, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result.getNonce());
-                }
-            });
-        });
+    
+    getNonce(address) {
+        const singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Base58.decode(address));
+        return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
     verifyTransaction (tx) {
@@ -105,6 +99,7 @@ class AergoClient {
                 if (err == null && result.getResultsList()[0].getError()) {
                     err = new Error();
                     err.code = result.getResultsList()[0].getError(); 
+                    err.message = errorMessageForCode(err.code);
                 }
                 if (err) {
                     reject(err);

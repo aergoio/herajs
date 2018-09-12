@@ -102,6 +102,7 @@ class Accounts {
             msgtxbody.setRecipient(Base58.decode(tx.to));
             msgtxbody.setAmount(tx.amount);
             msgtxbody.setPayload(tx.payload);
+            msgtxbody.setType(tx.type);
 
             const msgtx = new Tx();
             msgtx.setBody(msgtxbody);

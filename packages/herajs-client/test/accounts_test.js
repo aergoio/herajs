@@ -93,8 +93,8 @@ describe('Aergo.Accounts', () => {
             assert.typeOf(txhash, 'string');
             assert.equal(txhash.length, transactionHashLength);
 
-            // Tx can be retrieved again
-            const tx2 = await aergo.getTransaction(txhash);
+            // Tx can be retrieved again from mempool
+            const tx2 = await aergo.getTransaction(tx.hash);
             assert.equal(tx2.tx.hash, tx.hash);
             assert.equal(tx2.tx.amount, tx.amount);
 

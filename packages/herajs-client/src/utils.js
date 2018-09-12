@@ -1,3 +1,6 @@
+import rpcTypes from './client/types.js';
+const CommitStatus = rpcTypes.CommitStatus;
+
 const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
 const toHexString = bytes => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
@@ -10,14 +13,17 @@ const fromNumber = (d) => {
     return arr;
 };
 
-const fromB64String = (str) => {
-    const arr = new Uint8Array(8);
-    return arr;
+const errorMessageForCode = (code) => {
+    let errorMessage = 'UNDEFINED_ERROR';
+    if (code && code < Object.values(CommitStatus).length) {
+        errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
+    }
+    return errorMessage;
 };
 
 export {
     fromHexString,
     toHexString,
     fromNumber,
-    fromB64String,
+    errorMessageForCode
 };

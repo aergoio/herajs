@@ -21,7 +21,7 @@ export async function main(aergo) {
         from: address,
         to: address,
         amount: i + 1,
-        payload: null,
+        payload: null
     }));
 
     performance.mark('A');
@@ -44,6 +44,26 @@ export async function main(aergo) {
     )));
 
     performance.mark('C');
+
+    // Wait for transactions to be included in blocks
+    /*
+    function pollTxStatus(hash) {
+        return aergo.getTransaction(hash).then((result) => {
+            if ('block' in result) {
+                return result.block.getBlockhash_asB64();
+            } else {
+                return pollTxStatus(hash);
+            }
+        });
+    }
+
+    await Promise.all(signedTransactions.map(tx => (
+        pollTxStatus(tx.id).then(blockhash => {
+            tx.blockhash = blockhash;
+            console.log(tx.nonce, tx.id, tx.blockhash);
+        })
+    )));
+    */
     
     // Print tx ids
     for (const tx of signedTransactions) {
@@ -53,4 +73,7 @@ export async function main(aergo) {
     performance.measure('Transaction sign', 'A', 'B');
     performance.measure('Transaction commit', 'B', 'C');
     console.log(`${numberOfTx} tx`);
+
+    const nonce = await aergo.getNonce(address);
+    console.log(`Nonce for ${address} is now ${nonce}`);
 }

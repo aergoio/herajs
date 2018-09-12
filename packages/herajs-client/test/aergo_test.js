@@ -5,7 +5,6 @@ const assert = chai.assert;
 
 import Aergo from '../src';
 
-
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
     const invalidAergo = new Aergo({url: invalidUrl});
@@ -83,18 +82,44 @@ describe('Aergo', () => {
         });
     });
     
-    describe('getTransactionCount()', () => {
+    describe('getNonce()', () => {
         let testaddress;
         beforeEach(async ()=>{
             testaddress = await aergo.accounts.create('testpass');
         });
 
-        it('should return state info by account address', (done) => {
-            aergo.getTransactionCount(testaddress).then((response) => {
+        it('should return nonce of account address', (done) => {
+            aergo.getNonce(testaddress).then((response) => {
                 assert.equal(response, 0);
                 done();
             });
         });
+
+        it('should update nonce after submitting transaction', async () => {
+            await aergo.accounts.unlock(testaddress, 'testpass');
+            //console.log(`address: ${testaddress}`);
+            const unsignedtx = {
+                nonce: 1,
+                from: testaddress,
+                to: testaddress,
+                amount: 123,
+                payload: null,
+            };
+            const signedtx = await aergo.accounts.signTransaction(unsignedtx);
+            const txhash = await aergo.sendTransaction(signedtx);
+            //console.log(`txhash: ${txhash}, pending...`);
+            for(;;) {
+                const result = await aergo.getTransaction(txhash);
+                //console.log(`tx ${result.tx.hash} still pending...`);
+                if ('block' in result) {
+                    //console.log(`included in block #${result.block.getIdx()} (${result.block.getBlockhash_asB64()})`);
+                    break;
+                }
+            }
+            return aergo.getNonce(testaddress).then((nonce) => {
+                assert.equal(nonce, 1);
+            });
+        }).timeout(5000);
     });
 
     describe('getTransaction()', () => {
