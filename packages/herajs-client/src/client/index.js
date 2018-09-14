@@ -3,25 +3,26 @@ import rpcTypes from './types.js';
 import { fromHexString, fromNumber, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { transactionToTx, txToTransaction } from '../transactions/utils.js';
-import { encodeAddress, decodeAddress } from '../accounts/utils.js';
+import { decodeAddress } from '../accounts/utils.js';
 
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
 
 class AergoClient {
-    constructor (config) {
+    constructor (config, provider = null) {
         this.version = 0.1;
         this.config = {
-            url: '127.0.0.1:7845', // Don't put http:// here, protocol is determined by client
             ...config
         };
-        this.client = this.initClient(this.config);
+        this.client = provider || this.initProvider();
         this.accounts = new Accounts(this);
     }
 
-    initClient(config) {
-        // platform-specific override
+    initProvider() {
+        // Platform-specific override, see ../platforms/**
+        // for auto-configuration of a provider.
+        // Can also manually pass provider to constructor.
     }
 
     getConfig () {

@@ -1,11 +1,10 @@
 import AergoClient from '../../client';
-import { AergoRPCServiceClient as NodeClient} from '../../../types/rpc_grpc_pb.js';
-import grpc from 'grpc';
+import GrpcProvider from '../../providers/grpc';
 
 AergoClient.prototype.target = 'node';
 
-AergoClient.prototype.initClient = (config) => {
-    return new NodeClient(config.url, grpc.credentials.createInsecure()); 
+AergoClient.prototype.initProvider = () => {
+    return new GrpcProvider(); 
 };
 
 export default AergoClient;

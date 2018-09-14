@@ -19641,6 +19641,30 @@
 	  return target;
 	};
 
+	var inherits$3 = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	  }
+
+	  subClass.prototype = Object.create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+
+	var possibleConstructorReturn = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+	};
+
 	var toConsumableArray = function (arr) {
 	  if (Array.isArray(arr)) {
 	    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
@@ -19905,19 +19929,21 @@
 
 	var AergoClient = function () {
 	    function AergoClient(config) {
+	        var provider = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 	        classCallCheck(this, AergoClient);
 
 	        this.version = 0.1;
-	        this.config = _extends({
-	            url: '127.0.0.1:7845' }, config);
-	        this.client = this.initClient(this.config);
+	        this.config = _extends({}, config);
+	        this.client = provider || this.initProvider();
 	        this.accounts = new Accounts(this);
 	    }
 
 	    createClass(AergoClient, [{
-	        key: 'initClient',
-	        value: function initClient(config) {
-	            // platform-specific override
+	        key: 'initProvider',
+	        value: function initProvider() {
+	            // Platform-specific override, see ../platforms/**
+	            // for auto-configuration of a provider.
+	            // Can also manually pass provider to constructor.
 	        }
 	    }, {
 	        key: 'getConfig',
@@ -20031,6 +20057,20 @@
 	    }]);
 	    return AergoClient;
 	}();
+
+	var Provider = function Provider(config) {
+	    classCallCheck(this, Provider);
+
+	    this.config = _extends({}, this.defaultConfig, config);
+
+	    // Proxy that passes method calls to the provider's client object
+	    return new Proxy(this, {
+	        get: function get$$1(obj, field) {
+	            if (field in obj) return obj[field];
+	            return obj.client[field];
+	        }
+	    });
+	};
 
 	// This function is written in JS (ES5) to avoid an issue with TypeScript targeting ES5, but requiring Symbol.iterator
 	function iterateHeaders(headers, callback) {
@@ -22158,10 +22198,33 @@
 
 	var AergoRPCServiceClient_1 = AergoRPCServiceClient;
 
+	var GrpcWebProvider = function (_Provider) {
+	    inherits$3(GrpcWebProvider, _Provider);
+
+	    function GrpcWebProvider(config) {
+	        classCallCheck(this, GrpcWebProvider);
+
+	        var _this = possibleConstructorReturn(this, (GrpcWebProvider.__proto__ || Object.getPrototypeOf(GrpcWebProvider)).call(this, config));
+
+	        _this.client = new AergoRPCServiceClient_1(_this.config.url);
+	        return _this;
+	    }
+
+	    createClass(GrpcWebProvider, [{
+	        key: 'defaultConfig',
+	        get: function get$$1() {
+	            return {
+	                url: 'http://localhost:7845'
+	            };
+	        }
+	    }]);
+	    return GrpcWebProvider;
+	}(Provider);
+
 	AergoClient.prototype.target = 'web';
 
-	AergoClient.prototype.initClient = function (config) {
-	    return new AergoRPCServiceClient_1('http://' + config.url);
+	AergoClient.prototype.initProvider = function () {
+	    return new GrpcWebProvider();
 	};
 
 	return AergoClient;

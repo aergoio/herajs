@@ -4,10 +4,11 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 
 import Aergo from '../src';
+import GrpcProvider from '../src/providers/grpc';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
-    const invalidAergo = new Aergo({url: invalidUrl});
+    const invalidAergo = new Aergo({}, new GrpcProvider({url: invalidUrl}));
     describe('isConnected()', () => {
         it('should return false when disconnected', () => {
             assert.equal(invalidAergo.isConnected(), false);
@@ -20,22 +21,21 @@ describe('Aergo invalid config', () => {
         });
     });
 
-    describe('getConfig()', () => {
-        it('should return invalid config', () => {
-            assert.equal(invalidAergo.getConfig().url, invalidUrl);
+    describe('getInvalidConfig()', () => {
+        it('should return default config', () => {
+            assert.equal(invalidAergo.client.config.url, invalidUrl);
         });
     });
-
 });
 
 describe('Aergo', () => {
-    const aergo = new Aergo(); //default connect to 127.0.0.1:7844
+    const aergo = new Aergo();
     let bestBlockHash;
     let bestBlockNumber;
 
     describe('getDefaultConfig()', () => {
         it('should return default config', () => {
-            assert.equal(aergo.getConfig().url, '127.0.0.1:7845');
+            assert.equal(aergo.client.config.url, 'localhost:7845');
         });
     });
 
