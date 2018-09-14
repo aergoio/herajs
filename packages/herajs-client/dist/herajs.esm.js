@@ -5,7 +5,7 @@
  */
 import jspb from 'google-protobuf';
 import 'google-protobuf/google/protobuf/timestamp_pb.js';
-import base58check from 'base58check';
+import bs58check from 'bs58check';
 import grpc from 'grpc';
 
 function createCommonjsModule(fn, module) {
@@ -12506,15 +12506,64 @@ var platformWeb = typeof process === 'undefined' || process.env.TARGET == 'web';
 var rpcTypes = platformWeb ? typesWeb : typesNode;
 
 var ADDRESS_PREFIXES = {
-    ACCOUNT: '17' // 0x17
+    ACCOUNT: 0x42
+};
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
 };
 
 var encodeAddress = function encodeAddress(byteArray) {
-    return base58check.encode(Buffer.from(byteArray), ADDRESS_PREFIXES.ACCOUNT);
+    var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(toConsumableArray(byteArray)));
+    return bs58check.encode(buf);
 };
 
 var decodeAddress = function decodeAddress(address) {
-    return base58check.decode(address).data;
+    return bs58check.decode(address).slice(1);
 };
 
 /*
@@ -12563,44 +12612,6 @@ function txToTransaction(tx) {
     transaction.type = tx.getBody().getType();
     return transaction;
 }
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-var _extends = Object.assign || function (target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i];
-
-    for (var key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) {
-        target[key] = source[key];
-      }
-    }
-  }
-
-  return target;
-};
 
 var Accounts = function () {
     function Accounts(aergo) {

@@ -26,9 +26,7 @@ const external = [
     'google-protobuf',
     'google-protobuf/google/protobuf/timestamp_pb.js',
     'grpc-web-client',
-    'base58check',
-    'base-x',
-    'crypto'
+    'bs58check'
 ];
 
 // Treating these as external as they are runtime requirements for node only
@@ -113,7 +111,7 @@ function genConfig (name) {
 
             json(),
 
-            builtins({crypto: true}),
+            builtins(),
 
             //typescript(),
 

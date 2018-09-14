@@ -10,7 +10,7 @@
     "dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-esm",
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
-    "build": "babel-node  scripts/build.js"
+    "build": "babel-node scripts/build.js"
   },
   "repository": {
     "type": "git",
