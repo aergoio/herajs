@@ -1,11 +1,11 @@
 /*!
  * herajs v0.0.1
  * (c) 2018 AERGO
- * Released under the MIT License.
+ * Released under _resolvense.
  */
 import jspb from 'google-protobuf';
 import 'google-protobuf/google/protobuf/timestamp_pb.js';
-import Base58 from 'base-58';
+import base58check from 'base58check';
 import grpc from 'grpc';
 
 function createCommonjsModule(fn, module) {
@@ -12505,18 +12505,16 @@ var typesWeb = /*#__PURE__*/Object.freeze({
 var platformWeb = typeof process === 'undefined' || process.env.TARGET == 'web';
 var rpcTypes = platformWeb ? typesWeb : typesNode;
 
-var fromHexString = function fromHexString(hexString) {
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
-        return parseInt(byte, 16);
-    }));
+var ADDRESS_PREFIXES = {
+    ACCOUNT: '17' // 0x17
 };
 
-var fromNumber = function fromNumber(d) {
-    var arr = new Uint8Array(8);
-    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
-        arr[i] = d / j & 0xff;
-    }
-    return arr;
+var encodeAddress = function encodeAddress(byteArray) {
+    return base58check.encode(Buffer.from(byteArray), ADDRESS_PREFIXES.ACCOUNT);
+};
+
+var decodeAddress = function decodeAddress(address) {
+    return base58check.decode(address).data;
 };
 
 /*
@@ -12535,8 +12533,8 @@ tansaction = {
 function transactionToTx(tx) {
     var msgtxbody = new rpcTypes.TxBody();
     msgtxbody.setNonce(tx.nonce);
-    msgtxbody.setAccount(Base58.decode(tx.from));
-    msgtxbody.setRecipient(Base58.decode(tx.to));
+    msgtxbody.setAccount(decodeAddress(tx.from));
+    msgtxbody.setRecipient(decodeAddress(tx.to));
     msgtxbody.setAmount(tx.amount);
     if (tx.payload != null) {
         msgtxbody.setPayload(tx.payload);
@@ -12544,7 +12542,6 @@ function transactionToTx(tx) {
     msgtxbody.setSign(tx.sign);
     msgtxbody.setType(tx.type);
     var msgtx = new rpcTypes.Tx();
-    //msgtx.setHash(fromHexString(tx.hash));
 
     if (tx.hash != null) {
         msgtx.setHash(tx.hash);
@@ -12556,11 +12553,10 @@ function transactionToTx(tx) {
 
 function txToTransaction(tx) {
     var transaction = {};
-    //transaction.hash = toHexString(tx.getHash());
     transaction.hash = tx.getHash_asB64();
     transaction.nonce = tx.getBody().getNonce();
-    transaction.from = Base58.encode(tx.getBody().getAccount());
-    transaction.to = Base58.encode(tx.getBody().getRecipient());
+    transaction.from = encodeAddress(tx.getBody().getAccount_asU8());
+    transaction.to = encodeAddress(tx.getBody().getRecipient_asU8());
     transaction.amount = tx.getBody().getAmount();
     transaction.payload = tx.getBody().getPayload();
     transaction.sign = tx.getBody().getSign_asB64();
@@ -12626,8 +12622,8 @@ var Accounts = function () {
                         if (err) {
                             reject(err);
                         } else {
-                            var createdAddress = rsp.getAddress();
-                            resolve(Base58.encode(createdAddress));
+                            var createdAddress = rsp.getAddress_asU8();
+                            resolve(encodeAddress(createdAddress));
                         }
                     });
                 } catch (exception) {
@@ -12649,7 +12645,7 @@ var Accounts = function () {
                         } else {
                             var accounts = rsp.getAccountsList();
                             var addresses = accounts.map(function (account) {
-                                return Base58.encode(account.getAddress());
+                                return encodeAddress(account.getAddress_asU8());
                             });
                             resolve(addresses);
                         }
@@ -12666,7 +12662,7 @@ var Accounts = function () {
 
             return new Promise(function (resolve, reject) {
                 var account = new rpc_pb_3();
-                account.setAddress(Base58.decode(address));
+                account.setAddress(decodeAddress(address));
 
                 var personal = new rpc_pb_2();
                 personal.setPassphrase(passphrase);
@@ -12677,8 +12673,8 @@ var Accounts = function () {
                         if (err) {
                             reject(err);
                         } else {
-                            var createdAddress = rsp.getAddress();
-                            resolve(Base58.encode(createdAddress));
+                            var createdAddress = rsp.getAddress_asU8();
+                            resolve(encodeAddress(createdAddress));
                         }
                     });
                 } catch (exception) {
@@ -12693,7 +12689,7 @@ var Accounts = function () {
 
             return new Promise(function (resolve, reject) {
                 var account = new rpc_pb_3();
-                account.setAddress(Base58.decode(address));
+                account.setAddress(decodeAddress(address));
 
                 var personal = new rpc_pb_2();
                 personal.setPassphrase(passphrase);
@@ -12704,8 +12700,8 @@ var Accounts = function () {
                         if (err) {
                             reject(err);
                         } else {
-                            var createdAddress = rsp.getAddress();
-                            resolve(Base58.encode(createdAddress));
+                            var createdAddress = rsp.getAddress_asU8();
+                            resolve(encodeAddress(createdAddress));
                         }
                     });
                 } catch (exception) {
@@ -12721,10 +12717,11 @@ var Accounts = function () {
             return new Promise(function (resolve, reject) {
                 var msgtxbody = new rpc_pb_6();
                 msgtxbody.setNonce(tx.nonce);
-                msgtxbody.setAccount(Base58.decode(tx.from));
-                msgtxbody.setRecipient(Base58.decode(tx.to));
+                msgtxbody.setAccount(decodeAddress(tx.from));
+                msgtxbody.setRecipient(decodeAddress(tx.to));
                 msgtxbody.setAmount(tx.amount);
                 msgtxbody.setPayload(tx.payload);
+                msgtxbody.setType(tx.type);
 
                 var msgtx = new rpc_pb_7();
                 msgtx.setBody(msgtxbody);
@@ -12741,6 +12738,30 @@ var Accounts = function () {
     }]);
     return Accounts;
 }();
+
+var CommitStatus = rpcTypes.CommitStatus;
+
+var fromHexString = function fromHexString(hexString) {
+    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
+        return parseInt(byte, 16);
+    }));
+};
+
+var fromNumber = function fromNumber(d) {
+    var arr = new Uint8Array(8);
+    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
+        arr[i] = d / j & 0xff;
+    }
+    return arr;
+};
+
+var errorMessageForCode = function errorMessageForCode(code) {
+    var errorMessage = 'UNDEFINED_ERROR';
+    if (code && code < Object.values(CommitStatus).length) {
+        errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
+    }
+    return errorMessage;
+};
 
 var kCustomPromisifiedSymbol = Symbol('util.promisify.custom');
 
@@ -12775,7 +12796,7 @@ function promisify(original, context) {
     return Object.defineProperties(fn, Object.getOwnPropertyDescriptors(original));
 }
 
-var CommitStatus = rpcTypes.CommitStatus;
+var CommitStatus$1 = rpcTypes.CommitStatus;
 
 var AergoClient = function () {
     function AergoClient(config) {
@@ -12810,8 +12831,8 @@ var AergoClient = function () {
             return promisify(this.client.blockchain, this.client)(empty);
         }
 
-        //get transaction information in the aergo node. 
-        //if transaction is in the block return result with block hash and index.
+        // Get transaction information in the aergo node. 
+        // if transaction is in the block return result with block hash and index.
 
     }, {
         key: 'getTransaction',
@@ -12821,21 +12842,21 @@ var AergoClient = function () {
             var singleBytes = new rpcTypes.SingleBytes();
             singleBytes.setValue(txhash);
             return new Promise(function (resolve, reject) {
-                _this.client.getTX(singleBytes, function (err, result) {
+                _this.client.getBlockTX(singleBytes, function (err, result) {
                     if (err) {
-                        _this.client.getBlockTX(singleBytes, function (err, result) {
+                        _this.client.getTX(singleBytes, function (err, result) {
                             if (err) {
                                 reject(err);
                             } else {
                                 var res = {};
-                                res.block = result.getTxidx();
-                                res.tx = txToTransaction(result.getTx());
+                                res.tx = txToTransaction(result);
                                 resolve(res);
                             }
                         });
                     } else {
                         var res = {};
-                        res.tx = txToTransaction(result);
+                        res.block = result.getTxidx();
+                        res.tx = txToTransaction(result.getTx());
                         resolve(res);
                     }
                 });
@@ -12857,24 +12878,16 @@ var AergoClient = function () {
         key: 'getState',
         value: function getState(address) {
             var singleBytes = new rpcTypes.SingleBytes();
-            singleBytes.setValue(address);
+            singleBytes.setValue(decodeAddress(address));
             return promisify(this.client.getState, this.client)(singleBytes);
         }
     }, {
-        key: 'getTransactionCount',
-        value: function getTransactionCount(address) {
-            var _this2 = this;
-
-            return new Promise(function (resolve, reject) {
-                var singleBytes = new rpcTypes.SingleBytes();
-                singleBytes.setValue(address);
-                _this2.client.getState(singleBytes, function (err, result) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result.getNonce());
-                    }
-                });
+        key: 'getNonce',
+        value: function getNonce(address) {
+            var singleBytes = new rpcTypes.SingleBytes();
+            singleBytes.setValue(decodeAddress(address));
+            return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
+                return state.getNonce();
             });
         }
     }, {
@@ -12885,15 +12898,16 @@ var AergoClient = function () {
     }, {
         key: 'sendTransaction',
         value: function sendTransaction(tx) {
-            var _this3 = this;
+            var _this2 = this;
 
             return new Promise(function (resolve, reject) {
                 var txs = new rpcTypes.TxList();
                 txs.addTxs(transactionToTx(tx), 0);
-                _this3.client.commitTX(txs, function (err, result) {
+                _this2.client.commitTX(txs, function (err, result) {
                     if (err == null && result.getResultsList()[0].getError()) {
                         err = new Error();
                         err.code = result.getResultsList()[0].getError();
+                        err.message = errorMessageForCode(err.code);
                     }
                     if (err) {
                         reject(err);

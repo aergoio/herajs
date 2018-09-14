@@ -1,30 +1,34 @@
 /* eslint-disable */
-const path = require('path');
-const node_resolve = require('rollup-plugin-node-resolve');
-const babel = require('rollup-plugin-babel');
-const commonjs = require('rollup-plugin-commonjs');
-const json = require('rollup-plugin-json');
-const builtins = require('rollup-plugin-node-builtins');
+import { resolve as _resolve } from 'path';
+import node_resolve from 'rollup-plugin-node-resolve';
+import babel from 'rollup-plugin-babel';
+import commonjs from 'rollup-plugin-commonjs';
+import json from 'rollup-plugin-json';
+import builtins from 'rollup-plugin-node-builtins';
+import { terser } from 'rollup-plugin-terser';
+import progress from 'rollup-plugin-progress';
 //const typescript = require('rollup-plugin-typescript');
 //const globals = require('rollup-plugin-node-globals');
-const progress = require('rollup-plugin-progress');
 const version = process.env.VERSION || require('../package.json').version;
+
 
 const banner =
   '/*!\n' +
   ' * herajs v' + version + '\n' +
   ' * (c) ' + new Date().getFullYear() + ' AERGO\n' +
-  ' * Released under the MIT License.\n' +
+  ' * Released under _resolvense.\n' +
   ' */';
 
-const resolve = p => path.resolve(__dirname, '../', p);
+const resolve = p => _resolve(__dirname, '../', p);
 
 const external = [
     'grpc',
     'google-protobuf',
     'google-protobuf/google/protobuf/timestamp_pb.js',
-    'base-58',
-    'grpc-web-client'
+    'grpc-web-client',
+    'base58check',
+    'base-x',
+    'crypto'
 ];
 
 // Treating these as external as they are runtime requirements for node only
@@ -83,6 +87,7 @@ const builds = {
                 browser: true,
                 preferBuiltins: false
             }),
+            terser()
         ],
         context: 'window',
         external: webExternal
@@ -108,7 +113,7 @@ function genConfig (name) {
 
             json(),
 
-            //builtins(),
+            builtins({crypto: true}),
 
             //typescript(),
 
