@@ -1,12 +1,13 @@
 import { ADDRESS_PREFIXES } from '../constants.js';
-import base58check from 'base58check';
+import bs58check from 'bs58check';
 
 const encodeAddress = (byteArray) => {
-    return base58check.encode(Buffer.from(byteArray), ADDRESS_PREFIXES.ACCOUNT);
+    const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
+    return bs58check.encode(buf);
 };
 
 const decodeAddress = (address) => {
-    return base58check.decode(address).data;
+    return bs58check.decode(address).slice(1);
 };
 
 export {

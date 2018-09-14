@@ -1,3 +1,3 @@
 export const ADDRESS_PREFIXES = {
-    ACCOUNT: '17', // 0x17
+    ACCOUNT: 0x42,
 };
