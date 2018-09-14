@@ -3,7 +3,8 @@ import rpcTypes from './types.js';
 import { fromHexString, fromNumber, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { transactionToTx, txToTransaction } from '../transactions/utils.js';
-import Base58 from 'base-58';
+import { encodeAddress, decodeAddress } from '../accounts/utils.js';
+
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -77,13 +78,13 @@ class AergoClient {
 
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Base58.decode(address));
+        singleBytes.setValue(decodeAddress(address));
         return promisify(this.client.getState, this.client)(singleBytes);
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Base58.decode(address));
+        singleBytes.setValue(decodeAddress(address));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
