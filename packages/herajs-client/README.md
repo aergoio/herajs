@@ -3,7 +3,7 @@
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
 
 Tested with aergo server version
-[8a26a9c2dd1d8885280cceb8648dee601c6e6c19](https://github.com/aergoio/aergo/tree/8a26a9c2dd1d8885280cceb8648dee601c6e6c19)
+[02b411fed6f6e01a30d8102fdf6caecc5df3023e](https://github.com/aergoio/aergo/tree/02b411fed6f6e01a30d8102fdf6caecc5df3023e)
 
 This package supports both Node.js and Web platforms, but there is a difference in the handling of the GRPC connections. While the Node.js version uses the standard GRPC protocol over HTTP2, the Web version uses the GRPC-WEB extension, which wraps GRPC requests in standard HTTP requests. This results in the Node.js version having a significant performance advantage.
 
