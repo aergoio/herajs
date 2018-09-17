@@ -2529,11 +2529,13 @@ proto.types.VerifyResult.prototype.setError = function(value) {
  * @enum {number}
  */
 proto.types.CommitStatus = {
-  COMMIT_STATUS_OK: 0,
-  COMMIT_STATUS_NONCE_TOO_LOW: 1,
-  COMMIT_STATUS_INVALID_ARGUMENT: 2,
-  COMMIT_STATUS_TX_ALREADY_EXISTS: 3,
-  COMMIT_STATUS_TX_INTERNAL_ERROR: 4
+  TX_OK: 0,
+  TX_NONCE_TOO_LOW: 1,
+  TX_ALREADY_EXISTS: 2,
+  TX_INVALID_HASH: 3,
+  TX_INVALID_FORMAT: 4,
+  TX_INSUFFICIENT_BALANCE: 5,
+  TX_INTERNAL_ERROR: 6
 };
 
 /**

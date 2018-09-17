@@ -106,7 +106,7 @@ describe('Aergo', () => {
                 payload: null,
             };
             const signedtx = await aergo.accounts.signTransaction(unsignedtx);
-            const txhash = await aergo.sendTransaction(signedtx);
+            const txhash = await aergo.sendSignedTransaction(signedtx);
             //console.log(`txhash: ${txhash}, pending...`);
             for(;;) {
                 const result = await aergo.getTransaction(txhash);
@@ -138,7 +138,7 @@ describe('Aergo', () => {
             };
             // Tx is signed and submitted correctly
             testtx = await aergo.accounts.signTransaction(unsignedtx);
-            await aergo.sendTransaction(testtx);
+            await aergo.sendSignedTransaction(testtx);
         });
         it('should return transaction info by hash', async() => {
             const result = await aergo.getTransaction(testtx.hash);

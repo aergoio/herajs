@@ -54,6 +54,24 @@ describe('Aergo.Accounts', () => {
         });
     });
 
+    describe('sendTransaction()', () => {
+
+        it('should return hash for signed and comitted tx', (done) => {
+            const testtx = {
+                from: testAddress,
+                to: testAddress,
+                amount: 123,
+                payload: null,
+            };
+            aergo.accounts.sendTransaction(testtx)
+                .then((txhash) => {
+                    assert.typeOf(txhash, 'string');
+                    assert.equal(txhash.length, transactionHashLength);
+                    done();
+                });
+        });
+    });
+
     describe('signTX()', () => {
 
         it('should return tx which has a unlocked account sign', (done) => {
@@ -75,7 +93,7 @@ describe('Aergo.Accounts', () => {
         });
     });
 
-    describe('sendTransaction()', () => {
+    describe('sendSignedTransaction()', () => {
         it('should sign, commit, and retrieve transaction', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
@@ -89,7 +107,7 @@ describe('Aergo.Accounts', () => {
             };
             // Tx is signed and submitted correctly
             const tx = await aergo.accounts.signTransaction(testtx);
-            const txhash = await aergo.sendTransaction(tx);
+            const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
             assert.equal(txhash.length, transactionHashLength);
 
@@ -99,11 +117,11 @@ describe('Aergo.Accounts', () => {
             assert.equal(tx2.tx.amount, tx.amount);
 
             // Submitting same tx again should error
-            return assert.isRejected(aergo.sendTransaction(tx));
+            return assert.isRejected(aergo.sendSignedTransaction(tx));
         });
     });
 
-    describe('signTX(),sendTX()Multiple', () => {
+    describe('signTX(),sendSignedTransaction()Multiple', () => {
         it('should not timeout', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
@@ -118,7 +136,7 @@ describe('Aergo.Accounts', () => {
                 };
                 promises.push(new Promise((resolve, reject) => {
                     aergo.accounts.signTransaction(testtx).then((signedtx) => {
-                        aergo.sendTransaction(signedtx).then((txhash) => {
+                        aergo.sendSignedTransaction(signedtx).then((txhash) => {
                             assert.equal(txhash.length, transactionHashLength);
                             resolve();
                         }).catch(reject);

@@ -84,6 +84,15 @@ AergoRPCService.GetABI = {
   responseType: blockchain_pb.ABI
 };
 
+AergoRPCService.SendTX = {
+  methodName: "SendTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.CommitResult
+};
+
 AergoRPCService.CommitTX = {
   methodName: "CommitTX",
   service: AergoRPCService,
@@ -349,6 +358,28 @@ AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadat
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetABI, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.SendTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

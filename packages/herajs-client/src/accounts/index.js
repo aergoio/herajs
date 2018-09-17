@@ -1,5 +1,6 @@
 import { Personal, Empty, Account, TxBody, Tx } from '../../types/rpc_pb.js';
 import { txToTransaction } from '../transactions/utils.js';
+import { errorMessageForCode } from '../utils.js';
 import { encodeAddress, decodeAddress } from './utils.js';
 
 class Accounts {
@@ -90,6 +91,28 @@ class Accounts {
             } catch (exception) {
                 reject(exception);
             }
+        });
+    }
+
+    sendTransaction (tx) {
+        return new Promise((resolve, reject) => {
+            const msgtxbody = new TxBody();
+            msgtxbody.setAccount(decodeAddress(tx.from));
+            msgtxbody.setRecipient(decodeAddress(tx.to));
+            msgtxbody.setAmount(tx.amount);
+            msgtxbody.setPayload(tx.payload);
+            msgtxbody.setType(tx.type);
+
+            const msgtx = new Tx();
+            msgtx.setBody(msgtxbody);
+
+            this.client.sendTX(msgtx, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result.getHash_asB64());
+                }
+            });
         });
     }
 

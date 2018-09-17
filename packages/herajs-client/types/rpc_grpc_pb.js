@@ -74,6 +74,17 @@ function deserialize_types_BlockchainStatus(buffer_arg) {
   return rpc_pb.BlockchainStatus.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_CommitResult(arg) {
+  if (!(arg instanceof rpc_pb.CommitResult)) {
+    throw new Error('Expected argument of type types.CommitResult');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_CommitResult(buffer_arg) {
+  return rpc_pb.CommitResult.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_CommitResultList(arg) {
   if (!(arg instanceof rpc_pb.CommitResultList)) {
     throw new Error('Expected argument of type types.CommitResultList');
@@ -330,6 +341,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_ABI,
     responseDeserialize: deserialize_types_ABI,
+  },
+  sendTX: {
+    path: '/types.AergoRPCService/SendTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.Tx,
+    responseType: rpc_pb.CommitResult,
+    requestSerialize: serialize_types_Tx,
+    requestDeserialize: deserialize_types_Tx,
+    responseSerialize: serialize_types_CommitResult,
+    responseDeserialize: deserialize_types_CommitResult,
   },
   commitTX: {
     path: '/types.AergoRPCService/CommitTX',

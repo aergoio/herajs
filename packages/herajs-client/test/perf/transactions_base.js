@@ -38,7 +38,7 @@ export async function main(aergo) {
 
     // Commit transactions
     await Promise.all(signedTransactions.map(signedtx => (
-        aergo.sendTransaction(signedtx).then((txid) => {
+        aergo.sendSignedTransaction(signedtx).then((txid) => {
             signedtx.id = txid;
         })
     )));

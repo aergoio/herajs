@@ -93,7 +93,7 @@ class AergoClient {
         return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
     }
 
-    sendTransaction (tx) {
+    sendSignedTransaction (tx) {
         return new Promise((resolve, reject) => {
             const txs = new rpcTypes.TxList();
             txs.addTxs(transactionToTx(tx), 0);

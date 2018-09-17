@@ -78,6 +78,15 @@ type AergoRPCServiceGetABI = {
   readonly responseType: typeof blockchain_pb.ABI;
 };
 
+type AergoRPCServiceSendTX = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof blockchain_pb.Tx;
+  readonly responseType: typeof rpc_pb.CommitResult;
+};
+
 type AergoRPCServiceCommitTX = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -187,6 +196,7 @@ export class AergoRPCService {
   static readonly GetBlockTX: AergoRPCServiceGetBlockTX;
   static readonly GetReceipt: AergoRPCServiceGetReceipt;
   static readonly GetABI: AergoRPCServiceGetABI;
+  static readonly SendTX: AergoRPCServiceSendTX;
   static readonly CommitTX: AergoRPCServiceCommitTX;
   static readonly GetState: AergoRPCServiceGetState;
   static readonly CreateAccount: AergoRPCServiceCreateAccount;
@@ -286,6 +296,15 @@ export class AergoRPCServiceClient {
   getABI(
     requestMessage: rpc_pb.SingleBytes,
     callback: (error: ServiceError, responseMessage: blockchain_pb.ABI|null) => void
+  ): void;
+  sendTX(
+    requestMessage: blockchain_pb.Tx,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: rpc_pb.CommitResult|null) => void
+  ): void;
+  sendTX(
+    requestMessage: blockchain_pb.Tx,
+    callback: (error: ServiceError, responseMessage: rpc_pb.CommitResult|null) => void
   ): void;
   commitTX(
     requestMessage: blockchain_pb.TxList,
