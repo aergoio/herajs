@@ -65,6 +65,11 @@ describe('Aergo', () => {
                 done();
             });
         });
+        it('should throw error when block not found', () => {
+            assert.throws(() => {
+                aergo.getBlock('1');
+            }, Error, 'Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+        });
     });
 
     describe('getState()', () => {
@@ -79,6 +84,12 @@ describe('Aergo', () => {
                 assert.equal(response.getBalance(), 0);
                 done();
             });
+        });
+
+        it('should return error for invalid address', () => {
+            assert.throws(() => {
+                aergo.getState('invalid');
+            }, Error, 'Non-base58 character');
         });
     });
     

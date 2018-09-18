@@ -68,6 +68,9 @@ class AergoClient {
     getBlock (hashOrNumber) {
         if (typeof hashOrNumber === 'string') {
             hashOrNumber = fromHexString(hashOrNumber);
+            if (hashOrNumber.length != 32) {
+                throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+            }
         } else
         if (typeof hashOrNumber === 'number') {
             hashOrNumber = fromNumber(hashOrNumber);
