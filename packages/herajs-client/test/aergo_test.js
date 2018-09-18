@@ -65,10 +65,21 @@ describe('Aergo', () => {
                 done();
             });
         });
-        it('should throw error when block not found', () => {
+        it('should throw error when hash invalid', () => {
             assert.throws(() => {
-                aergo.getBlock('1');
+                aergo.getBlock('111');
             }, Error, 'Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+        });
+        it('should throw error when block not found', async () => {
+            return assert.isRejected(
+                aergo.getBlock(0xFFFFFFFFFFFFFFF),
+                Error, '13 INTERNAL: block not found: blockNo=1152921504606846976'
+            );
+        });
+        it('should throw error when number out of range', () => {
+            assert.throws(() => {
+                aergo.getBlock(0xFFFFFFFFFFFFFFFF);
+            }, Error, 'Number exeeds uint64 range');
         });
     });
 
