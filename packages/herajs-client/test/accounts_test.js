@@ -3,11 +3,11 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
-import Aergo from '../src';
+import AergoClient from '../src';
 
 
 describe('Aergo.Accounts', () => {
-    const aergo = new Aergo(); //default connect to 127.0.0.1:7845
+    const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
     const transactionHashLength = 44;
     let testAddress = 'INVALIDADDRESS';
     beforeEach(async ()=>{

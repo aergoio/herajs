@@ -13651,5 +13651,6 @@ AergoClient.prototype.initProvider = function () {
     return new GrpcProvider();
 };
 
+exports.AergoClient = AergoClient;
 exports.GrpcProvider = GrpcProvider;
 exports.default = AergoClient;

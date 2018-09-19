@@ -22419,6 +22419,7 @@
 	    return new GrpcWebProvider();
 	};
 
+	exports.AergoClient = AergoClient;
 	exports.GrpcWebProvider = GrpcWebProvider;
 	exports.default = AergoClient;
 

@@ -7,5 +7,4 @@ AergoClient.prototype.initProvider = () => {
     return new GrpcProvider(); 
 };
 
-export { GrpcProvider };
-export default AergoClient;
+export { AergoClient, GrpcProvider, AergoClient as default };

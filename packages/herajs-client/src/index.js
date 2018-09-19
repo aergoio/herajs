@@ -3,4 +3,4 @@
  * To import the Web target, either use a build or import 'src/platforms/web'
 */
 
-export { default } from './platforms/node';
+export { AergoClient as default } from './platforms/node';

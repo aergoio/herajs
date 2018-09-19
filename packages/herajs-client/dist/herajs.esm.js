@@ -13646,4 +13646,4 @@ AergoClient.prototype.initProvider = function () {
 };
 
 export default AergoClient;
-export { GrpcProvider };
+export { AergoClient, GrpcProvider };

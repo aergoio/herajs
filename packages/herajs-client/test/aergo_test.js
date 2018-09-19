@@ -3,12 +3,12 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
-import Aergo from '../src';
+import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
-    const invalidAergo = new Aergo({}, new GrpcProvider({url: invalidUrl}));
+    const invalidAergo = new AergoClient({}, new GrpcProvider({url: invalidUrl}));
     describe('isConnected()', () => {
         it('should return false when disconnected', () => {
             assert.equal(invalidAergo.isConnected(), false);
@@ -29,7 +29,7 @@ describe('Aergo invalid config', () => {
 });
 
 describe('Aergo', () => {
-    const aergo = new Aergo();
+    const aergo = new AergoClient();
     let bestBlockHash;
     let bestBlockNumber;
 
