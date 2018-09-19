@@ -9,7 +9,20 @@ import { decodeAddress } from '../accounts/utils.js';
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
 
+/**
+ * Main aergo client controller.
+ */
 class AergoClient {
+    /**
+     * Create a new auto-configured client with:
+     * 
+     * .. code-block:: javascript
+     * 
+     *     const aergo = new AergoClient();
+     * 
+     * @param [object] configuration. Unused at the moment.
+     * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
+     */
     constructor (config, provider = null) {
         this.version = 0.1;
         this.config = {
@@ -33,6 +46,10 @@ class AergoClient {
         return false;
     }
 
+    /**
+     * Request current status of blockchain.
+     * @returns {Promise<object>} an object detailing the current status
+     */
     blockchain () {
         const empty = new rpcTypes.Empty();
         return promisify(this.client.blockchain, this.client)(empty).then(result => ({
@@ -41,8 +58,12 @@ class AergoClient {
         }));
     }
 
-    // Get transaction information in the aergo node. 
-    // if transaction is in the block return result with block hash and index.
+    /**
+     * Get transaction information in the aergo node. 
+     * If transaction is in the block return result with block hash and index.
+     * @param {string} txhash transaction hash
+     * @returns {Promise<object>} transaction details
+     */
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(txhash);
@@ -68,6 +89,12 @@ class AergoClient {
         });
     }
 
+    /**
+     * Retrieve information about a block.
+     * 
+     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
+     * @returns {Promise<object>} block details
+     */
     getBlock (hashOrNumber) {
         if (typeof hashOrNumber === 'string') {
             hashOrNumber = fromHexString(hashOrNumber);
@@ -88,6 +115,11 @@ class AergoClient {
         });
     }
 
+    /**
+     * Retrieve account state, including current balance and nonce.
+     * @param {string} address Account address encoded in Base58check
+     * @returns {Promise<object>} account state
+     */
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(decodeAddress(address));
@@ -104,6 +136,11 @@ class AergoClient {
         return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
     }
 
+    /**
+     * Send a signed transaction to the network.
+     * @param {Transaction} tx signed transaction
+     * @returns {Promise<string>} transaction hash
+     */
     sendSignedTransaction (tx) {
         return new Promise((resolve, reject) => {
             const txs = new rpcTypes.TxList();

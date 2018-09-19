@@ -3,11 +3,19 @@ import { txToTransaction } from '../transactions/utils.js';
 import { errorMessageForCode } from '../utils.js';
 import { encodeAddress, decodeAddress } from './utils.js';
 
+/**
+ * Accounts controller.
+ */
 class Accounts {
     constructor (aergo) {
         this.client = aergo.client;
     }
     
+    /**
+     * Create a new account in the node.
+     * @param {string} passphrase 
+     * @returns {Promise<string>} newly created account address
+     */
     create (passphrase) {
         return new Promise((resolve, reject) => {
             const personal = new Personal();
@@ -27,6 +35,10 @@ class Accounts {
         });
     }
 
+    /**
+     * Get list of accounts.
+     * @returns {Promise<string[]>} list of account addresses
+     */
     get () {
         return new Promise((resolve, reject) => {
             const empty = new Empty();
@@ -46,6 +58,12 @@ class Accounts {
         });
     }
 
+    /**
+     * Unlock account.
+     * @param {string} address 
+     * @param {string} passphrase 
+     * @returns {Promise<string>} unlocked account address
+     */
     unlock (address, passphrase) {
         return new Promise((resolve, reject) => {
             const account = new Account();
@@ -70,6 +88,12 @@ class Accounts {
         });
     }
 
+    /**
+     * Lock account.
+     * @param {string} address 
+     * @param {string} passphrase 
+     * @returns {Promise<string>} locked account address
+     */
     lock (address, passphrase) {
         return new Promise((resolve, reject) => {
             const account = new Account();
@@ -94,6 +118,12 @@ class Accounts {
         });
     }
 
+    /**
+     * Convenience method to send transaction from account.
+     * This method automatically retrieves the nonce, signs the transaction, and sends it to the network.
+     * @param {object} tx transaction data
+     * @returns {Promise<string>} transaction hash
+     */
     sendTransaction (tx) {
         return new Promise((resolve, reject) => {
             const msgtxbody = new TxBody();
@@ -116,7 +146,11 @@ class Accounts {
         });
     }
 
-
+    /**
+     * Sign transaction.
+     * @param {object} tx transaction data
+     * @returns {Promise<object>} transaction data including signature
+     */
     signTransaction (tx) {
         return new Promise((resolve, reject) => {
             const msgtxbody = new TxBody();
