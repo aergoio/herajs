@@ -1,6 +1,6 @@
 import Accounts from '../accounts';
 import rpcTypes from './types.js';
-import { fromHexString, fromNumber, errorMessageForCode } from '../utils.js';
+import { fromHexString, toHexString, fromNumber, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { transactionToTx, txToTransaction } from '../transactions/utils.js';
 import { decodeAddress } from '../accounts/utils.js';
@@ -35,7 +35,10 @@ class AergoClient {
 
     blockchain () {
         const empty = new rpcTypes.Empty();
-        return promisify(this.client.blockchain, this.client)(empty);
+        return promisify(this.client.blockchain, this.client)(empty).then(result => ({
+            ...result.toObject(),
+            bestBlockHash: toHexString(result.getBestBlockHash_asU8())
+        }));
     }
 
     // Get transaction information in the aergo node. 
@@ -77,7 +80,12 @@ class AergoClient {
         }
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(hashOrNumber);
-        return promisify(this.client.getBlock, this.client)(singleBytes);
+        return promisify(this.client.getBlock, this.client)(singleBytes).then(result => {
+            const obj = result.toObject();
+            obj.hash = toHexString(result.getHash_asU8());
+            obj.header.prevblockhash = toHexString(result.getHeader().getPrevblockhash_asU8());
+            return obj;
+        });
     }
 
     getState (address) {

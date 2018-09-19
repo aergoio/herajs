@@ -42,11 +42,10 @@ describe('Aergo', () => {
     describe('blockchain()', () => {
         it('should return best block hash and number', (done) => {
             aergo.blockchain().then((response) => {
-                bestBlockHash = response.getBestBlockHash();
-                bestBlockNumber = response.getBestHeight();
-                assert.typeOf(bestBlockHash, 'Uint8Array');
-                assert.equal(bestBlockHash.length, 32);
-                assert.isNumber(response.getBestHeight());
+                bestBlockHash = response.bestBlockHash;
+                bestBlockNumber = response.bestHeight;
+                assert.isString(bestBlockHash);
+                assert.isNumber(bestBlockNumber);
                 done();
             });
         });
@@ -55,13 +54,13 @@ describe('Aergo', () => {
     describe('getBlock()', () => {
         it('should return block info by hash', (done) => {
             aergo.getBlock(bestBlockHash).then((response) => {
-                assert.equal(response.getHeader().getBlockno(), bestBlockNumber);
+                assert.equal(response.header.blockno, bestBlockNumber);
                 done();
             });
         });
         it('should return block info by number', (done) => {
             aergo.getBlock(bestBlockNumber).then((response) => {
-                assert.deepEqual(response.getHash(), bestBlockHash);
+                assert.deepEqual(response.hash, bestBlockHash);
                 done();
             });
         });
