@@ -12960,7 +12960,6 @@ var AergoClient = function () {
             singleBytes.setValue(hashOrNumber);
             return promisify(this.client.getBlock, this.client)(singleBytes).then(function (result) {
                 var obj = result.toObject();
-                console.log(result.getHash_asB64(), toHexString(result.getHash_asU8()));
                 obj.hash = toHexString(result.getHash_asU8());
                 obj.header.prevblockhash = toHexString(result.getHeader().getPrevblockhash_asU8());
                 return obj;
