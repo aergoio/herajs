@@ -6757,11 +6757,13 @@
 	   * @enum {number}
 	   */
 	  proto.types.CommitStatus = {
-	    COMMIT_STATUS_OK: 0,
-	    COMMIT_STATUS_NONCE_TOO_LOW: 1,
-	    COMMIT_STATUS_INVALID_ARGUMENT: 2,
-	    COMMIT_STATUS_TX_ALREADY_EXISTS: 3,
-	    COMMIT_STATUS_TX_INTERNAL_ERROR: 4
+	    TX_OK: 0,
+	    TX_NONCE_TOO_LOW: 1,
+	    TX_ALREADY_EXISTS: 2,
+	    TX_INVALID_HASH: 3,
+	    TX_INVALID_FORMAT: 4,
+	    TX_INSUFFICIENT_BALANCE: 5,
+	    TX_INTERNAL_ERROR: 6
 	  };
 
 	  /**
@@ -12917,11 +12919,13 @@
 	   * @enum {number}
 	   */
 	  proto.types.CommitStatus = {
-	    COMMIT_STATUS_OK: 0,
-	    COMMIT_STATUS_NONCE_TOO_LOW: 1,
-	    COMMIT_STATUS_INVALID_ARGUMENT: 2,
-	    COMMIT_STATUS_TX_ALREADY_EXISTS: 3,
-	    COMMIT_STATUS_TX_INTERNAL_ERROR: 4
+	    TX_OK: 0,
+	    TX_NONCE_TOO_LOW: 1,
+	    TX_ALREADY_EXISTS: 2,
+	    TX_INVALID_HASH: 3,
+	    TX_INVALID_FORMAT: 4,
+	    TX_INSUFFICIENT_BALANCE: 5,
+	    TX_INTERNAL_ERROR: 6
 	  };
 
 	  /**
@@ -19731,6 +19735,39 @@
 	    return transaction;
 	}
 
+	var CommitStatus = rpcTypes.CommitStatus;
+
+	var fromHexString = function fromHexString(hexString) {
+	    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
+	        return parseInt(byte, 16);
+	    }));
+	};
+
+	var toHexString = function toHexString(bytes) {
+	    return bytes.reduce(function (str, byte) {
+	        return str + byte.toString(16).padStart(2, '0');
+	    }, '');
+	};
+
+	var fromNumber = function fromNumber(d) {
+	    if (d >= Math.pow(2, 64)) {
+	        throw new Error('Number exeeds uint64 range');
+	    }
+	    var arr = new Uint8Array(8);
+	    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
+	        arr[i] = d / j & 0xff;
+	    }
+	    return arr;
+	};
+
+	var errorMessageForCode = function errorMessageForCode(code) {
+	    var errorMessage = 'UNDEFINED_ERROR';
+	    if (code && code < Object.values(CommitStatus).length) {
+	        errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
+	    }
+	    return errorMessage;
+	};
+
 	var Accounts = function () {
 	    function Accounts(aergo) {
 	        classCallCheck(this, Accounts);
@@ -19839,9 +19876,34 @@
 	            });
 	        }
 	    }, {
+	        key: 'sendTransaction',
+	        value: function sendTransaction(tx) {
+	            var _this5 = this;
+
+	            return new Promise(function (resolve, reject) {
+	                var msgtxbody = new rpc_pb_6();
+	                msgtxbody.setAccount(decodeAddress(tx.from));
+	                msgtxbody.setRecipient(decodeAddress(tx.to));
+	                msgtxbody.setAmount(tx.amount);
+	                msgtxbody.setPayload(tx.payload);
+	                msgtxbody.setType(tx.type);
+
+	                var msgtx = new rpc_pb_7();
+	                msgtx.setBody(msgtxbody);
+
+	                _this5.client.sendTX(msgtx, function (err, result) {
+	                    if (err) {
+	                        reject(err);
+	                    } else {
+	                        resolve(result.getHash_asB64());
+	                    }
+	                });
+	            });
+	        }
+	    }, {
 	        key: 'signTransaction',
 	        value: function signTransaction(tx) {
-	            var _this5 = this;
+	            var _this6 = this;
 
 	            return new Promise(function (resolve, reject) {
 	                var msgtxbody = new rpc_pb_6();
@@ -19855,7 +19917,7 @@
 	                var msgtx = new rpc_pb_7();
 	                msgtx.setBody(msgtxbody);
 
-	                _this5.client.signTX(msgtx, function (err, signedtx) {
+	                _this6.client.signTX(msgtx, function (err, signedtx) {
 	                    if (err == null) {
 	                        resolve(txToTransaction(signedtx));
 	                    } else {
@@ -19867,30 +19929,6 @@
 	    }]);
 	    return Accounts;
 	}();
-
-	var CommitStatus = rpcTypes.CommitStatus;
-
-	var fromHexString = function fromHexString(hexString) {
-	    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
-	        return parseInt(byte, 16);
-	    }));
-	};
-
-	var fromNumber = function fromNumber(d) {
-	    var arr = new Uint8Array(8);
-	    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
-	        arr[i] = d / j & 0xff;
-	    }
-	    return arr;
-	};
-
-	var errorMessageForCode = function errorMessageForCode(code) {
-	    var errorMessage = 'UNDEFINED_ERROR';
-	    if (code && code < Object.values(CommitStatus).length) {
-	        errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
-	    }
-	    return errorMessage;
-	};
 
 	var kCustomPromisifiedSymbol = Symbol('util.promisify.custom');
 
@@ -19959,7 +19997,11 @@
 	        key: 'blockchain',
 	        value: function blockchain() {
 	            var empty = new rpcTypes.Empty();
-	            return promisify(this.client.blockchain, this.client)(empty);
+	            return promisify(this.client.blockchain, this.client)(empty).then(function (result) {
+	                return _extends({}, result.toObject(), {
+	                    bestBlockHash: toHexString(result.getBestBlockHash_asU8())
+	                });
+	            });
 	        }
 
 	        // Get transaction information in the aergo node. 
@@ -19998,19 +20040,30 @@
 	        value: function getBlock(hashOrNumber) {
 	            if (typeof hashOrNumber === 'string') {
 	                hashOrNumber = fromHexString(hashOrNumber);
+	                if (hashOrNumber.length != 32) {
+	                    throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+	                }
 	            } else if (typeof hashOrNumber === 'number') {
 	                hashOrNumber = fromNumber(hashOrNumber);
 	            }
 	            var singleBytes = new rpcTypes.SingleBytes();
 	            singleBytes.setValue(hashOrNumber);
-	            return promisify(this.client.getBlock, this.client)(singleBytes);
+	            return promisify(this.client.getBlock, this.client)(singleBytes).then(function (result) {
+	                var obj = result.toObject();
+	                console.log(result.getHash_asB64(), toHexString(result.getHash_asU8()));
+	                obj.hash = toHexString(result.getHash_asU8());
+	                obj.header.prevblockhash = toHexString(result.getHeader().getPrevblockhash_asU8());
+	                return obj;
+	            });
 	        }
 	    }, {
 	        key: 'getState',
 	        value: function getState(address) {
 	            var singleBytes = new rpcTypes.SingleBytes();
 	            singleBytes.setValue(decodeAddress(address));
-	            return promisify(this.client.getState, this.client)(singleBytes);
+	            return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
+	                return state.toObject();
+	            });
 	        }
 	    }, {
 	        key: 'getNonce',
@@ -20027,8 +20080,8 @@
 	            return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
 	        }
 	    }, {
-	        key: 'sendTransaction',
-	        value: function sendTransaction(tx) {
+	        key: 'sendSignedTransaction',
+	        value: function sendSignedTransaction(tx) {
 	            var _this2 = this;
 
 	            return new Promise(function (resolve, reject) {
@@ -21674,6 +21727,15 @@
 	  responseType: blockchain_pb$1.ABI
 	};
 
+	AergoRPCService.SendTX = {
+	  methodName: "SendTX",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: blockchain_pb$1.Tx,
+	  responseType: rpc_pb$1.CommitResult
+	};
+
 	AergoRPCService.CommitTX = {
 	  methodName: "CommitTX",
 	  service: AergoRPCService,
@@ -21937,6 +21999,28 @@
 	    callback = arguments[1];
 	  }
 	  grpc.unary(AergoRPCService.GetABI, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
+	AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+	  grpc.unary(AergoRPCService.SendTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
