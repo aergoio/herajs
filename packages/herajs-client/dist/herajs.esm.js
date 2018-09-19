@@ -12674,12 +12674,23 @@ var errorMessageForCode = function errorMessageForCode(code) {
     return errorMessage;
 };
 
+/**
+ * Accounts controller.
+ */
+
 var Accounts = function () {
     function Accounts(aergo) {
         classCallCheck(this, Accounts);
 
         this.client = aergo.client;
     }
+
+    /**
+     * Create a new account in the node.
+     * @param {string} passphrase 
+     * @returns {Promise<string>} newly created account address
+     */
+
 
     createClass(Accounts, [{
         key: 'create',
@@ -12703,6 +12714,12 @@ var Accounts = function () {
                 }
             });
         }
+
+        /**
+         * Get list of accounts.
+         * @returns {Promise<string[]>} list of account addresses
+         */
+
     }, {
         key: 'get',
         value: function get$$1() {
@@ -12727,6 +12744,14 @@ var Accounts = function () {
                 }
             });
         }
+
+        /**
+         * Unlock account.
+         * @param {string} address 
+         * @param {string} passphrase 
+         * @returns {Promise<string>} unlocked account address
+         */
+
     }, {
         key: 'unlock',
         value: function unlock(address, passphrase) {
@@ -12754,6 +12779,14 @@ var Accounts = function () {
                 }
             });
         }
+
+        /**
+         * Lock account.
+         * @param {string} address 
+         * @param {string} passphrase 
+         * @returns {Promise<string>} locked account address
+         */
+
     }, {
         key: 'lock',
         value: function lock(address, passphrase) {
@@ -12781,6 +12814,14 @@ var Accounts = function () {
                 }
             });
         }
+
+        /**
+         * Convenience method to send transaction from account.
+         * This method automatically retrieves the nonce, signs the transaction, and sends it to the network.
+         * @param {object} tx transaction data
+         * @returns {Promise<string>} transaction hash
+         */
+
     }, {
         key: 'sendTransaction',
         value: function sendTransaction(tx) {
@@ -12806,6 +12847,13 @@ var Accounts = function () {
                 });
             });
         }
+
+        /**
+         * Sign transaction.
+         * @param {object} tx transaction data
+         * @returns {Promise<object>} transaction data including signature
+         */
+
     }, {
         key: 'signTransaction',
         value: function signTransaction(tx) {
@@ -12871,7 +12919,21 @@ function promisify(original, context) {
 
 var CommitStatus$1 = rpcTypes.CommitStatus;
 
+/**
+ * Main aergo client controller.
+ */
+
 var AergoClient = function () {
+    /**
+     * Create a new auto-configured client with:
+     * 
+     * .. code-block:: javascript
+     * 
+     *     const aergo = new AergoClient();
+     * 
+     * @param [object] configuration. Unused at the moment.
+     * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
+     */
     function AergoClient(config) {
         var provider = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
         classCallCheck(this, AergoClient);
@@ -12899,6 +12961,12 @@ var AergoClient = function () {
         value: function isConnected() {
             return false;
         }
+
+        /**
+         * Request current status of blockchain.
+         * @returns {Promise<object>} an object detailing the current status
+         */
+
     }, {
         key: 'blockchain',
         value: function blockchain() {
@@ -12910,8 +12978,12 @@ var AergoClient = function () {
             });
         }
 
-        // Get transaction information in the aergo node. 
-        // if transaction is in the block return result with block hash and index.
+        /**
+         * Get transaction information in the aergo node. 
+         * If transaction is in the block return result with block hash and index.
+         * @param {string} txhash transaction hash
+         * @returns {Promise<object>} transaction details
+         */
 
     }, {
         key: 'getTransaction',
@@ -12941,6 +13013,14 @@ var AergoClient = function () {
                 });
             });
         }
+
+        /**
+         * Retrieve information about a block.
+         * 
+         * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
+         * @returns {Promise<object>} block details
+         */
+
     }, {
         key: 'getBlock',
         value: function getBlock(hashOrNumber) {
@@ -12961,6 +13041,13 @@ var AergoClient = function () {
                 return obj;
             });
         }
+
+        /**
+         * Retrieve account state, including current balance and nonce.
+         * @param {string} address Account address encoded in Base58check
+         * @returns {Promise<object>} account state
+         */
+
     }, {
         key: 'getState',
         value: function getState(address) {
@@ -12984,6 +13071,13 @@ var AergoClient = function () {
         value: function verifyTransaction(tx) {
             return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
         }
+
+        /**
+         * Send a signed transaction to the network.
+         * @param {Transaction} tx signed transaction
+         * @returns {Promise<string>} transaction hash
+         */
+
     }, {
         key: 'sendSignedTransaction',
         value: function sendSignedTransaction(tx) {
@@ -13508,9 +13602,23 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
 var rpc_grpc_pb_1 = rpc_grpc_pb.AergoRPCServiceService;
 var rpc_grpc_pb_2 = rpc_grpc_pb.AergoRPCServiceClient;
 
+/**
+ * Provider for standard GRPC connections over HTTP2.
+ * This is only compatible with Node.js environments.
+ */
+
 var GrpcProvider = function (_Provider) {
     inherits(GrpcProvider, _Provider);
 
+    /**
+     * .. code-block:: javascript
+     * 
+     *     import { GrpcProvider } from 'herajs';
+     *     const provider = new GrpcProvider({url: 'localhost:7845'});
+     * 
+     * @param {object} config
+     * @param {string} config.url URL to connect to (excluding protocol)
+     */
     function GrpcProvider(config) {
         classCallCheck(this, GrpcProvider);
 
@@ -13538,3 +13646,4 @@ AergoClient.prototype.initProvider = function () {
 };
 
 export default AergoClient;
+export { GrpcProvider };
