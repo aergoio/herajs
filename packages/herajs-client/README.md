@@ -28,7 +28,7 @@ aergo.accounts.get().then((accounts) => {
 });
 ```
 
-Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import {AergoClient} from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. An example of how to do this with Webpack will be provided shortly.
+Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import {AergoClient} from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. Webpack automatically picks the browser version, so you don't need to configure anything.
 
 You can also directly import the pre-built bundle in HTML using `<script src="herajs/dist/herajs.min.js"></script>` and use the global `herajs` variable.
 
