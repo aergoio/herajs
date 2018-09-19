@@ -91,7 +91,7 @@ class AergoClient {
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(decodeAddress(address));
-        return promisify(this.client.getState, this.client)(singleBytes);
+        return promisify(this.client.getState, this.client)(singleBytes).then(state => state.toObject());
     }
     
     getNonce(address) {

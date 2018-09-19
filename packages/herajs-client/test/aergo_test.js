@@ -90,8 +90,8 @@ describe('Aergo', () => {
 
         it('should return state info by account address', (done) => {
             aergo.getState(testaddress).then((response) => {
-                assert.equal(response.getNonce(), 0);
-                assert.equal(response.getBalance(), 0);
+                assert.equal(response.nonce, 0);
+                assert.equal(response.balance, 0);
                 done();
             });
         });
