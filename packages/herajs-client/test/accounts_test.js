@@ -56,18 +56,18 @@ describe('Aergo.Accounts', () => {
 
     describe('sendTransaction()', () => {
 
-        it('should return hash for signed and comitted tx', (done) => {
+        it('should return hash for signed and comitted tx', async () => {
+            await aergo.accounts.unlock(testAddress, 'testpass');
             const testtx = {
                 from: testAddress,
                 to: testAddress,
                 amount: 123,
                 payload: null,
             };
-            aergo.accounts.sendTransaction(testtx)
+            return aergo.accounts.sendTransaction(testtx)
                 .then((txhash) => {
                     assert.typeOf(txhash, 'string');
                     assert.equal(txhash.length, transactionHashLength);
-                    done();
                 });
         });
     });
