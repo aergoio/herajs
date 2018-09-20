@@ -11,7 +11,6 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');

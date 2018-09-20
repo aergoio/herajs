@@ -3,7 +3,6 @@
 'use strict';
 var grpc = require('grpc');
 var rpc_pb = require('./rpc_pb.js');
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');

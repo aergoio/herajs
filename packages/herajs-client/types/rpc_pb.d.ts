@@ -2,7 +2,6 @@
 // file: rpc.proto
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as blockchain_pb from "./blockchain_pb";
 import * as account_pb from "./account_pb";
 import * as node_pb from "./node_pb";
