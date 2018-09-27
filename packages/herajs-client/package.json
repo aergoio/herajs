@@ -23,17 +23,18 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
+  },
+  "aergo": {
+    "version": "594f9cb040bd0efffe5af64ede2d1d8bdb613b25"
+  },
+  "devDependencies": {
     "@types/google-protobuf": "^3.2.7",
     "bs58check": "^2.1.2",
     "crypto-js": "^3.1.9-1",
     "google-protobuf": "^3.6.0",
     "grpc": "^1.13.1",
-    "grpc-web-client": "^0.6.2"
-  },
-  "aergo": {
-    "version": "5fde7301a0ac3483e51ca9e1446bb2bc5113bc13"
-  },
-  "devDependencies": {
+    "grpc-web-client": "^0.6.2",
+
     "@types/rollup-plugin-json": "^3.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",

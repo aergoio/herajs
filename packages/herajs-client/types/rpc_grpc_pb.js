@@ -239,8 +239,6 @@ function deserialize_types_VoteList(buffer_arg) {
 }
 
 
-// need option "--proto_path= .... /bitbucket.org/cloudwallet/argo-alpha/proto" when protoc generate output
-//
 // BlockService serves APIs that aergosvr provides.
 // Some methods optionally contains context path if it is also provided by REST API.
 var AergoRPCServiceService = exports.AergoRPCServiceService = {

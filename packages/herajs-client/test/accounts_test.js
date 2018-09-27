@@ -87,7 +87,7 @@ describe('Aergo.Accounts', () => {
                     assert.equal(testtx.nonce, result.nonce);
                     assert.equal(testtx.from, result.from);
                     assert.typeOf(result.sign, 'string');
-                    assert.equal(result.sign.length, 88); //raw byte length 65
+                    assert.equal(result.sign.length, 96);
                     done();
                 });
         });
