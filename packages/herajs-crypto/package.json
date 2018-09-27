@@ -1,0 +1,40 @@
+{
+  "name": "herajs-crypto",
+  "version": "0.0.1",
+  "description": "Cryptography tools for aergo",
+  "main": "dist/herajs-crypto.js",
+  "scripts": {
+    "lint": "eslint --fix src test",
+    "test": "npm run lint && mocha --require @babel/register",
+    "build": "browserify --external crypto --standalone herajs-crypto -g uglifyify src/index.js -t [ babelify --presets [ @babel/preset-env ] ] -o dist/herajs-crypto.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aergoio/herajs-crypto.git"
+  },
+  "author": "AERGO team and contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aergoio/herajs-crypto/issues"
+  },
+  "homepage": "https://github.com/aergoio/herajs-crypto#readme",
+  "dependencies": {
+    "bs58check": "^2.1.2",
+    "elliptic": "^6.4.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
+    "@types/elliptic": "^6.4.0",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^5.6.0",
+    "mocha": "^5.2.0",
+    "regenerator-runtime": "^0.12.1",
+    "uglify-js": "^3.4.9",
+    "uglifyify": "^5.0.1"
+  }
+}
