@@ -118,9 +118,9 @@ function genConfig (name) {
             babel({
                 babelrc: false,
                 exclude: 'node_modules/**',
-                plugins: ['external-helpers', 'transform-object-rest-spread', 'transform-class-properties'],
+                plugins: ['@babel/plugin-proposal-object-rest-spread'],
                 presets: [
-                    ["env", {
+                    ["@babel/preset-env", {
                         "modules": false
                     }]
                 ]
