@@ -5,6 +5,8 @@ const assert = chai.assert;
 
 import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
+import { decodeAddress } from '../src/accounts/utils.js';
+import {createIdentity, signTransaction, hashTransaction} from 'herajs-crypto';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
@@ -155,7 +157,7 @@ describe('Aergo', () => {
                 from: address,
                 to: address,
                 amount: 123,
-                payload: null,
+                payload: '',
             };
             // Tx is signed and submitted correctly
             testtx = await aergo.accounts.signTransaction(unsignedtx);
@@ -164,6 +166,27 @@ describe('Aergo', () => {
         it('should return transaction info by hash', async() => {
             const result = await aergo.getTransaction(testtx.hash);
             assert.equal(result.tx.hash, testtx.hash);
+        });
+    });
+
+    describe('sendLocallySignedTransaction()', () => {
+
+        it('should return hash for comitted tx', async () => {
+            const identity = createIdentity();
+            const tx = {
+                nonce: 1,
+                from: identity.address,
+                to: identity.address,
+                amount: 100,
+                payload: '',
+            };
+            tx.sign = await signTransaction(tx, identity.keyPair);
+            tx.hash = await hashTransaction(tx);
+
+            return aergo.sendSignedTransaction(tx)
+                .then((txhash) => {
+                    assert.typeOf(txhash, 'string');
+                });
         });
     });
 });

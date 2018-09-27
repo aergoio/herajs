@@ -23,7 +23,11 @@ export function transactionToTx(tx) {
     if (tx.payload != null) {
         msgtxbody.setPayload(tx.payload);
     }
-    msgtxbody.setSign(tx.sign);
+    if (typeof tx.sign === 'string') {
+        msgtxbody.setSign(Buffer.from(tx.sign, 'base64'));
+    } else {
+        msgtxbody.setSign(tx.sign);
+    }
     msgtxbody.setType(tx.type);
     const msgtx = new rpcTypes.Tx();
 
