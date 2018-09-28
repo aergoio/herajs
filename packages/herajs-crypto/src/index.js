@@ -1,7 +1,6 @@
-import bs58check from 'bs58check';
 import { ec } from 'elliptic';
-import { ADDRESS_PREFIXES } from './constants';
-import { fromNumber } from './encoding';
+import { AES_GCM } from 'asmcrypto.js';
+import { fromNumber, encodeAddress, decodeAddress, encodePrivateKey, decodePrivateKey } from './encoding';
 import 'regenerator-runtime/runtime';
 
 const ecdsa = new ec('secp256k1');
@@ -12,6 +11,24 @@ const ecdsa = new ec('secp256k1');
  */
 const createIdentity = () => {
     const keyPair = ecdsa.genKeyPair();
+    return encodeIdentity(keyPair);
+};
+
+/**
+ * Returns identity associated with private key
+ * @param {Uint8Array} privKeyBytes 
+ */
+const identifyFromPrivateKey = (privKeyBytes) => {
+    const keyPair = ecdsa.keyFromPrivate(privKeyBytes);
+    return encodeIdentity(keyPair);
+};
+
+/**
+ * Encodes a key pair into an identity object
+ * @param {KeyPair} keyPair 
+ * @return {object}
+ */
+const encodeIdentity = (keyPair) => {
     const privateKey = keyPair.getPrivate();
     const publicKey = keyPair.getPublic();
     const address = addressFromPublicKey(publicKey);
@@ -35,24 +52,7 @@ const addressFromPublicKey = (publicKey) => {
     return encodeAddress(address);
 };
 
-/**
- * Encodes address form byte array to string.
- * @param {number[]} byteArray 
- * @param {string} address
- */
-const encodeAddress = (byteArray) => {
-    const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
-    return bs58check.encode(buf);
-};
 
-/**
- * Decodes address from string to byte array.
- * @param {string} address base58check encoded address 
- * @return {number[]} byte array
- */
-const decodeAddress = (address) => {
-    return bs58check.decode(address).slice(1);
-};
 
 /**
  * Sign transaction with key.
@@ -108,16 +108,35 @@ const hashTransaction = (tx, encoding = 'base64', includeSign = true) => {
     });
 };
 
+const decryptPrivateKey = (encryptedBytes, password) => {
+    return new Promise((resolve) => {
+        // Make a key from double hashing the password
+        const hash = ecdsa.hash();
+        hash.update(password);
+        const addr = hash.digest();
+        const rehash = ecdsa.hash();
+        rehash.update(password);
+        rehash.update(addr);
+        const key = Buffer.from(rehash.digest());
+        const nonce = Buffer.from(addr.slice(4, 16));
+        resolve(AES_GCM.decrypt(encryptedBytes, key, nonce));
+    });
+};
+
 const encodeSignature = (sig) => {
     return Buffer.from(sig.toDER()).toString('base64');
 };
 
 export {
     createIdentity,
+    identifyFromPrivateKey,
     addressFromPublicKey,
     encodeAddress,
     decodeAddress,
     signTransaction,
     hashTransaction,
-    verifySignature
+    verifySignature,
+    decryptPrivateKey,
+    encodePrivateKey,
+    decodePrivateKey
 };
