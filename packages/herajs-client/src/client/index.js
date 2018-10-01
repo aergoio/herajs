@@ -116,6 +116,20 @@ class AergoClient {
         });
     }
 
+    getBlockHeaderStream () {
+        const empty = new rpcTypes.Empty();
+        const stream = this.client.listBlockHeadersStream(empty);
+        /*
+        transport: grpc.WebsocketTransportFactory
+        */
+        /*stream.on('error', (error) => {
+            if (error.code === 1) { // grpc.status.CANCELLED
+                return;
+            }
+        });*/
+        return stream;
+    }
+    
     /**
      * Retrieve account state, including current balance and nonce.
      * @param {string} address Account address encoded in Base58check

@@ -51,6 +51,17 @@ function deserialize_types_Block(buffer_arg) {
   return blockchain_pb.Block.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_BlockHeader(arg) {
+  if (!(arg instanceof blockchain_pb.BlockHeader)) {
+    throw new Error('Expected argument of type types.BlockHeader');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockHeader(buffer_arg) {
+  return blockchain_pb.BlockHeader.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_BlockHeaderList(arg) {
   if (!(arg instanceof rpc_pb.BlockHeaderList)) {
     throw new Error('Expected argument of type types.BlockHeaderList');
@@ -104,6 +115,17 @@ function serialize_types_Empty(arg) {
 
 function deserialize_types_Empty(buffer_arg) {
   return rpc_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_ImportFormat(arg) {
+  if (!(arg instanceof rpc_pb.ImportFormat)) {
+    throw new Error('Expected argument of type types.ImportFormat');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ImportFormat(buffer_arg) {
+  return rpc_pb.ImportFormat.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_ListParams(arg) {
@@ -278,6 +300,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockHeaderList,
     responseDeserialize: deserialize_types_BlockHeaderList,
   },
+  listBlockHeadersStream: {
+    path: '/types.AergoRPCService/ListBlockHeadersStream',
+    requestStream: false,
+    responseStream: true,
+    requestType: rpc_pb.Empty,
+    responseType: blockchain_pb.BlockHeader,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_BlockHeader,
+    responseDeserialize: deserialize_types_BlockHeader,
+  },
   getBlock: {
     path: '/types.AergoRPCService/GetBlock',
     requestStream: false,
@@ -419,6 +452,28 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Personal,
     responseSerialize: serialize_types_Account,
     responseDeserialize: deserialize_types_Account,
+  },
+  importAccount: {
+    path: '/types.AergoRPCService/ImportAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.ImportFormat,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_ImportFormat,
+    requestDeserialize: deserialize_types_ImportFormat,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  exportAccount: {
+    path: '/types.AergoRPCService/ExportAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: rpc_pb.SingleBytes,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_SingleBytes,
+    responseDeserialize: deserialize_types_SingleBytes,
   },
   signTX: {
     path: '/types.AergoRPCService/SignTX',

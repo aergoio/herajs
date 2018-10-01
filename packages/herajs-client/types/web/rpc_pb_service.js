@@ -39,6 +39,15 @@ AergoRPCService.ListBlockHeaders = {
   responseType: rpc_pb.BlockHeaderList
 };
 
+AergoRPCService.ListBlockHeadersStream = {
+  methodName: "ListBlockHeadersStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: rpc_pb.Empty,
+  responseType: blockchain_pb.BlockHeader
+};
+
 AergoRPCService.GetBlock = {
   methodName: "GetBlock",
   service: AergoRPCService,
@@ -145,6 +154,24 @@ AergoRPCService.UnlockAccount = {
   responseStream: false,
   requestType: rpc_pb.Personal,
   responseType: account_pb.Account
+};
+
+AergoRPCService.ImportAccount = {
+  methodName: "ImportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ImportFormat,
+  responseType: account_pb.Account
+};
+
+AergoRPCService.ExportAccount = {
+  methodName: "ExportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: rpc_pb.SingleBytes
 };
 
 AergoRPCService.SignTX = {
@@ -263,6 +290,45 @@ AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(req
       }
     }
   });
+};
+
+AergoRPCServiceClient.prototype.listBlockHeadersStream = function listBlockHeadersStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListBlockHeadersStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function (responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function (status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function (type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function () {
+      listeners = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, metadata, callback) {
@@ -512,6 +578,50 @@ AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMe
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.UnlockAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.ImportAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.ExportAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

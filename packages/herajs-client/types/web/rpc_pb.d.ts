@@ -150,32 +150,6 @@ export namespace SingleBytes {
   }
 }
 
-export class Personal extends jspb.Message {
-  getPassphrase(): string;
-  setPassphrase(value: string): void;
-
-  hasAccount(): boolean;
-  clearAccount(): void;
-  getAccount(): account_pb.Account | undefined;
-  setAccount(value?: account_pb.Account): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Personal.AsObject;
-  static toObject(includeInstance: boolean, msg: Personal): Personal.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Personal, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Personal;
-  static deserializeBinaryFromReader(message: Personal, reader: jspb.BinaryReader): Personal;
-}
-
-export namespace Personal {
-  export type AsObject = {
-    passphrase: string,
-    account?: account_pb.Account.AsObject,
-  }
-}
-
 export class PeerList extends jspb.Message {
   clearPeersList(): void;
   getPeersList(): Array<node_pb.PeerAddress>;
@@ -335,6 +309,62 @@ export namespace VerifyResult {
   export type AsObject = {
     tx?: blockchain_pb.Tx.AsObject,
     error: VerifyStatus,
+  }
+}
+
+export class Personal extends jspb.Message {
+  getPassphrase(): string;
+  setPassphrase(value: string): void;
+
+  hasAccount(): boolean;
+  clearAccount(): void;
+  getAccount(): account_pb.Account | undefined;
+  setAccount(value?: account_pb.Account): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Personal.AsObject;
+  static toObject(includeInstance: boolean, msg: Personal): Personal.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Personal, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Personal;
+  static deserializeBinaryFromReader(message: Personal, reader: jspb.BinaryReader): Personal;
+}
+
+export namespace Personal {
+  export type AsObject = {
+    passphrase: string,
+    account?: account_pb.Account.AsObject,
+  }
+}
+
+export class ImportFormat extends jspb.Message {
+  hasWif(): boolean;
+  clearWif(): void;
+  getWif(): SingleBytes | undefined;
+  setWif(value?: SingleBytes): void;
+
+  getOldpass(): string;
+  setOldpass(value: string): void;
+
+  getNewpass(): string;
+  setNewpass(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ImportFormat.AsObject;
+  static toObject(includeInstance: boolean, msg: ImportFormat): ImportFormat.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ImportFormat, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ImportFormat;
+  static deserializeBinaryFromReader(message: ImportFormat, reader: jspb.BinaryReader): ImportFormat;
+}
+
+export namespace ImportFormat {
+  export type AsObject = {
+    wif?: SingleBytes.AsObject,
+    oldpass: string,
+    newpass: string,
   }
 }
 

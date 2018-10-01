@@ -33,6 +33,15 @@ type AergoRPCServiceListBlockHeaders = {
   readonly responseType: typeof rpc_pb.BlockHeaderList;
 };
 
+type AergoRPCServiceListBlockHeadersStream = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: true;
+  readonly requestType: typeof rpc_pb.Empty;
+  readonly responseType: typeof blockchain_pb.BlockHeader;
+};
+
 type AergoRPCServiceGetBlock = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -141,6 +150,24 @@ type AergoRPCServiceUnlockAccount = {
   readonly responseType: typeof account_pb.Account;
 };
 
+type AergoRPCServiceImportAccount = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.ImportFormat;
+  readonly responseType: typeof account_pb.Account;
+};
+
+type AergoRPCServiceExportAccount = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.Personal;
+  readonly responseType: typeof rpc_pb.SingleBytes;
+};
+
 type AergoRPCServiceSignTX = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -191,6 +218,7 @@ export class AergoRPCService {
   static readonly NodeState: AergoRPCServiceNodeState;
   static readonly Blockchain: AergoRPCServiceBlockchain;
   static readonly ListBlockHeaders: AergoRPCServiceListBlockHeaders;
+  static readonly ListBlockHeadersStream: AergoRPCServiceListBlockHeadersStream;
   static readonly GetBlock: AergoRPCServiceGetBlock;
   static readonly GetTX: AergoRPCServiceGetTX;
   static readonly GetBlockTX: AergoRPCServiceGetBlockTX;
@@ -203,6 +231,8 @@ export class AergoRPCService {
   static readonly GetAccounts: AergoRPCServiceGetAccounts;
   static readonly LockAccount: AergoRPCServiceLockAccount;
   static readonly UnlockAccount: AergoRPCServiceUnlockAccount;
+  static readonly ImportAccount: AergoRPCServiceImportAccount;
+  static readonly ExportAccount: AergoRPCServiceExportAccount;
   static readonly SignTX: AergoRPCServiceSignTX;
   static readonly VerifyTX: AergoRPCServiceVerifyTX;
   static readonly QueryContract: AergoRPCServiceQueryContract;
@@ -252,6 +282,7 @@ export class AergoRPCServiceClient {
     requestMessage: rpc_pb.ListParams,
     callback: (error: ServiceError, responseMessage: rpc_pb.BlockHeaderList|null) => void
   ): void;
+  listBlockHeadersStream(requestMessage: rpc_pb.Empty, metadata?: grpc.Metadata): ResponseStream<blockchain_pb.BlockHeader>;
   getBlock(
     requestMessage: rpc_pb.SingleBytes,
     metadata: grpc.Metadata,
@@ -359,6 +390,24 @@ export class AergoRPCServiceClient {
   unlockAccount(
     requestMessage: rpc_pb.Personal,
     callback: (error: ServiceError, responseMessage: account_pb.Account|null) => void
+  ): void;
+  importAccount(
+    requestMessage: rpc_pb.ImportFormat,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: account_pb.Account|null) => void
+  ): void;
+  importAccount(
+    requestMessage: rpc_pb.ImportFormat,
+    callback: (error: ServiceError, responseMessage: account_pb.Account|null) => void
+  ): void;
+  exportAccount(
+    requestMessage: rpc_pb.Personal,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
+  ): void;
+  exportAccount(
+    requestMessage: rpc_pb.Personal,
+    callback: (error: ServiceError, responseMessage: rpc_pb.SingleBytes|null) => void
   ): void;
   signTX(
     requestMessage: blockchain_pb.Tx,

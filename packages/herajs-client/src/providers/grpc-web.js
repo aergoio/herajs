@@ -1,5 +1,6 @@
 import Provider from './base.js';
 import { AergoRPCServiceClient } from '../../types/web/rpc_pb_service.js';
+import { grpc } from 'grpc-web-client';
 
 /**
  * Provider for GRPC-WEB connections over HTTP.
@@ -18,7 +19,10 @@ class GrpcWebProvider extends Provider {
      */
     constructor(config) {
         super(config);
-        this.client = new AergoRPCServiceClient(this.config.url); 
+        const options = {
+            transport: grpc.WebsocketTransportFactory
+        };
+        this.client = new AergoRPCServiceClient(this.config.url, options);
     }
 
     get defaultConfig() {

@@ -84,6 +84,21 @@ describe('Aergo', () => {
         });
     });
 
+    describe('listBlockHeaadersStream()', () => {
+        it('should stream new blocks', async () => {
+            return new Promise(resolve => {
+                let countBlocks = 3;
+                const stream = aergo.getBlockHeaderStream().on('data', (blockHeader) => {
+                    countBlocks -= 1;
+                    if (countBlocks == 0) {
+                        stream.cancel();
+                        resolve();
+                    }
+                });
+            });
+        }).timeout(5000);
+    });
+
     describe('getState()', () => {
         let testaddress;
         beforeEach(async ()=>{
