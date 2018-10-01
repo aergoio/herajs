@@ -1,7 +1,7 @@
 /*!
  * herajs v0.0.1-b1
  * (c) 2018 AERGO
- * Released under _resolvense.
+ * Released under MIT license.
  */
 'use strict';
 

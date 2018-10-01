@@ -5,7 +5,7 @@ const assert = chai.assert;
 
 import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
-import { decodeAddress } from '../src/accounts/utils.js';
+import { toHexString } from '../src/utils.js';
 import {createIdentity, signTransaction, hashTransaction} from 'herajs-crypto';
 
 describe('Aergo invalid config', () => {
@@ -107,6 +107,8 @@ describe('Aergo', () => {
     
     describe('getNonce()', () => {
         let testaddress;
+        let txhash;
+        let blockhash;
         beforeEach(async ()=>{
             testaddress = await aergo.accounts.create('testpass');
         });
@@ -125,17 +127,18 @@ describe('Aergo', () => {
                 nonce: 1,
                 from: testaddress,
                 to: testaddress,
-                amount: 123,
+                amount: 13371337,
                 payload: null,
             };
             const signedtx = await aergo.accounts.signTransaction(unsignedtx);
-            const txhash = await aergo.sendSignedTransaction(signedtx);
+            txhash = await aergo.sendSignedTransaction(signedtx);
             //console.log(`txhash: ${txhash}, pending...`);
             for(;;) {
                 const result = await aergo.getTransaction(txhash);
                 //console.log(`tx ${result.tx.hash} still pending...`);
                 if ('block' in result) {
-                    //console.log(`included in block #${result.block.getIdx()} (${result.block.getBlockhash_asB64()})`);
+                    blockhash = toHexString(result.block.getBlockhash_asU8());
+                    //console.log(`tx ${txhash} is included in block ${blockhash}`);
                     break;
                 }
             }
@@ -143,6 +146,13 @@ describe('Aergo', () => {
                 assert.equal(nonce, 1);
             });
         }).timeout(5000);
+
+        it('should return transaction hash in block', async() => {
+            const result = await aergo.getBlock(blockhash);
+            const txs = result.body.txsList.filter(tx => tx.hash === txhash);
+            assert.equal(txs.length, 1);
+            assert.equal(txs[0].body.amount, 13371337);
+        });
     });
 
     describe('getTransaction()', () => {

@@ -1,7 +1,7 @@
 /*!
  * herajs v0.0.1-b1
  * (c) 2018 AERGO
- * Released under _resolvense.
+ * Released under MIT license.
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('http'), require('https'), require('url')) :

@@ -16,7 +16,7 @@ const banner =
   '/*!\n' +
   ' * herajs v' + version + '\n' +
   ' * (c) ' + new Date().getFullYear() + ' AERGO\n' +
-  ' * Released under _resolvense.\n' +
+  ' * Released under MIT license.\n' +
   ' */';
 
 const resolve = p => _resolve(__dirname, '../', p);
