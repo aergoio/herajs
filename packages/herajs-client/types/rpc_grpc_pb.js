@@ -51,17 +51,6 @@ function deserialize_types_Block(buffer_arg) {
   return blockchain_pb.Block.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_types_BlockHeader(arg) {
-  if (!(arg instanceof blockchain_pb.BlockHeader)) {
-    throw new Error('Expected argument of type types.BlockHeader');
-  }
-  return new Buffer(arg.serializeBinary());
-}
-
-function deserialize_types_BlockHeader(buffer_arg) {
-  return blockchain_pb.BlockHeader.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_types_BlockHeaderList(arg) {
   if (!(arg instanceof rpc_pb.BlockHeaderList)) {
     throw new Error('Expected argument of type types.BlockHeaderList');
@@ -300,16 +289,16 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockHeaderList,
     responseDeserialize: deserialize_types_BlockHeaderList,
   },
-  listBlockHeadersStream: {
-    path: '/types.AergoRPCService/ListBlockHeadersStream',
+  listBlockStream: {
+    path: '/types.AergoRPCService/ListBlockStream',
     requestStream: false,
     responseStream: true,
     requestType: rpc_pb.Empty,
-    responseType: blockchain_pb.BlockHeader,
+    responseType: blockchain_pb.Block,
     requestSerialize: serialize_types_Empty,
     requestDeserialize: deserialize_types_Empty,
-    responseSerialize: serialize_types_BlockHeader,
-    responseDeserialize: deserialize_types_BlockHeader,
+    responseSerialize: serialize_types_Block,
+    responseDeserialize: deserialize_types_Block,
   },
   getBlock: {
     path: '/types.AergoRPCService/GetBlock',

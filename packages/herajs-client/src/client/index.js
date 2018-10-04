@@ -29,14 +29,22 @@ class AergoClient {
         this.config = {
             ...config
         };
-        this.client = provider || this.initProvider();
+        this.client = provider || this.defaultProvider();
         this.accounts = new Accounts(this);
     }
 
-    initProvider() {
+    defaultProvider() {
         // Platform-specific override, see ../platforms/**
         // for auto-configuration of a provider.
         // Can also manually pass provider to constructor.
+    }
+
+    /**
+     * Set a new provider
+     * @param {Provider} provider
+     */
+    setProvider(provider) {
+        this.client = provider;
     }
 
     getConfig () {
@@ -116,17 +124,18 @@ class AergoClient {
         });
     }
 
-    getBlockHeaderStream () {
+    getBlockStream () {
         const empty = new rpcTypes.Empty();
-        const stream = this.client.listBlockHeadersStream(empty);
-        /*
-        transport: grpc.WebsocketTransportFactory
-        */
-        /*stream.on('error', (error) => {
-            if (error.code === 1) { // grpc.status.CANCELLED
-                return;
-            }
-        });*/
+        const stream = this.client.listBlockStream(empty);
+        try {
+            stream.on('error', (error) => {
+                if (error.code === 1) { // grpc.status.CANCELLED
+                    return;
+                }
+            });
+        } catch (e) {
+            // ignore. 'error' does not work on grpc-web implementation
+        }
         return stream;
     }
     

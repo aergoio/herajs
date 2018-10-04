@@ -1840,7 +1840,8 @@ proto.types.CommitResult.prototype.toObject = function(opt_includeInstance) {
 proto.types.CommitResult.toObject = function(includeInstance, msg) {
   var f, obj = {
     hash: msg.getHash_asB64(),
-    error: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    error: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    detail: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -1885,6 +1886,10 @@ proto.types.CommitResult.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!proto.types.CommitStatus} */ (reader.readEnum());
       msg.setError(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDetail(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1925,6 +1930,13 @@ proto.types.CommitResult.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       2,
+      f
+    );
+  }
+  f = message.getDetail();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -1982,6 +1994,21 @@ proto.types.CommitResult.prototype.getError = function() {
 /** @param {!proto.types.CommitStatus} value */
 proto.types.CommitResult.prototype.setError = function(value) {
   jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional string detail = 3;
+ * @return {string}
+ */
+proto.types.CommitResult.prototype.getDetail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.types.CommitResult.prototype.setDetail = function(value) {
+  jspb.Message.setField(this, 3, value);
 };
 
 
@@ -2746,9 +2773,10 @@ proto.types.CommitStatus = {
   TX_NONCE_TOO_LOW: 1,
   TX_ALREADY_EXISTS: 2,
   TX_INVALID_HASH: 3,
-  TX_INVALID_FORMAT: 4,
-  TX_INSUFFICIENT_BALANCE: 5,
-  TX_INTERNAL_ERROR: 6
+  TX_INVALID_SIGN: 4,
+  TX_INVALID_FORMAT: 5,
+  TX_INSUFFICIENT_BALANCE: 6,
+  TX_INTERNAL_ERROR: 7
 };
 
 /**

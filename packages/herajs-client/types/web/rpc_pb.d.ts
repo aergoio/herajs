@@ -247,6 +247,9 @@ export class CommitResult extends jspb.Message {
   getError(): CommitStatus;
   setError(value: CommitStatus): void;
 
+  getDetail(): string;
+  setDetail(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CommitResult.AsObject;
   static toObject(includeInstance: boolean, msg: CommitResult): CommitResult.AsObject;
@@ -261,6 +264,7 @@ export namespace CommitResult {
   export type AsObject = {
     hash: Uint8Array | string,
     error: CommitStatus,
+    detail: string,
   }
 }
 
@@ -373,9 +377,10 @@ export enum CommitStatus {
   TX_NONCE_TOO_LOW = 1,
   TX_ALREADY_EXISTS = 2,
   TX_INVALID_HASH = 3,
-  TX_INVALID_FORMAT = 4,
-  TX_INSUFFICIENT_BALANCE = 5,
-  TX_INTERNAL_ERROR = 6,
+  TX_INVALID_SIGN = 4,
+  TX_INVALID_FORMAT = 5,
+  TX_INSUFFICIENT_BALANCE = 6,
+  TX_INTERNAL_ERROR = 7,
 }
 
 export enum VerifyStatus {

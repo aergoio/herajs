@@ -3,7 +3,7 @@ import GrpcProvider from '../../providers/grpc';
 
 AergoClient.prototype.target = 'node';
 
-AergoClient.prototype.initProvider = () => {
+AergoClient.prototype.defaultProvider = () => {
     return new GrpcProvider(); 
 };
 

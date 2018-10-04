@@ -33,13 +33,13 @@ type AergoRPCServiceListBlockHeaders = {
   readonly responseType: typeof rpc_pb.BlockHeaderList;
 };
 
-type AergoRPCServiceListBlockHeadersStream = {
+type AergoRPCServiceListBlockStream = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof rpc_pb.Empty;
-  readonly responseType: typeof blockchain_pb.BlockHeader;
+  readonly responseType: typeof blockchain_pb.Block;
 };
 
 type AergoRPCServiceGetBlock = {
@@ -218,7 +218,7 @@ export class AergoRPCService {
   static readonly NodeState: AergoRPCServiceNodeState;
   static readonly Blockchain: AergoRPCServiceBlockchain;
   static readonly ListBlockHeaders: AergoRPCServiceListBlockHeaders;
-  static readonly ListBlockHeadersStream: AergoRPCServiceListBlockHeadersStream;
+  static readonly ListBlockStream: AergoRPCServiceListBlockStream;
   static readonly GetBlock: AergoRPCServiceGetBlock;
   static readonly GetTX: AergoRPCServiceGetTX;
   static readonly GetBlockTX: AergoRPCServiceGetBlockTX;
@@ -282,7 +282,7 @@ export class AergoRPCServiceClient {
     requestMessage: rpc_pb.ListParams,
     callback: (error: ServiceError, responseMessage: rpc_pb.BlockHeaderList|null) => void
   ): void;
-  listBlockHeadersStream(requestMessage: rpc_pb.Empty, metadata?: grpc.Metadata): ResponseStream<blockchain_pb.BlockHeader>;
+  listBlockStream(requestMessage: rpc_pb.Empty, metadata?: grpc.Metadata): ResponseStream<blockchain_pb.Block>;
   getBlock(
     requestMessage: rpc_pb.SingleBytes,
     metadata: grpc.Metadata,

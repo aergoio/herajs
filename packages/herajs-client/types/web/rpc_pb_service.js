@@ -39,13 +39,13 @@ AergoRPCService.ListBlockHeaders = {
   responseType: rpc_pb.BlockHeaderList
 };
 
-AergoRPCService.ListBlockHeadersStream = {
-  methodName: "ListBlockHeadersStream",
+AergoRPCService.ListBlockStream = {
+  methodName: "ListBlockStream",
   service: AergoRPCService,
   requestStream: false,
   responseStream: true,
   requestType: rpc_pb.Empty,
-  responseType: blockchain_pb.BlockHeader
+  responseType: blockchain_pb.Block
 };
 
 AergoRPCService.GetBlock = {
@@ -292,13 +292,13 @@ AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(req
   });
 };
 
-AergoRPCServiceClient.prototype.listBlockHeadersStream = function listBlockHeadersStream(requestMessage, metadata) {
+AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
   var listeners = {
     data: [],
     end: [],
     status: []
   };
-  var client = grpc.invoke(AergoRPCService.ListBlockHeadersStream, {
+  var client = grpc.invoke(AergoRPCService.ListBlockStream, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

@@ -84,11 +84,11 @@ describe('Aergo', () => {
         });
     });
 
-    describe('listBlockHeaadersStream()', () => {
+    describe('getBlockStream()', () => {
         it('should stream new blocks', async () => {
             return new Promise(resolve => {
                 let countBlocks = 3;
-                const stream = aergo.getBlockHeaderStream().on('data', (blockHeader) => {
+                const stream = aergo.getBlockStream().on('data', (blockHeader) => {
                     countBlocks -= 1;
                     if (countBlocks == 0) {
                         stream.cancel();
