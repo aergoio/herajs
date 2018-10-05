@@ -12,5 +12,5 @@ before_install:
 install:
   - npm install
 script:
-  - ${GOPATH}/src/github.com/aergoio/aergo/bin/aergosvr >/dev/null 2>&1 &
+  - ${GOPATH}/src/github.com/aergoio/aergo/bin/aergosvr --testmode >/dev/null 2>&1 &
   - npm test
