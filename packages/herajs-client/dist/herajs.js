@@ -22819,7 +22819,8 @@
               });
             } else {
               var res = {};
-              res.block = result.getTxidx();
+              res.block = result.getTxidx().toObject();
+              res.block.hash = toHexString(result.getTxidx().getBlockhash_asU8());
               res.tx = txToTransaction(result.getTx());
               resolve(res);
             }
@@ -22883,7 +22884,7 @@
       key: "getState",
       value: function getState(address) {
         var singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeAddress(address));
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
         return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
           return state.toObject();
         });
@@ -22892,7 +22893,7 @@
       key: "getNonce",
       value: function getNonce(address) {
         var singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeAddress(address));
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
         return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
           return state.getNonce();
         });

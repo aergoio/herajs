@@ -90,7 +90,8 @@ class AergoClient {
                     });
                 } else {
                     const res = {};
-                    res.block = result.getTxidx();
+                    res.block = result.getTxidx().toObject();
+                    res.block.hash = toHexString(result.getTxidx().getBlockhash_asU8());
                     res.tx = txToTransaction(result.getTx());
                     resolve(res);
                 }
@@ -146,13 +147,13 @@ class AergoClient {
      */
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeAddress(address));
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.toObject());
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeAddress(address));
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
