@@ -152,7 +152,7 @@ describe('Aergo', () => {
                 const result = await aergo.getTransaction(txhash);
                 //console.log(`tx ${result.tx.hash} still pending...`);
                 if ('block' in result) {
-                    blockhash = toHexString(result.block.getBlockhash_asU8());
+                    blockhash = result.block.hash;
                     //console.log(`tx ${txhash} is included in block ${blockhash}`);
                     break;
                 }

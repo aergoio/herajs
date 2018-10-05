@@ -6,7 +6,7 @@ Run this with
 /* eslint no-console: 0 */
 import { performance, PerformanceObserver } from 'perf_hooks';
 
-const numberOfTx = 1000;
+const numberOfTx = 10000;
 
 const waitForTx = true; // wait for tx to complete after sending
 
@@ -17,6 +17,18 @@ const obs = new PerformanceObserver((items) => {
 });
 obs.observe({ entryTypes: ['measure'] });
 
+function asyncMap(items, fn, concurrencyLimit) {
+    return Promise.all(items.reduce((promises, item, index) => {
+        const chainNum = index % concurrencyLimit;
+        let chain = promises[chainNum];
+        if (!chain) {
+            chain = promises[chainNum] = Promise.resolve();
+        }
+        promises[chainNum] = chain.then(async _ => await fn(item));
+        return promises;
+    }, []));
+}
+
 export async function main(aergo) {
     function pollTxStatus(hash) {
         return aergo.getTransaction(hash).then((result) => {
@@ -25,6 +37,8 @@ export async function main(aergo) {
             } else {
                 return pollTxStatus(hash);
             }
+        }).catch(e => {
+            return pollTxStatus(hash);
         });
     }
 
@@ -52,29 +66,25 @@ export async function main(aergo) {
 
     performance.mark('B');
 
-    // Commit transactions
-    await Promise.all(signedTransactions.map(signedtx => (
-        aergo.sendSignedTransaction(signedtx).then((txid) => {
-            signedtx.id = txid;
-        })
-    )));
+
+    // Commit transactions, limited concurrency
+    await asyncMap(signedTransactions, async item => 
+        await aergo.sendSignedTransaction(item).then((txid) => {
+            item.id = txid;
+        }), 50);
 
     performance.mark('C');
 
     if (waitForTx) {
-        let errorred = 0;
-
+        const blocks = new Set();
         // Wait for transactions to be included in blocks
-        await Promise.all(signedTransactions.map(tx => (
-            pollTxStatus(tx.id).then(blockhash => {
+        await asyncMap(signedTransactions, async tx => 
+            await pollTxStatus(tx.id).then(blockhash => {
                 tx.blockhash = blockhash;
                 console.log(tx.nonce, tx.id, tx.blockhash);
-            }).catch(e => {
-                console.log(tx.nonce, tx.id, 'not found');
-                errorred += 1;
-            })
-        )));
-        console.log(`(${errorred} tx not found)`);
+                blocks.add(tx.blockhash);
+            }), 100);
+        console.log(`(in ${blocks.size} blocks)`);
     } else {
         // Just print tx ids without waiting for confirmation
         for (const tx of signedTransactions) {
