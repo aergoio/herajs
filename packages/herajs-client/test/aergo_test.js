@@ -214,4 +214,14 @@ describe('Aergo', () => {
                 });
         });
     });
+
+    describe('getVotingResult()', () => {
+
+        it('should return given number of voting result', async () => {
+            return aergo.getVoteResult(10)
+                .then((voteList) => {
+                    assert.typeOf(voteList, 'Array');
+                });
+        });
+    });
 });

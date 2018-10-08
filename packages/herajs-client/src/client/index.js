@@ -1,6 +1,6 @@
 import Accounts from '../accounts';
 import rpcTypes from './types.js';
-import { fromHexString, toHexString, fromNumber, errorMessageForCode } from '../utils.js';
+import { fromHexString, toHexString, fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { transactionToTx, txToTransaction } from '../transactions/utils.js';
 import { decodeAddress } from '../accounts/utils.js';
@@ -183,6 +183,13 @@ class AergoClient {
                 }
             });
         });
+    }
+
+    getVoteResult(count) {
+        const singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
+        return promisify(this.client.getVotes, this.client)(singleBytes)
+            .then(state => state.getVotesList());
     }
 
     getTransactionReceipt (hash, callback) { // eslint-disable-line

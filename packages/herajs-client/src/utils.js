@@ -16,6 +16,13 @@ const fromNumber = (d) => {
     return arr;
 };
 
+const toBytesUint32 = (num) => {
+    const arr = new ArrayBuffer(8);
+    const view = new DataView(arr);
+    view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
+    return arr;
+};
+
 const errorMessageForCode = (code) => {
     let errorMessage = 'UNDEFINED_ERROR';
     if (code && code < Object.values(CommitStatus).length) {
@@ -28,5 +35,6 @@ export {
     fromHexString,
     toHexString,
     fromNumber,
+    toBytesUint32,
     errorMessageForCode
 };

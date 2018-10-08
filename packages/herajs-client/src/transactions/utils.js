@@ -51,4 +51,3 @@ export function txToTransaction(tx) {
     transaction.type = tx.getBody().getType();
     return transaction;
 }
-
