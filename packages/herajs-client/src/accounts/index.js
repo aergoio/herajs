@@ -1,6 +1,5 @@
 import { Personal, Empty, Account, TxBody, Tx } from '../../types/rpc_pb.js';
 import { txToTransaction } from '../transactions/utils.js';
-import { errorMessageForCode } from '../utils.js';
 import { encodeAddress, decodeAddress } from './utils.js';
 
 /**

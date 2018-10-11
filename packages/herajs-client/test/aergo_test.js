@@ -5,9 +5,7 @@ const assert = chai.assert;
 
 import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
-import { toHexString } from '../src/utils.js';
 import {createIdentity, signTransaction, hashTransaction} from 'herajs-crypto';
-import { AsyncResource } from 'async_hooks';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';

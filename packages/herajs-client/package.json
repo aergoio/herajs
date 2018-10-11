@@ -10,7 +10,8 @@
     "dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-esm",
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
-    "build": "babel-node scripts/build.js"
+    "build": "babel-node scripts/build.js",
+    "docs": "cd docs && make"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "aergo": {
-    "version": "f39a849663114d40fcccc0f0a3faeb41bff18669"
+    "version": "32d37d55df72eb0a46f510b3225dbaff8b7ce65d"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
