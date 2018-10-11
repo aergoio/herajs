@@ -7,6 +7,7 @@ import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
 import { toHexString } from '../src/utils.js';
 import {createIdentity, signTransaction, hashTransaction} from 'herajs-crypto';
+import { AsyncResource } from 'async_hooks';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
@@ -97,6 +98,21 @@ describe('Aergo', () => {
                 });
             });
         }).timeout(5000);
+    });
+
+    describe('getBlockHeaders()', () => {
+        it('should get list of last block headers by block height', async () => {
+            const blockchainState = await aergo.blockchain();
+            const height = blockchainState.bestHeight;
+            const list = await aergo.getBlockHeaders(height);
+            assert.equal(list[0].hash, blockchainState.bestBlockHash);
+        });
+        it('should get list of last block headers by block hash', async () => {
+            const blockchainState = await aergo.blockchain();
+            const height = blockchainState.bestBlockHash;
+            const list = await aergo.getBlockHeaders(height);
+            assert.equal(list[0].header.blockno, blockchainState.bestHeight);
+        });
     });
 
     describe('getState()', () => {

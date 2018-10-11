@@ -125,6 +125,40 @@ class AergoClient {
         });
     }
 
+    /**
+     * Retrieve the last n blocks, beginning from given block .
+     * 
+     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
+     * @param {number} size number of blocks to return
+     * @returns {Promise<object[]>} list of block headers
+     */
+    getBlockHeaders (hashOrNumber, size = 10, offset = 0, desc = false) {
+        const params = new rpcTypes.ListParams();
+        if (typeof hashOrNumber === 'string') {
+            hashOrNumber = fromHexString(hashOrNumber);
+            if (hashOrNumber.length != 32) {
+                throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+            }
+            params.setHash(hashOrNumber);
+        } else
+        if (typeof hashOrNumber === 'number') {
+            params.setHeight(hashOrNumber);
+        } else {
+            throw new Error('Block hash or number required.');
+        }
+        params.setSize(size);
+        params.setOffset(offset);
+        params.setAsc(!desc);
+        return promisify(this.client.listBlockHeaders, this.client)(params).then(result => {
+            return result.getBlocksList().map(item => {
+                const obj = item.toObject();
+                obj.hash = toHexString(item.getHash_asU8());
+                obj.header.prevblockhash = toHexString(item.getHeader().getPrevblockhash_asU8());
+                return obj;
+            });
+        });
+    }
+
     getBlockStream () {
         const empty = new rpcTypes.Empty();
         const stream = this.client.listBlockStream(empty);
