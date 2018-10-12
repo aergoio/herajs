@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b3
+ * herajs v0.0.1-b4
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -7853,6 +7853,7 @@ var rpc_pb_5 = rpc_pb.TxList;
 var rpc_pb_6 = rpc_pb.TxBody;
 var rpc_pb_7 = rpc_pb.Tx;
 var rpc_pb_8 = rpc_pb.CommitStatus;
+var rpc_pb_9 = rpc_pb.ListParams;
 
 var typesNode = /*#__PURE__*/Object.freeze({
   default: rpc_pb,
@@ -7864,7 +7865,8 @@ var typesNode = /*#__PURE__*/Object.freeze({
   TxList: rpc_pb_5,
   TxBody: rpc_pb_6,
   Tx: rpc_pb_7,
-  CommitStatus: rpc_pb_8
+  CommitStatus: rpc_pb_8,
+  ListParams: rpc_pb_9
 });
 
 var blockchain_pb$1 = createCommonjsModule(function (module, exports) {
