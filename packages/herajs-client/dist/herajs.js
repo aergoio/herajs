@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b1
+ * herajs v0.0.1-b3
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -22441,44 +22441,6 @@
     return transaction;
   }
 
-  var CommitStatus = rpcTypes.CommitStatus;
-
-  var fromHexString = function fromHexString(hexString) {
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
-      return parseInt(byte, 16);
-    }));
-  };
-
-  var toHexString = function toHexString(bytes) {
-    return bytes.reduce(function (str, byte) {
-      return str + byte.toString(16).padStart(2, '0');
-    }, '');
-  };
-
-  var fromNumber = function fromNumber(d) {
-    if (d >= Math.pow(2, 64)) {
-      throw new Error('Number exeeds uint64 range');
-    }
-
-    var arr = new Uint8Array(8);
-
-    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
-      arr[i] = d / j & 0xff;
-    }
-
-    return arr;
-  };
-
-  var errorMessageForCode = function errorMessageForCode(code) {
-    var errorMessage = 'UNDEFINED_ERROR';
-
-    if (code && code < Object.values(CommitStatus).length) {
-      errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
-    }
-
-    return errorMessage;
-  };
-
   /**
    * Accounts controller.
    */
@@ -22684,6 +22646,52 @@
     return Accounts;
   }();
 
+  var CommitStatus = rpcTypes.CommitStatus;
+
+  var fromHexString = function fromHexString(hexString) {
+    return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
+      return parseInt(byte, 16);
+    }));
+  };
+
+  var toHexString = function toHexString(bytes) {
+    return bytes.reduce(function (str, byte) {
+      return str + byte.toString(16).padStart(2, '0');
+    }, '');
+  };
+
+  var fromNumber = function fromNumber(d) {
+    if (d >= Math.pow(2, 64)) {
+      throw new Error('Number exeeds uint64 range');
+    }
+
+    var arr = new Uint8Array(8);
+
+    for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
+      arr[i] = d / j & 0xff;
+    }
+
+    return arr;
+  };
+
+  var toBytesUint32 = function toBytesUint32(num) {
+    var arr = new ArrayBuffer(8);
+    var view = new DataView(arr);
+    view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
+
+    return arr;
+  };
+
+  var errorMessageForCode = function errorMessageForCode(code) {
+    var errorMessage = 'UNDEFINED_ERROR';
+
+    if (code && code < Object.values(CommitStatus).length) {
+      errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
+    }
+
+    return errorMessage;
+  };
+
   var kCustomPromisifiedSymbol = Symbol('util.promisify.custom');
   function promisify(original, context) {
     if (typeof context === 'undefined') {
@@ -22856,6 +22864,48 @@
           return obj;
         });
       }
+      /**
+       * Retrieve the last n blocks, beginning from given block .
+       * 
+       * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
+       * @param {number} size number of blocks to return
+       * @returns {Promise<object[]>} list of block headers
+       */
+
+    }, {
+      key: "getBlockHeaders",
+      value: function getBlockHeaders(hashOrNumber) {
+        var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+        var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var desc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+        var params = new rpcTypes.ListParams();
+
+        if (typeof hashOrNumber === 'string') {
+          hashOrNumber = fromHexString(hashOrNumber);
+
+          if (hashOrNumber.length != 32) {
+            throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+          }
+
+          params.setHash(hashOrNumber);
+        } else if (typeof hashOrNumber === 'number') {
+          params.setHeight(hashOrNumber);
+        } else {
+          throw new Error('Block hash or number required.');
+        }
+
+        params.setSize(size);
+        params.setOffset(offset);
+        params.setAsc(!desc);
+        return promisify(this.client.listBlockHeaders, this.client)(params).then(function (result) {
+          return result.getBlocksList().map(function (item) {
+            var obj = item.toObject();
+            obj.hash = toHexString(item.getHash_asU8());
+            obj.header.prevblockhash = toHexString(item.getHeader().getPrevblockhash_asU8());
+            return obj;
+          });
+        });
+      }
     }, {
       key: "getBlockStream",
       value: function getBlockStream() {
@@ -22931,6 +22981,15 @@
               resolve(result.getResultsList()[0].getHash_asB64());
             }
           });
+        });
+      }
+    }, {
+      key: "getVoteResult",
+      value: function getVoteResult(count) {
+        var singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
+        return promisify(this.client.getVotes, this.client)(singleBytes).then(function (state) {
+          return state.getVotesList();
         });
       }
     }, {
