@@ -298,6 +298,9 @@ export class State extends jspb.Message {
   getStorageroot_asB64(): string;
   setStorageroot(value: Uint8Array | string): void;
 
+  getSqlrecoverypoint(): number;
+  setSqlrecoverypoint(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): State.AsObject;
   static toObject(includeInstance: boolean, msg: State): State.AsObject;
@@ -314,6 +317,7 @@ export namespace State {
     balance: number,
     codehash: Uint8Array | string,
     storageroot: Uint8Array | string,
+    sqlrecoverypoint: number,
   }
 }
 

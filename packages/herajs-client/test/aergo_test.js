@@ -104,11 +104,13 @@ describe('Aergo', () => {
             const height = blockchainState.bestHeight;
             const list = await aergo.getBlockHeaders(height);
             assert.equal(list[0].hash, blockchainState.bestBlockHash);
+            const listAsc = await aergo.getBlockHeaders(height, 10, 0, false);
+            assert.equal(listAsc[listAsc.length - 1].hash, blockchainState.bestBlockHash);
         });
         it('should get list of last block headers by block hash', async () => {
             const blockchainState = await aergo.blockchain();
-            const height = blockchainState.bestBlockHash;
-            const list = await aergo.getBlockHeaders(height);
+            const hash = blockchainState.bestBlockHash;
+            const list = await aergo.getBlockHeaders(hash);
             assert.equal(list[0].header.blockno, blockchainState.bestHeight);
         });
     });

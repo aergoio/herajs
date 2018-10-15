@@ -132,7 +132,7 @@ class AergoClient {
      * @param {number} size number of blocks to return
      * @returns {Promise<object[]>} list of block headers
      */
-    getBlockHeaders (hashOrNumber, size = 10, offset = 0, desc = false) {
+    getBlockHeaders (hashOrNumber, size = 10, offset = 0, desc = true) {
         const params = new rpcTypes.ListParams();
         if (typeof hashOrNumber === 'string') {
             hashOrNumber = fromHexString(hashOrNumber);

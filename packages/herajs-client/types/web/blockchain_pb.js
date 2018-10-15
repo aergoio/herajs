@@ -2179,7 +2179,8 @@ proto.types.State.toObject = function(includeInstance, msg) {
     nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
     balance: jspb.Message.getFieldWithDefault(msg, 2, 0),
     codehash: msg.getCodehash_asB64(),
-    storageroot: msg.getStorageroot_asB64()
+    storageroot: msg.getStorageroot_asB64(),
+    sqlrecoverypoint: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -2231,6 +2232,10 @@ proto.types.State.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setStorageroot(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setSqlrecoverypoint(value);
       break;
     default:
       reader.skipField();
@@ -2286,6 +2291,13 @@ proto.types.State.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       4,
+      f
+    );
+  }
+  f = message.getSqlrecoverypoint();
+  if (f !== 0) {
+    writer.writeUint64(
+      5,
       f
     );
   }
@@ -2397,6 +2409,21 @@ proto.types.State.prototype.getStorageroot_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.State.prototype.setStorageroot = function(value) {
   jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * optional uint64 sqlRecoveryPoint = 5;
+ * @return {number}
+ */
+proto.types.State.prototype.getSqlrecoverypoint = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.types.State.prototype.setSqlrecoverypoint = function(value) {
+  jspb.Message.setField(this, 5, value);
 };
 
 
