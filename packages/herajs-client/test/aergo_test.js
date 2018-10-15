@@ -89,6 +89,7 @@ describe('Aergo', () => {
                 let countBlocks = 3;
                 const stream = aergo.getBlockStream().on('data', (blockHeader) => {
                     countBlocks -= 1;
+                    //assert.isTrue(blockHeader.hasOwnProperty('hash'));
                     if (countBlocks == 0) {
                         stream.cancel();
                         resolve();
@@ -182,7 +183,7 @@ describe('Aergo', () => {
             const result = await aergo.getBlock(blockhash);
             const txs = result.body.txsList.filter(tx => tx.hash === txhash);
             assert.equal(txs.length, 1);
-            assert.equal(txs[0].body.amount, 13371337);
+            assert.equal(txs[0].amount, 13371337);
         });
     });
 
@@ -222,7 +223,7 @@ describe('Aergo', () => {
                 payload: '',
             };
             tx.sign = await signTransaction(tx, identity.keyPair);
-            tx.hash = await hashTransaction(tx);
+            tx.hash = await hashTransaction(tx, 'bytes');
 
             return aergo.sendSignedTransaction(tx)
                 .then((txhash) => {

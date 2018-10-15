@@ -8,7 +8,6 @@ import AergoClient from '../src';
 
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
-    const transactionHashLength = 44;
     let testAddress = 'INVALIDADDRESS';
     beforeEach(async ()=>{
         const created = await aergo.accounts.create('testpass');
@@ -67,7 +66,6 @@ describe('Aergo.Accounts', () => {
             return aergo.accounts.sendTransaction(testtx)
                 .then((txhash) => {
                     assert.typeOf(txhash, 'string');
-                    assert.equal(txhash.length, transactionHashLength);
                 });
         });
     });
@@ -109,7 +107,6 @@ describe('Aergo.Accounts', () => {
             const tx = await aergo.accounts.signTransaction(testtx);
             const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
-            assert.equal(txhash.length, transactionHashLength);
 
             // Tx can be retrieved again from mempool
             const tx2 = await aergo.getTransaction(tx.hash);
@@ -137,7 +134,7 @@ describe('Aergo.Accounts', () => {
                 promises.push(new Promise((resolve, reject) => {
                     aergo.accounts.signTransaction(testtx).then((signedtx) => {
                         aergo.sendSignedTransaction(signedtx).then((txhash) => {
-                            assert.equal(txhash.length, transactionHashLength);
+                            assert.typeOf(txhash, 'string');
                             resolve();
                         }).catch(reject);
                     }).catch(reject);

@@ -1,5 +1,6 @@
 import rpcTypes from '../client/types.js';
 import { encodeAddress, decodeAddress } from '../accounts/utils.js';
+import bs58 from 'bs58';
 
 /*
 tansaction = {
@@ -13,6 +14,14 @@ tansaction = {
     type : int
 }
 */
+
+export function encodeTxHash(bytes) {
+    return bs58.encode(bytes);
+}
+
+export function decodeTxHash(bs58string) {
+    return bs58.decode(bs58string);
+}
 
 export function transactionToTx(tx) {
     const msgtxbody = new rpcTypes.TxBody();
@@ -32,7 +41,11 @@ export function transactionToTx(tx) {
     const msgtx = new rpcTypes.Tx();
 
     if (tx.hash != null) {
-        msgtx.setHash(tx.hash);
+        let hash = tx.hash;
+        if (typeof hash === 'string') {
+            hash = decodeTxHash(hash);
+        }
+        msgtx.setHash(Buffer.from(hash));
     }
     msgtx.setBody(msgtxbody);
 
@@ -41,7 +54,7 @@ export function transactionToTx(tx) {
 
 export function txToTransaction(tx) {
     const transaction = {};
-    transaction.hash = tx.getHash_asB64();
+    transaction.hash = encodeTxHash(tx.getHash());
     transaction.nonce = tx.getBody().getNonce();
     transaction.from = encodeAddress(tx.getBody().getAccount_asU8());
     transaction.to = encodeAddress(tx.getBody().getRecipient_asU8());

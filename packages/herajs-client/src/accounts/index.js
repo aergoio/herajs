@@ -1,5 +1,5 @@
 import { Personal, Empty, Account, TxBody, Tx } from '../../types/rpc_pb.js';
-import { txToTransaction } from '../transactions/utils.js';
+import { txToTransaction, encodeTxHash } from '../transactions/utils.js';
 import { encodeAddress, decodeAddress } from './utils.js';
 
 /**
@@ -139,7 +139,7 @@ class Accounts {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.getHash_asB64());
+                    resolve(encodeTxHash(result.getHash()));
                 }
             });
         });

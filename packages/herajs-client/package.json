@@ -58,5 +58,8 @@
     "rollup-plugin-typescript": "^0.8.1",
     "ts-protoc-gen": "^0.7.6",
     "uglify-js": "^3.4.5"
+  },
+  "dependencies": {
+    "bs58": "^4.0.1"
   }
 }

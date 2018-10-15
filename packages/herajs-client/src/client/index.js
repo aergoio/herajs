@@ -2,7 +2,7 @@ import Accounts from '../accounts';
 import rpcTypes from './types.js';
 import { fromHexString, toHexString, fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
-import { transactionToTx, txToTransaction } from '../transactions/utils.js';
+import { transactionToTx, txToTransaction, decodeTxHash, encodeTxHash } from '../transactions/utils.js';
 import { decodeAddress } from '../accounts/utils.js';
 
 
@@ -75,7 +75,7 @@ class AergoClient {
      */
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(txhash);
+        singleBytes.setValue(decodeTxHash(txhash));
         return new Promise((resolve, reject) => {
             this.client.getBlockTX(singleBytes, (err, result) => {
                 if (err) {
@@ -121,6 +121,7 @@ class AergoClient {
             const obj = result.toObject();
             obj.hash = toHexString(result.getHash_asU8());
             obj.header.prevblockhash = toHexString(result.getHeader().getPrevblockhash_asU8());
+            obj.body.txsList = result.getBody().getTxsList().map(tx => txToTransaction(tx));
             return obj;
         });
     }
@@ -213,7 +214,7 @@ class AergoClient {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.getResultsList()[0].getHash_asB64());
+                    resolve(encodeTxHash(result.getResultsList()[0].getHash()));
                 }
             });
         });
