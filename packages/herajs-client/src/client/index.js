@@ -2,8 +2,10 @@ import Accounts from '../accounts';
 import rpcTypes from './types.js';
 import { fromHexString, toHexString, fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
-import { transactionToTx, txToTransaction, decodeTxHash, encodeTxHash } from '../transactions/utils.js';
+import { decodeTxHash, encodeTxHash } from '../transactions/utils.js';
 import { decodeAddress } from '../accounts/utils.js';
+import Tx from '../models/tx';
+import Block from '../models/block';
 
 
 const CommitStatus = rpcTypes.CommitStatus;
@@ -63,7 +65,7 @@ class AergoClient {
         const empty = new rpcTypes.Empty();
         return promisify(this.client.blockchain, this.client)(empty).then(result => ({
             ...result.toObject(),
-            bestBlockHash: toHexString(result.getBestBlockHash_asU8())
+            bestBlockHash: Block.encodeHash(result.getBestBlockHash_asU8())
         }));
     }
 
@@ -71,7 +73,7 @@ class AergoClient {
      * Get transaction information in the aergo node. 
      * If transaction is in the block return result with block hash and index.
      * @param {string} txhash transaction hash
-     * @returns {Promise<object>} transaction details
+     * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
@@ -84,15 +86,17 @@ class AergoClient {
                             reject(err);
                         } else {
                             const res = {};
-                            res.tx = txToTransaction(result);
+                            res.tx = Tx.fromGrpc(result);
                             resolve(res);
                         }
                     });
                 } else {
                     const res = {};
-                    res.block = result.getTxidx().toObject();
-                    res.block.hash = toHexString(result.getTxidx().getBlockhash_asU8());
-                    res.tx = txToTransaction(result.getTx());
+                    res.block = {
+                        hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
+                        idx: result.getTxidx().getIdx()
+                    };
+                    res.tx = Tx.fromGrpc(result.getTx());
                     resolve(res);
                 }
             });
@@ -102,14 +106,14 @@ class AergoClient {
     /**
      * Retrieve information about a block.
      * 
-     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
-     * @returns {Promise<object>} block details
+     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
+     * @returns {Promise<Block>} block details
      */
     getBlock (hashOrNumber) {
         if (typeof hashOrNumber === 'string') {
-            hashOrNumber = fromHexString(hashOrNumber);
+            hashOrNumber = Block.decodeHash(hashOrNumber);
             if (hashOrNumber.length != 32) {
-                throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+                throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
         } else
         if (typeof hashOrNumber === 'number') {
@@ -117,28 +121,22 @@ class AergoClient {
         }
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(hashOrNumber);
-        return promisify(this.client.getBlock, this.client)(singleBytes).then(result => {
-            const obj = result.toObject();
-            obj.hash = toHexString(result.getHash_asU8());
-            obj.header.prevblockhash = toHexString(result.getHeader().getPrevblockhash_asU8());
-            obj.body.txsList = result.getBody().getTxsList().map(tx => txToTransaction(tx));
-            return obj;
-        });
+        return promisify(this.client.getBlock, this.client)(singleBytes).then(result => Block.fromGrpc(result));
     }
 
     /**
      * Retrieve the last n blocks, beginning from given block .
      * 
-     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a hex string or block height as a number.
+     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @param {number} size number of blocks to return
-     * @returns {Promise<object[]>} list of block headers
+     * @returns {Promise<Block[]>} list of block headers (blocks without body)
      */
     getBlockHeaders (hashOrNumber, size = 10, offset = 0, desc = true) {
         const params = new rpcTypes.ListParams();
         if (typeof hashOrNumber === 'string') {
-            hashOrNumber = fromHexString(hashOrNumber);
+            hashOrNumber = Block.decodeHash(hashOrNumber);
             if (hashOrNumber.length != 32) {
-                throw new Error('Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+                throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
             params.setHash(hashOrNumber);
         } else
@@ -151,12 +149,7 @@ class AergoClient {
         params.setOffset(offset);
         params.setAsc(!desc);
         return promisify(this.client.listBlockHeaders, this.client)(params).then(result => {
-            return result.getBlocksList().map(item => {
-                const obj = item.toObject();
-                obj.hash = toHexString(item.getHash_asU8());
-                obj.header.prevblockhash = toHexString(item.getHeader().getPrevblockhash_asU8());
-                return obj;
-            });
+            return result.getBlocksList().map(item => Block.fromGrpc(item));
         });
     }
 
@@ -172,7 +165,11 @@ class AergoClient {
         } catch (e) {
             // ignore. 'error' does not work on grpc-web implementation
         }
-        return stream;
+        return {
+            _stream: stream,
+            on: (ev, callback) => stream.on(ev, data => callback(Block.fromGrpc(data))),
+            cancel: () => stream.cancel()
+        };
     }
     
     /**
@@ -193,18 +190,21 @@ class AergoClient {
     }
 
     verifyTransaction (tx) {
-        return promisify(this.client.verifyTX, this.client)(transactionToTx(tx));
+        return promisify(this.client.verifyTX, this.client)(grpcObject => Tx.fromGrpc(grpcObject));
     }
 
     /**
      * Send a signed transaction to the network.
-     * @param {Transaction} tx signed transaction
+     * @param {Tx} tx signed transaction
      * @returns {Promise<string>} transaction hash
      */
     sendSignedTransaction (tx) {
         return new Promise((resolve, reject) => {
             const txs = new rpcTypes.TxList();
-            txs.addTxs(transactionToTx(tx), 0);
+            if (!(tx instanceof Tx)) {
+                tx = new Tx(tx);
+            }
+            txs.addTxs(tx.toGrpc(), 0);
             this.client.commitTX(txs, (err, result) => {
                 if (err == null && result.getResultsList()[0].getError()) {
                     err = new Error();

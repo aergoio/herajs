@@ -5,6 +5,7 @@ Run this with
 */
 /* eslint no-console: 0 */
 import { performance, PerformanceObserver } from 'perf_hooks';
+import RateLimit from 'async-sema/rate-limit';
 
 const numberOfTx = 10000;
 
@@ -17,14 +18,19 @@ const obs = new PerformanceObserver((items) => {
 });
 obs.observe({ entryTypes: ['measure'] });
 
-function asyncMap(items, fn, concurrencyLimit) {
+function asyncMap(items, fn, concurrencyLimit, rateLimit = 20) {
+    const lim = RateLimit(rateLimit); // rps
+
     return Promise.all(items.reduce((promises, item, index) => {
         const chainNum = index % concurrencyLimit;
         let chain = promises[chainNum];
         if (!chain) {
             chain = promises[chainNum] = Promise.resolve();
         }
-        promises[chainNum] = chain.then(async _ => await fn(item));
+        promises[chainNum] = chain.then(async _ => {
+            await lim();
+            return await fn(item);
+        });
         return promises;
     }, []));
 }
@@ -33,7 +39,7 @@ export async function main(aergo) {
     function pollTxStatus(hash) {
         return aergo.getTransaction(hash).then((result) => {
             if ('block' in result) {
-                return result.block.getBlockhash_asB64();
+                return result.block.hash;
             } else {
                 return pollTxStatus(hash);
             }
@@ -71,7 +77,8 @@ export async function main(aergo) {
     await asyncMap(signedTransactions, async item => 
         await aergo.sendSignedTransaction(item).then((txid) => {
             item.id = txid;
-        }), 50);
+            console.log(`Sent ${txid}`);
+        }), 10);
 
     performance.mark('C');
 

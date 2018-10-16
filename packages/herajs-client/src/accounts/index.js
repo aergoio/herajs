@@ -1,6 +1,8 @@
-import { Personal, Empty, Account, TxBody, Tx } from '../../types/rpc_pb.js';
-import { txToTransaction, encodeTxHash } from '../transactions/utils.js';
+import { Personal, Empty, Account, } from '../../types/rpc_pb.js';
+import Tx from '../models/tx';
+import { encodeTxHash } from '../transactions/utils';
 import { encodeAddress, decodeAddress } from './utils.js';
+import promisify from '../promisify.js';
 
 /**
  * Accounts controller.
@@ -120,57 +122,26 @@ class Accounts {
     /**
      * Convenience method to send transaction from account.
      * This method automatically retrieves the nonce, signs the transaction, and sends it to the network.
-     * @param {object} tx transaction data
+     * @param {Tx} tx transaction data
      * @returns {Promise<string>} transaction hash
      */
     sendTransaction (tx) {
-        return new Promise((resolve, reject) => {
-            const msgtxbody = new TxBody();
-            msgtxbody.setAccount(decodeAddress(tx.from));
-            msgtxbody.setRecipient(decodeAddress(tx.to));
-            msgtxbody.setAmount(tx.amount);
-            msgtxbody.setPayload(tx.payload);
-            msgtxbody.setType(tx.type);
-
-            const msgtx = new Tx();
-            msgtx.setBody(msgtxbody);
-
-            this.client.sendTX(msgtx, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(encodeTxHash(result.getHash()));
-                }
-            });
-        });
+        if (!(tx instanceof Tx)) {
+            tx = new Tx(tx);
+        }
+        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then(result => encodeTxHash(result.getHash()));
     }
 
     /**
      * Sign transaction.
-     * @param {object} tx transaction data
-     * @returns {Promise<object>} transaction data including signature
+     * @param {Tx} tx transaction data
+     * @returns {Promise<Tx>} transaction data including signature
      */
     signTransaction (tx) {
-        return new Promise((resolve, reject) => {
-            const msgtxbody = new TxBody();
-            msgtxbody.setNonce(tx.nonce);
-            msgtxbody.setAccount(decodeAddress(tx.from));
-            msgtxbody.setRecipient(decodeAddress(tx.to));
-            msgtxbody.setAmount(tx.amount);
-            msgtxbody.setPayload(tx.payload);
-            msgtxbody.setType(tx.type);
-
-            const msgtx = new Tx();
-            msgtx.setBody(msgtxbody);
-
-            this.client.signTX(msgtx, (err, signedtx) => {
-                if (err == null) {
-                    resolve(txToTransaction(signedtx));
-                } else {
-                    reject(err);
-                }
-            });
-        });
+        if (!(tx instanceof Tx)) {
+            tx = new Tx(tx);
+        }
+        return promisify(this.client.signTX, this.client)(tx.toGrpc()).then(signedtx => Tx.fromGrpc(signedtx));
     }
 }
 

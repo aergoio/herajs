@@ -68,7 +68,7 @@ describe('Aergo', () => {
         it('should throw error when hash invalid', () => {
             assert.throws(() => {
                 aergo.getBlock('111');
-            }, Error, 'Invalid block hash. Must be 32 byte encoded in hex. Did you mean to pass a block number?');
+            }, Error, 'Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
         });
         it('should throw error when block not found', async () => {
             return assert.isRejected(
@@ -89,7 +89,7 @@ describe('Aergo', () => {
                 let countBlocks = 3;
                 const stream = aergo.getBlockStream().on('data', (blockHeader) => {
                     countBlocks -= 1;
-                    //assert.isTrue(blockHeader.hasOwnProperty('hash'));
+                    assert.isTrue(blockHeader.hasOwnProperty('hash'));
                     if (countBlocks == 0) {
                         stream.cancel();
                         resolve();
