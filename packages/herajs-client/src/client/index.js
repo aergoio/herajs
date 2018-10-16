@@ -120,7 +120,7 @@ class AergoClient {
             hashOrNumber = fromNumber(hashOrNumber);
         }
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(hashOrNumber);
+        singleBytes.setValue(Buffer.from(hashOrNumber));
         return promisify(this.client.getBlock, this.client)(singleBytes).then(result => Block.fromGrpc(result));
     }
 
@@ -138,7 +138,7 @@ class AergoClient {
             if (hashOrNumber.length != 32) {
                 throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
-            params.setHash(hashOrNumber);
+            params.setHash(Buffer.from(hashOrNumber));
         } else
         if (typeof hashOrNumber === 'number') {
             params.setHeight(hashOrNumber);
