@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b6
+ * herajs v0.0.1-b7
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -23060,7 +23060,7 @@
         }
 
         var singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(hashOrNumber);
+        singleBytes.setValue(Buffer.from(hashOrNumber));
         return promisify(this.client.getBlock, this.client)(singleBytes).then(function (result) {
           return Block.fromGrpc(result);
         });
@@ -23088,7 +23088,7 @@
             throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
           }
 
-          params.setHash(hashOrNumber);
+          params.setHash(Buffer.from(hashOrNumber));
         } else if (typeof hashOrNumber === 'number') {
           params.setHeight(hashOrNumber);
         } else {
