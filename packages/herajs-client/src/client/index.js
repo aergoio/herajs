@@ -1,9 +1,9 @@
 import Accounts from '../accounts';
 import rpcTypes from './types.js';
-import { fromHexString, toHexString, fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
+import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils.js';
-import { decodeAddress } from '../accounts/utils.js';
+import { encodeAddress, decodeAddress } from '../accounts/utils.js';
 import Tx from '../models/tx';
 import Block from '../models/block';
 
@@ -77,7 +77,7 @@ class AergoClient {
      */
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeTxHash(txhash));
+        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
             this.client.getBlockTX(singleBytes, (err, result) => {
                 if (err) {
@@ -110,14 +110,17 @@ class AergoClient {
      * @returns {Promise<Block>} block details
      */
     getBlock (hashOrNumber) {
+        if (typeof hashOrNumber === 'undefined') {
+            throw new Error('Missing argument block hash or number');
+        }
         if (typeof hashOrNumber === 'string') {
             hashOrNumber = Block.decodeHash(hashOrNumber);
-            if (hashOrNumber.length != 32) {
-                throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-            }
         } else
         if (typeof hashOrNumber === 'number') {
             hashOrNumber = fromNumber(hashOrNumber);
+        }
+        if (hashOrNumber.length != 32 && hashOrNumber.length != 8) {
+            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
         }
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Buffer.from(hashOrNumber));
@@ -189,8 +192,9 @@ class AergoClient {
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
-    verifyTransaction (tx) {
-        return promisify(this.client.verifyTX, this.client)(grpcObject => Tx.fromGrpc(grpcObject));
+    verifyTransaction (/*tx*/) {
+        // Untested
+        return promisify(this.client.verifyTX, this.client)()(grpcObject => Tx.fromGrpc(grpcObject));
     }
 
     /**
@@ -223,12 +227,58 @@ class AergoClient {
     getVoteResult(count) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
-        return promisify(this.client.getVotes, this.client)(singleBytes)
-            .then(state => state.getVotesList());
+        return promisify(this.client.getVotes, this.client)(singleBytes).then(state => state.getVotesList());
     }
 
-    getTransactionReceipt (hash, callback) { // eslint-disable-line
-        return true;
+    getTransactionReceipt (txhash) {
+        const singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
+        return promisify(this.client.getReceipt, this.client)(singleBytes).then(grpcObject => {
+            const obj = grpcObject.toObject();
+            return {
+                contractaddress: encodeAddress(grpcObject.getContractaddress_asU8()),
+                result: obj.ret, //JSON.parse(obj.ret),
+                status: obj.status
+            };
+        });
+    }
+
+    /**
+     * Query contract state
+     * @param {string} address of contract
+     * @param {obj} queryInfo object with {Name: '', Args: [...]}
+     * @returns {Promise<Uint8Array>} result of query
+     */
+    queryContract (address, queryInfo) {
+        const query = new rpcTypes.Query();
+        query.setContractaddress(decodeAddress(address));
+        query.setQueryinfo(Buffer.from(JSON.stringify(queryInfo)));
+        return promisify(this.client.queryContract, this.client)(query).then(
+            grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
+        );
+    }
+
+    /**
+     * Query contract state
+     * @param {string} address of contract
+     * @returns {Promise<object>} abi
+     */
+    getABI (address) {
+        const singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
+        return promisify(this.client.getABI, this.client)(singleBytes).then(
+            grpcObject => {
+                const obj = grpcObject.toObject();
+                return {
+                    language: obj.language,
+                    version: obj.version,
+                    functions: obj.functionsList.map(item => ({
+                        name: item.name,
+                        arguments: item.argumentsList
+                    }))
+                };
+            }
+        );
     }
 }
 

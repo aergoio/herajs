@@ -5,11 +5,11 @@ const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map
 
 const toHexString = bytes => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
 
-const fromNumber = (d) => {
-    if (d >= Math.pow(2, 64)) {
-        throw new Error('Number exeeds uint64 range');
+const fromNumber = (d, length = 8) => {
+    if (d >= Math.pow(2, length*8)) {
+        throw new Error('Number exeeds range');
     }
-    const arr = new Uint8Array(8);
+    const arr = new Uint8Array(length);
     for (let i=0, j=1; i<8; i++, j *= 0x100) {
         arr[i] = (d / j) & 0xff;
     }
@@ -31,10 +31,39 @@ const errorMessageForCode = (code) => {
     return errorMessage;
 };
 
+const waitFor = (ms) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};
+const basicCheck = (result) => result instanceof Error === false;
+const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
+    // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
+    return new Promise(async (resolve, reject) => {
+        const started = + new Date();
+        let lastError = '';
+        try {
+            const result = await func();
+            if (!check(result)) throw new Error('Condition not satisfied');
+            return resolve(result);
+        } catch(e) {
+            lastError = e;
+        }
+        const timePassed = new Date() - started;
+        timeout -= timePassed;
+        if (timeout < 0) {
+            return reject(new Error('Long polling timed out. ' + lastError));
+        }
+        await waitFor(wait); // give some breathing time
+        resolve(await longPolling(func, check, timeout - wait, wait)); 
+    });
+};
+
 export {
     fromHexString,
     toHexString,
     fromNumber,
     toBytesUint32,
-    errorMessageForCode
+    errorMessageForCode,
+    longPolling
 };

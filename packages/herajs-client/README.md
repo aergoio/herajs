@@ -3,7 +3,7 @@
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
 
 Tested with aergo server version
-[140c475f29b933c9467abe9c42fd2ecab69a75ad](https://github.com/aergoio/aergo/tree/140c475f29b933c9467abe9c42fd2ecab69a75ad)
+[f70136024f0e42d04b21b810c081174dff4049ba](https://github.com/aergoio/aergo/tree/f70136024f0e42d04b21b810c081174dff4049ba)
 
 [Documentation](https://herajs.readthedocs.io/)
 

@@ -24,10 +24,12 @@ export default class Tx {
         const msgtxbody = new rpcTypes.TxBody();
         msgtxbody.setNonce(this.nonce);
         msgtxbody.setAccount(decodeAddress(this.from));
-        msgtxbody.setRecipient(decodeAddress(this.to));
+        if (typeof this.to !== 'undefined' && this.to !== null) {
+            msgtxbody.setRecipient(decodeAddress(this.to));
+        }
         msgtxbody.setAmount(this.amount);
         if (this.payload != null) {
-            msgtxbody.setPayload(this.payload);
+            msgtxbody.setPayload(Buffer.from(this.payload));
         }
         if (typeof this.sign === 'string') {
             msgtxbody.setSign(Buffer.from(this.sign, 'base64'));
