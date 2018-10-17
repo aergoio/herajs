@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b7
+ * herajs v0.0.1-b8
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -12,6 +12,42 @@
   http = http && http.hasOwnProperty('default') ? http['default'] : http;
   https = https && https.hasOwnProperty('default') ? https['default'] : https;
   url = url && url.hasOwnProperty('default') ? url['default'] : url;
+
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -15787,7 +15823,26 @@
   var rpcTypes = platformWeb ? typesWeb : typesNode;
 
   var ADDRESS_PREFIXES = {
-    ACCOUNT: 0x42
+    ACCOUNT: 0x42,
+    CONTRACT: 0xC0
+  };
+  var UNITS = {
+    NATIVE_TOKEN: {
+      baseLabel: 'Aergo',
+      baseLabelShort: 'ARG',
+      baseDigits: 9,
+      subUnits: [{
+        e: 0,
+        label: 'aer'
+      }, {
+        e: 9,
+        label: 'ARG'
+      }]
+    }
+  };
+  var constants = {
+    ADDRESS_PREFIXES: ADDRESS_PREFIXES,
+    UNITS: UNITS
   };
 
   var inherits_browser = createCommonjsModule(function (module) {
@@ -22588,11 +22643,15 @@
         var msgtxbody = new rpcTypes.TxBody();
         msgtxbody.setNonce(this.nonce);
         msgtxbody.setAccount(decodeAddress(this.from));
-        msgtxbody.setRecipient(decodeAddress(this.to));
+
+        if (typeof this.to !== 'undefined' && this.to !== null) {
+          msgtxbody.setRecipient(decodeAddress(this.to));
+        }
+
         msgtxbody.setAmount(this.amount);
 
         if (this.payload != null) {
-          msgtxbody.setPayload(this.payload);
+          msgtxbody.setPayload(Buffer.from(this.payload));
         }
 
         if (typeof this.sign === 'string') {
@@ -22853,11 +22912,13 @@
   var CommitStatus = rpcTypes.CommitStatus;
 
   var fromNumber = function fromNumber(d) {
-    if (d >= Math.pow(2, 64)) {
-      throw new Error('Number exeeds uint64 range');
+    var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+
+    if (d >= Math.pow(2, length * 8)) {
+      throw new Error('Number exeeds range');
     }
 
-    var arr = new Uint8Array(8);
+    var arr = new Uint8Array(length);
 
     for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
       arr[i] = d / j & 0xff;
@@ -22883,6 +22944,118 @@
 
     return errorMessage;
   };
+
+  var waitFor = function waitFor(ms) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  };
+
+  var basicCheck = function basicCheck(result) {
+    return result instanceof Error === false;
+  };
+
+  var longPolling =
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee2(func) {
+      var check,
+          timeout,
+          wait,
+          _args2 = arguments;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              check = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : basicCheck;
+              timeout = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : 10000;
+              wait = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : 250;
+              return _context2.abrupt("return", new Promise(
+              /*#__PURE__*/
+              function () {
+                var _ref2 = _asyncToGenerator(
+                /*#__PURE__*/
+                regeneratorRuntime.mark(function _callee(resolve, reject) {
+                  var started, lastError, result, timePassed;
+                  return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          started = +new Date();
+                          lastError = '';
+                          _context.prev = 2;
+                          _context.next = 5;
+                          return func();
+
+                        case 5:
+                          result = _context.sent;
+
+                          if (check(result)) {
+                            _context.next = 8;
+                            break;
+                          }
+
+                          throw new Error('Condition not satisfied');
+
+                        case 8:
+                          return _context.abrupt("return", resolve(result));
+
+                        case 11:
+                          _context.prev = 11;
+                          _context.t0 = _context["catch"](2);
+                          lastError = _context.t0;
+
+                        case 14:
+                          timePassed = new Date() - started;
+                          timeout -= timePassed;
+
+                          if (!(timeout < 0)) {
+                            _context.next = 18;
+                            break;
+                          }
+
+                          return _context.abrupt("return", reject(new Error('Long polling timed out. ' + lastError)));
+
+                        case 18:
+                          _context.next = 20;
+                          return waitFor(wait);
+
+                        case 20:
+                          _context.t1 = resolve;
+                          _context.next = 23;
+                          return longPolling(func, check, timeout - wait, wait);
+
+                        case 23:
+                          _context.t2 = _context.sent;
+                          (0, _context.t1)(_context.t2);
+
+                        case 25:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }
+                  }, _callee, this, [[2, 11]]);
+                }));
+
+                return function (_x2, _x3) {
+                  return _ref2.apply(this, arguments);
+                };
+              }()));
+
+            case 4:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    return function longPolling(_x) {
+      return _ref.apply(this, arguments);
+    };
+  }();
 
   var Block =
   /*#__PURE__*/
@@ -23014,7 +23187,7 @@
         var _this = this;
 
         var singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(decodeTxHash(txhash));
+        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
         return new Promise(function (resolve, reject) {
           _this.client.getBlockTX(singleBytes, function (err, result) {
             if (err) {
@@ -23049,14 +23222,18 @@
     }, {
       key: "getBlock",
       value: function getBlock(hashOrNumber) {
+        if (typeof hashOrNumber === 'undefined') {
+          throw new Error('Missing argument block hash or number');
+        }
+
         if (typeof hashOrNumber === 'string') {
           hashOrNumber = Block.decodeHash(hashOrNumber);
-
-          if (hashOrNumber.length != 32) {
-            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-          }
         } else if (typeof hashOrNumber === 'number') {
           hashOrNumber = fromNumber(hashOrNumber);
+        }
+
+        if (hashOrNumber.length != 32 && hashOrNumber.length != 8) {
+          throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
         }
 
         var singleBytes = new rpcTypes.SingleBytes();
@@ -23158,8 +23335,11 @@
       }
     }, {
       key: "verifyTransaction",
-      value: function verifyTransaction(tx) {
-        return promisify(this.client.verifyTX, this.client)(function (grpcObject) {
+      value: function verifyTransaction()
+      /*tx*/
+      {
+        // Untested
+        return promisify(this.client.verifyTX, this.client)()(function (grpcObject) {
           return Tx.fromGrpc(grpcObject);
         });
       }
@@ -23209,9 +23389,60 @@
       }
     }, {
       key: "getTransactionReceipt",
-      value: function getTransactionReceipt(hash, callback) {
-        // eslint-disable-line
-        return true;
+      value: function getTransactionReceipt(txhash) {
+        var singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
+        return promisify(this.client.getReceipt, this.client)(singleBytes).then(function (grpcObject) {
+          var obj = grpcObject.toObject();
+          return {
+            contractaddress: encodeAddress(grpcObject.getContractaddress_asU8()),
+            result: obj.ret,
+            //JSON.parse(obj.ret),
+            status: obj.status
+          };
+        });
+      }
+      /**
+       * Query contract state
+       * @param {string} address of contract
+       * @param {obj} queryInfo object with {Name: '', Args: [...]}
+       * @returns {Promise<Uint8Array>} result of query
+       */
+
+    }, {
+      key: "queryContract",
+      value: function queryContract(address, queryInfo) {
+        var query = new rpcTypes.Query();
+        query.setContractaddress(decodeAddress(address));
+        query.setQueryinfo(Buffer.from(JSON.stringify(queryInfo)));
+        return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
+          return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
+        });
+      }
+      /**
+       * Query contract state
+       * @param {string} address of contract
+       * @returns {Promise<object>} abi
+       */
+
+    }, {
+      key: "getABI",
+      value: function getABI(address) {
+        var singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Buffer.from(decodeAddress(address)));
+        return promisify(this.client.getABI, this.client)(singleBytes).then(function (grpcObject) {
+          var obj = grpcObject.toObject();
+          return {
+            language: obj.language,
+            version: obj.version,
+            functions: obj.functionsList.map(function (item) {
+              return {
+                name: item.name,
+                arguments: item.argumentsList
+              };
+            })
+          };
+        });
       }
     }]);
 
@@ -25620,6 +25851,7 @@
 
   exports.AergoClient = AergoClient;
   exports.GrpcWebProvider = GrpcWebProvider;
+  exports.constants = constants;
   exports.default = AergoClient;
 
   Object.defineProperty(exports, '__esModule', { value: true });
