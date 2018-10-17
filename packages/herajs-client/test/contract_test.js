@@ -8,12 +8,19 @@ import contractAbi from './fixtures/contract-inc.abi.json';
 import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
 
+/*
+
+contract.functions.inc() -> FunctionCall
+aergo.accounts.sendTransaction(FunctionCall.asTransaction({from: address}) -> Promise<Transaction>
+aergo.queryContract(FunctionCall) -> Promise<Result>
+*/
+
 describe('Contracts', () => {
     const aergo = new AergoClient();
     
     const contractCode = 'qMi8Via28nBssysny7p32qMqWC3NSvJRBAtNQ3p66bi5K2xjMU8NLQngrcQe3g1mPRz3n44wa7wKM17SgyMpRSkf3eEw3mzEYSS57FdSAUon7rbSpV56xYsdzuhUBVmGbe41gcPgy3rkf3DC5b7ZhWQJC1z3fQK3JAaGyzFhT7jbwSiufHm6X7c3anS9q2hdrNVzEJDAAMsXar9KsV5pQm57oa8bYE9tMtMmqQFD9tv3bTbTxCwxDwjGZ8t5cxz2ZemUfsuy6La43usHpgokQpSfcCWT4nurtBBfujBeBNRoMaaY3ghGvHLAt9gPBqstTN7Wyv4P4QtaPSvB69MBDZaVM9JHARhKUMZPcoL5p3dHvRuQNybqtKitndu4txRCgR9s4YuWyMCzqHvLwFXzbitc25rGo9bwogRsrKK76F6SLuvdKALZpBbCf9UwXnmGUrbfbRuQtn5qKhYDSDiemxAQ9nCCj1L99SxJnR3q2akSeqxULuKDxdtcTFDL';
 
-    describe('deployment', () => {
+    describe('deploy, call, query', () => {
         let contractAddress;
         let testAddress;
 
@@ -57,7 +64,7 @@ describe('Contracts', () => {
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
             // Call contract
-            const callTx = contract.inc({
+            const callTx = contract.inc().asTransaction({
                 from: testAddress
             });
             assert.equal(callTx.from, testAddress);
@@ -66,6 +73,16 @@ describe('Contracts', () => {
                 await aergo.getTransactionReceipt(calltxhash)
             );
             assert.equal(calltxreceipt.status, 'SUCCESS');
+
+            // Test missing from address
+            assert.throws(() => {
+                aergo.accounts.sendTransaction(contract.inc().asTransaction());
+            }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
+            assert.throws(() => {
+                aergo.accounts.sendTransaction(contract.inc().asTransaction({
+                    from: null
+                }));
+            }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
         });
 
         it('should query a smart contract', async () => {
@@ -73,11 +90,11 @@ describe('Contracts', () => {
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
             // Query contract
-            const result1 = await aergo.queryContract(contract.address, {Name: 'query', Args: ['key1']});
+            const result1 = await aergo.queryContract(contract.query('key1'));
             assert.equal(1, result1);
 
             // Call contract again
-            const callTx = contract.inc({
+            const callTx = contract.inc().asTransaction({
                 from: testAddress
             });
             const callTxHash = await aergo.accounts.sendTransaction(callTx);
@@ -87,7 +104,7 @@ describe('Contracts', () => {
             assert.equal(callTxReceipt.status, 'SUCCESS');
 
             // Query contract
-            const result2 = await aergo.queryContract(contract.address, {Name: 'query', Args: ['key1']});
+            const result2 = await aergo.queryContract(contract.query('key1'));
             assert.equal(2, result2);
         }).timeout(3000);
     });

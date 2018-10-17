@@ -52,6 +52,13 @@ describe('Aergo', () => {
         });
     });
 
+    describe('getPeers()', () => {
+        it('should get a list of peers', async () => {
+            const peers = await aergo.getPeers();
+            assert.isTrue(peers.hasOwnProperty('peersList'));
+        });
+    });
+
     describe('getBlock()', () => {
         it('should return block info by hash', (done) => {
             aergo.getBlock(bestBlockHash).then((response) => {

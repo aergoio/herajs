@@ -2,6 +2,36 @@ import { ADDRESS_PREFIXES } from '../constants.js';
 import bs58check from 'bs58check';
 import { fromNumber } from '../utils';
 
+class FunctionCall {
+    constructor(contractInstance, definition, args) {
+        this.definition = definition;
+        this.args = args;
+        this.contractInstance = contractInstance;
+    }
+    asTransaction(extraArgs) {
+        const payload = JSON.stringify({
+            Name: this.definition.name,
+            Args: this.args
+        });
+        if (!this.contractInstance.address) throw new Error('Set address of contract before creating transactions');
+        if (typeof extraArgs === 'undefined' || !extraArgs.from || extraArgs.from.length === 0) {
+            throw new Error('Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
+        }
+        return {
+            to: this.contractInstance.address,
+            amount: 0,
+            payload,
+            ...extraArgs
+        };
+    }
+    asQueryInfo() {
+        return {
+            Name: this.definition.name,
+            Args: this.args
+        };
+    }
+}
+
 export default class Contract {
     constructor(data) {
         this.functions = {};
@@ -44,19 +74,7 @@ export default class Contract {
     }
     loadAbi(abi) {
         for (const definition of abi.functions) {
-            this.functions[definition.name] = (txdata, ...args) => {
-                const payload = JSON.stringify({
-                    Name: definition.name,
-                    Args: args
-                });
-                const tx = {
-                    from: txdata.from,
-                    to: this.address,
-                    amount: 0,
-                    payload
-                };
-                return tx;
-            };
+            this.functions[definition.name] = (...args) => new FunctionCall(this, definition, args);
         }
         return this;
     }

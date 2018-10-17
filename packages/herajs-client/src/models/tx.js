@@ -23,6 +23,9 @@ export default class Tx {
     toGrpc() {
         const msgtxbody = new rpcTypes.TxBody();
         msgtxbody.setNonce(this.nonce);
+        if (typeof this.from === 'undefined' || !this.from) {
+            throw new Error('Missing required transaction parameter \'from\'');
+        }
         msgtxbody.setAccount(decodeAddress(this.from));
         if (typeof this.to !== 'undefined' && this.to !== null) {
             msgtxbody.setRecipient(decodeAddress(this.to));

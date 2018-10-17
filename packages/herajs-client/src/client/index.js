@@ -250,14 +250,13 @@ class AergoClient {
 
     /**
      * Query contract state
-     * @param {string} address of contract
-     * @param {obj} queryInfo object with {Name: '', Args: [...]}
+     * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
      */
-    queryContract (address, queryInfo) {
+    queryContract (functionCall) {
         const query = new rpcTypes.Query();
-        query.setContractaddress(decodeAddress(address));
-        query.setQueryinfo(Buffer.from(JSON.stringify(queryInfo)));
+        query.setContractaddress(decodeAddress(functionCall.contractInstance.address));
+        query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
         return promisify(this.client.queryContract, this.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
         );
@@ -284,6 +283,14 @@ class AergoClient {
                 };
             }
         );
+    }
+
+    /**
+     * Get list of peers
+     */
+    getPeers () {
+        const empty = new rpcTypes.Empty();
+        return promisify(this.client.getPeers, this.client)(empty).then(grpcObject => grpcObject.toObject());
     }
 }
 
