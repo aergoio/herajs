@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b8
+ * herajs v0.0.1-b10
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -15764,6 +15764,11 @@ function () {
     value: function toGrpc() {
       var msgtxbody = new rpcTypes.TxBody();
       msgtxbody.setNonce(this.nonce);
+
+      if (typeof this.from === 'undefined' || !this.from) {
+        throw new Error('Missing required transaction parameter \'from\'');
+      }
+
       msgtxbody.setAccount(decodeAddress(this.from));
 
       if (typeof this.to !== 'undefined' && this.to !== null) {
@@ -16509,6 +16514,12 @@ function () {
         return state.getVotesList();
       });
     }
+    /**
+     * Retrieve the transaction receipt for a transaction
+     * @param {string} txhash transaction hash
+     * @return {Promise<object>} transaction receipt
+     */
+
   }, {
     key: "getTransactionReceipt",
     value: function getTransactionReceipt(txhash) {
@@ -16526,23 +16537,22 @@ function () {
     }
     /**
      * Query contract state
-     * @param {string} address of contract
-     * @param {obj} queryInfo object with {Name: '', Args: [...]}
-     * @returns {Promise<Uint8Array>} result of query
+     * @param {FunctionCall} functionCall call details
+     * @returns {Promise<object>} result of query
      */
 
   }, {
     key: "queryContract",
-    value: function queryContract(address, queryInfo) {
+    value: function queryContract(functionCall) {
       var query = new rpcTypes.Query();
-      query.setContractaddress(decodeAddress(address));
-      query.setQueryinfo(Buffer.from(JSON.stringify(queryInfo)));
+      query.setContractaddress(decodeAddress(functionCall.contractInstance.address));
+      query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
       return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
         return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
       });
     }
     /**
-     * Query contract state
+     * Query contract ABI
      * @param {string} address of contract
      * @returns {Promise<object>} abi
      */
@@ -16564,6 +16574,18 @@ function () {
             };
           })
         };
+      });
+    }
+    /**
+     * Get list of peers
+     */
+
+  }, {
+    key: "getPeers",
+    value: function getPeers() {
+      var empty = new rpcTypes.Empty();
+      return promisify(this.client.getPeers, this.client)(empty).then(function (grpcObject) {
+        return grpcObject.toObject();
       });
     }
   }]);
