@@ -230,6 +230,11 @@ class AergoClient {
         return promisify(this.client.getVotes, this.client)(singleBytes).then(state => state.getVotesList());
     }
 
+    /**
+     * Retrieve the transaction receipt for a transaction
+     * @param {string} txhash transaction hash
+     * @return {Promise<object>} transaction receipt
+     */
     getTransactionReceipt (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
@@ -247,7 +252,7 @@ class AergoClient {
      * Query contract state
      * @param {string} address of contract
      * @param {obj} queryInfo object with {Name: '', Args: [...]}
-     * @returns {Promise<Uint8Array>} result of query
+     * @returns {Promise<object>} result of query
      */
     queryContract (address, queryInfo) {
         const query = new rpcTypes.Query();
@@ -259,7 +264,7 @@ class AergoClient {
     }
 
     /**
-     * Query contract state
+     * Query contract ABI
      * @param {string} address of contract
      * @returns {Promise<object>} abi
      */
