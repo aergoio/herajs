@@ -96,7 +96,7 @@ function genConfig (name) {
     const opts = builds[name];
 
     const namedExports = {
-        [resolve('types/rpc_pb.js')]: 'Empty, Personal, Account, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams'.split(', ')
+        [resolve('types/rpc_pb.js')]: 'Empty, Personal, Account, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query'.split(', ')
     };
 
     const config = {
