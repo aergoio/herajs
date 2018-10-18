@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b12
+ * herajs v0.0.1-b13
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -23427,7 +23427,7 @@
       key: "queryContract",
       value: function queryContract(functionCall) {
         var query = new rpcTypes.Query();
-        query.setContractaddress(decodeAddress(functionCall.contractInstance.address));
+        query.setContractaddress(Buffer.from(decodeAddress(functionCall.contractInstance.address)));
         query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
         return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
           return JSON.parse(Buffer.from(grpcObject.getValue()).toString());

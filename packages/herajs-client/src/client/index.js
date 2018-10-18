@@ -255,7 +255,7 @@ class AergoClient {
      */
     queryContract (functionCall) {
         const query = new rpcTypes.Query();
-        query.setContractaddress(decodeAddress(functionCall.contractInstance.address));
+        query.setContractaddress(Buffer.from(decodeAddress(functionCall.contractInstance.address)));
         query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
         return promisify(this.client.queryContract, this.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
