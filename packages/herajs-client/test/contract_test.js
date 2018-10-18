@@ -23,6 +23,7 @@ describe('Contracts', () => {
     describe('deploy, call, query', () => {
         let contractAddress;
         let testAddress;
+        let deployTxhash;
 
         it('should deploy a smart contract', async () => {
             testAddress = await aergo.accounts.create('test');
@@ -36,16 +37,21 @@ describe('Contracts', () => {
                 amount: 0,
                 payload: contract.asPayload(),
             };
-            const txhash = await aergo.accounts.sendTransaction(testtx);
-            assert.typeOf(txhash, 'string');
+            deployTxhash = await aergo.accounts.sendTransaction(testtx);
+            assert.typeOf(deployTxhash, 'string');
             
             // Wait for deployment receipt
             
             const receipt = await longPolling(async () => 
-                await aergo.getTransactionReceipt(txhash)
+                await aergo.getTransactionReceipt(deployTxhash)
             );
             assert.equal(receipt.status, 'CREATED');
             contractAddress = receipt.contractaddress;
+        });
+
+        it('should encode a null address to an empty string', async () => {
+            const txInfo = await aergo.getTransaction(deployTxhash);
+            assert.equal(txInfo.tx.to, '');
         });
 
         it('should get a smart contract\'s ABI', async () => {
