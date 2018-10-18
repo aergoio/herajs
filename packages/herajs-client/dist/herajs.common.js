@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b10
+ * herajs v0.0.1-b11
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -17190,6 +17190,171 @@ function (_Provider) {
   return GrpcProvider;
 }(Provider);
 
+var FunctionCall =
+/*#__PURE__*/
+function () {
+  function FunctionCall(contractInstance, definition, args) {
+    _classCallCheck(this, FunctionCall);
+
+    this.definition = definition;
+    this.args = args;
+    this.contractInstance = contractInstance;
+  }
+
+  _createClass(FunctionCall, [{
+    key: "asTransaction",
+    value: function asTransaction(extraArgs) {
+      var payload = JSON.stringify({
+        Name: this.definition.name,
+        Args: this.args
+      });
+      if (!this.contractInstance.address) throw new Error('Set address of contract before creating transactions');
+
+      if (typeof extraArgs === 'undefined' || !extraArgs.from || extraArgs.from.length === 0) {
+        throw new Error('Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
+      }
+
+      return _objectSpread({
+        to: this.contractInstance.address,
+        amount: 0,
+        payload: payload
+      }, extraArgs);
+    }
+  }, {
+    key: "asQueryInfo",
+    value: function asQueryInfo() {
+      return {
+        Name: this.definition.name,
+        Args: this.args
+      };
+    }
+  }]);
+
+  return FunctionCall;
+}();
+
+var Contract =
+/*#__PURE__*/
+function () {
+  function Contract(data) {
+    _classCallCheck(this, Contract);
+
+    this.functions = {};
+
+    for (var key in data) {
+      this[key] = data[key];
+    } // This class acts as a proxy that passes ABI method calls
+
+
+    return new Proxy(this, {
+      get: function get(obj, field) {
+        if (field in obj) return obj[field];
+        if (field in obj.functions) return obj.functions[field];
+        return undefined;
+      }
+    });
+  }
+
+  _createClass(Contract, [{
+    key: "setAddress",
+    value: function setAddress(address) {
+      this.address = address;
+      return this;
+    }
+  }, {
+    key: "loadAbi",
+    value: function loadAbi(abi) {
+      var _this = this;
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        var _loop = function _loop() {
+          var definition = _step.value;
+
+          _this.functions[definition.name] = function () {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
+            }
+
+            return new FunctionCall(_this, definition, args);
+          };
+        };
+
+        for (var _iterator = abi.functions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return this;
+    }
+  }, {
+    key: "toGrpc",
+    value: function toGrpc() {}
+  }, {
+    key: "asPayload",
+    value: function asPayload() {
+      // First 4 bytes are the length
+      return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
+    }
+  }], [{
+    key: "fromGrpc",
+    value: function fromGrpc(grpcObject) {
+      return new Contract({});
+    }
+  }, {
+    key: "fromCode",
+    value: function fromCode(bs58checkCode) {
+      var decoded = Contract.decodeCode(bs58checkCode);
+      return new Contract({
+        code: decoded
+      });
+    }
+  }, {
+    key: "atAddress",
+    value: function atAddress(address) {
+      var contract = new Contract();
+      contract.setAddress(address);
+      return contract;
+    }
+  }, {
+    key: "fromAbi",
+    value: function fromAbi(abi) {
+      var contract = new Contract();
+      contract.loadAbi(abi);
+      return contract;
+    }
+  }, {
+    key: "encodeCode",
+    value: function encodeCode(byteArray) {
+      var buf = Buffer.from([ADDRESS_PREFIXES.CONTRACT].concat(_toConsumableArray(byteArray)));
+      return bs58check.encode(buf);
+    }
+  }, {
+    key: "decodeCode",
+    value: function decodeCode(bs58checkCode) {
+      return bs58check.decode(bs58checkCode).slice(1); //return bs58.decode(bs58checkCode);
+    }
+  }]);
+
+  return Contract;
+}();
+
 AergoClient.prototype.target = 'node';
 
 AergoClient.prototype.defaultProvider = function () {
@@ -17199,4 +17364,5 @@ AergoClient.prototype.defaultProvider = function () {
 exports.AergoClient = AergoClient;
 exports.GrpcProvider = GrpcProvider;
 exports.constants = constants;
+exports.Contract = Contract;
 exports.default = AergoClient;
