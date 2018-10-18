@@ -15714,6 +15714,8 @@ var constants = {
 };
 
 var encodeAddress = function encodeAddress(byteArray) {
+  if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
+
   var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
   return bs58check.encode(buf);
 };
