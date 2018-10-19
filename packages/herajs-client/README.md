@@ -14,7 +14,7 @@ This package supports both Node.js and Web platforms. Please refer to the docume
 Roadmap:
 
 - Improve documentation
-- Publish on NPM
+- Official release
 - Typescript support
 
 ## Quick start
@@ -28,12 +28,12 @@ You can import the module both as CommonJS (require) and ES module (import).
 ```javascript
 import AergoClient from 'herajs';
 let aergo = new AergoClient();
-aergo.accounts.get().then((accounts) => {
-    console.log(accounts);
+aergo.blockchain().then(result => {
+    console.log('Current state', result);
 });
 ```
 
-Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import {AergoClient} from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. Webpack automatically picks the browser version, so you don't need to configure anything.
+Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import AergoClient from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. Many bundlers like Webpack automatically pick the browser version, so you don't need to configure anything.
 
 You can also directly import the pre-built bundle in HTML using `<script src="herajs/dist/herajs.min.js"></script>` and use the global `herajs` variable.
 
@@ -49,7 +49,7 @@ npm install
 
 ### Scripts
 
-Run tests
+Run tests (requires a local Aergo node running in `--testmode`, listening on port `7845`).
 
 ```console
 npm run test
