@@ -1,6 +1,6 @@
 
 ====================
-AergoClient.Accounts
+aergoClient.accounts
 ====================
 
 .. js:autoclass:: Accounts

@@ -7,11 +7,20 @@ Welcome to herajs's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
+   :caption: User Documentation
 
    getting-started
-   api
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   client
+   accounts
+   providers
+   contract
 
 
 Indices and tables

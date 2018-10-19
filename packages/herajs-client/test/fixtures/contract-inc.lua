@@ -1,5 +1,6 @@
--- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --payload ./contract-inc.lua > contract-inc.txt
 -- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --abi contract-inc.abi.json contract-inc.lua contract-inc.out
+-- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --payload ./contract-inc.lua > contract-inc.txt
+
 function inc()
     a = system.getItem("key1")
     if (a == nil) then
