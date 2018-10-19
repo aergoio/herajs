@@ -9,3 +9,4 @@ API
    client
    accounts
    providers
+   contract

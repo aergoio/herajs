@@ -7,7 +7,7 @@ Welcome to herajs's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    getting-started
    api

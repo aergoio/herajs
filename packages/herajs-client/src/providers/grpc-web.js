@@ -15,7 +15,7 @@ class GrpcWebProvider extends Provider {
      *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
      * 
      * @param {object} config
-     * @param {string} config.url URL to connect to (including http:// protocol)
+     * @param {string} config.url URL to connect to (including https:// or http:// protocol)
      */
     constructor(config) {
         super(config);

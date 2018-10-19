@@ -2,6 +2,19 @@ import rpcTypes from '../client/types.js';
 import { encodeAddress, decodeAddress } from '../accounts/utils.js';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils.js';
 
+/*
+rpcTypes.Tx = {
+    hash : byte of base64 
+    nonce : uint
+    from : byte of base58
+    to : byte of base58
+    amount : uint
+    payload : byte of base64
+    sign : byte of base64
+    type : int
+}
+*/
+
 export default class Tx {
     constructor(data) {
         for (const key in data) {
