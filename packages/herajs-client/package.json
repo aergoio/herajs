@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "aergo": {
-    "version": "be4ccbb1f4156ab8cd661e23f22b50aaef507fe2"
+    "version": "cc9161d407d31663712332ec91ddf667e655cf59"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
@@ -63,7 +63,6 @@
     "uglify-js": "^3.4.5"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.2",
     "bs58": "^4.0.1"
   }
 }
