@@ -1,6 +1,6 @@
 {
-  "name": "herajs",
-  "version": "0.0.1-b14",
+  "name": "@herajs/client",
+  "version": "0.0.1",
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
@@ -45,7 +45,7 @@
     "grpc": "^1.13.1",
     "grpc-tools": "^1.6.6",
     "grpc-web-client": "^0.6.2",
-    "herajs-crypto": "0.0.1",
+    "@herajs/crypto": "0.0.1",
     "mocha": "^5.2.0",
     "rollup": "^0.65.2",
     "rollup-plugin-babel": "^4.0.3",

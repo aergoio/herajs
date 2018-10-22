@@ -20,13 +20,13 @@ Roadmap:
 ## Quick start
 
 ```console
-npm install https://github.com/aergoio/herajs
+npm install @herajs/client
 ```
 
 You can import the module both as CommonJS (require) and ES module (import).
 
 ```javascript
-import AergoClient from 'herajs';
+import AergoClient from '@herajs/client';
 let aergo = new AergoClient();
 aergo.blockchain().then(result => {
     console.log('Current state', result);
