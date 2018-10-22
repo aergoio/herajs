@@ -1,3 +1,5 @@
+import 'regenerator-runtime/runtime.js';
+
 import AergoClient from '../../client';
 import GrpcProvider from '../../providers/grpc';
 import constants from '../../constants';

@@ -26,7 +26,8 @@ const external = [
     'google-protobuf',
     'google-protobuf/google/protobuf/timestamp_pb.js',
     'grpc-web-client',
-    'bs58check'
+    'bs58check',
+    'bs58'
 ];
 
 // Treating these as external as they are runtime requirements for node only
@@ -43,6 +44,11 @@ const builds = {
         dest: resolve('dist/herajs.common.js'),
         format: 'cjs',
         banner,
+        plugins: [
+            node_resolve({
+                only: ['regenerator-runtime']
+            }),
+        ],
         external
     },
     // CommonJS build (ES Modules)
@@ -51,6 +57,11 @@ const builds = {
         dest: resolve('dist/herajs.esm.js'),
         format: 'es',
         banner,
+        plugins: [
+            node_resolve({
+                only: ['regenerator-runtime']
+            }),
+        ],
         external
     },
     // Development build (Web, for browser or node)
@@ -118,7 +129,10 @@ function genConfig (name) {
             babel({
                 babelrc: false,
                 exclude: 'node_modules/**',
-                plugins: ['@babel/plugin-proposal-object-rest-spread'],
+                runtimeHelpers: true,
+                plugins: [
+                    '@babel/plugin-proposal-object-rest-spread',
+                ],
                 presets: [
                     ["@babel/preset-env", {
                         "modules": false
@@ -132,7 +146,8 @@ function genConfig (name) {
             file: opts.dest,
             format: opts.format,
             banner: opts.banner,
-            name: 'herajs'
+            name: 'herajs',
+            exports: 'named'
         },
         context: opts.context || 'undefined'
     };
