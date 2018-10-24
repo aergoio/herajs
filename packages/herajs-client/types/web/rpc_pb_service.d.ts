@@ -114,6 +114,15 @@ type AergoRPCServiceGetState = {
   readonly responseType: typeof blockchain_pb.State;
 };
 
+type AergoRPCServiceGetStateAndProof = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.AccountAndRoot;
+  readonly responseType: typeof blockchain_pb.StateProof;
+};
+
 type AergoRPCServiceCreateAccount = {
   readonly methodName: string;
   readonly service: typeof AergoRPCService;
@@ -227,6 +236,7 @@ export class AergoRPCService {
   static readonly SendTX: AergoRPCServiceSendTX;
   static readonly CommitTX: AergoRPCServiceCommitTX;
   static readonly GetState: AergoRPCServiceGetState;
+  static readonly GetStateAndProof: AergoRPCServiceGetStateAndProof;
   static readonly CreateAccount: AergoRPCServiceCreateAccount;
   static readonly GetAccounts: AergoRPCServiceGetAccounts;
   static readonly LockAccount: AergoRPCServiceLockAccount;
@@ -354,6 +364,15 @@ export class AergoRPCServiceClient {
   getState(
     requestMessage: rpc_pb.SingleBytes,
     callback: (error: ServiceError, responseMessage: blockchain_pb.State|null) => void
+  ): void;
+  getStateAndProof(
+    requestMessage: rpc_pb.AccountAndRoot,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.StateProof|null) => void
+  ): void;
+  getStateAndProof(
+    requestMessage: rpc_pb.AccountAndRoot,
+    callback: (error: ServiceError, responseMessage: blockchain_pb.StateProof|null) => void
   ): void;
   createAccount(
     requestMessage: rpc_pb.Personal,

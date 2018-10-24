@@ -120,6 +120,15 @@ AergoRPCService.GetState = {
   responseType: blockchain_pb.State
 };
 
+AergoRPCService.GetStateAndProof = {
+  methodName: "GetStateAndProof",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.AccountAndRoot,
+  responseType: blockchain_pb.StateProof
+};
+
 AergoRPCService.CreateAccount = {
   methodName: "CreateAccount",
   service: AergoRPCService,
@@ -490,6 +499,28 @@ AergoRPCServiceClient.prototype.getState = function getState(requestMessage, met
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetStateAndProof, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

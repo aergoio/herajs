@@ -29,6 +29,17 @@ function deserialize_types_Account(buffer_arg) {
   return account_pb.Account.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_AccountAndRoot(arg) {
+  if (!(arg instanceof rpc_pb.AccountAndRoot)) {
+    throw new Error('Expected argument of type types.AccountAndRoot');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_AccountAndRoot(buffer_arg) {
+  return rpc_pb.AccountAndRoot.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_AccountList(arg) {
   if (!(arg instanceof account_pb.AccountList)) {
     throw new Error('Expected argument of type types.AccountList');
@@ -192,6 +203,17 @@ function serialize_types_State(arg) {
 
 function deserialize_types_State(buffer_arg) {
   return blockchain_pb.State.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_StateProof(arg) {
+  if (!(arg instanceof blockchain_pb.StateProof)) {
+    throw new Error('Expected argument of type types.StateProof');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_StateProof(buffer_arg) {
+  return blockchain_pb.StateProof.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Tx(arg) {
@@ -397,6 +419,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_State,
     responseDeserialize: deserialize_types_State,
+  },
+  getStateAndProof: {
+    path: '/types.AergoRPCService/GetStateAndProof',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.AccountAndRoot,
+    responseType: blockchain_pb.StateProof,
+    requestSerialize: serialize_types_AccountAndRoot,
+    requestDeserialize: deserialize_types_AccountAndRoot,
+    responseSerialize: serialize_types_StateProof,
+    responseDeserialize: deserialize_types_StateProof,
   },
   createAccount: {
     path: '/types.AergoRPCService/CreateAccount',

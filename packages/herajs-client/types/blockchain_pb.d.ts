@@ -59,6 +59,11 @@ export class BlockHeader extends jspb.Message {
   getTxsroothash_asB64(): string;
   setTxsroothash(value: Uint8Array | string): void;
 
+  getReceiptsroothash(): Uint8Array | string;
+  getReceiptsroothash_asU8(): Uint8Array;
+  getReceiptsroothash_asB64(): string;
+  setReceiptsroothash(value: Uint8Array | string): void;
+
   getConfirms(): number;
   setConfirms(value: number): void;
 
@@ -71,6 +76,11 @@ export class BlockHeader extends jspb.Message {
   getSign_asU8(): Uint8Array;
   getSign_asB64(): string;
   setSign(value: Uint8Array | string): void;
+
+  getCoinbaseaccount(): Uint8Array | string;
+  getCoinbaseaccount_asU8(): Uint8Array;
+  getCoinbaseaccount_asB64(): string;
+  setCoinbaseaccount(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockHeader.AsObject;
@@ -89,9 +99,11 @@ export namespace BlockHeader {
     timestamp: number,
     blocksroothash: Uint8Array | string,
     txsroothash: Uint8Array | string,
+    receiptsroothash: Uint8Array | string,
     confirms: number,
     pubkey: Uint8Array | string,
     sign: Uint8Array | string,
+    coinbaseaccount: Uint8Array | string,
   }
 }
 
@@ -318,6 +330,52 @@ export namespace State {
     codehash: Uint8Array | string,
     storageroot: Uint8Array | string,
     sqlrecoverypoint: number,
+  }
+}
+
+export class StateProof extends jspb.Message {
+  hasState(): boolean;
+  clearState(): void;
+  getState(): State | undefined;
+  setState(value?: State): void;
+
+  getInclusion(): boolean;
+  setInclusion(value: boolean): void;
+
+  getProofkey(): Uint8Array | string;
+  getProofkey_asU8(): Uint8Array;
+  getProofkey_asB64(): string;
+  setProofkey(value: Uint8Array | string): void;
+
+  getProofval(): Uint8Array | string;
+  getProofval_asU8(): Uint8Array;
+  getProofval_asB64(): string;
+  setProofval(value: Uint8Array | string): void;
+
+  clearAuditpathList(): void;
+  getAuditpathList(): Array<Uint8Array | string>;
+  getAuditpathList_asU8(): Array<Uint8Array>;
+  getAuditpathList_asB64(): Array<string>;
+  setAuditpathList(value: Array<Uint8Array | string>): void;
+  addAuditpath(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StateProof.AsObject;
+  static toObject(includeInstance: boolean, msg: StateProof): StateProof.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StateProof, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StateProof;
+  static deserializeBinaryFromReader(message: StateProof, reader: jspb.BinaryReader): StateProof;
+}
+
+export namespace StateProof {
+  export type AsObject = {
+    state?: State.AsObject,
+    inclusion: boolean,
+    proofkey: Uint8Array | string,
+    proofval: Uint8Array | string,
+    auditpathList: Array<Uint8Array | string>,
   }
 }
 
