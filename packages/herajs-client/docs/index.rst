@@ -1,10 +1,10 @@
-.. herajs documentation master file, created by
-   sphinx-quickstart on Wed Sep 19 14:13:04 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to herajs's documentation!
 ==================================
+
+Herajs is the JavaScript implementation of hera. So, what's hera?
+Hera is a goddess from ancient Greek mythology who protects the `Argo <https://en.wikipedia.org/wiki/Argo>`_ ship.
+We use the name hera for all the aergo clients.
+Currently, there is herajs, heraj, and herapy. They all implement similar API but with language-specific different styles.
 
 .. toctree::
    :maxdepth: 2

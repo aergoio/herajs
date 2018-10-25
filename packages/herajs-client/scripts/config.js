@@ -24,13 +24,13 @@ const resolve = p => _resolve(__dirname, '../', p);
 const external = [
     'grpc',
     'google-protobuf',
-    'google-protobuf/google/protobuf/timestamp_pb.js',
     'grpc-web-client',
     'bs58check',
     'bs58'
 ];
 
 // Treating these as external as they are runtime requirements for node only
+// Packages from `external` are inlined for the web distribution
 const webExternal = [
     'http',
     'https',

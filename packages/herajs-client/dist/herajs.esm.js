@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b2
+ * herajs v0.0.1-b3
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -18293,6 +18293,7 @@ var toBytesUint32 = function toBytesUint32(num) {
   var arr = new ArrayBuffer(8);
   var view = new DataView(arr);
   view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
+  // view.setBigUint64(0, num, true)
 
   return arr;
 };
@@ -18322,96 +18323,75 @@ var longPolling =
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(func) {
+  regeneratorRuntime.mark(function _callee(func) {
     var check,
         timeout,
         wait,
-        _args2 = arguments;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        started,
+        lastError,
+        result,
+        timePassed,
+        _args = arguments;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            check = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : basicCheck;
-            timeout = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : 10000;
-            wait = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : 250;
-            return _context2.abrupt("return", new Promise(
-            /*#__PURE__*/
-            function () {
-              var _ref2 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee(resolve, reject) {
-                var started, lastError, result, timePassed;
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        started = +new Date();
-                        lastError = '';
-                        _context.prev = 2;
-                        _context.next = 5;
-                        return func();
+            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
+            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
+            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
+            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
+            started = +new Date();
+            lastError = '';
+            _context.prev = 5;
+            _context.next = 8;
+            return func();
 
-                      case 5:
-                        result = _context.sent;
+          case 8:
+            result = _context.sent;
 
-                        if (check(result)) {
-                          _context.next = 8;
-                          break;
-                        }
+            if (check(result)) {
+              _context.next = 11;
+              break;
+            }
 
-                        throw new Error('Condition not satisfied');
+            throw new Error('Condition not satisfied');
 
-                      case 8:
-                        return _context.abrupt("return", resolve(result));
+          case 11:
+            return _context.abrupt("return", result);
 
-                      case 11:
-                        _context.prev = 11;
-                        _context.t0 = _context["catch"](2);
-                        lastError = _context.t0;
+          case 14:
+            _context.prev = 14;
+            _context.t0 = _context["catch"](5);
+            lastError = _context.t0;
 
-                      case 14:
-                        timePassed = new Date() - started;
-                        timeout -= timePassed;
+          case 17:
+            timePassed = new Date() - started;
+            timeout -= timePassed;
 
-                        if (!(timeout < 0)) {
-                          _context.next = 18;
-                          break;
-                        }
+            if (!(timeout < 0)) {
+              _context.next = 21;
+              break;
+            }
 
-                        return _context.abrupt("return", reject(new Error('Long polling timed out. ' + lastError)));
+            throw new Error('Long polling timed out. ' + lastError);
 
-                      case 18:
-                        _context.next = 20;
-                        return waitFor(wait);
+          case 21:
+            _context.next = 23;
+            return waitFor(wait);
 
-                      case 20:
-                        _context.t1 = resolve;
-                        _context.next = 23;
-                        return longPolling(func, check, timeout - wait, wait);
+          case 23:
+            _context.next = 25;
+            return longPolling(func, check, timeout - wait, wait);
 
-                      case 23:
-                        _context.t2 = _context.sent;
-                        (0, _context.t1)(_context.t2);
+          case 25:
+            return _context.abrupt("return", _context.sent);
 
-                      case 25:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this, [[2, 11]]);
-              }));
-
-              return function (_x2, _x3) {
-                return _ref2.apply(this, arguments);
-              };
-            }()));
-
-          case 4:
+          case 26:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee, this, [[5, 14]]);
   }));
 
   return function longPolling(_x) {
