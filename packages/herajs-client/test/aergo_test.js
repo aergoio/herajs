@@ -134,12 +134,10 @@ describe('Aergo', () => {
             testaddress = await aergo.accounts.create('testpass');
         });
 
-        it('should return state info by account address', (done) => {
-            aergo.getState(testaddress).then((response) => {
-                assert.equal(response.nonce, 0);
-                assert.equal(response.balance, 0);
-                done();
-            });
+        it('should return state info by account address', async () => {
+            const state = await aergo.getState(testaddress);
+            assert.equal(state.nonce, 0);
+            assert.typeOf(state.balance, 'number');
         });
 
         it('should return error for invalid address', () => {
