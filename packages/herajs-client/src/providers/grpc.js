@@ -10,7 +10,7 @@ class GrpcProvider extends Provider {
     /**
      * .. code-block:: javascript
      * 
-     *     import { GrpcProvider } from 'herajs';
+     *     import { GrpcProvider } from '@herajs/client';
      *     const provider = new GrpcProvider({url: 'localhost:7845'});
      * 
      * @param {object} config

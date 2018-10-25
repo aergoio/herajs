@@ -20,7 +20,7 @@ class AergoClient {
      * 
      * .. code-block:: javascript
      * 
-     *     import AergoClient from 'herajs';
+     *     import AergoClient from '@herajs/client';
      *     const aergo = new AergoClient();
      * 
      * @param [object] configuration. Unused at the moment.

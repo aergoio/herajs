@@ -18,7 +18,7 @@ class FunctionCall {
      * 
      * .. code-block:: javascript
      * 
-     *     import { Contract } from 'herajs';
+     *     import { Contract } from '@herajs/client';
      *     const contract = Contract.fromAbi(abi).atAddress(address);
      *     const functionCall = contract.someAbiFunction();
      *     aergo.accounts.sendTransaction(functionCall.asTransaction({
@@ -52,7 +52,7 @@ class FunctionCall {
      * 
      * .. code-block:: javascript
      * 
-     *     import { Contract } from 'herajs';
+     *     import { Contract } from '@herajs/client';
      *     const contract = Contract.fromAbi(abi).atAddress(address);
      *     const functionCall = contract.someAbiFunction();
      *     aergo.queryContract(functionCall).then(result => {
@@ -78,7 +78,7 @@ class FunctionCall {
  * 
  * .. code-block:: javascript
  * 
- *     import { Contract } from 'herajs';
+ *     import { Contract } from '@herajs/client';
  *     const contract = Contract.fromAbi(abi).atAddress(address);
  *     aergo.queryContract(contract.someAbiFunction()).then(result => {
  *         console.log(result);

@@ -11,7 +11,7 @@ class GrpcWebProvider extends Provider {
     /**
      * .. code-block:: javascript
      * 
-     *     import { GrpcWebProvider } from 'herajs';
+     *     import { GrpcWebProvider } from '@herajs/client';
      *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
      * 
      * @param {object} config

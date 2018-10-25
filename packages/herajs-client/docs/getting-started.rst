@@ -21,7 +21,7 @@ Quick start
     let aergo = new AergoClient();
 
     aergo.blockchain().then((blockchainState) => {
-        console.log(blockchainState);
+        console.log(blockchainState.bestHeight, blockchainState.bestBlockHash);
     });
 
 All async functions return standard promises, so you can also use them like this:
@@ -33,8 +33,8 @@ All async functions return standard promises, so you can also use them like this
     let aergo = new AergoClient();
 
     async function update() {
-        const blockchain = await aergo.blockchain();
-        console.log(blockchain.bestHeight, blockchain.bestBlockHash);
+        const blockchainState = await aergo.blockchain();
+        console.log(blockchainState.bestHeight, blockchainState.bestBlockHash);
         setTimeout(update, 1000);
     }
     update();
