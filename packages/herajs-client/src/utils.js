@@ -20,6 +20,7 @@ const toBytesUint32 = (num) => {
     const arr = new ArrayBuffer(8);
     const view = new DataView(arr);
     view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
+    // view.setBigUint64(0, num, true)
     return arr;
 };
 
@@ -39,24 +40,22 @@ const waitFor = (ms) => {
 const basicCheck = (result) => result instanceof Error === false;
 const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
     // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
-    return new Promise(async (resolve, reject) => {
-        const started = + new Date();
-        let lastError = '';
-        try {
-            const result = await func();
-            if (!check(result)) throw new Error('Condition not satisfied');
-            return resolve(result);
-        } catch(e) {
-            lastError = e;
-        }
-        const timePassed = new Date() - started;
-        timeout -= timePassed;
-        if (timeout < 0) {
-            return reject(new Error('Long polling timed out. ' + lastError));
-        }
-        await waitFor(wait); // give some breathing time
-        resolve(await longPolling(func, check, timeout - wait, wait)); 
-    });
+    const started = + new Date();
+    let lastError = '';
+    try {
+        const result = await func();
+        if (!check(result)) throw new Error('Condition not satisfied');
+        return result;
+    } catch(e) {
+        lastError = e;
+    }
+    const timePassed = new Date() - started;
+    timeout -= timePassed;
+    if (timeout < 0) {
+        throw new Error('Long polling timed out. ' + lastError);
+    }
+    await waitFor(wait); // give some breathing time
+    return await longPolling(func, check, timeout - wait, wait); 
 };
 
 export {

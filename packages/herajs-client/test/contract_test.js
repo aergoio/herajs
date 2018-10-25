@@ -164,6 +164,6 @@ describe('Contracts', () => {
                 [ 2, 3.1, 'Y Hello Blockchain' ],
                 [ 2, 3.1, 'Z Hello Blockchain' ]
             ]);
-        }).timeout(4000);
+        }).timeout(10000);
     });
 });
