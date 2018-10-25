@@ -3,7 +3,7 @@ go:
   - "1.10.x"
 before_install:
   - export PATH=./node_modules/.bin:$PATH
-  - nvm install 8
+  - nvm install 10
   - go get -t github.com/Masterminds/glide
   - AERGO_VERSION=`cat "package.json" | python -c "import sys, json; print json.load(sys.stdin)['aergo']['version']"`
   - go get -d github.com/aergoio/aergo || true
