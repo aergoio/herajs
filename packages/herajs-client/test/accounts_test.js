@@ -21,6 +21,7 @@ describe('Aergo.Accounts', () => {
             aergo.accounts.create('testpass').then((address) => {
                 assert.isString(address);
                 testAddress = address;
+                console.log(testAddress);
                 done();
             });
         });

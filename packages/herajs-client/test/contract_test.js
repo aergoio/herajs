@@ -165,5 +165,32 @@ describe('Contracts', () => {
                 [ 2, 3.1, 'Z Hello Blockchain' ]
             ]);
         }).timeout(11000);
+
+        it('should handle invalid calls', async () => {
+            const contract = Contract.atAddress(contractAddress).loadAbi(sqlContractAbi);
+
+            // Payload with undefined function
+            let tx = contract.insertTestValues().asTransaction({
+                from: testAddress
+            });
+            tx.payload = '{"Name":"undefinedFunction","Args":[]}';
+            const txHash = await aergo.accounts.sendTransaction(tx);
+            const result = await longPolling(async () =>
+                await aergo.getTransactionReceipt(txHash)
+            );
+            assert.equal(result.status, 'undefined function: undefinedFunction');
+
+            // Payload with invalid JSON
+            tx = contract.insertTestValues().asTransaction({
+                from: testAddress
+            });
+            tx.payload = '{"Name":"insertTestValues","Args":[]}invalidjson';
+            const txHash2 = await aergo.accounts.sendTransaction(tx);
+            const result2 = await longPolling(async () =>
+                await aergo.getTransactionReceipt(txHash2)
+            );
+            assert.equal(result2.status, 'invalid character \'i\' after top-level value');
+
+        }).timeout(11000);
     });
 });

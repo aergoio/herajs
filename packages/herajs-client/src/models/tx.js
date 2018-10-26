@@ -4,14 +4,16 @@ import { encodeTxHash, decodeTxHash } from '../transactions/utils.js';
 
 /*
 rpcTypes.Tx = {
-    hash : byte of base64 
-    nonce : uint
-    from : byte of base58
-    to : byte of base58
-    amount : uint
-    payload : byte of base64
-    sign : byte of base64
-    type : int
+    hash : bytes 
+    nonce : uint64
+    from : bytes
+    to : bytes
+    amount : uint64
+    payload : bytes
+    sign : bytes
+    type : int,
+    limit: uint64;
+    price: uint64;
 }
 */
 
@@ -31,6 +33,8 @@ export default class Tx {
             payload: grpcObject.getBody().getPayload(),
             sign: grpcObject.getBody().getSign_asB64(),
             type: grpcObject.getBody().getType(),
+            limit: grpcObject.getBody().getLimit(),
+            price: grpcObject.getBody().getPrice()
         });
     }
     toGrpc() {
@@ -53,6 +57,14 @@ export default class Tx {
             msgtxbody.setSign(this.sign);
         }
         msgtxbody.setType(this.type);
+
+        if (typeof this.limit !== 'undefined') {
+            msgtxbody.setLimit(this.limit);
+        }
+
+        if (typeof this.price !== 'undefined') {
+            msgtxbody.setPrice(this.price);
+        }
 
         const msgtx = new rpcTypes.Tx();
 
