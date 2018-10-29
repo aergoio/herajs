@@ -3,10 +3,9 @@ import rpcTypes from './types.js';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
 import promisify from '../promisify.js';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils.js';
-import { encodeAddress, decodeAddress } from '../accounts/utils.js';
 import Tx from '../models/tx';
 import Block from '../models/block';
-
+import Address from '../models/address';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -182,13 +181,13 @@ class AergoClient {
      */
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(decodeAddress(address)));
+        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.toObject());
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(decodeAddress(address)));
+        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
@@ -241,7 +240,7 @@ class AergoClient {
         return promisify(this.client.getReceipt, this.client)(singleBytes).then(grpcObject => {
             const obj = grpcObject.toObject();
             return {
-                contractaddress: encodeAddress(grpcObject.getContractaddress_asU8()),
+                contractaddress: new Address(grpcObject.getContractaddress_asU8()),
                 result: obj.ret, //JSON.parse(obj.ret),
                 status: obj.status
             };
@@ -255,7 +254,7 @@ class AergoClient {
      */
     queryContract (functionCall) {
         const query = new rpcTypes.Query();
-        query.setContractaddress(Buffer.from(decodeAddress(functionCall.contractInstance.address)));
+        query.setContractaddress(Buffer.from((new Address(functionCall.contractInstance.address)).asBytes()));
         query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
         return promisify(this.client.queryContract, this.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
@@ -269,7 +268,7 @@ class AergoClient {
      */
     getABI (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(decodeAddress(address)));
+        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
         return promisify(this.client.getABI, this.client)(singleBytes).then(
             grpcObject => {
                 const obj = grpcObject.toObject();

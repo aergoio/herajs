@@ -1,6 +1,6 @@
 import rpcTypes from '../client/types.js';
-import { encodeAddress, decodeAddress } from '../accounts/utils.js';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils.js';
+import Address from './address';
 
 /*
 rpcTypes.Tx = {
@@ -27,8 +27,8 @@ export default class Tx {
         return new Tx({
             hash: encodeTxHash(grpcObject.getHash()),
             nonce: grpcObject.getBody().getNonce(),
-            from: encodeAddress(grpcObject.getBody().getAccount_asU8()),
-            to: encodeAddress(grpcObject.getBody().getRecipient_asU8()),
+            from: new Address(grpcObject.getBody().getAccount_asU8()),
+            to: new Address(grpcObject.getBody().getRecipient_asU8()),
             amount: grpcObject.getBody().getAmount(),
             payload: grpcObject.getBody().getPayload(),
             sign: grpcObject.getBody().getSign_asB64(),
@@ -43,9 +43,9 @@ export default class Tx {
         if (typeof this.from === 'undefined' || !this.from) {
             throw new Error('Missing required transaction parameter \'from\'');
         }
-        msgtxbody.setAccount(decodeAddress(this.from));
+        msgtxbody.setAccount((new Address(this.from)).asBytes());
         if (typeof this.to !== 'undefined' && this.to !== null) {
-            msgtxbody.setRecipient(decodeAddress(this.to));
+            msgtxbody.setRecipient((new Address(this.to)).asBytes());
         }
         msgtxbody.setAmount(this.amount);
         if (this.payload != null) {

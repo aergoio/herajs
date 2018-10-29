@@ -1,7 +1,7 @@
 import { Personal, Empty, Account, } from '../../types/rpc_pb.js';
 import Tx from '../models/tx';
 import { encodeTxHash } from '../transactions/utils';
-import { encodeAddress, decodeAddress } from './utils.js';
+import Address from '../models/address';
 import promisify from '../promisify.js';
 
 /**
@@ -27,7 +27,7 @@ class Accounts {
                         reject(err);
                     } else {
                         const createdAddress = rsp.getAddress_asU8();
-                        resolve(encodeAddress(createdAddress));
+                        resolve(new Address(createdAddress));
                     }
                 });
             } catch (exception) {
@@ -49,7 +49,7 @@ class Accounts {
                         reject(err);
                     } else {
                         const accounts = rsp.getAccountsList();
-                        const addresses = accounts.map(account => encodeAddress(account.getAddress_asU8()));
+                        const addresses = accounts.map(account => new Address(account.getAddress_asU8()));
                         resolve(addresses);
                     }
                 });
@@ -68,7 +68,7 @@ class Accounts {
     unlock (address, passphrase) {
         return new Promise((resolve, reject) => {
             const account = new Account();
-            account.setAddress(decodeAddress(address));
+            account.setAddress((new Address(address)).asBytes());
 
             const personal = new Personal();
             personal.setPassphrase(passphrase);
@@ -80,7 +80,7 @@ class Accounts {
                         reject(err);
                     } else {
                         const createdAddress = rsp.getAddress_asU8();
-                        resolve(encodeAddress(createdAddress));
+                        resolve(new Address(createdAddress));
                     }
                 });
             } catch (exception) {
@@ -98,7 +98,7 @@ class Accounts {
     lock (address, passphrase) {
         return new Promise((resolve, reject) => {
             const account = new Account();
-            account.setAddress(decodeAddress(address));
+            account.setAddress((new Address(address)).asBytes());
 
             const personal = new Personal();
             personal.setPassphrase(passphrase);
@@ -110,7 +110,7 @@ class Accounts {
                         reject(err);
                     } else {
                         const createdAddress = rsp.getAddress_asU8();
-                        resolve(encodeAddress(createdAddress));
+                        resolve(new Address(createdAddress));
                     }
                 });
             } catch (exception) {

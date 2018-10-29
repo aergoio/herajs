@@ -202,7 +202,7 @@ describe('Aergo', () => {
         beforeEach(async ()=>{
             const created = await aergo.accounts.create('testpass');
             const unlocked = await aergo.accounts.unlock(created, 'testpass');
-            assert.equal(created, unlocked);
+            assert.deepEqual(created.value, unlocked.value);
             const address = unlocked;
             const unsignedtx = {
                 nonce: 1,

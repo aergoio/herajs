@@ -12,18 +12,14 @@ describe('Aergo.Accounts', () => {
     beforeEach(async ()=>{
         const created = await aergo.accounts.create('testpass');
         const unlocked = await aergo.accounts.unlock(created, 'testpass');
-        assert.equal(created, unlocked);
+        assert.deepEqual(created.value, unlocked.value);
         testAddress = unlocked;
     });
 
     describe('create()', () => {
-        it('should return created base58 encoded address', (done) => {
-            aergo.accounts.create('testpass').then((address) => {
-                assert.isString(address);
-                testAddress = address;
-                console.log(testAddress);
-                done();
-            });
+        it('should return created base58 encoded address', async () => {
+            testAddress = aergo.accounts.create('testpass');
+            assert.isString(testAddress.toString());
         });
     });
 
@@ -39,7 +35,7 @@ describe('Aergo.Accounts', () => {
     describe('unlock()', () => {
         it('should return unlocked address', (done) => {
             aergo.accounts.unlock(testAddress, 'testpass').then((address) => {
-                assert.isString(address);
+                assert.isString(address.toString());
                 done();
             });
         });
@@ -48,7 +44,7 @@ describe('Aergo.Accounts', () => {
     describe('lock()', () => {
         it('should return locked address', (done) => {
             aergo.accounts.lock(testAddress, 'testpass').then((address) => {
-                assert.isString(address);
+                assert.isString(address.toString());
                 done();
             });
         });
@@ -84,7 +80,7 @@ describe('Aergo.Accounts', () => {
             aergo.accounts.signTransaction(testtx)
                 .then((result) => {
                     assert.equal(testtx.nonce, result.nonce);
-                    assert.equal(testtx.from, result.from);
+                    assert.deepEqual(testtx.from.value, result.from.value);
                     assert.typeOf(result.sign, 'string');
                     assert.equal(result.sign.length, 96);
                     done();
@@ -96,7 +92,7 @@ describe('Aergo.Accounts', () => {
         it('should sign, commit, and retrieve transaction', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
-            assert.equal(address, createdAddress);
+            assert.deepEqual(address.value, createdAddress.value);
             const testtx = {
                 nonce: 1,
                 from: address,
