@@ -18,7 +18,7 @@ Quick start
 
     import { AergoClient } from '@herajs/client';
 
-    let aergo = new AergoClient();
+    const aergo = new AergoClient();
 
     aergo.blockchain().then((blockchainState) => {
         console.log(blockchainState.bestHeight, blockchainState.bestBlockHash);
@@ -30,7 +30,7 @@ All async functions return standard promises, so you can also use them like this
 
     import { AergoClient } from '@herajs/client';
 
-    let aergo = new AergoClient();
+    const aergo = new AergoClient();
 
     async function update() {
         const blockchainState = await aergo.blockchain();
@@ -67,7 +67,7 @@ For Node.js:
 
     import { AergoClient, GrpcProvider } from '@herajs/client';
 
-    let aergo = new AergoClient({}, new GrpcProvider({url: 'localhost:12345'}));
+    const aergo = new AergoClient({}, new GrpcProvider({url: 'localhost:12345'}));
 
 For Web:
 
@@ -75,6 +75,6 @@ For Web:
 
     import { AergoClient, GrpcWebProvider } from '@herajs/client';
 
-    let aergo = new AergoClient({}, new GrpcWebProvider({url: 'http://localhost:12345'}));
+    const aergo = new AergoClient({}, new GrpcWebProvider({url: 'http://localhost:12345'}));
 
 The web transport also supports https.

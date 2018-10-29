@@ -1,9 +1,10 @@
 # herajs - Javascript client framework for aergo
 
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
+[![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client)
 
 Tested with aergo server version
-[f5c3ddbd4ca3290239e0ff553a70a36f792e045d](https://github.com/aergoio/aergo/tree/f5c3ddbd4ca3290239e0ff553a70a36f792e045d)
+[447f804876f5a5bf84f89c9f93fb9e3ee563622c](https://github.com/aergoio/aergo/tree/447f804876f5a5bf84f89c9f93fb9e3ee563622c)
 
 [Documentation](https://herajs.readthedocs.io/)
 
