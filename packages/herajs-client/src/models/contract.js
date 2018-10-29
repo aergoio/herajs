@@ -14,7 +14,7 @@ class FunctionCall {
         this.contractInstance = contractInstance;
     }
     /**
-     * Generate transaction object that can be passed to `aergo.accounts.sendTransaction()`
+     * Generate transaction object that can be passed to :meth:`aergoClient.accounts.sendTrasaction`
      * 
      * .. code-block:: javascript
      * 
@@ -47,8 +47,8 @@ class FunctionCall {
         };
     }
     /**
-     * Generate query info that can be passed to `aergo.queryContract()`.
-     * You usually do not need to call this function yourself, `queryContract` takes care of that.
+     * Generate query info that can be passed to the API.
+     * You usually do not need to call this function yourself, :meth:`AergoClient.queryContract` takes care of that.
      * 
      * .. code-block:: javascript
      * 
@@ -70,11 +70,11 @@ class FunctionCall {
 }
 
 /**
- * Smart contract interface
+ * Smart contract interface.
  * You usually instantiante this class by using one of the static methods.
  * Most of the instance methods return the contract so they can be chained.
  * When an ABI is loaded, its functions will be added to the instance and can be called directly.
- * ABI functions return FunctionCall objects that can be queried or called.
+ * ABI functions return `FunctionCall` objects that can be queried or called.
  * 
  * .. code-block:: javascript
  * 

@@ -5,7 +5,7 @@ import Address from '../models/address';
 import promisify from '../promisify.js';
 
 /**
- * Accounts controller.
+ * Accounts controller. It is exposed at `aergoClient.accounts`.
  */
 class Accounts {
     constructor (aergo) {

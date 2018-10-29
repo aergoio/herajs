@@ -78,7 +78,7 @@ export async function main(aergo) {
         await aergo.sendSignedTransaction(item).then((txid) => {
             item.id = txid;
             console.log(`Sent ${txid}`);
-        }), 10);
+        }), 100);
 
     performance.mark('C');
 
