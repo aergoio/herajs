@@ -5,11 +5,11 @@ It is used by herajs and the official wallet to manage keys and sign transaction
 ## How to use
 
 ```shell
-npm install --save herajs-crypto
+npm install --save @herajs/crypto
 ```
 
 ```js
-import { createIdentity, signTransaction, hashTransaction } from 'herajs-crypto';
+import { createIdentity, signTransaction, hashTransaction } from '@herajs/crypto';
 
 async () => {
     const identity = createIdentity();

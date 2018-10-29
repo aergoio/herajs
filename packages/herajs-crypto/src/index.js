@@ -82,7 +82,6 @@ const verifySignature = (tx, key, signature) => {
 const hashTransaction = (tx, encoding = 'base64', includeSign = true) => {
     return new Promise((resolve) => {
         const h = ecdsa.hash();
-        tx.type = 1;
         let data = Buffer.concat([
             fromNumber(tx.nonce, 64),
             decodeAddress(tx.from),
