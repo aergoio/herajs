@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b3
+ * herajs v0.0.1-b4
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -18045,55 +18045,6 @@
 	var platformWeb = typeof process === 'undefined' || process.env.TARGET == 'web';
 	var rpcTypes = platformWeb ? typesWeb : typesNode;
 
-	var ADDRESS_PREFIXES = {
-	  ACCOUNT: 0x42,
-	  CONTRACT: 0xC0
-	};
-	var UNITS = {
-	  NATIVE_TOKEN: {
-	    baseLabel: 'Aergo',
-	    baseLabelShort: 'ARG',
-	    baseDigits: 9,
-	    subUnits: [{
-	      e: 0,
-	      label: 'aer'
-	    }, {
-	      e: 9,
-	      label: 'ARG'
-	    }]
-	  }
-	};
-	var constants = {
-	  ADDRESS_PREFIXES: ADDRESS_PREFIXES,
-	  UNITS: UNITS
-	};
-
-	var inherits_browser = createCommonjsModule(function (module) {
-	if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    ctor.prototype = Object.create(superCtor.prototype, {
-	      constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }
-	    });
-	  };
-	} else {
-	  // old school shim for old browsers
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    var TempCtor = function () {};
-	    TempCtor.prototype = superCtor.prototype;
-	    ctor.prototype = new TempCtor();
-	    ctor.prototype.constructor = ctor;
-	  };
-	}
-	});
-
 	var lookup = [];
 	var revLookup = [];
 	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
@@ -20147,6 +20098,159 @@
 	};
 	});
 	var safeBuffer_1 = safeBuffer.Buffer;
+
+	// base-x encoding
+	// Forked from https://github.com/cryptocoinjs/bs58
+	// Originally written by Mike Hearn for BitcoinJ
+	// Copyright (c) 2011 Google Inc
+	// Ported to JavaScript by Stefan Thomas
+	// Merged Buffer refactorings from base58-native by Stephen Pair
+	// Copyright (c) 2013 BitPay Inc
+
+	var Buffer$2 = safeBuffer.Buffer;
+
+	var baseX = function base (ALPHABET) {
+	  var ALPHABET_MAP = {};
+	  var BASE = ALPHABET.length;
+	  var LEADER = ALPHABET.charAt(0);
+
+	  // pre-compute lookup table
+	  for (var z = 0; z < ALPHABET.length; z++) {
+	    var x = ALPHABET.charAt(z);
+
+	    if (ALPHABET_MAP[x] !== undefined) throw new TypeError(x + ' is ambiguous')
+	    ALPHABET_MAP[x] = z;
+	  }
+
+	  function encode (source) {
+	    if (source.length === 0) return ''
+
+	    var digits = [0];
+	    for (var i = 0; i < source.length; ++i) {
+	      for (var j = 0, carry = source[i]; j < digits.length; ++j) {
+	        carry += digits[j] << 8;
+	        digits[j] = carry % BASE;
+	        carry = (carry / BASE) | 0;
+	      }
+
+	      while (carry > 0) {
+	        digits.push(carry % BASE);
+	        carry = (carry / BASE) | 0;
+	      }
+	    }
+
+	    var string = '';
+
+	    // deal with leading zeros
+	    for (var k = 0; source[k] === 0 && k < source.length - 1; ++k) string += LEADER;
+	    // convert digits to a string
+	    for (var q = digits.length - 1; q >= 0; --q) string += ALPHABET[digits[q]];
+
+	    return string
+	  }
+
+	  function decodeUnsafe (string) {
+	    if (typeof string !== 'string') throw new TypeError('Expected String')
+	    if (string.length === 0) return Buffer$2.allocUnsafe(0)
+
+	    var bytes = [0];
+	    for (var i = 0; i < string.length; i++) {
+	      var value = ALPHABET_MAP[string[i]];
+	      if (value === undefined) return
+
+	      for (var j = 0, carry = value; j < bytes.length; ++j) {
+	        carry += bytes[j] * BASE;
+	        bytes[j] = carry & 0xff;
+	        carry >>= 8;
+	      }
+
+	      while (carry > 0) {
+	        bytes.push(carry & 0xff);
+	        carry >>= 8;
+	      }
+	    }
+
+	    // deal with leading zeros
+	    for (var k = 0; string[k] === LEADER && k < string.length - 1; ++k) {
+	      bytes.push(0);
+	    }
+
+	    return Buffer$2.from(bytes.reverse())
+	  }
+
+	  function decode (string) {
+	    var buffer = decodeUnsafe(string);
+	    if (buffer) return buffer
+
+	    throw new Error('Non-base' + BASE + ' character')
+	  }
+
+	  return {
+	    encode: encode,
+	    decodeUnsafe: decodeUnsafe,
+	    decode: decode
+	  }
+	};
+
+	var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+	var bs58 = baseX(ALPHABET);
+
+	function encodeTxHash(bytes) {
+	  return bs58.encode(bytes);
+	}
+	function decodeTxHash(bs58string) {
+	  return bs58.decode(bs58string);
+	}
+
+	var ADDRESS_PREFIXES = {
+	  ACCOUNT: 0x42,
+	  CONTRACT: 0xC0
+	};
+	var UNITS = {
+	  NATIVE_TOKEN: {
+	    baseLabel: 'Aergo',
+	    baseLabelShort: 'ARG',
+	    baseDigits: 9,
+	    subUnits: [{
+	      e: 0,
+	      label: 'aer'
+	    }, {
+	      e: 9,
+	      label: 'ARG'
+	    }]
+	  }
+	};
+	var constants = {
+	  ADDRESS_PREFIXES: ADDRESS_PREFIXES,
+	  UNITS: UNITS
+	};
+
+	var inherits_browser = createCommonjsModule(function (module) {
+	if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor;
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor;
+	    var TempCtor = function () {};
+	    TempCtor.prototype = superCtor.prototype;
+	    ctor.prototype = new TempCtor();
+	    ctor.prototype.constructor = ctor;
+	  };
+	}
+	});
 
 	var domain;
 
@@ -23247,12 +23351,12 @@
 
 	var require$$1 = ( stream && Stream ) || stream;
 
-	var Buffer$2 = safeBuffer.Buffer;
+	var Buffer$3 = safeBuffer.Buffer;
 	var Transform$1 = require$$1.Transform;
 
 
 	function throwIfNotStringOrBuffer (val, prefix) {
-	  if (!Buffer$2.isBuffer(val) && typeof val !== 'string') {
+	  if (!Buffer$3.isBuffer(val) && typeof val !== 'string') {
 	    throw new TypeError(prefix + ' must be a string or a buffer')
 	  }
 	}
@@ -23260,7 +23364,7 @@
 	function HashBase (blockSize) {
 	  Transform$1.call(this);
 
-	  this._block = Buffer$2.allocUnsafe(blockSize);
+	  this._block = Buffer$3.allocUnsafe(blockSize);
 	  this._blockSize = blockSize;
 	  this._blockOffset = 0;
 	  this._length = [0, 0, 0, 0];
@@ -23295,7 +23399,7 @@
 	HashBase.prototype.update = function (data, encoding) {
 	  throwIfNotStringOrBuffer(data, 'Data');
 	  if (this._finalized) throw new Error('Digest already called')
-	  if (!Buffer$2.isBuffer(data)) data = Buffer$2.from(data, encoding);
+	  if (!Buffer$3.isBuffer(data)) data = Buffer$3.from(data, encoding);
 
 	  // consume data
 	  var block = this._block;
@@ -23484,7 +23588,7 @@
 
 	var md5_js = MD5;
 
-	var Buffer$3 = require$$0.Buffer;
+	var Buffer$4 = require$$0.Buffer;
 
 
 
@@ -23612,7 +23716,7 @@
 	  this._update();
 
 	  // produce result
-	  var buffer = Buffer$3.alloc ? Buffer$3.alloc(20) : new Buffer$3(20);
+	  var buffer = Buffer$4.alloc ? Buffer$4.alloc(20) : new Buffer$4(20);
 	  buffer.writeInt32LE(this._a, 0);
 	  buffer.writeInt32LE(this._b, 4);
 	  buffer.writeInt32LE(this._c, 8);
@@ -23647,11 +23751,11 @@
 
 	var ripemd160 = RIPEMD160;
 
-	var Buffer$4 = safeBuffer.Buffer;
+	var Buffer$5 = safeBuffer.Buffer;
 
 	// prototype class for hash functions
 	function Hash (blockSize, finalSize) {
-	  this._block = Buffer$4.alloc(blockSize);
+	  this._block = Buffer$5.alloc(blockSize);
 	  this._finalSize = finalSize;
 	  this._blockSize = blockSize;
 	  this._len = 0;
@@ -23660,7 +23764,7 @@
 	Hash.prototype.update = function (data, enc) {
 	  if (typeof data === 'string') {
 	    enc = enc || 'utf8';
-	    data = Buffer$4.from(data, enc);
+	    data = Buffer$5.from(data, enc);
 	  }
 
 	  var block = this._block;
@@ -23739,7 +23843,7 @@
 
 
 
-	var Buffer$5 = safeBuffer.Buffer;
+	var Buffer$6 = safeBuffer.Buffer;
 
 	var K = [
 	  0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -23811,7 +23915,7 @@
 	};
 
 	Sha.prototype._hash = function () {
-	  var H = Buffer$5.allocUnsafe(20);
+	  var H = Buffer$6.allocUnsafe(20);
 
 	  H.writeInt32BE(this._a | 0, 0);
 	  H.writeInt32BE(this._b | 0, 4);
@@ -23835,7 +23939,7 @@
 
 
 
-	var Buffer$6 = safeBuffer.Buffer;
+	var Buffer$7 = safeBuffer.Buffer;
 
 	var K$1 = [
 	  0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -23911,7 +24015,7 @@
 	};
 
 	Sha1.prototype._hash = function () {
-	  var H = Buffer$6.allocUnsafe(20);
+	  var H = Buffer$7.allocUnsafe(20);
 
 	  H.writeInt32BE(this._a | 0, 0);
 	  H.writeInt32BE(this._b | 0, 4);
@@ -23934,7 +24038,7 @@
 
 
 
-	var Buffer$7 = safeBuffer.Buffer;
+	var Buffer$8 = safeBuffer.Buffer;
 
 	var K$2 = [
 	  0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
@@ -24044,7 +24148,7 @@
 	};
 
 	Sha256.prototype._hash = function () {
-	  var H = Buffer$7.allocUnsafe(32);
+	  var H = Buffer$8.allocUnsafe(32);
 
 	  H.writeInt32BE(this._a, 0);
 	  H.writeInt32BE(this._b, 4);
@@ -24071,7 +24175,7 @@
 
 
 
-	var Buffer$8 = safeBuffer.Buffer;
+	var Buffer$9 = safeBuffer.Buffer;
 
 	var W$3 = new Array(64);
 
@@ -24099,7 +24203,7 @@
 	};
 
 	Sha224.prototype._hash = function () {
-	  var H = Buffer$8.allocUnsafe(28);
+	  var H = Buffer$9.allocUnsafe(28);
 
 	  H.writeInt32BE(this._a, 0);
 	  H.writeInt32BE(this._b, 4);
@@ -24114,7 +24218,7 @@
 
 	var sha224 = Sha224;
 
-	var Buffer$9 = safeBuffer.Buffer;
+	var Buffer$a = safeBuffer.Buffer;
 
 	var K$3 = [
 	  0x428a2f98, 0xd728ae22, 0x71374491, 0x23ef65cd,
@@ -24352,7 +24456,7 @@
 	};
 
 	Sha512.prototype._hash = function () {
-	  var H = Buffer$9.allocUnsafe(64);
+	  var H = Buffer$a.allocUnsafe(64);
 
 	  function writeInt64BE (h, l, offset) {
 	    H.writeInt32BE(h, offset);
@@ -24373,7 +24477,7 @@
 
 	var sha512 = Sha512;
 
-	var Buffer$a = safeBuffer.Buffer;
+	var Buffer$b = safeBuffer.Buffer;
 
 	var W$5 = new Array(160);
 
@@ -24409,7 +24513,7 @@
 	};
 
 	Sha384.prototype._hash = function () {
-	  var H = Buffer$a.allocUnsafe(48);
+	  var H = Buffer$b.allocUnsafe(48);
 
 	  function writeInt64BE (h, l, offset) {
 	    H.writeInt32BE(h, offset);
@@ -24446,7 +24550,7 @@
 	exports.sha512 = sha512;
 	});
 
-	var Buffer$b = safeBuffer.Buffer;
+	var Buffer$c = safeBuffer.Buffer;
 	var Transform$2 = require$$1.Transform;
 	var StringDecoder$1 = stringDecoder.StringDecoder;
 
@@ -24470,7 +24574,7 @@
 
 	CipherBase.prototype.update = function (data, inputEnc, outputEnc) {
 	  if (typeof data === 'string') {
-	    data = Buffer$b.from(data, inputEnc);
+	    data = Buffer$c.from(data, inputEnc);
 	  }
 
 	  var outData = this._update(data);
@@ -24521,7 +24625,7 @@
 	  done(err);
 	};
 	CipherBase.prototype._finalOrDigest = function (outputEnc) {
-	  var outData = this.__final() || Buffer$b.alloc(0);
+	  var outData = this.__final() || Buffer$c.alloc(0);
 	  if (outputEnc) {
 	    outData = this._toString(outData, outputEnc, true);
 	  }
@@ -24578,171 +24682,7 @@
 	// Merged Buffer refactorings from base58-native by Stephen Pair
 	// Copyright (c) 2013 BitPay Inc
 
-	var Buffer$c = safeBuffer.Buffer;
-
-	var baseX = function base (ALPHABET) {
-	  var ALPHABET_MAP = {};
-	  var BASE = ALPHABET.length;
-	  var LEADER = ALPHABET.charAt(0);
-
-	  // pre-compute lookup table
-	  for (var z = 0; z < ALPHABET.length; z++) {
-	    var x = ALPHABET.charAt(z);
-
-	    if (ALPHABET_MAP[x] !== undefined) throw new TypeError(x + ' is ambiguous')
-	    ALPHABET_MAP[x] = z;
-	  }
-
-	  function encode (source) {
-	    if (source.length === 0) return ''
-
-	    var digits = [0];
-	    for (var i = 0; i < source.length; ++i) {
-	      for (var j = 0, carry = source[i]; j < digits.length; ++j) {
-	        carry += digits[j] << 8;
-	        digits[j] = carry % BASE;
-	        carry = (carry / BASE) | 0;
-	      }
-
-	      while (carry > 0) {
-	        digits.push(carry % BASE);
-	        carry = (carry / BASE) | 0;
-	      }
-	    }
-
-	    var string = '';
-
-	    // deal with leading zeros
-	    for (var k = 0; source[k] === 0 && k < source.length - 1; ++k) string += LEADER;
-	    // convert digits to a string
-	    for (var q = digits.length - 1; q >= 0; --q) string += ALPHABET[digits[q]];
-
-	    return string
-	  }
-
-	  function decodeUnsafe (string) {
-	    if (typeof string !== 'string') throw new TypeError('Expected String')
-	    if (string.length === 0) return Buffer$c.allocUnsafe(0)
-
-	    var bytes = [0];
-	    for (var i = 0; i < string.length; i++) {
-	      var value = ALPHABET_MAP[string[i]];
-	      if (value === undefined) return
-
-	      for (var j = 0, carry = value; j < bytes.length; ++j) {
-	        carry += bytes[j] * BASE;
-	        bytes[j] = carry & 0xff;
-	        carry >>= 8;
-	      }
-
-	      while (carry > 0) {
-	        bytes.push(carry & 0xff);
-	        carry >>= 8;
-	      }
-	    }
-
-	    // deal with leading zeros
-	    for (var k = 0; string[k] === LEADER && k < string.length - 1; ++k) {
-	      bytes.push(0);
-	    }
-
-	    return Buffer$c.from(bytes.reverse())
-	  }
-
-	  function decode (string) {
-	    var buffer = decodeUnsafe(string);
-	    if (buffer) return buffer
-
-	    throw new Error('Non-base' + BASE + ' character')
-	  }
-
-	  return {
-	    encode: encode,
-	    decodeUnsafe: decodeUnsafe,
-	    decode: decode
-	  }
-	};
-
-	var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-	var bs58 = baseX(ALPHABET);
-
 	var Buffer$d = safeBuffer.Buffer;
-
-	var base = function (checksumFn) {
-	  // Encode a buffer as a base58-check encoded string
-	  function encode (payload) {
-	    var checksum = checksumFn(payload);
-
-	    return bs58.encode(Buffer$d.concat([
-	      payload,
-	      checksum
-	    ], payload.length + 4))
-	  }
-
-	  function decodeRaw (buffer) {
-	    var payload = buffer.slice(0, -4);
-	    var checksum = buffer.slice(-4);
-	    var newChecksum = checksumFn(payload);
-
-	    if (checksum[0] ^ newChecksum[0] |
-	        checksum[1] ^ newChecksum[1] |
-	        checksum[2] ^ newChecksum[2] |
-	        checksum[3] ^ newChecksum[3]) return
-
-	    return payload
-	  }
-
-	  // Decode a base58-check encoded string to a buffer, no result if checksum is wrong
-	  function decodeUnsafe (string) {
-	    var buffer = bs58.decodeUnsafe(string);
-	    if (!buffer) return
-
-	    return decodeRaw(buffer)
-	  }
-
-	  function decode (string) {
-	    var buffer = bs58.decode(string);
-	    var payload = decodeRaw(buffer, checksumFn);
-	    if (!payload) throw new Error('Invalid checksum')
-	    return payload
-	  }
-
-	  return {
-	    encode: encode,
-	    decode: decode,
-	    decodeUnsafe: decodeUnsafe
-	  }
-	};
-
-	// SHA256(SHA256(buffer))
-	function sha256x2 (buffer) {
-	  var tmp = browser$1('sha256').update(buffer).digest();
-	  return browser$1('sha256').update(tmp).digest()
-	}
-
-	var bs58check = base(sha256x2);
-
-	var encodeAddress = function encodeAddress(byteArray) {
-	  if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
-
-	  var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
-	  return bs58check.encode(buf);
-	};
-
-	var decodeAddress = function decodeAddress(address) {
-	  return bs58check.decode(address).slice(1);
-	};
-
-	// base-x encoding
-	// Forked from https://github.com/cryptocoinjs/bs58
-	// Originally written by Mike Hearn for BitcoinJ
-	// Copyright (c) 2011 Google Inc
-	// Ported to JavaScript by Stefan Thomas
-	// Merged Buffer refactorings from base58-native by Stephen Pair
-	// Copyright (c) 2013 BitPay Inc
-
-	var Buffer$e = safeBuffer.Buffer;
 
 	var baseX$1 = function base (ALPHABET) {
 	  var ALPHABET_MAP = {};
@@ -24786,7 +24726,7 @@
 
 	  function decodeUnsafe (string) {
 	    if (typeof string !== 'string') throw new TypeError('Expected String')
-	    if (string.length === 0) return Buffer$e.allocUnsafe(0)
+	    if (string.length === 0) return Buffer$d.allocUnsafe(0)
 
 	    var bytes = [0];
 	    for (var i = 0; i < string.length; i++) {
@@ -24810,7 +24750,7 @@
 	      bytes.push(0);
 	    }
 
-	    return Buffer$e.from(bytes.reverse())
+	    return Buffer$d.from(bytes.reverse())
 	  }
 
 	  function decode (string) {
@@ -24831,23 +24771,133 @@
 
 	var bs58$1 = baseX$1(ALPHABET$1);
 
-	function encodeTxHash(bytes) {
-	  return bs58$1.encode(bytes);
+	var Buffer$e = safeBuffer.Buffer;
+
+	var base = function (checksumFn) {
+	  // Encode a buffer as a base58-check encoded string
+	  function encode (payload) {
+	    var checksum = checksumFn(payload);
+
+	    return bs58$1.encode(Buffer$e.concat([
+	      payload,
+	      checksum
+	    ], payload.length + 4))
+	  }
+
+	  function decodeRaw (buffer) {
+	    var payload = buffer.slice(0, -4);
+	    var checksum = buffer.slice(-4);
+	    var newChecksum = checksumFn(payload);
+
+	    if (checksum[0] ^ newChecksum[0] |
+	        checksum[1] ^ newChecksum[1] |
+	        checksum[2] ^ newChecksum[2] |
+	        checksum[3] ^ newChecksum[3]) return
+
+	    return payload
+	  }
+
+	  // Decode a base58-check encoded string to a buffer, no result if checksum is wrong
+	  function decodeUnsafe (string) {
+	    var buffer = bs58$1.decodeUnsafe(string);
+	    if (!buffer) return
+
+	    return decodeRaw(buffer)
+	  }
+
+	  function decode (string) {
+	    var buffer = bs58$1.decode(string);
+	    var payload = decodeRaw(buffer, checksumFn);
+	    if (!payload) throw new Error('Invalid checksum')
+	    return payload
+	  }
+
+	  return {
+	    encode: encode,
+	    decode: decode,
+	    decodeUnsafe: decodeUnsafe
+	  }
+	};
+
+	// SHA256(SHA256(buffer))
+	function sha256x2 (buffer) {
+	  var tmp = browser$1('sha256').update(buffer).digest();
+	  return browser$1('sha256').update(tmp).digest()
 	}
-	function decodeTxHash(bs58string) {
-	  return bs58$1.decode(bs58string);
-	}
+
+	var bs58check = base(sha256x2);
+
+	/**
+	 * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
+	 * but client-side they are displayed as base58-check encoded strings.
+	 * The encoding requires some computation, so you should only convert address objects to strings when needed.
+	 */
+
+	var Address =
+	/*#__PURE__*/
+	function () {
+	  function Address(address) {
+	    _classCallCheck(this, Address);
+
+	    if (address instanceof Address) {
+	      // Copy buffer
+	      this.value = Buffer.from(address.value);
+	    } else if (typeof address === 'string') {
+	      // Decode string
+	      this.value = Address.decode(address);
+	      this.encoded = address;
+	    } else if (address.length >= 0) {
+	      // Treat array-like as buffer
+	      this.value = address;
+	    } else {
+	      throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not');
+	    }
+	  }
+
+	  _createClass(Address, [{
+	    key: "asBytes",
+	    value: function asBytes() {
+	      return this.value;
+	    }
+	  }, {
+	    key: "toString",
+	    value: function toString() {
+	      if (!this.encoded) {
+	        this.encoded = Address.encode(this.value);
+	      }
+
+	      return this.encoded;
+	    }
+	  }], [{
+	    key: "decode",
+	    value: function decode(bs58string) {
+	      return bs58check.decode(bs58string).slice(1);
+	    }
+	  }, {
+	    key: "encode",
+	    value: function encode(byteArray) {
+	      if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
+
+	      var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
+	      return bs58check.encode(buf);
+	    }
+	  }]);
+
+	  return Address;
+	}();
 
 	/*
 	rpcTypes.Tx = {
-	    hash : byte of base64 
-	    nonce : uint
-	    from : byte of base58
-	    to : byte of base58
-	    amount : uint
-	    payload : byte of base64
-	    sign : byte of base64
-	    type : int
+	    hash : bytes 
+	    nonce : uint64
+	    from : bytes
+	    to : bytes
+	    amount : uint64
+	    payload : bytes
+	    sign : bytes
+	    type : int,
+	    limit: uint64;
+	    price: uint64;
 	}
 	*/
 
@@ -24872,10 +24922,10 @@
 	        throw new Error('Missing required transaction parameter \'from\'');
 	      }
 
-	      msgtxbody.setAccount(decodeAddress(this.from));
+	      msgtxbody.setAccount(new Address(this.from).asBytes());
 
 	      if (typeof this.to !== 'undefined' && this.to !== null) {
-	        msgtxbody.setRecipient(decodeAddress(this.to));
+	        msgtxbody.setRecipient(new Address(this.to).asBytes());
 	      }
 
 	      msgtxbody.setAmount(this.amount);
@@ -24891,6 +24941,15 @@
 	      }
 
 	      msgtxbody.setType(this.type);
+
+	      if (typeof this.limit !== 'undefined') {
+	        msgtxbody.setLimit(this.limit);
+	      }
+
+	      if (typeof this.price !== 'undefined') {
+	        msgtxbody.setPrice(this.price);
+	      }
+
 	      var msgtx = new rpcTypes.Tx();
 
 	      if (this.hash != null) {
@@ -24912,12 +24971,14 @@
 	      return new Tx({
 	        hash: encodeTxHash(grpcObject.getHash()),
 	        nonce: grpcObject.getBody().getNonce(),
-	        from: encodeAddress(grpcObject.getBody().getAccount_asU8()),
-	        to: encodeAddress(grpcObject.getBody().getRecipient_asU8()),
+	        from: new Address(grpcObject.getBody().getAccount_asU8()),
+	        to: new Address(grpcObject.getBody().getRecipient_asU8()),
 	        amount: grpcObject.getBody().getAmount(),
 	        payload: grpcObject.getBody().getPayload(),
 	        sign: grpcObject.getBody().getSign_asB64(),
-	        type: grpcObject.getBody().getType()
+	        type: grpcObject.getBody().getType(),
+	        limit: grpcObject.getBody().getLimit(),
+	        price: grpcObject.getBody().getPrice()
 	      });
 	    }
 	  }]);
@@ -24995,7 +25056,7 @@
 	              reject(err);
 	            } else {
 	              var createdAddress = rsp.getAddress_asU8();
-	              resolve(encodeAddress(createdAddress));
+	              resolve(new Address(createdAddress));
 	            }
 	          });
 	        } catch (exception) {
@@ -25023,7 +25084,7 @@
 	            } else {
 	              var accounts = rsp.getAccountsList();
 	              var addresses = accounts.map(function (account) {
-	                return encodeAddress(account.getAddress_asU8());
+	                return new Address(account.getAddress_asU8());
 	              });
 	              resolve(addresses);
 	            }
@@ -25047,7 +25108,7 @@
 
 	      return new Promise(function (resolve, reject) {
 	        var account = new rpc_pb_3();
-	        account.setAddress(decodeAddress(address));
+	        account.setAddress(new Address(address).asBytes());
 	        var personal = new rpc_pb_2();
 	        personal.setPassphrase(passphrase);
 	        personal.setAccount(account);
@@ -25058,7 +25119,7 @@
 	              reject(err);
 	            } else {
 	              var createdAddress = rsp.getAddress_asU8();
-	              resolve(encodeAddress(createdAddress));
+	              resolve(new Address(createdAddress));
 	            }
 	          });
 	        } catch (exception) {
@@ -25080,7 +25141,7 @@
 
 	      return new Promise(function (resolve, reject) {
 	        var account = new rpc_pb_3();
-	        account.setAddress(decodeAddress(address));
+	        account.setAddress(new Address(address).asBytes());
 	        var personal = new rpc_pb_2();
 	        personal.setPassphrase(passphrase);
 	        personal.setAccount(account);
@@ -25091,7 +25152,7 @@
 	              reject(err);
 	            } else {
 	              var createdAddress = rsp.getAddress_asU8();
-	              resolve(encodeAddress(createdAddress));
+	              resolve(new Address(createdAddress));
 	            }
 	          });
 	        } catch (exception) {
@@ -25301,12 +25362,12 @@
 	  }, {
 	    key: "encodeHash",
 	    value: function encodeHash(bytes) {
-	      return bs58$1.encode(bytes);
+	      return bs58.encode(bytes);
 	    }
 	  }, {
 	    key: "decodeHash",
 	    value: function decodeHash(bs58string) {
-	      return bs58$1.decode(bs58string);
+	      return bs58.decode(bs58string);
 	    }
 	  }]);
 
@@ -25326,7 +25387,7 @@
 	   * 
 	   * .. code-block:: javascript
 	   * 
-	   *     import AergoClient from 'herajs';
+	   *     import AergoClient from '@herajs/client';
 	   *     const aergo = new AergoClient();
 	   * 
 	   * @param [object] configuration. Unused at the moment.
@@ -25529,7 +25590,7 @@
 	    key: "getState",
 	    value: function getState(address) {
 	      var singleBytes = new rpcTypes.SingleBytes();
-	      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+	      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
 	      return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
 	        return state.toObject();
 	      });
@@ -25538,7 +25599,7 @@
 	    key: "getNonce",
 	    value: function getNonce(address) {
 	      var singleBytes = new rpcTypes.SingleBytes();
-	      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+	      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
 	      return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
 	        return state.getNonce();
 	      });
@@ -25611,7 +25672,7 @@
 	      return promisify(this.client.getReceipt, this.client)(singleBytes).then(function (grpcObject) {
 	        var obj = grpcObject.toObject();
 	        return {
-	          contractaddress: encodeAddress(grpcObject.getContractaddress_asU8()),
+	          contractaddress: new Address(grpcObject.getContractaddress_asU8()),
 	          result: obj.ret,
 	          //JSON.parse(obj.ret),
 	          status: obj.status
@@ -25628,7 +25689,7 @@
 	    key: "queryContract",
 	    value: function queryContract(functionCall) {
 	      var query = new rpcTypes.Query();
-	      query.setContractaddress(Buffer.from(decodeAddress(functionCall.contractInstance.address)));
+	      query.setContractaddress(Buffer.from(new Address(functionCall.contractInstance.address).asBytes()));
 	      query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
 	      return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
 	        return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
@@ -25644,7 +25705,7 @@
 	    key: "getABI",
 	    value: function getABI(address) {
 	      var singleBytes = new rpcTypes.SingleBytes();
-	      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+	      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
 	      return promisify(this.client.getABI, this.client)(singleBytes).then(function (grpcObject) {
 	        var obj = grpcObject.toObject();
 	        return {
@@ -28073,7 +28134,7 @@
 	  /**
 	   * .. code-block:: javascript
 	   * 
-	   *     import { GrpcWebProvider } from 'herajs';
+	   *     import { GrpcWebProvider } from '@herajs/client';
 	   *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
 	   * 
 	   * @param {object} config
@@ -28125,7 +28186,7 @@
 	   * 
 	   * .. code-block:: javascript
 	   * 
-	   *     import { Contract } from 'herajs';
+	   *     import { Contract } from '@herajs/client';
 	   *     const contract = Contract.fromAbi(abi).atAddress(address);
 	   *     const functionCall = contract.someAbiFunction();
 	   *     aergo.accounts.sendTransaction(functionCall.asTransaction({
@@ -28164,7 +28225,7 @@
 	     * 
 	     * .. code-block:: javascript
 	     * 
-	     *     import { Contract } from 'herajs';
+	     *     import { Contract } from '@herajs/client';
 	     *     const contract = Contract.fromAbi(abi).atAddress(address);
 	     *     const functionCall = contract.someAbiFunction();
 	     *     aergo.queryContract(functionCall).then(result => {
@@ -28195,7 +28256,7 @@
 	 * 
 	 * .. code-block:: javascript
 	 * 
-	 *     import { Contract } from 'herajs';
+	 *     import { Contract } from '@herajs/client';
 	 *     const contract = Contract.fromAbi(abi).atAddress(address);
 	 *     aergo.queryContract(contract.someAbiFunction()).then(result => {
 	 *         console.log(result);

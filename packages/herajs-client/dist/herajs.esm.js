@@ -1,11 +1,11 @@
 /*!
- * herajs v0.0.1-b3
+ * herajs v0.0.1-b4
  * (c) 2018 AERGO
  * Released under MIT license.
  */
 import jspb from 'google-protobuf';
-import bs58check from 'bs58check';
 import bs58 from 'bs58';
+import bs58check from 'bs58check';
 import grpc from 'grpc';
 
 function createCommonjsModule(fn, module) {
@@ -17929,6 +17929,13 @@ var typesWeb = /*#__PURE__*/Object.freeze({
 var platformWeb = typeof process === 'undefined' || process.env.TARGET == 'web';
 var rpcTypes = platformWeb ? typesWeb : typesNode;
 
+function encodeTxHash(bytes) {
+  return bs58.encode(bytes);
+}
+function decodeTxHash(bs58string) {
+  return bs58.decode(bs58string);
+}
+
 var ADDRESS_PREFIXES = {
   ACCOUNT: 0x42,
   CONTRACT: 0xC0
@@ -17952,34 +17959,77 @@ var constants = {
   UNITS: UNITS
 };
 
-var encodeAddress = function encodeAddress(byteArray) {
-  if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
+/**
+ * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
+ * but client-side they are displayed as base58-check encoded strings.
+ * The encoding requires some computation, so you should only convert address objects to strings when needed.
+ */
 
-  var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
-  return bs58check.encode(buf);
-};
+var Address =
+/*#__PURE__*/
+function () {
+  function Address(address) {
+    _classCallCheck(this, Address);
 
-var decodeAddress = function decodeAddress(address) {
-  return bs58check.decode(address).slice(1);
-};
+    if (address instanceof Address) {
+      // Copy buffer
+      this.value = Buffer.from(address.value);
+    } else if (typeof address === 'string') {
+      // Decode string
+      this.value = Address.decode(address);
+      this.encoded = address;
+    } else if (address.length >= 0) {
+      // Treat array-like as buffer
+      this.value = address;
+    } else {
+      throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not');
+    }
+  }
 
-function encodeTxHash(bytes) {
-  return bs58.encode(bytes);
-}
-function decodeTxHash(bs58string) {
-  return bs58.decode(bs58string);
-}
+  _createClass(Address, [{
+    key: "asBytes",
+    value: function asBytes() {
+      return this.value;
+    }
+  }, {
+    key: "toString",
+    value: function toString() {
+      if (!this.encoded) {
+        this.encoded = Address.encode(this.value);
+      }
+
+      return this.encoded;
+    }
+  }], [{
+    key: "decode",
+    value: function decode(bs58string) {
+      return bs58check.decode(bs58string).slice(1);
+    }
+  }, {
+    key: "encode",
+    value: function encode(byteArray) {
+      if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
+
+      var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
+      return bs58check.encode(buf);
+    }
+  }]);
+
+  return Address;
+}();
 
 /*
 rpcTypes.Tx = {
-    hash : byte of base64 
-    nonce : uint
-    from : byte of base58
-    to : byte of base58
-    amount : uint
-    payload : byte of base64
-    sign : byte of base64
-    type : int
+    hash : bytes 
+    nonce : uint64
+    from : bytes
+    to : bytes
+    amount : uint64
+    payload : bytes
+    sign : bytes
+    type : int,
+    limit: uint64;
+    price: uint64;
 }
 */
 
@@ -18004,10 +18054,10 @@ function () {
         throw new Error('Missing required transaction parameter \'from\'');
       }
 
-      msgtxbody.setAccount(decodeAddress(this.from));
+      msgtxbody.setAccount(new Address(this.from).asBytes());
 
       if (typeof this.to !== 'undefined' && this.to !== null) {
-        msgtxbody.setRecipient(decodeAddress(this.to));
+        msgtxbody.setRecipient(new Address(this.to).asBytes());
       }
 
       msgtxbody.setAmount(this.amount);
@@ -18023,6 +18073,15 @@ function () {
       }
 
       msgtxbody.setType(this.type);
+
+      if (typeof this.limit !== 'undefined') {
+        msgtxbody.setLimit(this.limit);
+      }
+
+      if (typeof this.price !== 'undefined') {
+        msgtxbody.setPrice(this.price);
+      }
+
       var msgtx = new rpcTypes.Tx();
 
       if (this.hash != null) {
@@ -18044,12 +18103,14 @@ function () {
       return new Tx({
         hash: encodeTxHash(grpcObject.getHash()),
         nonce: grpcObject.getBody().getNonce(),
-        from: encodeAddress(grpcObject.getBody().getAccount_asU8()),
-        to: encodeAddress(grpcObject.getBody().getRecipient_asU8()),
+        from: new Address(grpcObject.getBody().getAccount_asU8()),
+        to: new Address(grpcObject.getBody().getRecipient_asU8()),
         amount: grpcObject.getBody().getAmount(),
         payload: grpcObject.getBody().getPayload(),
         sign: grpcObject.getBody().getSign_asB64(),
-        type: grpcObject.getBody().getType()
+        type: grpcObject.getBody().getType(),
+        limit: grpcObject.getBody().getLimit(),
+        price: grpcObject.getBody().getPrice()
       });
     }
   }]);
@@ -18127,7 +18188,7 @@ function () {
               reject(err);
             } else {
               var createdAddress = rsp.getAddress_asU8();
-              resolve(encodeAddress(createdAddress));
+              resolve(new Address(createdAddress));
             }
           });
         } catch (exception) {
@@ -18155,7 +18216,7 @@ function () {
             } else {
               var accounts = rsp.getAccountsList();
               var addresses = accounts.map(function (account) {
-                return encodeAddress(account.getAddress_asU8());
+                return new Address(account.getAddress_asU8());
               });
               resolve(addresses);
             }
@@ -18179,7 +18240,7 @@ function () {
 
       return new Promise(function (resolve, reject) {
         var account = new rpc_pb_3();
-        account.setAddress(decodeAddress(address));
+        account.setAddress(new Address(address).asBytes());
         var personal = new rpc_pb_2();
         personal.setPassphrase(passphrase);
         personal.setAccount(account);
@@ -18190,7 +18251,7 @@ function () {
               reject(err);
             } else {
               var createdAddress = rsp.getAddress_asU8();
-              resolve(encodeAddress(createdAddress));
+              resolve(new Address(createdAddress));
             }
           });
         } catch (exception) {
@@ -18212,7 +18273,7 @@ function () {
 
       return new Promise(function (resolve, reject) {
         var account = new rpc_pb_3();
-        account.setAddress(decodeAddress(address));
+        account.setAddress(new Address(address).asBytes());
         var personal = new rpc_pb_2();
         personal.setPassphrase(passphrase);
         personal.setAccount(account);
@@ -18223,7 +18284,7 @@ function () {
               reject(err);
             } else {
               var createdAddress = rsp.getAddress_asU8();
-              resolve(encodeAddress(createdAddress));
+              resolve(new Address(createdAddress));
             }
           });
         } catch (exception) {
@@ -18458,7 +18519,7 @@ function () {
    * 
    * .. code-block:: javascript
    * 
-   *     import AergoClient from 'herajs';
+   *     import AergoClient from '@herajs/client';
    *     const aergo = new AergoClient();
    * 
    * @param [object] configuration. Unused at the moment.
@@ -18661,7 +18722,7 @@ function () {
     key: "getState",
     value: function getState(address) {
       var singleBytes = new rpcTypes.SingleBytes();
-      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
       return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
         return state.toObject();
       });
@@ -18670,7 +18731,7 @@ function () {
     key: "getNonce",
     value: function getNonce(address) {
       var singleBytes = new rpcTypes.SingleBytes();
-      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
       return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
         return state.getNonce();
       });
@@ -18743,7 +18804,7 @@ function () {
       return promisify(this.client.getReceipt, this.client)(singleBytes).then(function (grpcObject) {
         var obj = grpcObject.toObject();
         return {
-          contractaddress: encodeAddress(grpcObject.getContractaddress_asU8()),
+          contractaddress: new Address(grpcObject.getContractaddress_asU8()),
           result: obj.ret,
           //JSON.parse(obj.ret),
           status: obj.status
@@ -18760,7 +18821,7 @@ function () {
     key: "queryContract",
     value: function queryContract(functionCall) {
       var query = new rpcTypes.Query();
-      query.setContractaddress(Buffer.from(decodeAddress(functionCall.contractInstance.address)));
+      query.setContractaddress(Buffer.from(new Address(functionCall.contractInstance.address).asBytes()));
       query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
       return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
         return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
@@ -18776,7 +18837,7 @@ function () {
     key: "getABI",
     value: function getABI(address) {
       var singleBytes = new rpcTypes.SingleBytes();
-      singleBytes.setValue(Buffer.from(decodeAddress(address)));
+      singleBytes.setValue(Buffer.from(new Address(address).asBytes()));
       return promisify(this.client.getABI, this.client)(singleBytes).then(function (grpcObject) {
         var obj = grpcObject.toObject();
         return {
@@ -19410,7 +19471,7 @@ function (_Provider) {
   /**
    * .. code-block:: javascript
    * 
-   *     import { GrpcProvider } from 'herajs';
+   *     import { GrpcProvider } from '@herajs/client';
    *     const provider = new GrpcProvider({url: 'localhost:7845'});
    * 
    * @param {object} config
@@ -19459,7 +19520,7 @@ function () {
    * 
    * .. code-block:: javascript
    * 
-   *     import { Contract } from 'herajs';
+   *     import { Contract } from '@herajs/client';
    *     const contract = Contract.fromAbi(abi).atAddress(address);
    *     const functionCall = contract.someAbiFunction();
    *     aergo.accounts.sendTransaction(functionCall.asTransaction({
@@ -19498,7 +19559,7 @@ function () {
      * 
      * .. code-block:: javascript
      * 
-     *     import { Contract } from 'herajs';
+     *     import { Contract } from '@herajs/client';
      *     const contract = Contract.fromAbi(abi).atAddress(address);
      *     const functionCall = contract.someAbiFunction();
      *     aergo.queryContract(functionCall).then(result => {
@@ -19529,7 +19590,7 @@ function () {
  * 
  * .. code-block:: javascript
  * 
- *     import { Contract } from 'herajs';
+ *     import { Contract } from '@herajs/client';
  *     const contract = Contract.fromAbi(abi).atAddress(address);
  *     aergo.queryContract(contract.someAbiFunction()).then(result => {
  *         console.log(result);
