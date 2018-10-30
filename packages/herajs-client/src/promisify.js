@@ -1,3 +1,9 @@
+const getOwnPropertyDescriptors = originalObject => Object.getOwnPropertyNames(originalObject).reduce(
+    (descriptors, name) => {
+        descriptors[name] = Object.getOwnPropertyDescriptor(originalObject, name);
+        return descriptors;
+    }, {});
+
 const kCustomPromisifiedSymbol = Symbol('util.promisify.custom');
 
 export default function promisify(original, context) {
@@ -26,6 +32,6 @@ export default function promisify(original, context) {
     });
     return Object.defineProperties(
         fn,
-        Object.getOwnPropertyDescriptors(original)
+        (Object.getOwnPropertyDescriptors || getOwnPropertyDescriptors)(original)
     );
 }
