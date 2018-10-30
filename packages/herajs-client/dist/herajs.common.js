@@ -18024,30 +18024,44 @@ function () {
   return Address;
 }();
 
-/*
-rpcTypes.Tx = {
-    hash : bytes 
-    nonce : uint64
-    from : bytes
-    to : bytes
-    amount : uint64
-    payload : bytes
-    sign : bytes
-    type : int,
-    limit: uint64;
-    price: uint64;
-}
-*/
-
-var Tx =
+/**
+ * Basically just a named struct that can be extended
+ */
+var BaseModel =
 /*#__PURE__*/
 function () {
-  function Tx(data) {
-    _classCallCheck(this, Tx);
+  function BaseModel(data) {
+    _classCallCheck(this, BaseModel);
 
     for (var key in data) {
       this[key] = data[key];
     }
+  }
+
+  _createClass(BaseModel, [{
+    key: "toGrpc",
+    value: function toGrpc() {
+      throw new Error('not implemented');
+    }
+  }], [{
+    key: "fromGrpc",
+    value: function fromGrpc(grpcObject) {
+      return grpcObject.toObject();
+    }
+  }]);
+
+  return BaseModel;
+}();
+
+var Tx =
+/*#__PURE__*/
+function (_BaseModel) {
+  _inherits(Tx, _BaseModel);
+
+  function Tx() {
+    _classCallCheck(this, Tx);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tx).apply(this, arguments));
   }
 
   _createClass(Tx, [{
@@ -18105,6 +18119,19 @@ function () {
     }
   }], [{
     key: "fromGrpc",
+
+    /*
+    hash: bytes;
+    nonce: uint64;
+    from: bytes;
+    to: bytes;
+    amount: uint64;
+    payload: bytes;
+    sign: bytes;
+    type: int;
+    limit: uint64;
+    price: uint64;
+    */
     value: function fromGrpc(grpcObject) {
       return new Tx({
         hash: encodeTxHash(grpcObject.getHash()),
@@ -18122,7 +18149,14 @@ function () {
   }]);
 
   return Tx;
-}();
+}(BaseModel);
+
+var getOwnPropertyDescriptors = function getOwnPropertyDescriptors(originalObject) {
+  return Object.getOwnPropertyNames(originalObject).reduce(function (descriptors, name) {
+    descriptors[name] = Object.getOwnPropertyDescriptor(originalObject, name);
+    return descriptors;
+  }, {});
+};
 
 var kCustomPromisifiedSymbol = Symbol('util.promisify.custom');
 function promisify(original, context) {
@@ -18157,11 +18191,11 @@ function promisify(original, context) {
     writable: false,
     configurable: true
   });
-  return Object.defineProperties(fn, Object.getOwnPropertyDescriptors(original));
+  return Object.defineProperties(fn, (Object.getOwnPropertyDescriptors || getOwnPropertyDescriptors)(original));
 }
 
 /**
- * Accounts controller.
+ * Accounts controller. It is exposed at `aergoClient.accounts`.
  */
 
 var Accounts =
@@ -18468,13 +18502,13 @@ function () {
 
 var Block =
 /*#__PURE__*/
-function () {
-  function Block(data) {
+function (_BaseModel) {
+  _inherits(Block, _BaseModel);
+
+  function Block() {
     _classCallCheck(this, Block);
 
-    for (var key in data) {
-      this[key] = data[key];
-    }
+    return _possibleConstructorReturn(this, _getPrototypeOf(Block).apply(this, arguments));
   }
 
   _createClass(Block, [{
@@ -18510,7 +18544,7 @@ function () {
   }]);
 
   return Block;
-}();
+}(BaseModel);
 
 var CommitStatus$1 = rpcTypes.CommitStatus;
 /**
@@ -18859,7 +18893,7 @@ function () {
       });
     }
     /**
-     * Get list of peers
+     * Get list of peers of connected node
      */
 
   }, {
@@ -19522,7 +19556,7 @@ function () {
     this.contractInstance = contractInstance;
   }
   /**
-   * Generate transaction object that can be passed to `aergo.accounts.sendTransaction()`
+   * Generate transaction object that can be passed to :meth:`aergoClient.accounts.sendTrasaction`
    * 
    * .. code-block:: javascript
    * 
@@ -19560,8 +19594,8 @@ function () {
       }, extraArgs);
     }
     /**
-     * Generate query info that can be passed to `aergo.queryContract()`.
-     * You usually do not need to call this function yourself, `queryContract` takes care of that.
+     * Generate query info that can be passed to the API.
+     * You usually do not need to call this function yourself, :meth:`AergoClient.queryContract` takes care of that.
      * 
      * .. code-block:: javascript
      * 
@@ -19588,11 +19622,11 @@ function () {
   return FunctionCall;
 }();
 /**
- * Smart contract interface
+ * Smart contract interface.
  * You usually instantiante this class by using one of the static methods.
  * Most of the instance methods return the contract so they can be chained.
  * When an ABI is loaded, its functions will be added to the instance and can be called directly.
- * ABI functions return FunctionCall objects that can be queried or called.
+ * ABI functions return `FunctionCall` objects that can be queried or called.
  * 
  * .. code-block:: javascript
  * 
@@ -19607,29 +19641,27 @@ function () {
 
 var Contract =
 /*#__PURE__*/
-function () {
+function (_BaseModel) {
+  _inherits(Contract, _BaseModel);
+
   /**
    * @param {obj} [data]
    */
   function Contract(data) {
+    var _this;
+
     _classCallCheck(this, Contract);
 
-    this.functions = {};
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Contract).call(this, data));
+    _this.functions = {}; // This class acts as a proxy that passes ABI method calls
 
-    if (data) {
-      for (var key in data) {
-        this[key] = data[key];
-      }
-    } // This class acts as a proxy that passes ABI method calls
-
-
-    return new Proxy(this, {
+    return _possibleConstructorReturn(_this, new Proxy(_assertThisInitialized(_assertThisInitialized(_this)), {
       get: function get(obj, field) {
         if (field in obj) return obj[field];
         if (field in obj.functions) return obj.functions[field];
         return undefined;
       }
-    });
+    }));
   }
   /**
    * Create contract instance from code
@@ -19659,7 +19691,7 @@ function () {
   }, {
     key: "loadAbi",
     value: function loadAbi(abi) {
-      var _this = this;
+      var _this2 = this;
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -19669,12 +19701,12 @@ function () {
         var _loop = function _loop() {
           var definition = _step.value;
 
-          _this.functions[definition.name] = function () {
+          _this2.functions[definition.name] = function () {
             for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
-            return new FunctionCall(_this, definition, args);
+            return new FunctionCall(_this2, definition, args);
           };
         };
 
@@ -19761,7 +19793,7 @@ function () {
   }]);
 
   return Contract;
-}();
+}(BaseModel);
 
 AergoClient.prototype.target = 'node';
 
