@@ -285,7 +285,7 @@ class AergoClient {
     }
 
     /**
-     * Get list of peers
+     * Get list of peers of connected node
      */
     getPeers () {
         const empty = new rpcTypes.Empty();

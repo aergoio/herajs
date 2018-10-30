@@ -1,6 +1,7 @@
 import { ADDRESS_PREFIXES } from '../constants.js';
 import bs58check from 'bs58check';
 import { fromNumber } from '../utils';
+import BaseModel from './base';
 
 /**
  * Data structure for contract function calls.
@@ -85,18 +86,14 @@ class FunctionCall {
  *     })
  * 
  */
-class Contract {
+class Contract extends BaseModel {
     /**
      * @param {obj} [data]
      */
     constructor(data) {
+        super(data);
+
         this.functions = {};
-        
-        if (data) {
-            for (const key in data) {
-                this[key] = data[key];
-            }
-        }
 
         // This class acts as a proxy that passes ABI method calls
         return new Proxy(this, {

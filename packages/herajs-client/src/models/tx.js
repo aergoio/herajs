@@ -1,28 +1,21 @@
 import rpcTypes from '../client/types.js';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils.js';
 import Address from './address';
+import BaseModel from './base';
 
-/*
-rpcTypes.Tx = {
-    hash : bytes 
-    nonce : uint64
-    from : bytes
-    to : bytes
-    amount : uint64
-    payload : bytes
-    sign : bytes
-    type : int,
+export default class Tx extends BaseModel {
+    /*
+    hash: bytes;
+    nonce: uint64;
+    from: bytes;
+    to: bytes;
+    amount: uint64;
+    payload: bytes;
+    sign: bytes;
+    type: int;
     limit: uint64;
     price: uint64;
-}
-*/
-
-export default class Tx {
-    constructor(data) {
-        for (const key in data) {
-            this[key] = data[key];
-        }
-    }
+    */
     static fromGrpc(grpcObject) {
         return new Tx({
             hash: encodeTxHash(grpcObject.getHash()),

@@ -1,12 +1,8 @@
 import Tx from './tx';
+import BaseModel from './base';
 import bs58 from 'bs58';
 
-export default class Block {
-    constructor(data) {
-        for (const key in data) {
-            this[key] = data[key];
-        }
-    }
+export default class Block extends BaseModel {
     static fromGrpc(grpcObject) {
         const obj = grpcObject.toObject();
         obj.hash = Block.encodeHash(grpcObject.getHash_asU8());
