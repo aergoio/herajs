@@ -19,8 +19,21 @@ aergo.queryContract(FunctionCall) -> Promise<Result>
 describe('Contracts', () => {
     const aergo = new AergoClient();
 
-    
     describe('error handling', () => {
+        it('should return error when sending payload to empty account', async () => {
+            const testAddress = await aergo.accounts.create('test');
+            await aergo.accounts.unlock(testAddress, 'test');
+            const contract = Contract.fromAbi(contractAbi).setAddress(testAddress);
+            const callTx = contract.inc().asTransaction({
+                from: testAddress
+            });
+            const calltxhash = await aergo.accounts.sendTransaction(callTx);
+            const calltxreceipt = await longPolling(async () => 
+                await aergo.getTransactionReceipt(calltxhash)
+            );
+            assert.equal(calltxreceipt.status, 'invalid code (expected 1632510587 bytes, actual 24 bytes)');
+        }).timeout(31000);
+        /*
         it('should return error when sending payload to non-contract', async () => {
             const testAddress = await aergo.accounts.create('test');
             await aergo.accounts.unlock(testAddress, 'test');
@@ -29,14 +42,13 @@ describe('Contracts', () => {
                 from: testAddress
             });
             const calltxhash = await aergo.accounts.sendTransaction(callTx);
-            //console.log(calltxhash);
             const calltxreceipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(calltxhash)
             );
-            assert.equal(calltxreceipt.status, 'SQL logic error');
+            assert.equal(calltxreceipt.status, 'invalid code (expected 1632510587 bytes, actual 24 bytes)');
         }).timeout(31000);
+        */
     });
-    
     
     describe('deploy, call, query a simple contract', () => {
         const contractCode = 'qMi8Via28nBssysny7p32qMqWC3NSvJRBAtNQ3p66bi5K2xjMU8NLQngrcQe3g1mPRz3n44wa7wKM17SgyMpRSkf3eEw3mzEYSS57FdSAUon7rbSpV56xYsdzuhUBVmGbe41gcPgy3rkf3DC5b7ZhWQJC1z3fQK3JAaGyzFhT7jbwSiufHm6X7c3anS9q2hdrNVzEJDAAMsXar9KsV5pQm57oa8bYE9tMtMmqQFD9tv3bTbTxCwxDwjGZ8t5cxz2ZemUfsuy6La43usHpgokQpSfcCWT4nurtBBfujBeBNRoMaaY3ghGvHLAt9gPBqstTN7Wyv4P4QtaPSvB69MBDZaVM9JHARhKUMZPcoL5p3dHvRuQNybqtKitndu4txRCgR9s4YuWyMCzqHvLwFXzbitc25rGo9bwogRsrKK76F6SLuvdKALZpBbCf9UwXnmGUrbfbRuQtn5qKhYDSDiemxAQ9nCCj1L99SxJnR3q2akSeqxULuKDxdtcTFDL';

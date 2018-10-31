@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "aergo": {
-    "version": "447f804876f5a5bf84f89c9f93fb9e3ee563622c"
+    "version": "8c1e8534251260650d7a4f30adb92fb1e4e70f05"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
