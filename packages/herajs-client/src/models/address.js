@@ -25,6 +25,9 @@ export default class Address {
     asBytes() {
         return this.value;
     }
+    toJSON() {
+        return this.toString();
+    }
     toString() {
         if (!this.encoded) {
             this.encoded = Address.encode(this.value);
