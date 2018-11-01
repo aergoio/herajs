@@ -1,5 +1,5 @@
 /*!
- * herajs v0.0.1-b4
+ * herajs v0.1.0
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -17998,6 +17998,11 @@ function () {
       return this.value;
     }
   }, {
+    key: "toJSON",
+    value: function toJSON() {
+      return this.toString();
+    }
+  }, {
     key: "toString",
     value: function toString() {
       if (!this.encoded) {
@@ -18438,7 +18443,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
-            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
+            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 30000;
             wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
             // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
             started = +new Date();
@@ -18520,6 +18525,7 @@ function (_BaseModel) {
     key: "fromGrpc",
     value: function fromGrpc(grpcObject) {
       var obj = grpcObject.toObject();
+      if (typeof obj.header === 'undefined') throw new Error('block not found');
       obj.hash = Block.encodeHash(grpcObject.getHash_asU8());
       obj.header.prevblockhash = Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8());
 

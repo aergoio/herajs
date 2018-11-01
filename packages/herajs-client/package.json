@@ -1,6 +1,6 @@
 {
   "name": "@herajs/client",
-  "version": "0.0.1-b5",
+  "version": "0.1.0",
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
@@ -11,7 +11,8 @@
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
     "build": "babel-node scripts/build.js",
-    "docs": "cd docs && make html"
+    "docs": "cd docs && make html",
+    "release": "bash scripts/release.sh"
   },
   "repository": {
     "type": "git",

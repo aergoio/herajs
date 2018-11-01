@@ -82,10 +82,16 @@ describe('Aergo', () => {
                 aergo.getBlock();
             }, Error, 'Missing argument block hash or number');
         });
-        it('should throw error when block not found', async () => {
+        it('should throw error when block not found by number', async () => {
             return assert.isRejected(
                 aergo.getBlock(0xFFFFFFFFFFFFFFF),
                 Error, '13 INTERNAL: block not found: blockNo=1152921504606846976'
+            );
+        });
+        it('should throw error when block not found by hash', async () => {
+            return assert.isRejected(
+                aergo.getBlock('3ntLyinxwZ3W51AWms4UPjjBHW4CDQHqmrP5NmgmmEZ4'),
+                Error, 'block not found'
             );
         });
         it('should throw error when number out of range', () => {

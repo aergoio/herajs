@@ -5,6 +5,7 @@ import bs58 from 'bs58';
 export default class Block extends BaseModel {
     static fromGrpc(grpcObject) {
         const obj = grpcObject.toObject();
+        if (typeof obj.header === 'undefined') throw new Error('block not found');
         obj.hash = Block.encodeHash(grpcObject.getHash_asU8());
         obj.header.prevblockhash = Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8());
         if (obj.body) {
