@@ -31,12 +31,21 @@ describe('Contracts', () => {
             const calltxreceipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(calltxhash)
             );
-            assert.equal(calltxreceipt.status, 'invalid code (expected 1632510587 bytes, actual 24 bytes)');
-        }).timeout(31000);
-        /*
+            assert.equal(calltxreceipt.status, `cannot find contract ${testAddress}`);
+        }).timeout(11000);
+        
         it('should return error when sending payload to non-contract', async () => {
             const testAddress = await aergo.accounts.create('test');
             await aergo.accounts.unlock(testAddress, 'test');
+            const testtx = {
+                from: testAddress,
+                to: testAddress,
+                amount: 1
+            };
+            const txhash = await aergo.accounts.sendTransaction(testtx);
+            await longPolling(async () => 
+                await aergo.getTransactionReceipt(txhash)
+            );
             const contract = Contract.fromAbi(contractAbi).setAddress(testAddress);
             const callTx = contract.inc().asTransaction({
                 from: testAddress
@@ -45,9 +54,9 @@ describe('Contracts', () => {
             const calltxreceipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(calltxhash)
             );
-            assert.equal(calltxreceipt.status, 'invalid code (expected 1632510587 bytes, actual 24 bytes)');
-        }).timeout(31000);
-        */
+            assert.equal(calltxreceipt.status, 'account is not a contract');
+        }).timeout(11000);
+        
     });
     
     describe('deploy, call, query a simple contract', () => {

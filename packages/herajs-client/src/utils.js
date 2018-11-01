@@ -38,7 +38,7 @@ const waitFor = (ms) => {
     });
 };
 const basicCheck = (result) => result instanceof Error === false;
-const longPolling = async (func, check = basicCheck, timeout = 30000, wait = 250) => {
+const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
     // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
     const started = + new Date();
     let lastError = '';

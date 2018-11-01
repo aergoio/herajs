@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client)
 
 Tested with aergo server version
-[8c1e8534251260650d7a4f30adb92fb1e4e70f05](https://github.com/aergoio/aergo/tree/8c1e8534251260650d7a4f30adb92fb1e4e70f05)
+[daf6f3eec6e33a13fe188650104d7d38ac3f1520](https://github.com/aergoio/aergo/tree/daf6f3eec6e33a13fe188650104d7d38ac3f1520)
 
 [Documentation](https://herajs.readthedocs.io/)
 
@@ -14,9 +14,8 @@ This package supports both Node.js and Web platforms. Please refer to the docume
 
 Roadmap:
 
-- Improve documentation
-- Official release
 - Typescript support
+- Middleware architecture
 
 ## Quick start
 
