@@ -8,7 +8,7 @@ import builtins from 'rollup-plugin-node-builtins';
 import { terser } from 'rollup-plugin-terser';
 import progress from 'rollup-plugin-progress';
 //const typescript = require('rollup-plugin-typescript');
-//const globals = require('rollup-plugin-node-globals');
+const globals = require('rollup-plugin-node-globals');
 const version = process.env.VERSION || require('../package.json').version;
 
 
@@ -139,6 +139,8 @@ function genConfig (name) {
                     }]
                 ]
             }),
+
+            globals(),
 
             progress(),
         ].concat(opts.plugins || []),
