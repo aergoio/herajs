@@ -249,13 +249,11 @@ describe('Aergo', () => {
         });
     });
 
-    describe('getVotingResult()', () => {
-
+    
+    describe.skip('getVotingResult()', () => {
         it('should return given number of voting result', async () => {
-            return aergo.getVoteResult(10)
-                .then((voteList) => {
-                    assert.typeOf(voteList, 'Array');
-                });
+            const voteList = await aergo.getVoteResult(10);
+            assert.typeOf(voteList, 'Array');
         });
     });
 });

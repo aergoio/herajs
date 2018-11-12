@@ -1,16 +1,12 @@
-language: go
-go:
-  - "1.10.x"
+language: node_js
+node_js:
+  - "10"
+sudo: required
+services:
+  - docker
 before_install:
-  - export PATH=./node_modules/.bin:$PATH
-  - nvm install 10
-  - go get -t github.com/Masterminds/glide
-  - AERGO_VERSION=`cat "package.json" | python -c "import sys, json; print json.load(sys.stdin)['aergo']['version']"`
-  - go get -d github.com/aergoio/aergo || true
-  - cd ${GOPATH}/src/github.com/aergoio/aergo && git checkout ${AERGO_VERSION} && make 
-  - cd ${TRAVIS_BUILD_DIR}
+  - docker run -d -p 7845:7845 aergo/node aergosvr --config /aergo/config.toml --testmode
 install:
   - npm install
 script:
-  - ${GOPATH}/src/github.com/aergoio/aergo/bin/aergosvr --testmode >/dev/null 2>&1 &
   - npm test
