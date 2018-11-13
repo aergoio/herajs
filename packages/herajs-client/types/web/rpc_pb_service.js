@@ -225,7 +225,16 @@ AergoRPCService.GetVotes = {
   requestStream: false,
   responseStream: false,
   requestType: rpc_pb.SingleBytes,
-  responseType: blockchain_pb.VoteList
+  responseType: rpc_pb.VoteList
+};
+
+AergoRPCService.GetStaking = {
+  methodName: "GetStaking",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.Staking
 };
 
 exports.AergoRPCService = AergoRPCService;
@@ -763,6 +772,28 @@ AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, met
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetVotes, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetStaking, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

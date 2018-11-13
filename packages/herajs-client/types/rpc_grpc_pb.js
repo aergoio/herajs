@@ -6,6 +6,7 @@ var rpc_pb = require('./rpc_pb.js');
 var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');
+var p2p_pb = require('./p2p_pb.js');
 
 function serialize_types_ABI(arg) {
   if (!(arg instanceof blockchain_pb.ABI)) {
@@ -194,6 +195,17 @@ function deserialize_types_SingleBytes(buffer_arg) {
   return rpc_pb.SingleBytes.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_Staking(arg) {
+  if (!(arg instanceof rpc_pb.Staking)) {
+    throw new Error('Expected argument of type types.Staking');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Staking(buffer_arg) {
+  return rpc_pb.Staking.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_State(arg) {
   if (!(arg instanceof blockchain_pb.State)) {
     throw new Error('Expected argument of type types.State');
@@ -261,14 +273,14 @@ function deserialize_types_VerifyResult(buffer_arg) {
 }
 
 function serialize_types_VoteList(arg) {
-  if (!(arg instanceof blockchain_pb.VoteList)) {
+  if (!(arg instanceof rpc_pb.VoteList)) {
     throw new Error('Expected argument of type types.VoteList');
   }
   return new Buffer(arg.serializeBinary());
 }
 
 function deserialize_types_VoteList(buffer_arg) {
-  return blockchain_pb.VoteList.deserializeBinary(new Uint8Array(buffer_arg));
+  return rpc_pb.VoteList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -546,11 +558,22 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestStream: false,
     responseStream: false,
     requestType: rpc_pb.SingleBytes,
-    responseType: blockchain_pb.VoteList,
+    responseType: rpc_pb.VoteList,
     requestSerialize: serialize_types_SingleBytes,
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_VoteList,
     responseDeserialize: deserialize_types_VoteList,
+  },
+  getStaking: {
+    path: '/types.AergoRPCService/GetStaking',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: rpc_pb.Staking,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_Staking,
+    responseDeserialize: deserialize_types_Staking,
   },
 };
 

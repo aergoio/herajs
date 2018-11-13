@@ -219,7 +219,16 @@ type AergoRPCServiceGetVotes = {
   readonly requestStream: false;
   readonly responseStream: false;
   readonly requestType: typeof rpc_pb.SingleBytes;
-  readonly responseType: typeof blockchain_pb.VoteList;
+  readonly responseType: typeof rpc_pb.VoteList;
+};
+
+type AergoRPCServiceGetStaking = {
+  readonly methodName: string;
+  readonly service: typeof AergoRPCService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof rpc_pb.SingleBytes;
+  readonly responseType: typeof rpc_pb.Staking;
 };
 
 export class AergoRPCService {
@@ -248,6 +257,7 @@ export class AergoRPCService {
   static readonly QueryContract: AergoRPCServiceQueryContract;
   static readonly GetPeers: AergoRPCServiceGetPeers;
   static readonly GetVotes: AergoRPCServiceGetVotes;
+  static readonly GetStaking: AergoRPCServiceGetStaking;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -467,11 +477,20 @@ export class AergoRPCServiceClient {
   getVotes(
     requestMessage: rpc_pb.SingleBytes,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError, responseMessage: blockchain_pb.VoteList|null) => void
+    callback: (error: ServiceError, responseMessage: rpc_pb.VoteList|null) => void
   ): void;
   getVotes(
     requestMessage: rpc_pb.SingleBytes,
-    callback: (error: ServiceError, responseMessage: blockchain_pb.VoteList|null) => void
+    callback: (error: ServiceError, responseMessage: rpc_pb.VoteList|null) => void
+  ): void;
+  getStaking(
+    requestMessage: rpc_pb.SingleBytes,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError, responseMessage: rpc_pb.Staking|null) => void
+  ): void;
+  getStaking(
+    requestMessage: rpc_pb.SingleBytes,
+    callback: (error: ServiceError, responseMessage: rpc_pb.Staking|null) => void
   ): void;
 }
 

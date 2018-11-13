@@ -352,6 +352,14 @@ export class StateProof extends jspb.Message {
   getProofval_asB64(): string;
   setProofval(value: Uint8Array | string): void;
 
+  getBitmap(): Uint8Array | string;
+  getBitmap_asU8(): Uint8Array;
+  getBitmap_asB64(): string;
+  setBitmap(value: Uint8Array | string): void;
+
+  getHeight(): number;
+  setHeight(value: number): void;
+
   clearAuditpathList(): void;
   getAuditpathList(): Array<Uint8Array | string>;
   getAuditpathList_asU8(): Array<Uint8Array>;
@@ -375,6 +383,8 @@ export namespace StateProof {
     inclusion: boolean,
     proofkey: Uint8Array | string,
     proofval: Uint8Array | string,
+    bitmap: Uint8Array | string,
+    height: number,
     auditpathList: Array<Uint8Array | string>,
   }
 }
@@ -406,54 +416,6 @@ export namespace Receipt {
     contractaddress: Uint8Array | string,
     status: string,
     ret: string,
-  }
-}
-
-export class Vote extends jspb.Message {
-  getCandidate(): Uint8Array | string;
-  getCandidate_asU8(): Uint8Array;
-  getCandidate_asB64(): string;
-  setCandidate(value: Uint8Array | string): void;
-
-  getAmount(): number;
-  setAmount(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Vote.AsObject;
-  static toObject(includeInstance: boolean, msg: Vote): Vote.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Vote, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Vote;
-  static deserializeBinaryFromReader(message: Vote, reader: jspb.BinaryReader): Vote;
-}
-
-export namespace Vote {
-  export type AsObject = {
-    candidate: Uint8Array | string,
-    amount: number,
-  }
-}
-
-export class VoteList extends jspb.Message {
-  clearVotesList(): void;
-  getVotesList(): Array<Vote>;
-  setVotesList(value: Array<Vote>): void;
-  addVotes(value?: Vote, index?: number): Vote;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): VoteList.AsObject;
-  static toObject(includeInstance: boolean, msg: VoteList): VoteList.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: VoteList, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): VoteList;
-  static deserializeBinaryFromReader(message: VoteList, reader: jspb.BinaryReader): VoteList;
-}
-
-export namespace VoteList {
-  export type AsObject = {
-    votesList: Array<Vote.AsObject>,
   }
 }
 

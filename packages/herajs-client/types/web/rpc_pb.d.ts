@@ -5,6 +5,7 @@ import * as jspb from "google-protobuf";
 import * as blockchain_pb from "./blockchain_pb";
 import * as account_pb from "./account_pb";
 import * as node_pb from "./node_pb";
+import * as p2p_pb from "./p2p_pb";
 
 export class BlockchainStatus extends jspb.Message {
   getBestBlockHash(): Uint8Array | string;
@@ -161,6 +162,9 @@ export class AccountAndRoot extends jspb.Message {
   getRoot_asB64(): string;
   setRoot(value: Uint8Array | string): void;
 
+  getCompressed(): boolean;
+  setCompressed(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountAndRoot.AsObject;
   static toObject(includeInstance: boolean, msg: AccountAndRoot): AccountAndRoot.AsObject;
@@ -175,19 +179,47 @@ export namespace AccountAndRoot {
   export type AsObject = {
     account: Uint8Array | string,
     root: Uint8Array | string,
+    compressed: boolean,
+  }
+}
+
+export class Peer extends jspb.Message {
+  hasAddress(): boolean;
+  clearAddress(): void;
+  getAddress(): node_pb.PeerAddress | undefined;
+  setAddress(value?: node_pb.PeerAddress): void;
+
+  hasBestblock(): boolean;
+  clearBestblock(): void;
+  getBestblock(): p2p_pb.NewBlockNotice | undefined;
+  setBestblock(value?: p2p_pb.NewBlockNotice): void;
+
+  getState(): number;
+  setState(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Peer.AsObject;
+  static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Peer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Peer;
+  static deserializeBinaryFromReader(message: Peer, reader: jspb.BinaryReader): Peer;
+}
+
+export namespace Peer {
+  export type AsObject = {
+    address?: node_pb.PeerAddress.AsObject,
+    bestblock?: p2p_pb.NewBlockNotice.AsObject,
+    state: number,
   }
 }
 
 export class PeerList extends jspb.Message {
   clearPeersList(): void;
-  getPeersList(): Array<node_pb.PeerAddress>;
-  setPeersList(value: Array<node_pb.PeerAddress>): void;
-  addPeers(value?: node_pb.PeerAddress, index?: number): node_pb.PeerAddress;
-
-  clearStatesList(): void;
-  getStatesList(): Array<number>;
-  setStatesList(value: Array<number>): void;
-  addStates(value: number, index?: number): number;
+  getPeersList(): Array<Peer>;
+  setPeersList(value: Array<Peer>): void;
+  addPeers(value?: Peer, index?: number): Peer;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PeerList.AsObject;
@@ -201,8 +233,7 @@ export class PeerList extends jspb.Message {
 
 export namespace PeerList {
   export type AsObject = {
-    peersList: Array<node_pb.PeerAddress.AsObject>,
-    statesList: Array<number>,
+    peersList: Array<Peer.AsObject>,
   }
 }
 
@@ -400,6 +431,78 @@ export namespace ImportFormat {
   }
 }
 
+export class Staking extends jspb.Message {
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  getWhen(): number;
+  setWhen(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Staking.AsObject;
+  static toObject(includeInstance: boolean, msg: Staking): Staking.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Staking, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Staking;
+  static deserializeBinaryFromReader(message: Staking, reader: jspb.BinaryReader): Staking;
+}
+
+export namespace Staking {
+  export type AsObject = {
+    amount: number,
+    when: number,
+  }
+}
+
+export class Vote extends jspb.Message {
+  getCandidate(): Uint8Array | string;
+  getCandidate_asU8(): Uint8Array;
+  getCandidate_asB64(): string;
+  setCandidate(value: Uint8Array | string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Vote.AsObject;
+  static toObject(includeInstance: boolean, msg: Vote): Vote.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Vote, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Vote;
+  static deserializeBinaryFromReader(message: Vote, reader: jspb.BinaryReader): Vote;
+}
+
+export namespace Vote {
+  export type AsObject = {
+    candidate: Uint8Array | string,
+    amount: number,
+  }
+}
+
+export class VoteList extends jspb.Message {
+  clearVotesList(): void;
+  getVotesList(): Array<Vote>;
+  setVotesList(value: Array<Vote>): void;
+  addVotes(value?: Vote, index?: number): Vote;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VoteList.AsObject;
+  static toObject(includeInstance: boolean, msg: VoteList): VoteList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: VoteList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VoteList;
+  static deserializeBinaryFromReader(message: VoteList, reader: jspb.BinaryReader): VoteList;
+}
+
+export namespace VoteList {
+  export type AsObject = {
+    votesList: Array<Vote.AsObject>,
+  }
+}
+
 export enum CommitStatus {
   TX_OK = 0,
   TX_NONCE_TOO_LOW = 1,
@@ -408,7 +511,8 @@ export enum CommitStatus {
   TX_INVALID_SIGN = 4,
   TX_INVALID_FORMAT = 5,
   TX_INSUFFICIENT_BALANCE = 6,
-  TX_INTERNAL_ERROR = 7,
+  TX_HAS_SAME_NONCE = 7,
+  TX_INTERNAL_ERROR = 9,
 }
 
 export enum VerifyStatus {
