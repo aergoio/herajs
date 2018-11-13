@@ -1,5 +1,5 @@
 /*!
- * herajs v0.1.1
+ * herajs v0.1.2
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -20383,7 +20383,7 @@ function promisify(original, context) {
     writable: false,
     configurable: true
   });
-  return Object.defineProperties(fn, (Object.getOwnPropertyDescriptors || getOwnPropertyDescriptors)(original));
+  return Object.defineProperties(fn, getOwnPropertyDescriptors(original));
 }
 
 /**

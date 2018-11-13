@@ -32,6 +32,6 @@ export default function promisify(original, context) {
     });
     return Object.defineProperties(
         fn,
-        (Object.getOwnPropertyDescriptors || getOwnPropertyDescriptors)(original)
+        getOwnPropertyDescriptors(original)
     );
 }
