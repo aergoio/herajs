@@ -1,8 +1,10 @@
 import Accounts from '../accounts';
-import rpcTypes from './types.js';
-import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils.js';
-import promisify from '../promisify.js';
-import { decodeTxHash, encodeTxHash } from '../transactions/utils.js';
+import rpcTypes from './types';
+import { Empty } from '../../types/rpc_pb';
+import { BlockchainStatus as GrpcBlockchainStatus } from '../../types/rpc_pb';
+import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
+import promisify from '../promisify';
+import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import Tx from '../models/tx';
 import Block from '../models/block';
 import Address from '../models/address';
@@ -14,6 +16,11 @@ export { CommitStatus };
  * Main aergo client controller.
  */
 class AergoClient {
+    config: object;
+    client: any;
+    accounts: Accounts;
+    target: string;
+
     /**
      * Create a new auto-configured client with:
      * 
@@ -26,7 +33,6 @@ class AergoClient {
      * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
      */
     constructor (config, provider = null) {
-        this.version = 0.1;
         this.config = {
             ...config
         };
@@ -60,8 +66,8 @@ class AergoClient {
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
      */
-    blockchain () {
-        const empty = new rpcTypes.Empty();
+    blockchain (): Promise<GrpcBlockchainStatus.AsObject> {
+        const empty = new Empty();
         return promisify(this.client.blockchain, this.client)(empty).then(result => ({
             ...result.toObject(),
             bestBlockHash: Block.encodeHash(result.getBestBlockHash_asU8())
@@ -84,13 +90,13 @@ class AergoClient {
                         if (err) {
                             reject(err);
                         } else {
-                            const res = {};
+                            const res = <any>{};
                             res.tx = Tx.fromGrpc(result);
                             resolve(res);
                         }
                     });
                 } else {
-                    const res = {};
+                    const res = <any>{};
                     res.block = {
                         hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
                         idx: result.getTxidx().getIdx()

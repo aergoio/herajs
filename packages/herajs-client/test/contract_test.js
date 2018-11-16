@@ -4,6 +4,8 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 
 import AergoClient from '../src';
+//import AergoClient from '../dist/herajs.esm';
+
 import contractAbi from './fixtures/contract-inc.abi.json';
 //import sqlContractAbi from './fixtures/contract-sql.abi.json';
 import Contract from '../src/models/contract';

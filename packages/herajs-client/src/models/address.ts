@@ -7,7 +7,10 @@ import bs58check from 'bs58check';
  * The encoding requires some computation, so you should only convert address objects to strings when needed.
  */
 export default class Address {
-    constructor(address) {
+    value: Buffer;
+    encoded: string;
+
+    constructor(address: Address|string|Buffer|Uint8Array) {
         if (address instanceof Address) {
             // Copy buffer
             this.value = Buffer.from(address.value);
@@ -15,29 +18,32 @@ export default class Address {
             // Decode string
             this.value = Address.decode(address);
             this.encoded = address;
-        } else if (address.length >= 0) {
+        } else if (address instanceof Buffer) {
             // Treat array-like as buffer
             this.value = address;
-        } else {
-            throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not');
+        } else if (address instanceof Uint8Array) {
+            // Treat array-like as buffer
+            this.value = Buffer.from(address);
+        }  else {
+            throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
         }
     }
-    asBytes() {
+    asBytes(): Buffer {
         return this.value;
     }
-    toJSON() {
+    toJSON(): string {
         return this.toString();
     }
-    toString() {
+    toString(): string {
         if (!this.encoded) {
             this.encoded = Address.encode(this.value);
         }
         return this.encoded;
     }
-    static decode(bs58string) {
+    static decode(bs58string): Buffer {
         return bs58check.decode(bs58string).slice(1);
     }
-    static encode(byteArray) {
+    static encode(byteArray): string {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);

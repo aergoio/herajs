@@ -1,0 +1,13 @@
+{
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "declarationDir": "dist",
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  }
+}

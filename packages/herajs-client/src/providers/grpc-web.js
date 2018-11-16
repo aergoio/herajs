@@ -1,5 +1,5 @@
-import Provider from './base.js';
-import { AergoRPCServiceClient } from '../../types/web/rpc_pb_service.js';
+import Provider from './base';
+import { AergoRPCServiceClient } from '../../types/rpc_grpc_web_pb';
 import { grpc } from 'grpc-web-client';
 
 /**

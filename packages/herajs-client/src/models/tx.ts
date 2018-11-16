@@ -1,21 +1,23 @@
-import rpcTypes from '../client/types.js';
+import { TxBody, Tx as GrpcTx } from '../../types/blockchain_pb';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils.js';
 import Address from './address';
-import BaseModel from './base';
 
-export default class Tx extends BaseModel {
-    /*
-    hash: bytes;
-    nonce: uint64;
-    from: bytes;
-    to: bytes;
-    amount: uint64;
-    payload: bytes;
-    sign: bytes;
-    type: int;
-    limit: uint64;
-    price: uint64;
-    */
+export default class Tx {
+    hash: string /*bytes*/;
+    nonce: number /*uint64*/;
+    from: Address /*bytes*/;
+    to: Address /*bytes*/;
+    amount: number /*uint64*/;
+    payload: Buffer;
+    sign: Buffer;
+    type: number;
+    limit: number /*uint64*/;
+    price: number /*uint64*/;
+
+    constructor(data: Partial<Tx>) {
+        Object.assign(this, data);
+    }
+
     static fromGrpc(grpcObject) {
         return new Tx({
             hash: encodeTxHash(grpcObject.getHash()),
@@ -31,7 +33,7 @@ export default class Tx extends BaseModel {
         });
     }
     toGrpc() {
-        const msgtxbody = new rpcTypes.TxBody();
+        const msgtxbody = new TxBody();
         msgtxbody.setNonce(this.nonce);
         if (typeof this.from === 'undefined' || !this.from) {
             throw new Error('Missing required transaction parameter \'from\'');
@@ -59,14 +61,17 @@ export default class Tx extends BaseModel {
             msgtxbody.setPrice(this.price);
         }
 
-        const msgtx = new rpcTypes.Tx();
+        const msgtx = new GrpcTx();
 
         if (this.hash != null) {
             let hash = this.hash;
+            let hashBuffer;
             if (typeof hash === 'string') {
-                hash = decodeTxHash(hash);
+                hashBuffer = Buffer.from(decodeTxHash(hash));
+            } else {
+                hashBuffer = Buffer.from(hash);
             }
-            msgtx.setHash(Buffer.from(hash));
+            msgtx.setHash(hashBuffer);
         }
         msgtx.setBody(msgtxbody);
 

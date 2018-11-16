@@ -1,4 +1,5 @@
-import { Personal, Empty, Account, } from '../../types/rpc_pb.js';
+import { Personal, Empty } from '../../types/rpc_pb';
+import { Account } from '../../types/account_pb';
 import Tx from '../models/tx';
 import { encodeTxHash } from '../transactions/utils';
 import Address from '../models/address';
@@ -8,6 +9,8 @@ import promisify from '../promisify.js';
  * Accounts controller. It is exposed at `aergoClient.accounts`.
  */
 class Accounts {
+    client: any;
+
     constructor (aergo) {
         this.client = aergo.client;
     }
@@ -15,9 +18,9 @@ class Accounts {
     /**
      * Create a new account in the node.
      * @param {string} passphrase 
-     * @returns {Promise<string>} newly created account address
+     * @returns {Promise<Address>} newly created account address
      */
-    create (passphrase) {
+    create (passphrase: string): Promise<Address> {
         return new Promise((resolve, reject) => {
             const personal = new Personal();
             personal.setPassphrase(passphrase);
@@ -38,9 +41,9 @@ class Accounts {
 
     /**
      * Get list of accounts.
-     * @returns {Promise<string[]>} list of account addresses
+     * @returns {Promise<Address[]>} list of account addresses
      */
-    get () {
+    get (): Promise<Address[]> {
         return new Promise((resolve, reject) => {
             const empty = new Empty();
             try {
@@ -61,11 +64,11 @@ class Accounts {
 
     /**
      * Unlock account.
-     * @param {string} address 
-     * @param {string} passphrase 
-     * @returns {Promise<string>} unlocked account address
+     * @param {Address|string} address 
+     * @param {Address|string} passphrase 
+     * @returns {Promise<Address>} unlocked account address
      */
-    unlock (address, passphrase) {
+    unlock (address: Address|string, passphrase: string): Promise<Address> {
         return new Promise((resolve, reject) => {
             const account = new Account();
             account.setAddress((new Address(address)).asBytes());
@@ -91,11 +94,11 @@ class Accounts {
 
     /**
      * Lock account.
-     * @param {string} address 
-     * @param {string} passphrase 
-     * @returns {Promise<string>} locked account address
+     * @param {Address|string} address 
+     * @param {Address|string} passphrase 
+     * @returns {Promise<Address>} locked account address
      */
-    lock (address, passphrase) {
+    lock (address: Address|string, passphrase: string): Promise<Address> {
         return new Promise((resolve, reject) => {
             const account = new Account();
             account.setAddress((new Address(address)).asBytes());
@@ -125,7 +128,7 @@ class Accounts {
      * @param {Tx} tx transaction data
      * @returns {Promise<string>} transaction hash
      */
-    sendTransaction (tx) {
+    sendTransaction (tx): Promise<string> {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
@@ -137,14 +140,15 @@ class Accounts {
      * @param {Tx} tx transaction data
      * @returns {Promise<Tx>} transaction data including signature
      */
-    signTransaction (tx) {
-        if (!(tx instanceof Tx)) {
-            tx = new Tx(tx);
+    signTransaction (_tx: Tx|object): Promise<Tx> {
+        let tx: Tx;
+        if (!(_tx instanceof Tx)) {
+            tx = new Tx(_tx);
+        } else {
+            tx = _tx;
         }
         return promisify(this.client.signTX, this.client)(tx.toGrpc()).then(signedtx => Tx.fromGrpc(signedtx));
     }
 }
-
-
 
 export default Accounts;

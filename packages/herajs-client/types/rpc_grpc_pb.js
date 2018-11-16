@@ -109,7 +109,7 @@ function deserialize_types_CommitResultList(buffer_arg) {
 
 function serialize_types_Empty(arg) {
   if (!(arg instanceof rpc_pb.Empty)) {
-    throw new Error('Expected argument of type types.Empty');
+    throw new Error('Expected argument of type types.Empty. not', arg);
   }
   return new Buffer(arg.serializeBinary());
 }

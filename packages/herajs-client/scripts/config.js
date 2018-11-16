@@ -7,8 +7,10 @@ import json from 'rollup-plugin-json';
 import builtins from 'rollup-plugin-node-builtins';
 import { terser } from 'rollup-plugin-terser';
 import progress from 'rollup-plugin-progress';
-//const typescript = require('rollup-plugin-typescript');
+
 const globals = require('rollup-plugin-node-globals');
+import typescript from 'rollup-plugin-typescript2';
+
 const version = process.env.VERSION || require('../package.json').version;
 
 
@@ -40,20 +42,20 @@ const webExternal = [
 const builds = {
     // CommonJS build (CommonJS)
     'node-cjs': {
-        entry: resolve('src/platforms/node/index.js'),
+        entry: resolve('src/platforms/node/index.ts'),
         dest: resolve('dist/herajs.common.js'),
         format: 'cjs',
         banner,
         plugins: [
             node_resolve({
-                only: ['regenerator-runtime']
+                only: ['regenerator-runtime'],
             }),
         ],
         external
     },
     // CommonJS build (ES Modules)
     'node-esm': {
-        entry: resolve('src/platforms/node/index.js'),
+        entry: resolve('src/platforms/node/index.ts'),
         dest: resolve('dist/herajs.esm.js'),
         format: 'es',
         banner,
@@ -66,7 +68,7 @@ const builds = {
     },
     // Development build (Web, for browser or node)
     'web-dev': {
-        entry: resolve('src/platforms/web/index.js'),
+        entry: resolve('src/platforms/web/index.ts'),
         dest: resolve('dist/herajs.js'),
         format: 'umd',
         env: 'development',
@@ -84,7 +86,7 @@ const builds = {
     },
     // Production build (Web, for browser or node)
     'web-prod': {
-        entry: resolve('src/platforms/web/index.js'),
+        entry: resolve('src/platforms/web/index.ts'),
         dest: resolve('dist/herajs.min.js'),
         format: 'umd',
         env: 'production',
@@ -107,7 +109,9 @@ function genConfig (name) {
     const opts = builds[name];
 
     const namedExports = {
-        [resolve('types/rpc_pb.js')]: 'Empty, Personal, Account, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query'.split(', ')
+        [resolve('types/rpc_pb.js')]: 'Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query'.split(', '),
+        [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block'.split(', '),
+        [resolve('types/account_pb.js')]: 'Account'.split(', ')
     };
 
     const config = {
@@ -124,7 +128,13 @@ function genConfig (name) {
 
             builtins(),
 
-            //typescript(),
+            typescript({
+                tsconfigOverride: {
+                    compilerOptions: {
+                        module: 'ES2015'
+                    }
+                }
+            }),
 
             babel({
                 babelrc: false,
@@ -132,11 +142,13 @@ function genConfig (name) {
                 runtimeHelpers: true,
                 plugins: [
                     '@babel/plugin-proposal-object-rest-spread',
+                    '@babel/proposal-class-properties'
                 ],
                 presets: [
                     ["@babel/preset-env", {
                         "modules": false
-                    }]
+                    }],
+                    "@babel/typescript"
                 ]
             }),
 

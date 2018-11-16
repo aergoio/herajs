@@ -1,4 +1,4 @@
-export default class A {
+export default class Account {
     constructor() {
 
     }

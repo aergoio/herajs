@@ -4,10 +4,12 @@
             "targets": {
                 "node": "current"
             }
-        }]
+        }],
+        "@babel/typescript"
     ],
     "plugins": [
-        "@babel/plugin-proposal-object-rest-spread"
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/proposal-class-properties"
     ],
     "retainLines": true
 }
