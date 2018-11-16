@@ -389,6 +389,90 @@ export namespace StateProof {
   }
 }
 
+export class ContractVarProof extends jspb.Message {
+  getValue(): Uint8Array | string;
+  getValue_asU8(): Uint8Array;
+  getValue_asB64(): string;
+  setValue(value: Uint8Array | string): void;
+
+  getInclusion(): boolean;
+  setInclusion(value: boolean): void;
+
+  getProofkey(): Uint8Array | string;
+  getProofkey_asU8(): Uint8Array;
+  getProofkey_asB64(): string;
+  setProofkey(value: Uint8Array | string): void;
+
+  getProofval(): Uint8Array | string;
+  getProofval_asU8(): Uint8Array;
+  getProofval_asB64(): string;
+  setProofval(value: Uint8Array | string): void;
+
+  getBitmap(): Uint8Array | string;
+  getBitmap_asU8(): Uint8Array;
+  getBitmap_asB64(): string;
+  setBitmap(value: Uint8Array | string): void;
+
+  getHeight(): number;
+  setHeight(value: number): void;
+
+  clearAuditpathList(): void;
+  getAuditpathList(): Array<Uint8Array | string>;
+  getAuditpathList_asU8(): Array<Uint8Array>;
+  getAuditpathList_asB64(): Array<string>;
+  setAuditpathList(value: Array<Uint8Array | string>): void;
+  addAuditpath(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContractVarProof.AsObject;
+  static toObject(includeInstance: boolean, msg: ContractVarProof): ContractVarProof.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContractVarProof, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContractVarProof;
+  static deserializeBinaryFromReader(message: ContractVarProof, reader: jspb.BinaryReader): ContractVarProof;
+}
+
+export namespace ContractVarProof {
+  export type AsObject = {
+    value: Uint8Array | string,
+    inclusion: boolean,
+    proofkey: Uint8Array | string,
+    proofval: Uint8Array | string,
+    bitmap: Uint8Array | string,
+    height: number,
+    auditpathList: Array<Uint8Array | string>,
+  }
+}
+
+export class StateQueryProof extends jspb.Message {
+  hasContractproof(): boolean;
+  clearContractproof(): void;
+  getContractproof(): StateProof | undefined;
+  setContractproof(value?: StateProof): void;
+
+  hasVarproof(): boolean;
+  clearVarproof(): void;
+  getVarproof(): ContractVarProof | undefined;
+  setVarproof(value?: ContractVarProof): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StateQueryProof.AsObject;
+  static toObject(includeInstance: boolean, msg: StateQueryProof): StateQueryProof.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StateQueryProof, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StateQueryProof;
+  static deserializeBinaryFromReader(message: StateQueryProof, reader: jspb.BinaryReader): StateQueryProof;
+}
+
+export namespace StateQueryProof {
+  export type AsObject = {
+    contractproof?: StateProof.AsObject,
+    varproof?: ContractVarProof.AsObject,
+  }
+}
+
 export class Receipt extends jspb.Message {
   getContractaddress(): Uint8Array | string;
   getContractaddress_asU8(): Uint8Array;
@@ -520,6 +604,46 @@ export namespace Query {
   export type AsObject = {
     contractaddress: Uint8Array | string,
     queryinfo: Uint8Array | string,
+  }
+}
+
+export class StateQuery extends jspb.Message {
+  getContractaddress(): Uint8Array | string;
+  getContractaddress_asU8(): Uint8Array;
+  getContractaddress_asB64(): string;
+  setContractaddress(value: Uint8Array | string): void;
+
+  getVarname(): string;
+  setVarname(value: string): void;
+
+  getVarindex(): string;
+  setVarindex(value: string): void;
+
+  getRoot(): Uint8Array | string;
+  getRoot_asU8(): Uint8Array;
+  getRoot_asB64(): string;
+  setRoot(value: Uint8Array | string): void;
+
+  getCompressed(): boolean;
+  setCompressed(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StateQuery.AsObject;
+  static toObject(includeInstance: boolean, msg: StateQuery): StateQuery.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StateQuery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StateQuery;
+  static deserializeBinaryFromReader(message: StateQuery, reader: jspb.BinaryReader): StateQuery;
+}
+
+export namespace StateQuery {
+  export type AsObject = {
+    contractaddress: Uint8Array | string,
+    varname: string,
+    varindex: string,
+    root: Uint8Array | string,
+    compressed: boolean,
   }
 }
 

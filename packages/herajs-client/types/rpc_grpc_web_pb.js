@@ -210,6 +210,15 @@ AergoRPCService.QueryContract = {
   responseType: rpc_pb.SingleBytes
 };
 
+AergoRPCService.QueryContractState = {
+  methodName: "QueryContractState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.StateQuery,
+  responseType: blockchain_pb.StateQueryProof
+};
+
 AergoRPCService.GetPeers = {
   methodName: "GetPeers",
   service: AergoRPCService,
@@ -728,6 +737,28 @@ AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMe
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.QueryContract, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.queryContractState = function queryContractState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.QueryContractState, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

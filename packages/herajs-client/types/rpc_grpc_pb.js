@@ -109,7 +109,7 @@ function deserialize_types_CommitResultList(buffer_arg) {
 
 function serialize_types_Empty(arg) {
   if (!(arg instanceof rpc_pb.Empty)) {
-    throw new Error('Expected argument of type types.Empty. not', arg);
+    throw new Error('Expected argument of type types.Empty');
   }
   return new Buffer(arg.serializeBinary());
 }
@@ -226,6 +226,28 @@ function serialize_types_StateProof(arg) {
 
 function deserialize_types_StateProof(buffer_arg) {
   return blockchain_pb.StateProof.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_StateQuery(arg) {
+  if (!(arg instanceof blockchain_pb.StateQuery)) {
+    throw new Error('Expected argument of type types.StateQuery');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_StateQuery(buffer_arg) {
+  return blockchain_pb.StateQuery.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_StateQueryProof(arg) {
+  if (!(arg instanceof blockchain_pb.StateQueryProof)) {
+    throw new Error('Expected argument of type types.StateQueryProof');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_StateQueryProof(buffer_arg) {
+  return blockchain_pb.StateQueryProof.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Tx(arg) {
@@ -541,6 +563,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Query,
     responseSerialize: serialize_types_SingleBytes,
     responseDeserialize: deserialize_types_SingleBytes,
+  },
+  queryContractState: {
+    path: '/types.AergoRPCService/QueryContractState',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.StateQuery,
+    responseType: blockchain_pb.StateQueryProof,
+    requestSerialize: serialize_types_StateQuery,
+    requestDeserialize: deserialize_types_StateQuery,
+    responseSerialize: serialize_types_StateQueryProof,
+    responseDeserialize: deserialize_types_StateQueryProof,
   },
   getPeers: {
     path: '/types.AergoRPCService/GetPeers',

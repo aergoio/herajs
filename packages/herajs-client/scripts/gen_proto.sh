@@ -1,6 +1,8 @@
 #!/bin/bash
 PROTOPATH=aergo-protobuf/proto/
 
+mkdir -p ./types/web
+
 # For grpc target
 grpc_tools_node_protoc \
     --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \

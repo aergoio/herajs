@@ -519,6 +519,168 @@ export namespace GetMissingRequest {
   }
 }
 
+export class GetAncestorRequest extends jspb.Message {
+  clearHashesList(): void;
+  getHashesList(): Array<Uint8Array | string>;
+  getHashesList_asU8(): Array<Uint8Array>;
+  getHashesList_asB64(): Array<string>;
+  setHashesList(value: Array<Uint8Array | string>): void;
+  addHashes(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAncestorRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAncestorRequest): GetAncestorRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetAncestorRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAncestorRequest;
+  static deserializeBinaryFromReader(message: GetAncestorRequest, reader: jspb.BinaryReader): GetAncestorRequest;
+}
+
+export namespace GetAncestorRequest {
+  export type AsObject = {
+    hashesList: Array<Uint8Array | string>,
+  }
+}
+
+export class GetAncestorResponse extends jspb.Message {
+  getStatus(): ResultStatus;
+  setStatus(value: ResultStatus): void;
+
+  getAncestorhash(): Uint8Array | string;
+  getAncestorhash_asU8(): Uint8Array;
+  getAncestorhash_asB64(): string;
+  setAncestorhash(value: Uint8Array | string): void;
+
+  getAncestorno(): number;
+  setAncestorno(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAncestorResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAncestorResponse): GetAncestorResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetAncestorResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAncestorResponse;
+  static deserializeBinaryFromReader(message: GetAncestorResponse, reader: jspb.BinaryReader): GetAncestorResponse;
+}
+
+export namespace GetAncestorResponse {
+  export type AsObject = {
+    status: ResultStatus,
+    ancestorhash: Uint8Array | string,
+    ancestorno: number,
+  }
+}
+
+export class GetHashByNo extends jspb.Message {
+  getBlockno(): number;
+  setBlockno(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetHashByNo.AsObject;
+  static toObject(includeInstance: boolean, msg: GetHashByNo): GetHashByNo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetHashByNo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetHashByNo;
+  static deserializeBinaryFromReader(message: GetHashByNo, reader: jspb.BinaryReader): GetHashByNo;
+}
+
+export namespace GetHashByNo {
+  export type AsObject = {
+    blockno: number,
+  }
+}
+
+export class GetHashByNoResponse extends jspb.Message {
+  getStatus(): ResultStatus;
+  setStatus(value: ResultStatus): void;
+
+  getBlockhash(): Uint8Array | string;
+  getBlockhash_asU8(): Uint8Array;
+  getBlockhash_asB64(): string;
+  setBlockhash(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetHashByNoResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetHashByNoResponse): GetHashByNoResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetHashByNoResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetHashByNoResponse;
+  static deserializeBinaryFromReader(message: GetHashByNoResponse, reader: jspb.BinaryReader): GetHashByNoResponse;
+}
+
+export namespace GetHashByNoResponse {
+  export type AsObject = {
+    status: ResultStatus,
+    blockhash: Uint8Array | string,
+  }
+}
+
+export class GetHashesRequest extends jspb.Message {
+  getPrevhash(): Uint8Array | string;
+  getPrevhash_asU8(): Uint8Array;
+  getPrevhash_asB64(): string;
+  setPrevhash(value: Uint8Array | string): void;
+
+  getPrevnumber(): number;
+  setPrevnumber(value: number): void;
+
+  getSize(): number;
+  setSize(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetHashesRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetHashesRequest): GetHashesRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetHashesRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetHashesRequest;
+  static deserializeBinaryFromReader(message: GetHashesRequest, reader: jspb.BinaryReader): GetHashesRequest;
+}
+
+export namespace GetHashesRequest {
+  export type AsObject = {
+    prevhash: Uint8Array | string,
+    prevnumber: number,
+    size: number,
+  }
+}
+
+export class GetHashesResponse extends jspb.Message {
+  getStatus(): ResultStatus;
+  setStatus(value: ResultStatus): void;
+
+  clearHashesList(): void;
+  getHashesList(): Array<Uint8Array | string>;
+  getHashesList_asU8(): Array<Uint8Array>;
+  getHashesList_asB64(): Array<string>;
+  setHashesList(value: Array<Uint8Array | string>): void;
+  addHashes(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+  getHasnext(): boolean;
+  setHasnext(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetHashesResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetHashesResponse): GetHashesResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetHashesResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetHashesResponse;
+  static deserializeBinaryFromReader(message: GetHashesResponse, reader: jspb.BinaryReader): GetHashesResponse;
+}
+
+export namespace GetHashesResponse {
+  export type AsObject = {
+    status: ResultStatus,
+    hashesList: Array<Uint8Array | string>,
+    hasnext: boolean,
+  }
+}
+
 export enum ResultStatus {
   OK = 0,
   CANCELED = 1,
