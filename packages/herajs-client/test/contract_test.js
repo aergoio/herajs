@@ -139,7 +139,7 @@ describe('Contracts', () => {
 
             // Query contract
             const result1 = await aergo.queryContract(contract.query('key1'));
-            assert.equal(1, result1);
+            assert.equal(result1, 1);
 
             // Call contract again
             const callTx = contract.inc().asTransaction({
@@ -153,7 +153,7 @@ describe('Contracts', () => {
 
             // Query contract
             const result2 = await aergo.queryContract(contract.query('key1'));
-            assert.equal(2, result2);
+            assert.equal(result2, 2);
         }).timeout(3000);
     });
 

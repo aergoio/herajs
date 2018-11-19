@@ -263,7 +263,7 @@ class AergoClient {
         query.setContractaddress(Uint8Array.from((new Address(functionCall.contractInstance.address)).asBytes()));
         query.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(functionCall.asQueryInfo()))));
         return promisify(this.client.queryContract, this.client)(query).then(
-            grpcObject => JSON.parse(Uint8Array.from(grpcObject.getValue()).toString())
+            grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
         );
     }
 
