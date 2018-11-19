@@ -82,7 +82,7 @@ class AergoClient {
      */
     getTransaction (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
+        singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
             this.client.getBlockTX(singleBytes, (err, result) => {
                 if (err) {
@@ -128,7 +128,7 @@ class AergoClient {
             throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
         }
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(hashOrNumber));
+        singleBytes.setValue(Uint8Array.from(hashOrNumber));
         return promisify(this.client.getBlock, this.client)(singleBytes).then(result => Block.fromGrpc(result));
     }
 
@@ -146,7 +146,7 @@ class AergoClient {
             if (hashOrNumber.length != 32) {
                 throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
-            params.setHash(Buffer.from(hashOrNumber));
+            params.setHash(Uint8Array.from(hashOrNumber));
         } else
         if (typeof hashOrNumber === 'number') {
             params.setHeight(hashOrNumber);
@@ -187,13 +187,13 @@ class AergoClient {
      */
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
+        singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.toObject());
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
+        singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
     }
 
@@ -242,7 +242,7 @@ class AergoClient {
      */
     getTransactionReceipt (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from(decodeTxHash(txhash)));
+        singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return promisify(this.client.getReceipt, this.client)(singleBytes).then(grpcObject => {
             const obj = grpcObject.toObject();
             return {
@@ -260,10 +260,10 @@ class AergoClient {
      */
     queryContract (functionCall) {
         const query = new rpcTypes.Query();
-        query.setContractaddress(Buffer.from((new Address(functionCall.contractInstance.address)).asBytes()));
-        query.setQueryinfo(Buffer.from(JSON.stringify(functionCall.asQueryInfo())));
+        query.setContractaddress(Uint8Array.from((new Address(functionCall.contractInstance.address)).asBytes()));
+        query.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(functionCall.asQueryInfo()))));
         return promisify(this.client.queryContract, this.client)(query).then(
-            grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
+            grpcObject => JSON.parse(Uint8Array.from(grpcObject.getValue()).toString())
         );
     }
 
@@ -274,7 +274,7 @@ class AergoClient {
      */
     getABI (address) {
         const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Buffer.from((new Address(address)).asBytes()));
+        singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.getABI, this.client)(singleBytes).then(
             grpcObject => {
                 const obj = grpcObject.toObject();

@@ -48,7 +48,7 @@ const builds = {
         banner,
         plugins: [
             node_resolve({
-                only: ['regenerator-runtime'],
+                extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
             }),
         ],
         external
@@ -61,7 +61,7 @@ const builds = {
         banner,
         plugins: [
             node_resolve({
-                only: ['regenerator-runtime']
+                extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
             }),
         ],
         external
@@ -75,6 +75,7 @@ const builds = {
         banner,
         plugins: [
             node_resolve({
+                extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
                 jsnext: true,
                 main: true,
                 browser: true,
@@ -93,6 +94,7 @@ const builds = {
         banner,
         plugins: [
             node_resolve({
+                extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
                 jsnext: true,
                 main: true,
                 browser: true,
@@ -128,15 +130,17 @@ function genConfig (name) {
 
             builtins(),
 
-            typescript({
+            /*typescript({
                 tsconfigOverride: {
                     compilerOptions: {
-                        module: 'ES2015'
+                        module: 'ES2015',
+                        target: 'ESNext',
                     }
                 }
-            }),
+            }),*/
 
             babel({
+                extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
                 babelrc: false,
                 exclude: 'node_modules/**',
                 runtimeHelpers: true,
