@@ -9,7 +9,9 @@ import { terser } from 'rollup-plugin-terser';
 import progress from 'rollup-plugin-progress';
 
 const globals = require('rollup-plugin-node-globals');
-import typescript from 'rollup-plugin-typescript2';
+//import typescript from 'rollup-plugin-typescript2';
+
+//import { plugin as analyze } from 'rollup-plugin-analyzer'
 
 const version = process.env.VERSION || require('../package.json').version;
 
@@ -50,6 +52,7 @@ const builds = {
             node_resolve({
                 extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
             }),
+            //analyze()
         ],
         external
     },
@@ -81,6 +84,7 @@ const builds = {
                 browser: true,
                 preferBuiltins: false
             }),
+            
         ],
         context: 'window',
         external: webExternal
@@ -100,7 +104,8 @@ const builds = {
                 browser: true,
                 preferBuiltins: false
             }),
-            terser()
+            terser(),
+            //analyze()
         ],
         context: 'window',
         external: webExternal
