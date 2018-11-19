@@ -5,7 +5,7 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker run -d -p 7845:7845 aergo/node aergosvr --config /aergo/config.toml --testmode
+  - docker run -d -p 7845:7845 aergo/node:0.8.1 aergosvr --config /aergo/config.toml --testmode
 install:
   - npm install
 script:
