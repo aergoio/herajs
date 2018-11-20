@@ -1,6 +1,6 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { Empty } from '../../types/rpc_pb';
+import { Empty, PeerList as GrpcPeerList, Peer as GrpcPeer } from '../../types/rpc_pb';
 import { BlockchainStatus as GrpcBlockchainStatus } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -8,6 +8,7 @@ import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import Tx from '../models/tx';
 import Block from '../models/block';
 import Address from '../models/address';
+import Peer from '../models/peer';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -295,7 +296,11 @@ class AergoClient {
      */
     getPeers () {
         const empty = new rpcTypes.Empty();
-        return promisify(this.client.getPeers, this.client)(empty).then(grpcObject => grpcObject.toObject());
+        return promisify(this.client.getPeers, this.client)(empty).then(
+            (grpcObject: GrpcPeerList): Array<Peer> => grpcObject.getPeersList().map(
+                (peer: GrpcPeer): Peer => Peer.fromGrpc(peer)
+            )
+        );
     }
 }
 
