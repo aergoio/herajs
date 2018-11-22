@@ -2,22 +2,28 @@ import Provider from './base';
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_web_pb';
 import { grpc } from 'grpc-web-client';
 
+interface GrpcWebProviderConfig {
+    url?: string;
+}
+
 /**
  * Provider for GRPC-WEB connections over HTTP.
  * This is compatible with both Web browser and Node.js environments.
  * Note that the transport is considerably slower than over standard GRPC.
  */
 class GrpcWebProvider extends Provider {
+    client: AergoRPCServiceClient;
+    config: GrpcWebProviderConfig;
+
     /**
      * .. code-block:: javascript
      * 
      *     import { GrpcWebProvider } from '@herajs/client';
      *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
      * 
-     * @param {object} config
-     * @param {string} config.url URL to connect to (including https:// or http:// protocol)
+     * @param {GrpcWebProviderConfig} config
      */
-    constructor(config) {
+    constructor(config: GrpcWebProviderConfig = {}) {
         super(config);
         const options = {
             transport: grpc.WebsocketTransportFactory
@@ -25,7 +31,7 @@ class GrpcWebProvider extends Provider {
         this.client = new AergoRPCServiceClient(this.config.url, options);
     }
 
-    get defaultConfig() {
+    get defaultConfig(): GrpcWebProviderConfig {
         return {
             url: 'http://localhost:7845'
         };

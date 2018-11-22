@@ -40,8 +40,10 @@ release = u''
 # ones.
 extensions = ['sphinx_js']
 js_source_path = '../src'
-jsdoc_config_path = 'conf.json'
+jsdoc_config_path = '../tsconfig.json' #'conf.json'
 primary_domain = 'js'
+js_language = 'typescript'
+root_for_relative_js_paths = '..'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []

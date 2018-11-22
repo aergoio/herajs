@@ -1,5 +1,9 @@
 {
     "opts": {
         "recurse": true
-    }
+    },
+    "source": {
+        "includePattern": ".+\\.(ts|js)(doc|x)?$"
+    },
+    "tsconfig": "../tsconfig.json"
 }

@@ -24,7 +24,7 @@ Currently, there is herajs, heraj, and herapy. They all implement similar API bu
    client
    accounts
    providers
-   contract
+   models/contract
 
 
 Indices and tables
