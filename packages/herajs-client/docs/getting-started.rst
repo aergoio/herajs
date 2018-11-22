@@ -50,8 +50,8 @@ However, currently most browsers do not fully support this protocol. There is a 
 Node.js supports the plain GRPC standard, so that's what you should use in that case.
 When you import herajs in Node.js environments, it will automatically pick up that implementation.
 
-To use herajs in browser environments either ``import AergoClient from 'herajs/dist/herajs.js'`` or create an alias in your bundler configuration.
-Many bundlers like Webpack automatically pick the browser version, so you don't need to configure anything and can just ``import AergoClient from 'herajs'``.
+To use herajs in browser environments either explicitly ``import ... from '@herajs/client/dist/herajs.js'`` or create an alias in your bundler configuration.
+Many bundlers like Webpack automatically pick the browser version, so you don't need to configure anything and can just ``import ... from '@herajs/client'``.
 
 Setting a custom provider
 -------------------------
