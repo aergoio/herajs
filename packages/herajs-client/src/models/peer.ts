@@ -8,7 +8,10 @@ export default class Peer {
 
     static fromGrpc(grpcObject: GrpcPeer) {
         const obj: GrpcPeer.AsObject = grpcObject.toObject();
-        obj.bestblock.blockhash = Block.encodeHash(grpcObject.getBestblock().getBlockhash_asU8());
+        const bestblock = grpcObject.getBestblock();
+        if (bestblock) {
+            obj.bestblock.blockhash = Block.encodeHash(bestblock.getBlockhash_asU8());
+        }
         return new Peer(<Partial<Peer>>obj);
     }
     toGrpc() {

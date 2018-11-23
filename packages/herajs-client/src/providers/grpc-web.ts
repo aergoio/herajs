@@ -24,7 +24,11 @@ class GrpcWebProvider extends Provider {
      * @param {GrpcWebProviderConfig} config
      */
     constructor(config: GrpcWebProviderConfig = {}) {
-        super(config);
+        super();
+        this.config = {
+            ...this.defaultConfig,
+            ...config
+        };
         const options = {
             transport: grpc.WebsocketTransportFactory
         };

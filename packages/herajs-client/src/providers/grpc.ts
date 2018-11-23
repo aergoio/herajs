@@ -24,7 +24,11 @@ class GrpcProvider extends Provider {
      * @param {GrpcProviderConfig} config
      */
     constructor(config: GrpcProviderConfig = {}) {
-        super(config);
+        super();
+        this.config = {
+            ...this.defaultConfig,
+            ...config
+        };
         this.client = new AergoRPCServiceClient(this.config.url, grpc.credentials.createInsecure()); 
     }
 

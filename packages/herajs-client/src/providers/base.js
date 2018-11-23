@@ -1,10 +1,5 @@
 class Provider {
-    constructor(config) {
-        this.config = {
-            ...this.defaultConfig,
-            ...config
-        };
-
+    constructor() {
         // Proxy that passes method calls to the provider's client object
         return new Proxy(this, {
             get(obj, field) {
