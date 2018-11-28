@@ -1,5 +1,5 @@
 /*!
- * herajs v0.2.1
+ * herajs v0.2.2
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -17128,6 +17128,37 @@ function () {
   return Block;
 }();
 
+var Peer =
+/*#__PURE__*/
+function () {
+  function Peer(data) {
+    _classCallCheck(this, Peer);
+
+    Object.assign(this, data);
+  }
+
+  _createClass(Peer, [{
+    key: "toGrpc",
+    value: function toGrpc() {
+      throw new Error('Not implemented');
+    }
+  }], [{
+    key: "fromGrpc",
+    value: function fromGrpc(grpcObject) {
+      var obj = grpcObject.toObject();
+      var bestblock = grpcObject.getBestblock();
+
+      if (bestblock) {
+        obj.bestblock.blockhash = Block.encodeHash(bestblock.getBlockhash_asU8());
+      }
+
+      return new Peer(obj);
+    }
+  }]);
+
+  return Peer;
+}();
+
 var CommitStatus$1 = rpcTypes.CommitStatus;
 /**
  * Main aergo client controller.
@@ -17490,7 +17521,9 @@ function () {
     value: function getPeers() {
       var empty = new rpcTypes.Empty();
       return promisify(this.client.getPeers, this.client)(empty).then(function (grpcObject) {
-        return grpcObject.toObject();
+        return grpcObject.getPeersList().map(function (peer) {
+          return Peer.fromGrpc(peer);
+        });
       });
     }
   }]);
@@ -17498,11 +17531,10 @@ function () {
   return AergoClient;
 }();
 
-var Provider = function Provider(config) {
+var Provider = function Provider() {
   _classCallCheck(this, Provider);
 
-  this.config = _objectSpread({}, this.defaultConfig, config); // Proxy that passes method calls to the provider's client object
-
+  // Proxy that passes method calls to the provider's client object
   return new Proxy(this, {
     get: function get(obj, field) {
       if (field in obj) return obj[field];
@@ -20114,7 +20146,6 @@ var rpc_grpc_pb_2 = rpc_grpc_pb.AergoRPCServiceClient;
  * Provider for standard GRPC connections over HTTP2.
  * This is only compatible with Node.js environments.
  */
-
 var GrpcProvider =
 /*#__PURE__*/
 function (_Provider) {
@@ -20126,15 +20157,22 @@ function (_Provider) {
    *     import { GrpcProvider } from '@herajs/client';
    *     const provider = new GrpcProvider({url: 'localhost:7845'});
    * 
-   * @param {object} config
-   * @param {string} config.url URL to connect to (excluding protocol)
+   * @param {GrpcProviderConfig} config
    */
-  function GrpcProvider(config) {
+  function GrpcProvider() {
     var _this;
+
+    var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, GrpcProvider);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(GrpcProvider).call(this, config));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(GrpcProvider).call(this));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "client", void 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "config", void 0);
+
+    _this.config = _objectSpread({}, _this.defaultConfig, config);
     _this.client = new rpc_grpc_pb_2(_this.config.url, grpc.credentials.createInsecure());
     return _this;
   }
