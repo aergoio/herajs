@@ -1,5 +1,5 @@
 /*!
- * herajs v0.2.2
+ * herajs v0.3.0
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -3289,6 +3289,7 @@
 	  goog.exportSymbol('proto.types.StateProof', null, global);
 	  goog.exportSymbol('proto.types.StateQuery', null, global);
 	  goog.exportSymbol('proto.types.StateQueryProof', null, global);
+	  goog.exportSymbol('proto.types.StateVar', null, global);
 	  goog.exportSymbol('proto.types.Tx', null, global);
 	  goog.exportSymbol('proto.types.TxBody', null, global);
 	  goog.exportSymbol('proto.types.TxIdx', null, global);
@@ -3602,13 +3603,14 @@
 
 	    proto.types.BlockHeader.toObject = function (includeInstance, msg) {
 	      var obj = {
+	        chainid: msg.getChainid_asB64(),
 	        prevblockhash: msg.getPrevblockhash_asB64(),
-	        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
-	        timestamp: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+	        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+	        timestamp: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
 	        blocksroothash: msg.getBlocksroothash_asB64(),
 	        txsroothash: msg.getTxsroothash_asB64(),
 	        receiptsroothash: msg.getReceiptsroothash_asB64(),
-	        confirms: googleProtobuf.Message.getFieldWithDefault(msg, 7, 0),
+	        confirms: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
 	        pubkey: msg.getPubkey_asB64(),
 	        sign: msg.getSign_asB64(),
 	        coinbaseaccount: msg.getCoinbaseaccount_asB64()
@@ -3655,66 +3657,73 @@
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
-	          msg.setPrevblockhash(value);
+	          msg.setChainid(value);
 	          break;
 
 	        case 2:
+	          var value =
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
+	          msg.setPrevblockhash(value);
+	          break;
+
+	        case 3:
 	          var value =
 	          /** @type {number} */
 	          reader.readUint64();
 	          msg.setBlockno(value);
 	          break;
 
-	        case 3:
+	        case 4:
 	          var value =
 	          /** @type {number} */
 	          reader.readInt64();
 	          msg.setTimestamp(value);
 	          break;
 
-	        case 4:
+	        case 5:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
 	          msg.setBlocksroothash(value);
 	          break;
 
-	        case 5:
+	        case 6:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
 	          msg.setTxsroothash(value);
 	          break;
 
-	        case 6:
+	        case 7:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
 	          msg.setReceiptsroothash(value);
 	          break;
 
-	        case 7:
+	        case 8:
 	          var value =
 	          /** @type {number} */
 	          reader.readUint64();
 	          msg.setConfirms(value);
 	          break;
 
-	        case 8:
+	        case 9:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
 	          msg.setPubkey(value);
 	          break;
 
-	        case 9:
+	        case 10:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
 	          msg.setSign(value);
 	          break;
 
-	        case 10:
+	        case 11:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
@@ -3751,68 +3760,120 @@
 
 	  proto.types.BlockHeader.serializeBinaryToWriter = function (message, writer) {
 	    var f = undefined;
-	    f = message.getPrevblockhash_asU8();
+	    f = message.getChainid_asU8();
 
 	    if (f.length > 0) {
 	      writer.writeBytes(1, f);
 	    }
 
+	    f = message.getPrevblockhash_asU8();
+
+	    if (f.length > 0) {
+	      writer.writeBytes(2, f);
+	    }
+
 	    f = message.getBlockno();
 
 	    if (f !== 0) {
-	      writer.writeUint64(2, f);
+	      writer.writeUint64(3, f);
 	    }
 
 	    f = message.getTimestamp();
 
 	    if (f !== 0) {
-	      writer.writeInt64(3, f);
+	      writer.writeInt64(4, f);
 	    }
 
 	    f = message.getBlocksroothash_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(4, f);
+	      writer.writeBytes(5, f);
 	    }
 
 	    f = message.getTxsroothash_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(5, f);
+	      writer.writeBytes(6, f);
 	    }
 
 	    f = message.getReceiptsroothash_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(6, f);
+	      writer.writeBytes(7, f);
 	    }
 
 	    f = message.getConfirms();
 
 	    if (f !== 0) {
-	      writer.writeUint64(7, f);
+	      writer.writeUint64(8, f);
 	    }
 
 	    f = message.getPubkey_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(8, f);
+	      writer.writeBytes(9, f);
 	    }
 
 	    f = message.getSign_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(9, f);
+	      writer.writeBytes(10, f);
 	    }
 
 	    f = message.getCoinbaseaccount_asU8();
 
 	    if (f.length > 0) {
-	      writer.writeBytes(10, f);
+	      writer.writeBytes(11, f);
 	    }
 	  };
 	  /**
-	   * optional bytes prevBlockHash = 1;
+	   * optional bytes chainID = 1;
+	   * @return {!(string|Uint8Array)}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getChainid = function () {
+	    return (
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	    );
+	  };
+	  /**
+	   * optional bytes chainID = 1;
+	   * This is a type-conversion wrapper around `getChainid()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getChainid_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getChainid())
+	    );
+	  };
+	  /**
+	   * optional bytes chainID = 1;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getChainid()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getChainid_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getChainid())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
+
+
+	  proto.types.BlockHeader.prototype.setChainid = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value);
+	  };
+	  /**
+	   * optional bytes prevBlockHash = 2;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -3820,11 +3881,11 @@
 	  proto.types.BlockHeader.prototype.getPrevblockhash = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
 	    );
 	  };
 	  /**
-	   * optional bytes prevBlockHash = 1;
+	   * optional bytes prevBlockHash = 2;
 	   * This is a type-conversion wrapper around `getPrevblockhash()`
 	   * @return {string}
 	   */
@@ -3837,7 +3898,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes prevBlockHash = 1;
+	   * optional bytes prevBlockHash = 2;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getPrevblockhash()`
@@ -3855,33 +3916,15 @@
 
 
 	  proto.types.BlockHeader.prototype.setPrevblockhash = function (value) {
-	    googleProtobuf.Message.setField(this, 1, value);
+	    googleProtobuf.Message.setField(this, 2, value);
 	  };
 	  /**
-	   * optional uint64 blockNo = 2;
+	   * optional uint64 blockNo = 3;
 	   * @return {number}
 	   */
 
 
 	  proto.types.BlockHeader.prototype.getBlockno = function () {
-	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
-	    );
-	  };
-	  /** @param {number} value */
-
-
-	  proto.types.BlockHeader.prototype.setBlockno = function (value) {
-	    googleProtobuf.Message.setField(this, 2, value);
-	  };
-	  /**
-	   * optional int64 timestamp = 3;
-	   * @return {number}
-	   */
-
-
-	  proto.types.BlockHeader.prototype.getTimestamp = function () {
 	    return (
 	      /** @type {number} */
 	      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
@@ -3890,11 +3933,29 @@
 	  /** @param {number} value */
 
 
-	  proto.types.BlockHeader.prototype.setTimestamp = function (value) {
+	  proto.types.BlockHeader.prototype.setBlockno = function (value) {
 	    googleProtobuf.Message.setField(this, 3, value);
 	  };
 	  /**
-	   * optional bytes blocksRootHash = 4;
+	   * optional int64 timestamp = 4;
+	   * @return {number}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getTimestamp = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.BlockHeader.prototype.setTimestamp = function (value) {
+	    googleProtobuf.Message.setField(this, 4, value);
+	  };
+	  /**
+	   * optional bytes blocksRootHash = 5;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -3902,11 +3963,11 @@
 	  proto.types.BlockHeader.prototype.getBlocksroothash = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
 	    );
 	  };
 	  /**
-	   * optional bytes blocksRootHash = 4;
+	   * optional bytes blocksRootHash = 5;
 	   * This is a type-conversion wrapper around `getBlocksroothash()`
 	   * @return {string}
 	   */
@@ -3919,7 +3980,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes blocksRootHash = 4;
+	   * optional bytes blocksRootHash = 5;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getBlocksroothash()`
@@ -3937,10 +3998,10 @@
 
 
 	  proto.types.BlockHeader.prototype.setBlocksroothash = function (value) {
-	    googleProtobuf.Message.setField(this, 4, value);
+	    googleProtobuf.Message.setField(this, 5, value);
 	  };
 	  /**
-	   * optional bytes txsRootHash = 5;
+	   * optional bytes txsRootHash = 6;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -3948,11 +4009,11 @@
 	  proto.types.BlockHeader.prototype.getTxsroothash = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
 	    );
 	  };
 	  /**
-	   * optional bytes txsRootHash = 5;
+	   * optional bytes txsRootHash = 6;
 	   * This is a type-conversion wrapper around `getTxsroothash()`
 	   * @return {string}
 	   */
@@ -3965,7 +4026,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes txsRootHash = 5;
+	   * optional bytes txsRootHash = 6;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getTxsroothash()`
@@ -3983,10 +4044,10 @@
 
 
 	  proto.types.BlockHeader.prototype.setTxsroothash = function (value) {
-	    googleProtobuf.Message.setField(this, 5, value);
+	    googleProtobuf.Message.setField(this, 6, value);
 	  };
 	  /**
-	   * optional bytes receiptsRootHash = 6;
+	   * optional bytes receiptsRootHash = 7;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -3994,11 +4055,11 @@
 	  proto.types.BlockHeader.prototype.getReceiptsroothash = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
 	    );
 	  };
 	  /**
-	   * optional bytes receiptsRootHash = 6;
+	   * optional bytes receiptsRootHash = 7;
 	   * This is a type-conversion wrapper around `getReceiptsroothash()`
 	   * @return {string}
 	   */
@@ -4011,7 +4072,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes receiptsRootHash = 6;
+	   * optional bytes receiptsRootHash = 7;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getReceiptsroothash()`
@@ -4029,10 +4090,10 @@
 
 
 	  proto.types.BlockHeader.prototype.setReceiptsroothash = function (value) {
-	    googleProtobuf.Message.setField(this, 6, value);
+	    googleProtobuf.Message.setField(this, 7, value);
 	  };
 	  /**
-	   * optional uint64 confirms = 7;
+	   * optional uint64 confirms = 8;
 	   * @return {number}
 	   */
 
@@ -4040,17 +4101,17 @@
 	  proto.types.BlockHeader.prototype.getConfirms = function () {
 	    return (
 	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 7, 0)
+	      googleProtobuf.Message.getFieldWithDefault(this, 8, 0)
 	    );
 	  };
 	  /** @param {number} value */
 
 
 	  proto.types.BlockHeader.prototype.setConfirms = function (value) {
-	    googleProtobuf.Message.setField(this, 7, value);
+	    googleProtobuf.Message.setField(this, 8, value);
 	  };
 	  /**
-	   * optional bytes pubKey = 8;
+	   * optional bytes pubKey = 9;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -4058,11 +4119,11 @@
 	  proto.types.BlockHeader.prototype.getPubkey = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 8, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 9, "")
 	    );
 	  };
 	  /**
-	   * optional bytes pubKey = 8;
+	   * optional bytes pubKey = 9;
 	   * This is a type-conversion wrapper around `getPubkey()`
 	   * @return {string}
 	   */
@@ -4075,7 +4136,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes pubKey = 8;
+	   * optional bytes pubKey = 9;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getPubkey()`
@@ -4093,10 +4154,10 @@
 
 
 	  proto.types.BlockHeader.prototype.setPubkey = function (value) {
-	    googleProtobuf.Message.setField(this, 8, value);
+	    googleProtobuf.Message.setField(this, 9, value);
 	  };
 	  /**
-	   * optional bytes sign = 9;
+	   * optional bytes sign = 10;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -4104,11 +4165,11 @@
 	  proto.types.BlockHeader.prototype.getSign = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 9, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
 	    );
 	  };
 	  /**
-	   * optional bytes sign = 9;
+	   * optional bytes sign = 10;
 	   * This is a type-conversion wrapper around `getSign()`
 	   * @return {string}
 	   */
@@ -4121,7 +4182,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes sign = 9;
+	   * optional bytes sign = 10;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getSign()`
@@ -4139,10 +4200,10 @@
 
 
 	  proto.types.BlockHeader.prototype.setSign = function (value) {
-	    googleProtobuf.Message.setField(this, 9, value);
+	    googleProtobuf.Message.setField(this, 10, value);
 	  };
 	  /**
-	   * optional bytes coinbaseAccount = 10;
+	   * optional bytes coinbaseAccount = 11;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -4150,11 +4211,11 @@
 	  proto.types.BlockHeader.prototype.getCoinbaseaccount = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 11, "")
 	    );
 	  };
 	  /**
-	   * optional bytes coinbaseAccount = 10;
+	   * optional bytes coinbaseAccount = 11;
 	   * This is a type-conversion wrapper around `getCoinbaseaccount()`
 	   * @return {string}
 	   */
@@ -4167,7 +4228,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes coinbaseAccount = 10;
+	   * optional bytes coinbaseAccount = 11;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getCoinbaseaccount()`
@@ -4185,7 +4246,7 @@
 
 
 	  proto.types.BlockHeader.prototype.setCoinbaseaccount = function (value) {
-	    googleProtobuf.Message.setField(this, 10, value);
+	    googleProtobuf.Message.setField(this, 11, value);
 	  };
 	  /**
 	   * Generated by JsPbCodeGenerator.
@@ -4788,10 +4849,10 @@
 	        nonce: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
 	        account: msg.getAccount_asB64(),
 	        recipient: msg.getRecipient_asB64(),
-	        amount: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+	        amount: msg.getAmount_asB64(),
 	        payload: msg.getPayload_asB64(),
 	        limit: googleProtobuf.Message.getFieldWithDefault(msg, 6, 0),
-	        price: googleProtobuf.Message.getFieldWithDefault(msg, 7, 0),
+	        price: msg.getPrice_asB64(),
 	        type: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
 	        sign: msg.getSign_asB64()
 	      };
@@ -4856,8 +4917,8 @@
 
 	        case 4:
 	          var value =
-	          /** @type {number} */
-	          reader.readUint64();
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
 	          msg.setAmount(value);
 	          break;
 
@@ -4877,8 +4938,8 @@
 
 	        case 7:
 	          var value =
-	          /** @type {number} */
-	          reader.readUint64();
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
 	          msg.setPrice(value);
 	          break;
 
@@ -4944,10 +5005,10 @@
 	      writer.writeBytes(3, f);
 	    }
 
-	    f = message.getAmount();
+	    f = message.getAmount_asU8();
 
-	    if (f !== 0) {
-	      writer.writeUint64(4, f);
+	    if (f.length > 0) {
+	      writer.writeBytes(4, f);
 	    }
 
 	    f = message.getPayload_asU8();
@@ -4962,10 +5023,10 @@
 	      writer.writeUint64(6, f);
 	    }
 
-	    f = message.getPrice();
+	    f = message.getPrice_asU8();
 
-	    if (f !== 0) {
-	      writer.writeUint64(7, f);
+	    if (f.length > 0) {
+	      writer.writeBytes(7, f);
 	    }
 
 	    f = message.getType();
@@ -5091,18 +5152,46 @@
 	    googleProtobuf.Message.setField(this, 3, value);
 	  };
 	  /**
-	   * optional uint64 amount = 4;
-	   * @return {number}
+	   * optional bytes amount = 4;
+	   * @return {!(string|Uint8Array)}
 	   */
 
 
 	  proto.types.TxBody.prototype.getAmount = function () {
 	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
 	    );
 	  };
-	  /** @param {number} value */
+	  /**
+	   * optional bytes amount = 4;
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.TxBody.prototype.getAmount_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getAmount())
+	    );
+	  };
+	  /**
+	   * optional bytes amount = 4;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.TxBody.prototype.getAmount_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getAmount())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
 
 
 	  proto.types.TxBody.prototype.setAmount = function (value) {
@@ -5173,18 +5262,46 @@
 	    googleProtobuf.Message.setField(this, 6, value);
 	  };
 	  /**
-	   * optional uint64 price = 7;
-	   * @return {number}
+	   * optional bytes price = 7;
+	   * @return {!(string|Uint8Array)}
 	   */
 
 
 	  proto.types.TxBody.prototype.getPrice = function () {
 	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 7, 0)
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
 	    );
 	  };
-	  /** @param {number} value */
+	  /**
+	   * optional bytes price = 7;
+	   * This is a type-conversion wrapper around `getPrice()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.TxBody.prototype.getPrice_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getPrice())
+	    );
+	  };
+	  /**
+	   * optional bytes price = 7;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getPrice()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.TxBody.prototype.getPrice_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getPrice())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
 
 
 	  proto.types.TxBody.prototype.setPrice = function (value) {
@@ -5709,7 +5826,7 @@
 	    proto.types.State.toObject = function (includeInstance, msg) {
 	      var obj = {
 	        nonce: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
-	        balance: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+	        balance: msg.getBalance_asB64(),
 	        codehash: msg.getCodehash_asB64(),
 	        storageroot: msg.getStorageroot_asB64(),
 	        sqlrecoverypoint: googleProtobuf.Message.getFieldWithDefault(msg, 5, 0)
@@ -5761,8 +5878,8 @@
 
 	        case 2:
 	          var value =
-	          /** @type {number} */
-	          reader.readUint64();
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
 	          msg.setBalance(value);
 	          break;
 
@@ -5823,10 +5940,10 @@
 	      writer.writeUint64(1, f);
 	    }
 
-	    f = message.getBalance();
+	    f = message.getBalance_asU8();
 
-	    if (f !== 0) {
-	      writer.writeUint64(2, f);
+	    if (f.length > 0) {
+	      writer.writeBytes(2, f);
 	    }
 
 	    f = message.getCodehash_asU8();
@@ -5866,18 +5983,46 @@
 	    googleProtobuf.Message.setField(this, 1, value);
 	  };
 	  /**
-	   * optional uint64 balance = 2;
-	   * @return {number}
+	   * optional bytes balance = 2;
+	   * @return {!(string|Uint8Array)}
 	   */
 
 
 	  proto.types.State.prototype.getBalance = function () {
 	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
 	    );
 	  };
-	  /** @param {number} value */
+	  /**
+	   * optional bytes balance = 2;
+	   * This is a type-conversion wrapper around `getBalance()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.State.prototype.getBalance_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getBalance())
+	    );
+	  };
+	  /**
+	   * optional bytes balance = 2;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getBalance()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.State.prototype.getBalance_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getBalance())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
 
 
 	  proto.types.State.prototype.setBalance = function (value) {
@@ -7778,6 +7923,184 @@
 	   */
 
 
+	  proto.types.StateVar = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
+	  };
+
+	  goog.inherits(proto.types.StateVar, googleProtobuf.Message);
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.StateVar.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.StateVar.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.StateVar} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.StateVar.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+	        type: googleProtobuf.Message.getFieldWithDefault(msg, 2, "")
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.StateVar}
+	   */
+
+
+	  proto.types.StateVar.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.StateVar();
+	    return proto.types.StateVar.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.StateVar} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.StateVar}
+	   */
+
+
+	  proto.types.StateVar.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value =
+	          /** @type {string} */
+	          reader.readString();
+	          msg.setName(value);
+	          break;
+
+	        case 2:
+	          var value =
+	          /** @type {string} */
+	          reader.readString();
+	          msg.setType(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.StateVar.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.StateVar.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.StateVar} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.StateVar.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getName();
+
+	    if (f.length > 0) {
+	      writer.writeString(1, f);
+	    }
+
+	    f = message.getType();
+
+	    if (f.length > 0) {
+	      writer.writeString(2, f);
+	    }
+	  };
+	  /**
+	   * optional string name = 1;
+	   * @return {string}
+	   */
+
+
+	  proto.types.StateVar.prototype.getName = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	    );
+	  };
+	  /** @param {string} value */
+
+
+	  proto.types.StateVar.prototype.setName = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value);
+	  };
+	  /**
+	   * optional string type = 2;
+	   * @return {string}
+	   */
+
+
+	  proto.types.StateVar.prototype.getType = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
+	    );
+	  };
+	  /** @param {string} value */
+
+
+	  proto.types.StateVar.prototype.setType = function (value) {
+	    googleProtobuf.Message.setField(this, 2, value);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
 	  proto.types.ABI = function (opt_data) {
 	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.ABI.repeatedFields_, null);
 	  };
@@ -7790,7 +8113,7 @@
 	   */
 
 
-	  proto.types.ABI.repeatedFields_ = [3];
+	  proto.types.ABI.repeatedFields_ = [3, 4];
 
 	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
 	    /**
@@ -7821,7 +8144,8 @@
 	      var obj = {
 	        version: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
 	        language: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
-	        functionsList: googleProtobuf.Message.toObjectList(msg.getFunctionsList(), proto.types.Function.toObject, includeInstance)
+	        functionsList: googleProtobuf.Message.toObjectList(msg.getFunctionsList(), proto.types.Function.toObject, includeInstance),
+	        stateVariablesList: googleProtobuf.Message.toObjectList(msg.getStateVariablesList(), proto.types.StateVar.toObject, includeInstance)
 	      };
 
 	      if (includeInstance) {
@@ -7881,6 +8205,12 @@
 	          msg.addFunctions(value);
 	          break;
 
+	        case 4:
+	          var value = new proto.types.StateVar();
+	          reader.readMessage(value, proto.types.StateVar.deserializeBinaryFromReader);
+	          msg.addStateVariables(value);
+	          break;
+
 	        default:
 	          reader.skipField();
 	          break;
@@ -7927,6 +8257,12 @@
 
 	    if (f.length > 0) {
 	      writer.writeRepeatedMessage(3, f, proto.types.Function.serializeBinaryToWriter);
+	    }
+
+	    f = message.getStateVariablesList();
+
+	    if (f.length > 0) {
+	      writer.writeRepeatedMessage(4, f, proto.types.StateVar.serializeBinaryToWriter);
 	    }
 	  };
 	  /**
@@ -7996,6 +8332,38 @@
 
 	  proto.types.ABI.prototype.clearFunctionsList = function () {
 	    this.setFunctionsList([]);
+	  };
+	  /**
+	   * repeated StateVar state_variables = 4;
+	   * @return {!Array.<!proto.types.StateVar>}
+	   */
+
+
+	  proto.types.ABI.prototype.getStateVariablesList = function () {
+	    return (
+	      /** @type{!Array.<!proto.types.StateVar>} */
+	      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.StateVar, 4)
+	    );
+	  };
+	  /** @param {!Array.<!proto.types.StateVar>} value */
+
+
+	  proto.types.ABI.prototype.setStateVariablesList = function (value) {
+	    googleProtobuf.Message.setRepeatedWrapperField(this, 4, value);
+	  };
+	  /**
+	   * @param {!proto.types.StateVar=} opt_value
+	   * @param {number=} opt_index
+	   * @return {!proto.types.StateVar}
+	   */
+
+
+	  proto.types.ABI.prototype.addStateVariables = function (opt_value, opt_index) {
+	    return googleProtobuf.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.types.StateVar, opt_index);
+	  };
+
+	  proto.types.ABI.prototype.clearStateVariablesList = function () {
+	    this.setStateVariablesList([]);
 	  };
 	  /**
 	   * Generated by JsPbCodeGenerator.
@@ -8498,7 +8866,7 @@
 	    googleProtobuf.Message.setField(this, 3, value);
 	  };
 	  /**
-	   * optional bytes Root = 4;
+	   * optional bytes root = 4;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -8510,7 +8878,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes Root = 4;
+	   * optional bytes root = 4;
 	   * This is a type-conversion wrapper around `getRoot()`
 	   * @return {string}
 	   */
@@ -8523,7 +8891,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes Root = 4;
+	   * optional bytes root = 4;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getRoot()`
@@ -8544,7 +8912,7 @@
 	    googleProtobuf.Message.setField(this, 4, value);
 	  };
 	  /**
-	   * optional bool Compressed = 5;
+	   * optional bool compressed = 5;
 	   * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
 	   * You should avoid comparisons like {@code val === true/false} in those cases.
 	   * @return {boolean}
@@ -14664,6 +15032,668 @@
 	  goog.object.extend(exports, proto.types);
 	});
 
+	var metric_pb = createCommonjsModule(function (module, exports) {
+	  /**
+	   * @fileoverview
+	   * @enhanceable
+	   * @suppress {messageConventions} JS Compiler reports an error if a variable or
+	   *     field starts with 'MSG_' and isn't a translatable message.
+	   * @public
+	   */
+	  // GENERATED CODE -- DO NOT EDIT!
+	  var goog = googleProtobuf;
+	  var global = Function('return this')();
+	  goog.exportSymbol('proto.types.MetricType', null, global);
+	  goog.exportSymbol('proto.types.Metrics', null, global);
+	  goog.exportSymbol('proto.types.MetricsRequest', null, global);
+	  goog.exportSymbol('proto.types.PeerMetric', null, global);
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+	  proto.types.MetricsRequest = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.MetricsRequest.repeatedFields_, null);
+	  };
+
+	  goog.inherits(proto.types.MetricsRequest, googleProtobuf.Message);
+	  /**
+	   * List of repeated fields within this message type.
+	   * @private {!Array<number>}
+	   * @const
+	   */
+
+
+	  proto.types.MetricsRequest.repeatedFields_ = [1];
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.MetricsRequest.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.MetricsRequest.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.MetricsRequest} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.MetricsRequest.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        typesList: googleProtobuf.Message.getRepeatedField(msg, 1)
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.MetricsRequest}
+	   */
+
+
+	  proto.types.MetricsRequest.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.MetricsRequest();
+	    return proto.types.MetricsRequest.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.MetricsRequest} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.MetricsRequest}
+	   */
+
+
+	  proto.types.MetricsRequest.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value =
+	          /** @type {!Array.<!proto.types.MetricType>} */
+	          reader.readPackedEnum();
+	          msg.setTypesList(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.MetricsRequest.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.MetricsRequest.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.MetricsRequest} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.MetricsRequest.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getTypesList();
+
+	    if (f.length > 0) {
+	      writer.writePackedEnum(1, f);
+	    }
+	  };
+	  /**
+	   * repeated MetricType types = 1;
+	   * @return {!Array.<!proto.types.MetricType>}
+	   */
+
+
+	  proto.types.MetricsRequest.prototype.getTypesList = function () {
+	    return (
+	      /** @type {!Array.<!proto.types.MetricType>} */
+	      googleProtobuf.Message.getRepeatedField(this, 1)
+	    );
+	  };
+	  /** @param {!Array.<!proto.types.MetricType>} value */
+
+
+	  proto.types.MetricsRequest.prototype.setTypesList = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value || []);
+	  };
+	  /**
+	   * @param {!proto.types.MetricType} value
+	   * @param {number=} opt_index
+	   */
+
+
+	  proto.types.MetricsRequest.prototype.addTypes = function (value, opt_index) {
+	    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
+	  };
+
+	  proto.types.MetricsRequest.prototype.clearTypesList = function () {
+	    this.setTypesList([]);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
+	  proto.types.Metrics = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.Metrics.repeatedFields_, null);
+	  };
+
+	  goog.inherits(proto.types.Metrics, googleProtobuf.Message);
+	  /**
+	   * List of repeated fields within this message type.
+	   * @private {!Array<number>}
+	   * @const
+	   */
+
+
+	  proto.types.Metrics.repeatedFields_ = [1];
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.Metrics.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.Metrics.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.Metrics} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.Metrics.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        peersList: googleProtobuf.Message.toObjectList(msg.getPeersList(), proto.types.PeerMetric.toObject, includeInstance)
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.Metrics}
+	   */
+
+
+	  proto.types.Metrics.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.Metrics();
+	    return proto.types.Metrics.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.Metrics} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.Metrics}
+	   */
+
+
+	  proto.types.Metrics.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value = new proto.types.PeerMetric();
+	          reader.readMessage(value, proto.types.PeerMetric.deserializeBinaryFromReader);
+	          msg.addPeers(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.Metrics.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.Metrics.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.Metrics} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.Metrics.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getPeersList();
+
+	    if (f.length > 0) {
+	      writer.writeRepeatedMessage(1, f, proto.types.PeerMetric.serializeBinaryToWriter);
+	    }
+	  };
+	  /**
+	   * repeated PeerMetric peers = 1;
+	   * @return {!Array.<!proto.types.PeerMetric>}
+	   */
+
+
+	  proto.types.Metrics.prototype.getPeersList = function () {
+	    return (
+	      /** @type{!Array.<!proto.types.PeerMetric>} */
+	      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.PeerMetric, 1)
+	    );
+	  };
+	  /** @param {!Array.<!proto.types.PeerMetric>} value */
+
+
+	  proto.types.Metrics.prototype.setPeersList = function (value) {
+	    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
+	  };
+	  /**
+	   * @param {!proto.types.PeerMetric=} opt_value
+	   * @param {number=} opt_index
+	   * @return {!proto.types.PeerMetric}
+	   */
+
+
+	  proto.types.Metrics.prototype.addPeers = function (opt_value, opt_index) {
+	    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.PeerMetric, opt_index);
+	  };
+
+	  proto.types.Metrics.prototype.clearPeersList = function () {
+	    this.setPeersList([]);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
+	  proto.types.PeerMetric = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
+	  };
+
+	  goog.inherits(proto.types.PeerMetric, googleProtobuf.Message);
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.PeerMetric.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.PeerMetric.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.PeerMetric} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.PeerMetric.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        peerid: msg.getPeerid_asB64(),
+	        sumin: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+	        avrin: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+	        sumout: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+	        avrout: googleProtobuf.Message.getFieldWithDefault(msg, 5, 0)
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.PeerMetric}
+	   */
+
+
+	  proto.types.PeerMetric.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.PeerMetric();
+	    return proto.types.PeerMetric.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.PeerMetric} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.PeerMetric}
+	   */
+
+
+	  proto.types.PeerMetric.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value =
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
+	          msg.setPeerid(value);
+	          break;
+
+	        case 2:
+	          var value =
+	          /** @type {number} */
+	          reader.readInt64();
+	          msg.setSumin(value);
+	          break;
+
+	        case 3:
+	          var value =
+	          /** @type {number} */
+	          reader.readInt64();
+	          msg.setAvrin(value);
+	          break;
+
+	        case 4:
+	          var value =
+	          /** @type {number} */
+	          reader.readInt64();
+	          msg.setSumout(value);
+	          break;
+
+	        case 5:
+	          var value =
+	          /** @type {number} */
+	          reader.readInt64();
+	          msg.setAvrout(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.PeerMetric.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.PeerMetric} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.PeerMetric.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getPeerid_asU8();
+
+	    if (f.length > 0) {
+	      writer.writeBytes(1, f);
+	    }
+
+	    f = message.getSumin();
+
+	    if (f !== 0) {
+	      writer.writeInt64(2, f);
+	    }
+
+	    f = message.getAvrin();
+
+	    if (f !== 0) {
+	      writer.writeInt64(3, f);
+	    }
+
+	    f = message.getSumout();
+
+	    if (f !== 0) {
+	      writer.writeInt64(4, f);
+	    }
+
+	    f = message.getAvrout();
+
+	    if (f !== 0) {
+	      writer.writeInt64(5, f);
+	    }
+	  };
+	  /**
+	   * optional bytes peerID = 1;
+	   * @return {!(string|Uint8Array)}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getPeerid = function () {
+	    return (
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	    );
+	  };
+	  /**
+	   * optional bytes peerID = 1;
+	   * This is a type-conversion wrapper around `getPeerid()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getPeerid_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getPeerid())
+	    );
+	  };
+	  /**
+	   * optional bytes peerID = 1;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getPeerid()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getPeerid_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getPeerid())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
+
+
+	  proto.types.PeerMetric.prototype.setPeerid = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value);
+	  };
+	  /**
+	   * optional int64 sumIn = 2;
+	   * @return {number}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getSumin = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.PeerMetric.prototype.setSumin = function (value) {
+	    googleProtobuf.Message.setField(this, 2, value);
+	  };
+	  /**
+	   * optional int64 avrIn = 3;
+	   * @return {number}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getAvrin = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.PeerMetric.prototype.setAvrin = function (value) {
+	    googleProtobuf.Message.setField(this, 3, value);
+	  };
+	  /**
+	   * optional int64 sumOut = 4;
+	   * @return {number}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getSumout = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.PeerMetric.prototype.setSumout = function (value) {
+	    googleProtobuf.Message.setField(this, 4, value);
+	  };
+	  /**
+	   * optional int64 avrOut = 5;
+	   * @return {number}
+	   */
+
+
+	  proto.types.PeerMetric.prototype.getAvrout = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 5, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.PeerMetric.prototype.setAvrout = function (value) {
+	    googleProtobuf.Message.setField(this, 5, value);
+	  };
+	  /**
+	   * @enum {number}
+	   */
+
+
+	  proto.types.MetricType = {
+	    NOTHING: 0,
+	    P2P_NETWORK: 1
+	  };
+	  goog.object.extend(exports, proto.types);
+	});
+
 	var rpc_pb = createCommonjsModule(function (module, exports) {
 	  /**
 	   * @fileoverview
@@ -18084,7 +19114,7 @@
 
 	    proto.types.Staking.toObject = function (includeInstance, msg) {
 	      var obj = {
-	        amount: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
+	        amount: msg.getAmount_asB64(),
 	        when: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
 	      };
 
@@ -18127,8 +19157,8 @@
 	      switch (field) {
 	        case 1:
 	          var value =
-	          /** @type {number} */
-	          reader.readUint64();
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
 	          msg.setAmount(value);
 	          break;
 
@@ -18169,10 +19199,10 @@
 
 	  proto.types.Staking.serializeBinaryToWriter = function (message, writer) {
 	    var f = undefined;
-	    f = message.getAmount();
+	    f = message.getAmount_asU8();
 
-	    if (f !== 0) {
-	      writer.writeUint64(1, f);
+	    if (f.length > 0) {
+	      writer.writeBytes(1, f);
 	    }
 
 	    f = message.getWhen();
@@ -18182,18 +19212,46 @@
 	    }
 	  };
 	  /**
-	   * optional uint64 amount = 1;
-	   * @return {number}
+	   * optional bytes amount = 1;
+	   * @return {!(string|Uint8Array)}
 	   */
 
 
 	  proto.types.Staking.prototype.getAmount = function () {
 	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
 	    );
 	  };
-	  /** @param {number} value */
+	  /**
+	   * optional bytes amount = 1;
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.Staking.prototype.getAmount_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getAmount())
+	    );
+	  };
+	  /**
+	   * optional bytes amount = 1;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.Staking.prototype.getAmount_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getAmount())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
 
 
 	  proto.types.Staking.prototype.setAmount = function (value) {
@@ -18263,7 +19321,7 @@
 	    proto.types.Vote.toObject = function (includeInstance, msg) {
 	      var obj = {
 	        candidate: msg.getCandidate_asB64(),
-	        amount: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
+	        amount: msg.getAmount_asB64()
 	      };
 
 	      if (includeInstance) {
@@ -18312,8 +19370,8 @@
 
 	        case 2:
 	          var value =
-	          /** @type {number} */
-	          reader.readUint64();
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
 	          msg.setAmount(value);
 	          break;
 
@@ -18353,10 +19411,10 @@
 	      writer.writeBytes(1, f);
 	    }
 
-	    f = message.getAmount();
+	    f = message.getAmount_asU8();
 
-	    if (f !== 0) {
-	      writer.writeUint64(2, f);
+	    if (f.length > 0) {
+	      writer.writeBytes(2, f);
 	    }
 	  };
 	  /**
@@ -18406,18 +19464,46 @@
 	    googleProtobuf.Message.setField(this, 1, value);
 	  };
 	  /**
-	   * optional uint64 amount = 2;
-	   * @return {number}
+	   * optional bytes amount = 2;
+	   * @return {!(string|Uint8Array)}
 	   */
 
 
 	  proto.types.Vote.prototype.getAmount = function () {
 	    return (
-	      /** @type {number} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
 	    );
 	  };
-	  /** @param {number} value */
+	  /**
+	   * optional bytes amount = 2;
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.Vote.prototype.getAmount_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getAmount())
+	    );
+	  };
+	  /**
+	   * optional bytes amount = 2;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getAmount()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.Vote.prototype.getAmount_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getAmount())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
 
 
 	  proto.types.Vote.prototype.setAmount = function (value) {
@@ -18811,6 +19897,148 @@
 	  return bs58.decode(bs58string);
 	}
 
+	var jsbiUmd = createCommonjsModule(function (module, exports) {
+	(function(a,b){module.exports=b();})(commonjsGlobal,function(){var a=Math.imul,b=Math.abs,c=Math.max,d=Math.clz32;class e extends Array{constructor(a,b){if(a>e.__kMaxLength)throw new RangeError("Maximum BigInt size exceeded");super(a),this.sign=b;}static BigInt(a){var b=Math.floor,c=Number.isFinite;if("number"==typeof a){if(0===a)return e.__zero();if((0|a)===a)return 0>a?e.__oneDigit(-a,!0):e.__oneDigit(a,!1);if(!c(a)||b(a)!==a)throw new RangeError("The number "+a+" cannot be converted to BigInt because it is not an integer");return e.__fromDouble(a)}if("string"==typeof a){const b=e.__fromString(a);if(null===b)throw new SyntaxError("Cannot convert "+a+" to a BigInt");return b}if("boolean"==typeof a)return !0===a?e.__oneDigit(1,!1):e.__zero();if("object"==typeof a){if(a.constructor===e)return a;const b=e.__toPrimitive(a);return e.BigInt(b)}throw new TypeError("Cannot convert "+a+" to a BigInt")}toDebugString(){const a=["BigInt["];for(const b of this)a.push((b?(b>>>0).toString(16):b)+", ");return a.push("]"),a.join("")}toString(a=10){if(2>a||36<a)throw new RangeError("toString() radix argument must be between 2 and 36");return 0===this.length?"0":0==(a&a-1)?e.__toStringBasePowerOfTwo(this,a):e.__toStringGeneric(this,a,!1)}static toNumber(a){const b=a.length;if(0===b)return 0;if(1===b){const b=a.__unsignedDigit(0);return a.sign?-b:b}const c=a.__digit(b-1),f=d(c),g=32*b-f;if(1024<g)return a.sign?-Infinity:1/0;let h=g-1,i=c,j=b-1;const k=f+1;let l=32===k?0:i<<k;l>>>=12;const m=k-12;let n=12<=k?0:i<<20+k,o=20+k;0<m&&0<j&&(j--,i=a.__digit(j),l|=i>>>32-m,n=i<<m,o=m),0<o&&0<j&&(j--,i=a.__digit(j),n|=i>>>32-o,o-=32);const p=e.__decideRounding(a,o,j,i);if((1===p||0===p&&1==(1&n))&&(n=n+1>>>0,0==n&&(l++,0!=l>>>20&&(l=0,h++,1023<h))))return a.sign?-Infinity:1/0;const q=a.sign?-2147483648:0;return h=h+1023<<20,e.__kBitConversionInts[1]=q|h|l,e.__kBitConversionInts[0]=n,e.__kBitConversionDouble[0]}static unaryMinus(a){if(0===a.length)return a;const b=a.__copy();return b.sign=!a.sign,b}static bitwiseNot(a){return a.sign?e.__absoluteSubOne(a).__trim():e.__absoluteAddOne(a,!0)}static exponentiate(a,b){if(b.sign)throw new RangeError("Exponent must be positive");if(0===b.length)return e.__oneDigit(1,!1);if(0===a.length)return a;if(1===a.length&&1===a.__digit(0))return a.sign&&0==(1&b.__digit(0))?e.unaryMinus(a):a;if(1<b.length)throw new RangeError("BigInt too big");let c=b.__unsignedDigit(0);if(1===c)return a;if(c>=e.__kMaxLengthBits)throw new RangeError("BigInt too big");if(1===a.length&&2===a.__digit(0)){const b=1+(c>>>5),d=a.sign&&0!=(1&c),f=new e(b,d);f.__initializeDigits();const g=1<<(31&c);return f.__setDigit(b-1,g),f}let d=null,f=a;for(0!=(1&c)&&(d=a),c>>=1;0!==c;c>>=1)f=e.multiply(f,f),0!=(1&c)&&(null===d?d=f:d=e.multiply(d,f));return d}static multiply(a,b){if(0===a.length)return a;if(0===b.length)return b;let c=a.length+b.length;32<=a.__clzmsd()+b.__clzmsd()&&c--;const d=new e(c,a.sign!==b.sign);d.__initializeDigits();for(let c=0;c<a.length;c++)e.__multiplyAccumulate(b,a.__digit(c),d,c);return d.__trim()}static divide(a,b){if(0===b.length)throw new RangeError("Division by zero");if(0>e.__absoluteCompare(a,b))return e.__zero();const c=a.sign!==b.sign,d=b.__unsignedDigit(0);let f;if(1===b.length&&65535>=d){if(1===d)return c===a.sign?a:e.unaryMinus(a);f=e.__absoluteDivSmall(a,d,null);}else f=e.__absoluteDivLarge(a,b,!0,!1);return f.sign=c,f.__trim()}static remainder(a,b){if(0===b.length)throw new RangeError("Division by zero");if(0>e.__absoluteCompare(a,b))return a;const c=b.__unsignedDigit(0);if(1===b.length&&65535>=c){if(1===c)return e.__zero();const b=e.__absoluteModSmall(a,c);return 0===b?e.__zero():e.__oneDigit(b,a.sign)}const d=e.__absoluteDivLarge(a,b,!1,!0);return d.sign=a.sign,d.__trim()}static add(a,b){const c=a.sign;return c===b.sign?e.__absoluteAdd(a,b,c):0<=e.__absoluteCompare(a,b)?e.__absoluteSub(a,b,c):e.__absoluteSub(b,a,!c)}static subtract(a,b){const c=a.sign;return c===b.sign?0<=e.__absoluteCompare(a,b)?e.__absoluteSub(a,b,c):e.__absoluteSub(b,a,!c):e.__absoluteAdd(a,b,c)}static leftShift(a,b){return 0===b.length||0===a.length?a:b.sign?e.__rightShiftByAbsolute(a,b):e.__leftShiftByAbsolute(a,b)}static signedRightShift(a,b){return 0===b.length||0===a.length?a:b.sign?e.__leftShiftByAbsolute(a,b):e.__rightShiftByAbsolute(a,b)}static unsignedRightShift(){throw new TypeError("BigInts have no unsigned right shift; use >> instead")}static lessThan(a,b){return 0>e.__compareToBigInt(a,b)}static lessThanOrEqual(a,b){return 0>=e.__compareToBigInt(a,b)}static greaterThan(a,b){return 0<e.__compareToBigInt(a,b)}static greaterThanOrEqual(a,b){return 0<=e.__compareToBigInt(a,b)}static equal(a,b){if(a.sign!==b.sign)return !1;if(a.length!==b.length)return !1;for(let c=0;c<a.length;c++)if(a.__digit(c)!==b.__digit(c))return !1;return !0}static bitwiseAnd(a,b){if(!a.sign&&!b.sign)return e.__absoluteAnd(a,b).__trim();if(a.sign&&b.sign){const d=c(a.length,b.length)+1;let f=e.__absoluteSubOne(a,d);const g=e.__absoluteSubOne(b);return f=e.__absoluteOr(f,g,f),e.__absoluteAddOne(f,!0,f).__trim()}return a.sign&&([a,b]=[b,a]),e.__absoluteAndNot(a,e.__absoluteSubOne(b)).__trim()}static bitwiseXor(a,b){if(!a.sign&&!b.sign)return e.__absoluteXor(a,b).__trim();if(a.sign&&b.sign){const d=c(a.length,b.length),f=e.__absoluteSubOne(a,d),g=e.__absoluteSubOne(b);return e.__absoluteXor(f,g,f).__trim()}const d=c(a.length,b.length)+1;a.sign&&([a,b]=[b,a]);let f=e.__absoluteSubOne(b,d);return f=e.__absoluteXor(f,a,f),e.__absoluteAddOne(f,!0,f).__trim()}static bitwiseOr(a,b){const d=c(a.length,b.length);if(!a.sign&&!b.sign)return e.__absoluteOr(a,b).__trim();if(a.sign&&b.sign){let c=e.__absoluteSubOne(a,d);const f=e.__absoluteSubOne(b);return c=e.__absoluteAnd(c,f,c),e.__absoluteAddOne(c,!0,c).__trim()}a.sign&&([a,b]=[b,a]);let f=e.__absoluteSubOne(b,d);return f=e.__absoluteAndNot(f,a,f),e.__absoluteAddOne(f,!0,f).__trim()}static ADD(a,b){if(a=e.__toPrimitive(a),b=e.__toPrimitive(b),"string"==typeof a)return "string"!=typeof b&&(b=b.toString()),a+b;if("string"==typeof b)return a.toString()+b;if(a=e.__toNumeric(a),b=e.__toNumeric(b),e.__isBigInt(a)&&e.__isBigInt(b))return e.add(a,b);if("number"==typeof a&&"number"==typeof b)return a+b;throw new TypeError("Cannot mix BigInt and other types, use explicit conversions")}static LT(a,b){return e.__compare(a,b,0)}static LE(a,b){return e.__compare(a,b,1)}static GT(a,b){return e.__compare(a,b,2)}static GE(a,b){return e.__compare(a,b,3)}static EQ(a,b){for(;;){if(e.__isBigInt(a))return e.__isBigInt(b)?e.equal(a,b):e.EQ(b,a);if("number"==typeof a){if(e.__isBigInt(b))return e.__equalToNumber(b,a);if("object"!=typeof b)return a==b;b=e.__toPrimitive(b);}else if("string"==typeof a){if(e.__isBigInt(b))return a=e.__fromString(a),null!==a&&e.equal(a,b);if("object"!=typeof b)return a==b;b=e.__toPrimitive(b);}else if("boolean"==typeof a){if(e.__isBigInt(b))return e.__equalToNumber(b,+a);if("object"!=typeof b)return a==b;b=e.__toPrimitive(b);}else if("symbol"==typeof a){if(e.__isBigInt(b))return !1;if("object"!=typeof b)return a==b;b=e.__toPrimitive(b);}else if("object"==typeof a){if("object"==typeof b&&b.constructor!==e)return a==b;a=e.__toPrimitive(a);}else return a==b}}static __zero(){return new e(0,!1)}static __oneDigit(a,b){const c=new e(1,b);return c.__setDigit(0,a),c}__copy(){const a=new e(this.length,this.sign);for(let b=0;b<this.length;b++)a[b]=this[b];return a}__trim(){let a=this.length,b=this[a-1];for(;0===b;)a--,b=this[a-1],this.pop();return 0===a&&(this.sign=!1),this}__initializeDigits(){for(let a=0;a<this.length;a++)this[a]=0;}static __decideRounding(a,b,c,d){if(0<b)return -1;let e;if(0>b)e=-b-1;else{if(0===c)return -1;c--,d=a.__digit(c),e=31;}let f=1<<e;if(0==(d&f))return -1;if(f-=1,0!=(d&f))return 1;for(;0<c;)if(c--,0!==a.__digit(c))return 1;return 0}static __fromDouble(a){e.__kBitConversionDouble[0]=a;const b=2047&e.__kBitConversionInts[1]>>>20,c=b-1023,d=(c>>>5)+1,f=new e(d,0>a);let g=1048575&e.__kBitConversionInts[1]|1048576,h=e.__kBitConversionInts[0];const i=20,j=31&c;let k,l=0;if(20>j){const a=i-j;l=a+32,k=g>>>a,g=g<<32-a|h>>>a,h<<=32-a;}else if(20===j)l=32,k=g,g=h;else{const a=j-i;l=32-a,k=g<<a|h>>>32-a,g=h<<a;}f.__setDigit(d-1,k);for(let b=d-2;0<=b;b--)0<l?(l-=32,k=g,g=h):k=0,f.__setDigit(b,k);return f.__trim()}static __isWhitespace(a){return !!(13>=a&&9<=a)||(159>=a?32==a:131071>=a?160==a||5760==a:196607>=a?(a&=131071,10>=a||40==a||41==a||47==a||95==a||4096==a):65279==a)}static __fromString(a,b=0){let c=0;const f=a.length;let g=0;if(g===f)return e.__zero();let h=a.charCodeAt(g);for(;e.__isWhitespace(h);){if(++g===f)return e.__zero();h=a.charCodeAt(g);}if(43===h){if(++g===f)return null;h=a.charCodeAt(g),c=1;}else if(45===h){if(++g===f)return null;h=a.charCodeAt(g),c=-1;}if(0===b){if(b=10,48===h){if(++g===f)return e.__zero();if(h=a.charCodeAt(g),88===h||120===h){if(b=16,++g===f)return null;h=a.charCodeAt(g);}else if(79===h||111===h){if(b=8,++g===f)return null;h=a.charCodeAt(g);}else if(66===h||98===h){if(b=2,++g===f)return null;h=a.charCodeAt(g);}}}else if(16===b&&48===h){if(++g===f)return e.__zero();if(h=a.charCodeAt(g),88===h||120===h){if(++g===f)return null;h=a.charCodeAt(g);}}for(;48===h;){if(++g===f)return e.__zero();h=a.charCodeAt(g);}const i=f-g;let j=e.__kMaxBitsPerChar[b],k=e.__kBitsPerCharTableMultiplier-1;if(i>1073741824/j)return null;const l=j*i+k>>>e.__kBitsPerCharTableShift,m=new e(l+31>>>5,!1),n=10>b?b:10,o=10<b?b-10:0;if(0==(b&b-1)){j>>=e.__kBitsPerCharTableShift;const b=[],c=[];let d=!1;do{let e=0,i=0;for(;;){let b;if(h-48>>>0<n)b=h-48;else if((32|h)-97>>>0<o)b=(32|h)-87;else{d=!0;break}if(i+=j,e=e<<j|b,++g===f){d=!0;break}if(h=a.charCodeAt(g),32<i+j)break}b.push(e),c.push(i);}while(!d);e.__fillFromParts(m,b,c);}else{m.__initializeDigits();let c=!1,i=0;do{let l=0,p=1;for(;;){let e;if(h-48>>>0<n)e=h-48;else if((32|h)-97>>>0<o)e=(32|h)-87;else{c=!0;break}const d=p*b;if(4294967295<d)break;if(p=d,l=l*b+e,i++,++g===f){c=!0;break}h=a.charCodeAt(g);}k=32*e.__kBitsPerCharTableMultiplier-1;const q=j*i+k>>>e.__kBitsPerCharTableShift+5;m.__inplaceMultiplyAdd(p,l,q);}while(!c)}for(;g!==f;){if(!e.__isWhitespace(h))return null;h=a.charCodeAt(g++);}return 0!=c&&10!==b?null:(m.sign=-1==c,m.__trim())}static __fillFromParts(a,b,c){let d=0,e=0,f=0;for(let g=b.length-1;0<=g;g--){const h=b[g],i=c[g];e|=h<<f,f+=i,32===f?(a.__setDigit(d++,e),f=0,e=0):32<f&&(a.__setDigit(d++,e),f-=32,e=h>>>i-f);}if(0!==e){if(d>=a.length)throw new Error("implementation bug");a.__setDigit(d++,e);}for(;d<a.length;d++)a.__setDigit(d,0);}static __toStringBasePowerOfTwo(a,b){const c=a.length;let f=b-1;f=(85&f>>>1)+(85&f),f=(51&f>>>2)+(51&f),f=(15&f>>>4)+(15&f);const g=f,h=b-1,i=a.__digit(c-1),j=d(i);let k=0|(32*c-j+g-1)/g;if(a.sign&&k++,268435456<k)throw new Error("string too long");const l=Array(k);let m=k-1,n=0,o=0;for(let d=0;d<c-1;d++){const b=a.__digit(d),c=(n|b<<o)&h;l[m--]=e.__kConversionChars[c];const f=g-o;for(n=b>>>f,o=32-f;o>=g;)l[m--]=e.__kConversionChars[n&h],n>>>=g,o-=g;}const p=(n|i<<o)&h;for(l[m--]=e.__kConversionChars[p],n=i>>>g-o;0!==n;)l[m--]=e.__kConversionChars[n&h],n>>>=g;if(a.sign&&(l[m--]="-"),-1!=m)throw new Error("implementation bug");return l.join("")}static __toStringGeneric(a,b,c){const f=a.length;if(0===f)return "";if(1===f){let d=a.__unsignedDigit(0).toString(b);return !1===c&&a.sign&&(d="-"+d),d}const g=32*f-d(a.__digit(f-1)),h=e.__kMaxBitsPerChar[b],i=h-1;let j=g*e.__kBitsPerCharTableMultiplier;j+=i-1,j=0|j/i;const k=j+1>>1,l=e.exponentiate(e.__oneDigit(b,!1),e.__oneDigit(k,!1));let m,n;const o=l.__unsignedDigit(0);if(1===l.length&&65535>=o){m=new e(a.length,!1),m.__initializeDigits();let c=0;for(let b=2*a.length-1;0<=b;b--){const d=c<<16|a.__halfDigit(b);m.__setHalfDigit(b,0|d/o),c=0|d%o;}n=c.toString(b);}else{const c=e.__absoluteDivLarge(a,l,!0,!0);m=c.quotient;const d=c.remainder.__trim();n=e.__toStringGeneric(d,b,!0);}m.__trim();let p=e.__toStringGeneric(m,b,!0);for(;n.length<k;)n="0"+n;return !1===c&&a.sign&&(p="-"+p),p+n}static __unequalSign(a){return a?-1:1}static __absoluteGreater(a){return a?-1:1}static __absoluteLess(a){return a?1:-1}static __compareToBigInt(a,b){const c=a.sign;if(c!==b.sign)return e.__unequalSign(c);const d=e.__absoluteCompare(a,b);return 0<d?e.__absoluteGreater(c):0>d?e.__absoluteLess(c):0}static __compareToNumber(a,c){if(!0|c){const d=a.sign,f=0>c;if(d!==f)return e.__unequalSign(d);if(0===a.length){if(f)throw new Error("implementation bug");return 0===c?0:-1}if(1<a.length)return e.__absoluteGreater(d);const g=b(c),h=a.__unsignedDigit(0);return h>g?e.__absoluteGreater(d):h<g?e.__absoluteLess(d):0}return e.__compareToDouble(a,c)}static __compareToDouble(a,b){if(b!==b)return b;if(b===1/0)return -1;if(b===-Infinity)return 1;const c=a.sign;if(c!==0>b)return e.__unequalSign(c);if(0===b)throw new Error("implementation bug: should be handled elsewhere");if(0===a.length)return -1;e.__kBitConversionDouble[0]=b;const f=2047&e.__kBitConversionInts[1]>>>20;if(2047==f)throw new Error("implementation bug: handled elsewhere");const g=f-1023;if(0>g)return e.__absoluteGreater(c);const h=a.length;let i=a.__digit(h-1);const j=d(i),k=32*h-j,l=g+1;if(k<l)return e.__absoluteLess(c);if(k>l)return e.__absoluteGreater(c);let m=1048576|1048575&e.__kBitConversionInts[1],n=e.__kBitConversionInts[0];const o=20,p=31-j;if(p!==(k-1)%31)throw new Error("implementation bug");let q,r=0;if(20>p){const a=o-p;r=a+32,q=m>>>a,m=m<<32-a|n>>>a,n<<=32-a;}else if(20===p)r=32,q=m,m=n;else{const a=p-o;r=32-a,q=m<<a|n>>>32-a,m=n<<a;}if(i>>>=0,q>>>=0,i>q)return e.__absoluteGreater(c);if(i<q)return e.__absoluteLess(c);for(let d=h-2;0<=d;d--){0<r?(r-=32,q=m>>>0,m=n,n=0):q=0;const b=a.__unsignedDigit(d);if(b>q)return e.__absoluteGreater(c);if(b<q)return e.__absoluteLess(c)}if(0!==m||0!==n){if(0===r)throw new Error("implementation bug");return e.__absoluteLess(c)}return 0}static __equalToNumber(a,c){return c|0===c?0===c?0===a.length:1===a.length&&a.sign===0>c&&a.__unsignedDigit(0)===b(c):0===e.__compareToDouble(a,c)}static __comparisonResultToBool(a,b){switch(b){case 0:return 0>a;case 1:return 0>=a;case 2:return 0<a;case 3:return 0<=a;}throw new Error("unreachable")}static __compare(a,b,c){if(a=e.__toPrimitive(a),b=e.__toPrimitive(b),"string"==typeof a&&"string"==typeof b)switch(c){case 0:return a<b;case 1:return a<=b;case 2:return a>b;case 3:return a>=b;}if(e.__isBigInt(a)&&"string"==typeof b)return b=e.__fromString(b),null!==b&&e.__comparisonResultToBool(e.__compareToBigInt(a,b),c);if("string"==typeof a&&e.__isBigInt(b))return a=e.__fromString(a),null!==a&&e.__comparisonResultToBool(e.__compareToBigInt(a,b),c);if(a=e.__toNumeric(a),b=e.__toNumeric(b),e.__isBigInt(a)){if(e.__isBigInt(b))return e.__comparisonResultToBool(e.__compareToBigInt(a,b),c);if("number"!=typeof b)throw new Error("implementation bug");return e.__comparisonResultToBool(e.__compareToNumber(a,b),c)}if("number"!=typeof a)throw new Error("implementation bug");if(e.__isBigInt(b))return e.__comparisonResultToBool(e.__compareToNumber(b,a),2^c);if("number"!=typeof b)throw new Error("implementation bug");return 0===c?a<b:1===c?a<=b:2===c?a>b:3===c?a>=b:void 0}__clzmsd(){return d(this[this.length-1])}static __absoluteAdd(a,b,c){if(a.length<b.length)return e.__absoluteAdd(b,a,c);if(0===a.length)return a;if(0===b.length)return a.sign===c?a:e.unaryMinus(a);let d=a.length;(0===a.__clzmsd()||b.length===a.length&&0===b.__clzmsd())&&d++;const f=new e(d,c);let g=0,h=0;for(;h<b.length;h++){const c=b.__digit(h),d=a.__digit(h),e=(65535&d)+(65535&c)+g,i=(d>>>16)+(c>>>16)+(e>>>16);g=i>>>16,f.__setDigit(h,65535&e|i<<16);}for(;h<a.length;h++){const b=a.__digit(h),c=(65535&b)+g,d=(b>>>16)+(c>>>16);g=d>>>16,f.__setDigit(h,65535&c|d<<16);}return h<f.length&&f.__setDigit(h,g),f.__trim()}static __absoluteSub(a,b,c){if(0===a.length)return a;if(0===b.length)return a.sign===c?a:e.unaryMinus(a);const d=new e(a.length,c);let f=0,g=0;for(;g<b.length;g++){const c=a.__digit(g),e=b.__digit(g),h=(65535&c)-(65535&e)-f;f=1&h>>>16;const i=(c>>>16)-(e>>>16)-f;f=1&i>>>16,d.__setDigit(g,65535&h|i<<16);}for(;g<a.length;g++){const b=a.__digit(g),c=(65535&b)-f;f=1&c>>>16;const e=(b>>>16)-f;f=1&e>>>16,d.__setDigit(g,65535&c|e<<16);}return d.__trim()}static __absoluteAddOne(a,b,c=null){const d=a.length;null===c?c=new e(d,b):c.sign=b;let f=!0;for(let e,g=0;g<d;g++){e=a.__digit(g);const b=-1===e;f&&(e=0|e+1),f=b,c.__setDigit(g,e);}return f&&c.__setDigitGrow(d,1),c}static __absoluteSubOne(a,b){const c=a.length;b=b||c;const d=new e(b,!1);let f=!0;for(let e,g=0;g<c;g++){e=a.__digit(g);const b=0===e;f&&(e=0|e-1),f=b,d.__setDigit(g,e);}for(let e=c;e<b;e++)d.__setDigit(e,0);return d}static __absoluteAnd(a,b,c=null){let d=a.length,f=b.length,g=f;if(d<f){g=d;const c=a,e=d;a=b,d=f,b=c,f=e;}let h=g;null===c?c=new e(h,!1):h=c.length;let j=0;for(;j<g;j++)c.__setDigit(j,a.__digit(j)&b.__digit(j));for(;j<h;j++)c.__setDigit(j,0);return c}static __absoluteAndNot(a,b,c=null){const d=a.length,f=b.length;let g=f;d<f&&(g=d);let h=d;null===c?c=new e(h,!1):h=c.length;let j=0;for(;j<g;j++)c.__setDigit(j,a.__digit(j)&~b.__digit(j));for(;j<d;j++)c.__setDigit(j,a.__digit(j));for(;j<h;j++)c.__setDigit(j,0);return c}static __absoluteOr(a,b,c=null){let d=a.length,f=b.length,g=f;if(d<f){g=d;const c=a,e=d;a=b,d=f,b=c,f=e;}let h=d;null===c?c=new e(h,!1):h=c.length;let j=0;for(;j<g;j++)c.__setDigit(j,a.__digit(j)|b.__digit(j));for(;j<d;j++)c.__setDigit(j,a.__digit(j));for(;j<h;j++)c.__setDigit(j,0);return c}static __absoluteXor(a,b,c=null){let d=a.length,f=b.length,g=f;if(d<f){g=d;const c=a,e=d;a=b,d=f,b=c,f=e;}let h=d;null===c?c=new e(h,!1):h=c.length;let j=0;for(;j<g;j++)c.__setDigit(j,a.__digit(j)^b.__digit(j));for(;j<d;j++)c.__setDigit(j,a.__digit(j));for(;j<h;j++)c.__setDigit(j,0);return c}static __absoluteCompare(a,b){const c=a.length-b.length;if(0!=c)return c;let d=a.length-1;for(;0<=d&&a.__digit(d)===b.__digit(d);)d--;return 0>d?0:a.__unsignedDigit(d)>b.__unsignedDigit(d)?1:-1}static __multiplyAccumulate(b,c,d,e){if(0===c)return;const f=65535&c,g=c>>>16;let h=0,j=0,k=0;for(let l=0;l<b.length;l++,e++){let c=d.__digit(e),i=65535&c,m=c>>>16;const n=b.__digit(l),o=65535&n,p=n>>>16,q=a(o,f),r=a(o,g),s=a(p,f),t=a(p,g);i+=j+(65535&q),m+=k+h+(i>>>16)+(q>>>16)+(65535&r)+(65535&s),h=m>>>16,j=(r>>>16)+(s>>>16)+(65535&t)+h,h=j>>>16,j&=65535,k=t>>>16,c=65535&i|m<<16,d.__setDigit(e,c);}for(;0!=h||0!==j||0!==k;e++){let a=d.__digit(e);const b=(65535&a)+j,c=(a>>>16)+(b>>>16)+k+h;j=0,k=0,h=c>>>16,a=65535&b|c<<16,d.__setDigit(e,a);}}static __internalMultiplyAdd(b,c,d,e,f){let g=d,h=0;for(let j=0;j<e;j++){const d=b.__digit(j),e=a(65535&d,c),i=(65535&e)+h+g;g=i>>>16;const k=a(d>>>16,c),l=(65535&k)+(e>>>16)+g;g=l>>>16,h=k>>>16,f.__setDigit(j,l<<16|65535&i);}if(f.length>e)for(f.__setDigit(e++,g+h);e<f.length;)f.__setDigit(e++,0);else if(0!==g+h)throw new Error("implementation bug")}__inplaceMultiplyAdd(b,c,d){d>this.length&&(d=this.length);const e=65535&b,f=b>>>16;let g=0,h=65535&c,j=c>>>16;for(let k=0;k<d;k++){const b=this.__digit(k),c=65535&b,d=b>>>16,i=a(c,e),l=a(c,f),m=a(d,e),n=a(d,f),o=h+(65535&i),p=j+g+(o>>>16)+(i>>>16)+(65535&l)+(65535&m);h=(l>>>16)+(m>>>16)+(65535&n)+(p>>>16),g=h>>>16,h&=65535,j=n>>>16;this.__setDigit(k,65535&o|p<<16);}if(0!=g||0!==h||0!==j)throw new Error("implementation bug")}static __absoluteDivSmall(a,b,c){null===c&&(c=new e(a.length,!1));let d=0;for(let e,f=2*a.length-1;0<=f;f-=2){e=(d<<16|a.__halfDigit(f))>>>0;const g=0|e/b;d=0|e%b,e=(d<<16|a.__halfDigit(f-1))>>>0;const h=0|e/b;d=0|e%b,c.__setDigit(f>>>1,g<<16|h);}return c}static __absoluteModSmall(a,b){let c=0;for(let d=2*a.length-1;0<=d;d--){const e=(c<<16|a.__halfDigit(d))>>>0;c=0|e%b;}return c}static __absoluteDivLarge(b,d,f,g){const h=d.__halfDigitLength(),i=d.length,c=b.__halfDigitLength()-h;let k=null;f&&(k=new e(c+2>>>1,!1),k.__initializeDigits());const l=new e(h+2>>>1,!1);l.__initializeDigits();const m=e.__clz16(d.__halfDigit(h-1));0<m&&(d=e.__specialLeftShift(d,m,0));const n=e.__specialLeftShift(b,m,1),o=d.__halfDigit(h-1);let p=0;for(let m,q=c;0<=q;q--){m=65535;const b=n.__halfDigit(q+h);if(b!==o){const c=(b<<16|n.__halfDigit(q+h-1))>>>0;m=0|c/o;let e=0|c%o;const f=d.__halfDigit(h-2),g=n.__halfDigit(q+h-2);for(;a(m,f)>>>0>(e<<16|g)>>>0&&(m--,e+=o,!(65535<e)););}e.__internalMultiplyAdd(d,m,0,i,l);let g=n.__inplaceSub(l,q,h+1);0!==g&&(g=n.__inplaceAdd(d,q,h),n.__setHalfDigit(q+h,n.__halfDigit(q+h)+g),m--),f&&(1&q?p=m<<16:k.__setDigit(q>>>1,p|m));}return g?(n.__inplaceRightShift(m),f?{quotient:k,remainder:n}:n):f?k:void 0}static __clz16(a){return d(a)-16}__inplaceAdd(a,b,c){let d=0;for(let e=0;e<c;e++){const c=this.__halfDigit(b+e)+a.__halfDigit(e)+d;d=c>>>16,this.__setHalfDigit(b+e,c);}return d}__inplaceSub(a,b,c){let d=0;if(1&b){b>>=1;let e=this.__digit(b),f=65535&e,g=0;for(;g<c-1>>>1;g++){const c=a.__digit(g),h=(e>>>16)-(65535&c)-d;d=1&h>>>16,this.__setDigit(b+g,h<<16|65535&f),e=this.__digit(b+g+1),f=(65535&e)-(c>>>16)-d,d=1&f>>>16;}const h=a.__digit(g),i=(e>>>16)-(65535&h)-d;d=1&i>>>16,this.__setDigit(b+g,i<<16|65535&f);if(b+g+1>=this.length)throw new RangeError("out of bounds");0==(1&c)&&(e=this.__digit(b+g+1),f=(65535&e)-(h>>>16)-d,d=1&f>>>16,this.__setDigit(b+a.length,4294901760&e|65535&f));}else{b>>=1;let e=0;for(;e<a.length-1;e++){const c=this.__digit(b+e),f=a.__digit(e),g=(65535&c)-(65535&f)-d;d=1&g>>>16;const h=(c>>>16)-(f>>>16)-d;d=1&h>>>16,this.__setDigit(b+e,h<<16|65535&g);}const f=this.__digit(b+e),g=a.__digit(e),h=(65535&f)-(65535&g)-d;d=1&h>>>16;let i=0;0==(1&c)&&(i=(f>>>16)-(g>>>16)-d,d=1&i>>>16),this.__setDigit(b+e,i<<16|65535&h);}return d}__inplaceRightShift(a){if(0===a)return;let b=this.__digit(0)>>>a;const c=this.length-1;for(let e=0;e<c;e++){const c=this.__digit(e+1);this.__setDigit(e,c<<32-a|b),b=c>>>a;}this.__setDigit(c,b);}static __specialLeftShift(a,b,c){const d=a.length,f=new e(d+c,!1);if(0===b){for(let b=0;b<d;b++)f.__setDigit(b,a.__digit(b));return 0<c&&f.__setDigit(d,0),f}let g=0;for(let e=0;e<d;e++){const c=a.__digit(e);f.__setDigit(e,c<<b|g),g=c>>>32-b;}return 0<c&&f.__setDigit(d,g),f}static __leftShiftByAbsolute(a,b){const c=e.__toShiftAmount(b);if(0>c)throw new RangeError("BigInt too big");const f=c>>>5,g=31&c,h=a.length,i=0!==g&&0!=a.__digit(h-1)>>>32-g,j=h+f+(i?1:0),k=new e(j,a.sign);if(0===g){let b=0;for(;b<f;b++)k.__setDigit(b,0);for(;b<j;b++)k.__setDigit(b,a.__digit(b-f));}else{let b=0;for(let a=0;a<f;a++)k.__setDigit(a,0);for(let c=0;c<h;c++){const e=a.__digit(c);k.__setDigit(c+f,e<<g|b),b=e>>>32-g;}if(i)k.__setDigit(h+f,b);else if(0!=b)throw new Error("implementation bug")}return k.__trim()}static __rightShiftByAbsolute(a,b){const c=a.length,d=a.sign,f=e.__toShiftAmount(b);if(0>f)return e.__rightShiftByMaximum(d);const g=f>>>5,h=31&f;let i=c-g;if(0>=i)return e.__rightShiftByMaximum(d);let j=!1;if(d){if(0!=(a.__digit(g)&(1<<h)-1))j=!0;else for(let b=0;b<g;b++)if(0!==a.__digit(b)){j=!0;break}}if(j&&0===h){const b=a.__digit(c-1);0==~b&&i++;}let k=new e(i,d);if(0===h)for(let b=g;b<c;b++)k.__setDigit(b-g,a.__digit(b));else{let b=a.__digit(g)>>>h;const d=c-g-1;for(let c=0;c<d;c++){const e=a.__digit(c+g+1);k.__setDigit(c,e<<32-h|b),b=e>>>h;}k.__setDigit(d,b);}return j&&(k=e.__absoluteAddOne(k,!0,k)),k.__trim()}static __rightShiftByMaximum(a){return a?e.__oneDigit(1,!0):e.__zero()}static __toShiftAmount(a){if(1<a.length)return -1;const b=a.__unsignedDigit(0);return b>e.__kMaxLengthBits?-1:b}static __toPrimitive(a,b="default"){if("object"!=typeof a)return a;if(a.constructor===e)return a;const c=a[Symbol.toPrimitive];if(c){const a=c(b);if("object"!=typeof a)return a;throw new TypeError("Cannot convert object to primitive value")}const d=a.valueOf;if(d){const b=d.call(a);if("object"!=typeof b)return b}const f=a.toString;if(f){const b=f.call(a);if("object"!=typeof b)return b}throw new TypeError("Cannot convert object to primitive value")}static __toNumeric(a){return e.__isBigInt(a)?a:+a}static __isBigInt(a){return "object"==typeof a&&a.constructor===e}__digit(a){return this[a]}__unsignedDigit(a){return this[a]>>>0}__setDigit(a,b){this[a]=0|b;}__setDigitGrow(a,b){this[a]=0|b;}__halfDigitLength(){const a=this.length;return 65535>=this.__unsignedDigit(a-1)?2*a-1:2*a}__halfDigit(a){return 65535&this[a>>>1]>>>((1&a)<<4)}__setHalfDigit(a,b){const c=a>>>1,d=this.__digit(c),e=1&a?65535&d|b<<16:4294901760&d|65535&b;this.__setDigit(c,e);}static __digitPow(a,b){let c=1;for(;0<b;)1&b&&(c*=a),b>>>=1,a*=a;return c}}return e.__kMaxLength=33554432,e.__kMaxLengthBits=e.__kMaxLength<<5,e.__kMaxBitsPerChar=[0,0,32,51,64,75,83,90,96,102,107,111,115,119,122,126,128,131,134,136,139,141,143,145,147,149,151,153,154,156,158,159,160,162,163,165,166],e.__kBitsPerCharTableShift=5,e.__kBitsPerCharTableMultiplier=1<<e.__kBitsPerCharTableShift,e.__kConversionChars=["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],e.__kBitConversionBuffer=new ArrayBuffer(8),e.__kBitConversionDouble=new Float64Array(e.__kBitConversionBuffer),e.__kBitConversionInts=new Int32Array(e.__kBitConversionBuffer),e});
+	});
+
+	var CommitStatus = typesNode.CommitStatus;
+
+	var fromHexString = function fromHexString(hexString) {
+	  return new Uint8Array(hexString.match(/.{1,2}/g).map(function (byte) {
+	    return parseInt(byte, 16);
+	  }));
+	};
+
+	var toHexString = function toHexString(bytes) {
+	  return bytes.reduce(function (str, byte) {
+	    return str + byte.toString(16).padStart(2, '0');
+	  }, '');
+	};
+
+	var fromNumber = function fromNumber(d) {
+	  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+
+	  if (d >= Math.pow(2, length * 8)) {
+	    throw new Error('Number exeeds range');
+	  }
+
+	  var arr = new Uint8Array(length);
+
+	  for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
+	    arr[i] = d / j & 0xff;
+	  }
+
+	  return arr;
+	};
+
+	var toBytesUint32 = function toBytesUint32(num) {
+	  var arr = new ArrayBuffer(8);
+	  var view = new DataView(arr);
+	  view.setUint32(0, num, true);
+	  return arr;
+	};
+
+	var errorMessageForCode = function errorMessageForCode(code) {
+	  var errorMessage = 'UNDEFINED_ERROR';
+
+	  if (code && code < Object.values(CommitStatus).length) {
+	    errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
+	  }
+
+	  return errorMessage;
+	};
+
+	var waitFor = function waitFor(ms) {
+	  return new Promise(function (resolve) {
+	    setTimeout(resolve, ms);
+	  });
+	};
+
+	var basicCheck = function basicCheck(result) {
+	  return result instanceof Error === false;
+	};
+
+	var longPolling =
+	/*#__PURE__*/
+	function () {
+	  var _ref = _asyncToGenerator(
+	  /*#__PURE__*/
+	  regeneratorRuntime.mark(function _callee(func) {
+	    var check,
+	        timeout,
+	        wait,
+	        started,
+	        lastError,
+	        result,
+	        timePassed,
+	        _args = arguments;
+	    return regeneratorRuntime.wrap(function _callee$(_context) {
+	      while (1) {
+	        switch (_context.prev = _context.next) {
+	          case 0:
+	            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
+	            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
+	            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
+	            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
+	            started = +new Date();
+	            lastError = '';
+	            _context.prev = 5;
+	            _context.next = 8;
+	            return func();
+
+	          case 8:
+	            result = _context.sent;
+
+	            if (check(result)) {
+	              _context.next = 11;
+	              break;
+	            }
+
+	            throw new Error('Condition not satisfied');
+
+	          case 11:
+	            return _context.abrupt("return", result);
+
+	          case 14:
+	            _context.prev = 14;
+	            _context.t0 = _context["catch"](5);
+	            lastError = _context.t0;
+
+	          case 17:
+	            timePassed = new Date() - started;
+	            timeout -= timePassed;
+
+	            if (!(timeout < 0)) {
+	              _context.next = 21;
+	              break;
+	            }
+
+	            throw new Error('Long polling timed out. ' + lastError);
+
+	          case 21:
+	            _context.next = 23;
+	            return waitFor(wait);
+
+	          case 23:
+	            _context.next = 25;
+	            return longPolling(func, check, timeout - wait, wait);
+
+	          case 25:
+	            return _context.abrupt("return", _context.sent);
+
+	          case 26:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }
+	    }, _callee, this, [[5, 14]]);
+	  }));
+
+	  return function longPolling(_x) {
+	    return _ref.apply(this, arguments);
+	  };
+	}();
+
 	var ADDRESS_PREFIXES = {
 	  ACCOUNT: 0x42,
 	  CONTRACT: 0xC0
@@ -18819,12 +20047,12 @@
 	  NATIVE_TOKEN: {
 	    baseLabel: 'Aergo',
 	    baseLabelShort: 'ARG',
-	    baseDigits: 9,
+	    baseDigits: 18,
 	    subUnits: [{
 	      e: 0,
 	      label: 'aer'
 	    }, {
-	      e: 9,
+	      e: 18,
 	      label: 'ARG'
 	    }]
 	  }
@@ -23532,6 +24760,8 @@
 	    _defineProperty(this, "price", void 0);
 
 	    Object.assign(this, data);
+	    this.amount = jsbiUmd.BigInt(this.amount || 0);
+	    this.price = jsbiUmd.BigInt(this.price || 0);
 	  }
 
 	  _createClass(Tx$$1, [{
@@ -23550,7 +24780,7 @@
 	        msgtxbody.setRecipient(new Address(this.to).asBytes());
 	      }
 
-	      msgtxbody.setAmount(this.amount);
+	      msgtxbody.setAmount(fromHexString(this.amount.toString(16)));
 
 	      if (this.payload != null) {
 	        msgtxbody.setPayload(Buffer.from(this.payload));
@@ -23569,7 +24799,7 @@
 	      }
 
 	      if (typeof this.price !== 'undefined') {
-	        msgtxbody.setPrice(this.price);
+	        msgtxbody.setPrice(fromHexString(this.price.toString(16)));
 	      }
 
 	      var msgtx = new blockchain_pb_3();
@@ -23598,12 +24828,12 @@
 	        nonce: grpcObject.getBody().getNonce(),
 	        from: new Address(grpcObject.getBody().getAccount_asU8()),
 	        to: new Address(grpcObject.getBody().getRecipient_asU8()),
-	        amount: grpcObject.getBody().getAmount(),
-	        payload: grpcObject.getBody().getPayload(),
+	        amount: jsbiUmd.BigInt('0x' + toHexString(grpcObject.getBody().getAmount_asU8())),
+	        payload: grpcObject.getBody().getPayload_asU8(),
 	        sign: grpcObject.getBody().getSign_asB64(),
 	        type: grpcObject.getBody().getType(),
 	        limit: grpcObject.getBody().getLimit(),
-	        price: grpcObject.getBody().getPrice()
+	        price: jsbiUmd.BigInt(toHexString(grpcObject.getBody().getPrice_asU8()))
 	      });
 	    }
 	  }]);
@@ -23838,134 +25068,6 @@
 	  return Accounts;
 	}();
 
-	var CommitStatus = typesNode.CommitStatus;
-
-	var fromNumber = function fromNumber(d) {
-	  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
-
-	  if (d >= Math.pow(2, length * 8)) {
-	    throw new Error('Number exeeds range');
-	  }
-
-	  var arr = new Uint8Array(length);
-
-	  for (var i = 0, j = 1; i < 8; i++, j *= 0x100) {
-	    arr[i] = d / j & 0xff;
-	  }
-
-	  return arr;
-	};
-
-	var toBytesUint32 = function toBytesUint32(num) {
-	  var arr = new ArrayBuffer(8);
-	  var view = new DataView(arr);
-	  view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
-	  // view.setBigUint64(0, num, true)
-
-	  return arr;
-	};
-
-	var errorMessageForCode = function errorMessageForCode(code) {
-	  var errorMessage = 'UNDEFINED_ERROR';
-
-	  if (code && code < Object.values(CommitStatus).length) {
-	    errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
-	  }
-
-	  return errorMessage;
-	};
-
-	var waitFor = function waitFor(ms) {
-	  return new Promise(function (resolve) {
-	    setTimeout(resolve, ms);
-	  });
-	};
-
-	var basicCheck = function basicCheck(result) {
-	  return result instanceof Error === false;
-	};
-
-	var longPolling =
-	/*#__PURE__*/
-	function () {
-	  var _ref = _asyncToGenerator(
-	  /*#__PURE__*/
-	  regeneratorRuntime.mark(function _callee(func) {
-	    var check,
-	        timeout,
-	        wait,
-	        started,
-	        lastError,
-	        result,
-	        timePassed,
-	        _args = arguments;
-	    return regeneratorRuntime.wrap(function _callee$(_context) {
-	      while (1) {
-	        switch (_context.prev = _context.next) {
-	          case 0:
-	            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
-	            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
-	            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
-	            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
-	            started = +new Date();
-	            lastError = '';
-	            _context.prev = 5;
-	            _context.next = 8;
-	            return func();
-
-	          case 8:
-	            result = _context.sent;
-
-	            if (check(result)) {
-	              _context.next = 11;
-	              break;
-	            }
-
-	            throw new Error('Condition not satisfied');
-
-	          case 11:
-	            return _context.abrupt("return", result);
-
-	          case 14:
-	            _context.prev = 14;
-	            _context.t0 = _context["catch"](5);
-	            lastError = _context.t0;
-
-	          case 17:
-	            timePassed = new Date() - started;
-	            timeout -= timePassed;
-
-	            if (!(timeout < 0)) {
-	              _context.next = 21;
-	              break;
-	            }
-
-	            throw new Error('Long polling timed out. ' + lastError);
-
-	          case 21:
-	            _context.next = 23;
-	            return waitFor(wait);
-
-	          case 23:
-	            _context.next = 25;
-	            return longPolling(func, check, timeout - wait, wait);
-
-	          case 25:
-	            return _context.abrupt("return", _context.sent);
-
-	          case 26:
-	          case "end":
-	            return _context.stop();
-	        }
-	      }
-	    }, _callee, this, [[5, 14]]);
-	  }));
-
-	  return function longPolling(_x) {
-	    return _ref.apply(this, arguments);
-	  };
-	}();
-
 	var Block =
 	/*#__PURE__*/
 	function () {
@@ -24039,6 +25141,46 @@
 	  }]);
 
 	  return Peer;
+	}();
+
+	var State =
+	/*#__PURE__*/
+	function () {
+	  function State(data) {
+	    _classCallCheck(this, State);
+
+	    _defineProperty(this, "nonce", void 0);
+
+	    _defineProperty(this, "balance", void 0);
+
+	    _defineProperty(this, "codehash", void 0);
+
+	    _defineProperty(this, "storageroot", void 0);
+
+	    _defineProperty(this, "sqlrecoverypoint", void 0);
+
+	    Object.assign(this, data);
+	  }
+
+	  _createClass(State, [{
+	    key: "toGrpc",
+	    value: function toGrpc() {
+	      throw new Error('not implemented');
+	    }
+	  }], [{
+	    key: "fromGrpc",
+	    value: function fromGrpc(grpcObject) {
+	      return new State({
+	        nonce: grpcObject.getNonce(),
+	        balance: jsbiUmd.BigInt('0x' + toHexString(grpcObject.getBalance_asU8())),
+	        codehash: grpcObject.getCodehash_asB64(),
+	        storageroot: grpcObject.getStorageroot_asB64(),
+	        sqlrecoverypoint: grpcObject.getSqlrecoverypoint()
+	      });
+	    }
+	  }]);
+
+	  return State;
 	}();
 
 	var CommitStatus$1 = typesNode.CommitStatus;
@@ -24265,8 +25407,8 @@
 	    value: function getState(address) {
 	      var singleBytes = new typesNode.SingleBytes();
 	      singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
-	      return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
-	        return state.toObject();
+	      return promisify(this.client.getState, this.client)(singleBytes).then(function (grpcObject) {
+	        return State.fromGrpc(grpcObject);
 	      });
 	    }
 	  }, {
@@ -24274,8 +25416,8 @@
 	    value: function getNonce(address) {
 	      var singleBytes = new typesNode.SingleBytes();
 	      singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
-	      return promisify(this.client.getState, this.client)(singleBytes).then(function (state) {
-	        return state.getNonce();
+	      return promisify(this.client.getState, this.client)(singleBytes).then(function (grpcObject) {
+	        return grpcObject.getNonce();
 	      });
 	    }
 	  }, {
@@ -25962,6 +27104,14 @@
 	  requestType: rpc_pb.SingleBytes,
 	  responseType: rpc_pb.SingleBytes
 	};
+	AergoRPCService.Metric = {
+	  methodName: "Metric",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: metric_pb.MetricsRequest,
+	  responseType: metric_pb.Metrics
+	};
 	AergoRPCService.Blockchain = {
 	  methodName: "Blockchain",
 	  service: AergoRPCService,
@@ -26174,6 +27324,32 @@
 	  }
 
 	  grpc.unary(AergoRPCService.NodeState, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), {
+	            code: response.status,
+	            metadata: response.trailers
+	          }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
+	AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+
+	  grpc.unary(AergoRPCService.Metric, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
