@@ -1,6 +1,6 @@
 import { ec } from 'elliptic';
 import { AES_GCM } from 'asmcrypto.js';
-import { fromNumber, encodeAddress, decodeAddress, encodePrivateKey, decodePrivateKey } from './encoding';
+import { fromNumber, fromBigInt, encodeAddress, decodeAddress, encodePrivateKey, decodePrivateKey } from './encoding';
 import 'regenerator-runtime/runtime';
 
 const ecdsa = new ec('secp256k1');
@@ -86,10 +86,10 @@ const hashTransaction = (tx, encoding = 'base64', includeSign = true) => {
             fromNumber(tx.nonce, 64),
             decodeAddress(tx.from),
             decodeAddress(tx.to),
-            fromNumber(tx.amount, 64),
+            fromBigInt(tx.amount || 0),
             Buffer.from(tx.payload),
             fromNumber(tx.limit, 64),
-            fromNumber(tx.price, 64),
+            fromBigInt(tx.price || 0),
             fromNumber(tx.type, 32)
         ]);
 

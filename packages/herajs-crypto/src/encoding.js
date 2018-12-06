@@ -1,5 +1,6 @@
 import bs58check from 'bs58check';
 import { ADDRESS_PREFIXES } from './constants';
+import JSBI from 'jsbi';
 
 /**
  * Convert Uint8 array to hex string
@@ -31,6 +32,12 @@ const fromNumber = (d, bitLength = 64) => {
     }
     return arr;
 };
+
+/**
+ * Convert BigInt to Uint8 array
+ * @param {JSBI} d 
+ */
+const fromBigInt = (d) => fromHexString(JSBI.BigInt(d).toString(16));
 
 /**
  * Encodes address form byte array to string.
@@ -74,6 +81,7 @@ export {
     fromHexString,
     toHexString,
     fromNumber,
+    fromBigInt,
     encodeAddress,
     decodeAddress,
     encodePrivateKey,
