@@ -7,6 +7,7 @@ var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');
 var p2p_pb = require('./p2p_pb.js');
+var metric_pb = require('./metric_pb.js');
 
 function serialize_types_ABI(arg) {
   if (!(arg instanceof blockchain_pb.ABI)) {
@@ -138,6 +139,28 @@ function serialize_types_ListParams(arg) {
 
 function deserialize_types_ListParams(buffer_arg) {
   return rpc_pb.ListParams.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Metrics(arg) {
+  if (!(arg instanceof metric_pb.Metrics)) {
+    throw new Error('Expected argument of type types.Metrics');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Metrics(buffer_arg) {
+  return metric_pb.Metrics.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_MetricsRequest(arg) {
+  if (!(arg instanceof metric_pb.MetricsRequest)) {
+    throw new Error('Expected argument of type types.MetricsRequest');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_MetricsRequest(buffer_arg) {
+  return metric_pb.MetricsRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_PeerList(arg) {
@@ -319,6 +342,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_SingleBytes,
     responseDeserialize: deserialize_types_SingleBytes,
+  },
+  metric: {
+    path: '/types.AergoRPCService/Metric',
+    requestStream: false,
+    responseStream: false,
+    requestType: metric_pb.MetricsRequest,
+    responseType: metric_pb.Metrics,
+    requestSerialize: serialize_types_MetricsRequest,
+    requestDeserialize: deserialize_types_MetricsRequest,
+    responseSerialize: serialize_types_Metrics,
+    responseDeserialize: deserialize_types_Metrics,
   },
   blockchain: {
     path: '/types.AergoRPCService/Blockchain',

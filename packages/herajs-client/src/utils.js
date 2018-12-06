@@ -1,4 +1,5 @@
 import rpcTypes from './client/types.js';
+import JSBI from 'jsbi';
 const CommitStatus = rpcTypes.CommitStatus;
 
 const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -19,9 +20,13 @@ const fromNumber = (d, length = 8) => {
 const toBytesUint32 = (num) => {
     const arr = new ArrayBuffer(8);
     const view = new DataView(arr);
-    view.setUint32(0, num, true); // byteOffset = 0; litteEndian = true
-    // view.setBigUint64(0, num, true)
+    view.setUint32(0, num, true);
     return arr;
+};
+
+const bigIntToUint8Array = (value) => {
+    const bigint = JSBI.BigInt(value);
+    return fromHexString(bigint.toString(16));
 };
 
 const errorMessageForCode = (code) => {
@@ -63,6 +68,7 @@ export {
     toHexString,
     fromNumber,
     toBytesUint32,
+    bigIntToUint8Array,
     errorMessageForCode,
-    longPolling
+    longPolling,
 };

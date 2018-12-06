@@ -38,6 +38,11 @@ export namespace Block {
 }
 
 export class BlockHeader extends jspb.Message {
+  getChainid(): Uint8Array | string;
+  getChainid_asU8(): Uint8Array;
+  getChainid_asB64(): string;
+  setChainid(value: Uint8Array | string): void;
+
   getPrevblockhash(): Uint8Array | string;
   getPrevblockhash_asU8(): Uint8Array;
   getPrevblockhash_asB64(): string;
@@ -94,6 +99,7 @@ export class BlockHeader extends jspb.Message {
 
 export namespace BlockHeader {
   export type AsObject = {
+    chainid: Uint8Array | string,
     prevblockhash: Uint8Array | string,
     blockno: number,
     timestamp: number,
@@ -193,8 +199,10 @@ export class TxBody extends jspb.Message {
   getRecipient_asB64(): string;
   setRecipient(value: Uint8Array | string): void;
 
-  getAmount(): number;
-  setAmount(value: number): void;
+  getAmount(): Uint8Array | string;
+  getAmount_asU8(): Uint8Array;
+  getAmount_asB64(): string;
+  setAmount(value: Uint8Array | string): void;
 
   getPayload(): Uint8Array | string;
   getPayload_asU8(): Uint8Array;
@@ -204,8 +212,10 @@ export class TxBody extends jspb.Message {
   getLimit(): number;
   setLimit(value: number): void;
 
-  getPrice(): number;
-  setPrice(value: number): void;
+  getPrice(): Uint8Array | string;
+  getPrice_asU8(): Uint8Array;
+  getPrice_asB64(): string;
+  setPrice(value: Uint8Array | string): void;
 
   getType(): TxType;
   setType(value: TxType): void;
@@ -230,10 +240,10 @@ export namespace TxBody {
     nonce: number,
     account: Uint8Array | string,
     recipient: Uint8Array | string,
-    amount: number,
+    amount: Uint8Array | string,
     payload: Uint8Array | string,
     limit: number,
-    price: number,
+    price: Uint8Array | string,
     type: TxType,
     sign: Uint8Array | string,
   }
@@ -297,8 +307,10 @@ export class State extends jspb.Message {
   getNonce(): number;
   setNonce(value: number): void;
 
-  getBalance(): number;
-  setBalance(value: number): void;
+  getBalance(): Uint8Array | string;
+  getBalance_asU8(): Uint8Array;
+  getBalance_asB64(): string;
+  setBalance(value: Uint8Array | string): void;
 
   getCodehash(): Uint8Array | string;
   getCodehash_asU8(): Uint8Array;
@@ -326,7 +338,7 @@ export class State extends jspb.Message {
 export namespace State {
   export type AsObject = {
     nonce: number,
-    balance: number,
+    balance: Uint8Array | string,
     codehash: Uint8Array | string,
     storageroot: Uint8Array | string,
     sqlrecoverypoint: number,
@@ -549,6 +561,30 @@ export namespace Function {
   }
 }
 
+export class StateVar extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  getType(): string;
+  setType(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StateVar.AsObject;
+  static toObject(includeInstance: boolean, msg: StateVar): StateVar.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StateVar, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StateVar;
+  static deserializeBinaryFromReader(message: StateVar, reader: jspb.BinaryReader): StateVar;
+}
+
+export namespace StateVar {
+  export type AsObject = {
+    name: string,
+    type: string,
+  }
+}
+
 export class ABI extends jspb.Message {
   getVersion(): string;
   setVersion(value: string): void;
@@ -560,6 +596,11 @@ export class ABI extends jspb.Message {
   getFunctionsList(): Array<Function>;
   setFunctionsList(value: Array<Function>): void;
   addFunctions(value?: Function, index?: number): Function;
+
+  clearStateVariablesList(): void;
+  getStateVariablesList(): Array<StateVar>;
+  setStateVariablesList(value: Array<StateVar>): void;
+  addStateVariables(value?: StateVar, index?: number): StateVar;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ABI.AsObject;
@@ -576,6 +617,7 @@ export namespace ABI {
     version: string,
     language: string,
     functionsList: Array<Function.AsObject>,
+    stateVariablesList: Array<StateVar.AsObject>,
   }
 }
 

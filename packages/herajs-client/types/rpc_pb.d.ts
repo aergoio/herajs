@@ -6,6 +6,7 @@ import * as blockchain_pb from "./blockchain_pb";
 import * as account_pb from "./account_pb";
 import * as node_pb from "./node_pb";
 import * as p2p_pb from "./p2p_pb";
+import * as metric_pb from "./metric_pb";
 
 export class BlockchainStatus extends jspb.Message {
   getBestBlockHash(): Uint8Array | string;
@@ -432,8 +433,10 @@ export namespace ImportFormat {
 }
 
 export class Staking extends jspb.Message {
-  getAmount(): number;
-  setAmount(value: number): void;
+  getAmount(): Uint8Array | string;
+  getAmount_asU8(): Uint8Array;
+  getAmount_asB64(): string;
+  setAmount(value: Uint8Array | string): void;
 
   getWhen(): number;
   setWhen(value: number): void;
@@ -450,7 +453,7 @@ export class Staking extends jspb.Message {
 
 export namespace Staking {
   export type AsObject = {
-    amount: number,
+    amount: Uint8Array | string,
     when: number,
   }
 }
@@ -461,8 +464,10 @@ export class Vote extends jspb.Message {
   getCandidate_asB64(): string;
   setCandidate(value: Uint8Array | string): void;
 
-  getAmount(): number;
-  setAmount(value: number): void;
+  getAmount(): Uint8Array | string;
+  getAmount_asU8(): Uint8Array;
+  getAmount_asB64(): string;
+  setAmount(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Vote.AsObject;
@@ -477,7 +482,7 @@ export class Vote extends jspb.Message {
 export namespace Vote {
   export type AsObject = {
     candidate: Uint8Array | string,
-    amount: number,
+    amount: Uint8Array | string,
   }
 }
 

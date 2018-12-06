@@ -15,6 +15,7 @@ var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');
 var p2p_pb = require('./p2p_pb.js');
+var metric_pb = require('./metric_pb.js');
 goog.exportSymbol('proto.types.AccountAndRoot', null, global);
 goog.exportSymbol('proto.types.BlockHeaderList', null, global);
 goog.exportSymbol('proto.types.BlockchainStatus', null, global);
@@ -3253,7 +3254,7 @@ proto.types.Staking.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.Staking.toObject = function(includeInstance, msg) {
   var f, obj = {
-    amount: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    amount: msg.getAmount_asB64(),
     when: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
@@ -3292,7 +3293,7 @@ proto.types.Staking.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAmount(value);
       break;
     case 2:
@@ -3328,9 +3329,9 @@ proto.types.Staking.prototype.serializeBinary = function() {
  */
 proto.types.Staking.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAmount();
-  if (f !== 0) {
-    writer.writeUint64(
+  f = message.getAmount_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       1,
       f
     );
@@ -3346,15 +3347,39 @@ proto.types.Staking.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 amount = 1;
- * @return {number}
+ * optional bytes amount = 1;
+ * @return {!(string|Uint8Array)}
  */
 proto.types.Staking.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
-/** @param {number} value */
+/**
+ * optional bytes amount = 1;
+ * This is a type-conversion wrapper around `getAmount()`
+ * @return {string}
+ */
+proto.types.Staking.prototype.getAmount_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getAmount()));
+};
+
+
+/**
+ * optional bytes amount = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getAmount()`
+ * @return {!Uint8Array}
+ */
+proto.types.Staking.prototype.getAmount_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getAmount()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
 proto.types.Staking.prototype.setAmount = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -3423,7 +3448,7 @@ proto.types.Vote.prototype.toObject = function(opt_includeInstance) {
 proto.types.Vote.toObject = function(includeInstance, msg) {
   var f, obj = {
     candidate: msg.getCandidate_asB64(),
-    amount: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    amount: msg.getAmount_asB64()
   };
 
   if (includeInstance) {
@@ -3465,7 +3490,7 @@ proto.types.Vote.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCandidate(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAmount(value);
       break;
     default:
@@ -3504,9 +3529,9 @@ proto.types.Vote.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getAmount();
-  if (f !== 0) {
-    writer.writeUint64(
+  f = message.getAmount_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       2,
       f
     );
@@ -3554,15 +3579,39 @@ proto.types.Vote.prototype.setCandidate = function(value) {
 
 
 /**
- * optional uint64 amount = 2;
- * @return {number}
+ * optional bytes amount = 2;
+ * @return {!(string|Uint8Array)}
  */
 proto.types.Vote.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {number} value */
+/**
+ * optional bytes amount = 2;
+ * This is a type-conversion wrapper around `getAmount()`
+ * @return {string}
+ */
+proto.types.Vote.prototype.getAmount_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getAmount()));
+};
+
+
+/**
+ * optional bytes amount = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getAmount()`
+ * @return {!Uint8Array}
+ */
+proto.types.Vote.prototype.getAmount_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getAmount()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
 proto.types.Vote.prototype.setAmount = function(value) {
   jspb.Message.setField(this, 2, value);
 };

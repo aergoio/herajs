@@ -6,6 +6,8 @@ const assert = chai.assert;
 import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
 
+import JSBI from 'jsbi';
+
 //import AergoClient, { GrpcProvider } from '../dist/herajs.esm';
 
 import {createIdentity, signTransaction, hashTransaction} from '@herajs/crypto';
@@ -148,7 +150,7 @@ describe('Aergo', () => {
         it('should return state info by account address', async () => {
             const state = await aergo.getState(testaddress);
             assert.equal(state.nonce, 0);
-            assert.typeOf(state.balance, 'number');
+            assert.typeOf(JSBI.toNumber(state.balance), 'number');
         });
 
         it('should return error for invalid address', () => {

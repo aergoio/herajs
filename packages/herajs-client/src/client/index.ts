@@ -9,6 +9,7 @@ import Tx from '../models/tx';
 import Block from '../models/block';
 import Address from '../models/address';
 import Peer from '../models/peer';
+import State from '../models/state';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -189,13 +190,13 @@ class AergoClient {
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getState, this.client)(singleBytes).then(state => state.toObject());
+        return promisify(this.client.getState, this.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getState, this.client)(singleBytes).then(state => state.getNonce());
+        return promisify(this.client.getState, this.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
     }
 
     verifyTransaction (/*tx*/) {

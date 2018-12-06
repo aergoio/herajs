@@ -4,6 +4,7 @@
 var rpc_pb = require("./rpc_pb");
 var blockchain_pb = require("./blockchain_pb");
 var account_pb = require("./account_pb");
+var metric_pb = require("./metric_pb");
 var grpc = require("grpc-web-client").grpc;
 
 var AergoRPCService = (function () {
@@ -19,6 +20,15 @@ AergoRPCService.NodeState = {
   responseStream: false,
   requestType: rpc_pb.SingleBytes,
   responseType: rpc_pb.SingleBytes
+};
+
+AergoRPCService.Metric = {
+  methodName: "Metric",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: metric_pb.MetricsRequest,
+  responseType: metric_pb.Metrics
 };
 
 AergoRPCService.Blockchain = {
@@ -258,6 +268,28 @@ AergoRPCServiceClient.prototype.nodeState = function nodeState(requestMessage, m
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.NodeState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.Metric, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

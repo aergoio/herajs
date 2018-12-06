@@ -7,11 +7,11 @@ export const UNITS = {
     NATIVE_TOKEN: {
         baseLabel: 'Aergo',
         baseLabelShort: 'ARG',
-        baseDigits: 9,
+        baseDigits: 18,
 
         subUnits: [
             { e: 0, label: 'aer' },
-            { e: 9, label: 'ARG' }
+            { e: 18, label: 'ARG' }
         ]
     }
 };

@@ -6,6 +6,8 @@ const assert = chai.assert;
 import AergoClient from '../src';
 //import AergoClient from '../dist/herajs.esm';
 
+import JSBI from 'jsbi';
+
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
     let testAddress = 'INVALIDADDRESS';
@@ -108,7 +110,7 @@ describe('Aergo.Accounts', () => {
             // Tx can be retrieved again from mempool
             const tx2 = await aergo.getTransaction(tx.hash);
             assert.equal(tx2.tx.hash, tx.hash);
-            assert.equal(tx2.tx.amount, tx.amount);
+            assert.isTrue(JSBI.equal(tx2.tx.amount, tx.amount));
 
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendSignedTransaction(tx));
