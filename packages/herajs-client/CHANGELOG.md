@@ -1,3 +1,7 @@
+## 0.3.1 (December 7, 2018)
+
+- Fixed a possible bug regarding conversion of hex strings
+
 ## 0.3.0 (December 6, 2018)
 
 - Changed number of decimals of native token to 18 (https://github.com/aergoio/aergo/issues/16)
