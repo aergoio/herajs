@@ -28,12 +28,12 @@ export default class Tx {
             nonce: grpcObject.getBody().getNonce(),
             from: new Address(grpcObject.getBody().getAccount_asU8()),
             to: new Address(grpcObject.getBody().getRecipient_asU8()),
-            amount: JSBI.BigInt('0x' + toHexString(grpcObject.getBody().getAmount_asU8())),
+            amount: JSBI.BigInt(toHexString(grpcObject.getBody().getAmount_asU8(), true)),
             payload: grpcObject.getBody().getPayload_asU8(),
             sign: grpcObject.getBody().getSign_asB64(),
             type: grpcObject.getBody().getType(),
             limit: grpcObject.getBody().getLimit(),
-            price: JSBI.BigInt(toHexString(grpcObject.getBody().getPrice_asU8()))
+            price: JSBI.BigInt(toHexString(grpcObject.getBody().getPrice_asU8(), true))
         });
     }
     toGrpc() {

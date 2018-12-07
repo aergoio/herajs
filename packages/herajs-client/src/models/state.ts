@@ -16,11 +16,10 @@ export default class State {
     static fromGrpc(grpcObject: GrpcState) {
         return new State({
             nonce: grpcObject.getNonce(),
-            balance: JSBI.BigInt('0x' + toHexString(grpcObject.getBalance_asU8())),
+            balance: JSBI.BigInt(toHexString(grpcObject.getBalance_asU8(), true)),
             codehash: grpcObject.getCodehash_asB64(),
             storageroot: grpcObject.getStorageroot_asB64(),
             sqlrecoverypoint: grpcObject.getSqlrecoverypoint()
-            
         });
     }
 

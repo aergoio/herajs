@@ -4,7 +4,12 @@ const CommitStatus = rpcTypes.CommitStatus;
 
 const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
-const toHexString = bytes => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+const toHexString = function(bytes, format=false) {
+    const result = bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+    if (!format) return result;
+    if (result === '00' || result === '') return '0x0';
+    return '0x' + result;
+};
 
 const fromNumber = (d, length = 8) => {
     if (d >= Math.pow(2, length*8)) {

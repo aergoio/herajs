@@ -1,3 +1,8 @@
+## 0.3.0 (December 6, 2018)
+
+- Changed number of decimals of native token to 18 (https://github.com/aergoio/aergo/issues/16)
+- Use BigInt for balances and amounts
+
 ## 0.2.2 (November 28, 2018)
 
 - Changed return value of getPeers to return Peer objects

@@ -11,6 +11,7 @@ import JSBI from 'jsbi';
 //import AergoClient, { GrpcProvider } from '../dist/herajs.esm';
 
 import {createIdentity, signTransaction, hashTransaction} from '@herajs/crypto';
+import { longPolling } from '../src/utils';
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
@@ -151,6 +152,7 @@ describe('Aergo', () => {
             const state = await aergo.getState(testaddress);
             assert.equal(state.nonce, 0);
             assert.typeOf(JSBI.toNumber(state.balance), 'number');
+            assert.equal(state.balance.toString(), '10000000000000000000');
         });
 
         it('should return error for invalid address', () => {
@@ -187,16 +189,11 @@ describe('Aergo', () => {
             };
             const signedtx = await aergo.accounts.signTransaction(unsignedtx);
             txhash = await aergo.sendSignedTransaction(signedtx);
-            //console.log(`txhash: ${txhash}, pending...`);
-            for(;;) {
-                const result = await aergo.getTransaction(txhash);
-                //console.log(`tx ${result.tx.hash} still pending...`);
-                if ('block' in result) {
-                    blockhash = result.block.hash;
-                    //console.log(`tx ${txhash} is included in block ${blockhash}`);
-                    break;
-                }
-            }
+            const tx = await longPolling(async () => {
+                return await aergo.getTransaction(txhash);
+            }, result => 'block' in result);
+            assert.equal(tx.tx.hash, txhash);
+            blockhash = tx.block.hash;
             return aergo.getNonce(testaddress).then((nonce) => {
                 assert.equal(nonce, 1);
             });
