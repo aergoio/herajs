@@ -1,5 +1,5 @@
 /*!
- * herajs v0.3.0
+ * herajs v0.3.1
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -17636,9 +17636,13 @@ var fromHexString = function fromHexString(hexString) {
 };
 
 var toHexString = function toHexString(bytes) {
-  return bytes.reduce(function (str, byte) {
+  var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var result = bytes.reduce(function (str, byte) {
     return str + byte.toString(16).padStart(2, '0');
   }, '');
+  if (!format) return result;
+  if (result === '00' || result === '') return '0x0';
+  return '0x' + result;
 };
 
 var fromNumber = function fromNumber(d) {
@@ -17954,12 +17958,12 @@ function () {
         nonce: grpcObject.getBody().getNonce(),
         from: new Address(grpcObject.getBody().getAccount_asU8()),
         to: new Address(grpcObject.getBody().getRecipient_asU8()),
-        amount: JSBI.BigInt('0x' + toHexString(grpcObject.getBody().getAmount_asU8())),
+        amount: JSBI.BigInt(toHexString(grpcObject.getBody().getAmount_asU8(), true)),
         payload: grpcObject.getBody().getPayload_asU8(),
         sign: grpcObject.getBody().getSign_asB64(),
         type: grpcObject.getBody().getType(),
         limit: grpcObject.getBody().getLimit(),
-        price: JSBI.BigInt(toHexString(grpcObject.getBody().getPrice_asU8()))
+        price: JSBI.BigInt(toHexString(grpcObject.getBody().getPrice_asU8(), true))
       });
     }
   }]);
@@ -18298,7 +18302,7 @@ function () {
     value: function fromGrpc(grpcObject) {
       return new State({
         nonce: grpcObject.getNonce(),
-        balance: JSBI.BigInt('0x' + toHexString(grpcObject.getBalance_asU8())),
+        balance: JSBI.BigInt(toHexString(grpcObject.getBalance_asU8(), true)),
         codehash: grpcObject.getCodehash_asB64(),
         storageroot: grpcObject.getStorageroot_asB64(),
         sqlrecoverypoint: grpcObject.getSqlrecoverypoint()
