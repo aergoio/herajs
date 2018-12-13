@@ -122,7 +122,7 @@ describe('Aergo', () => {
                     }
                 });
             });
-        }).timeout(10000);
+        }).timeout(15000);
     });
 
     describe('getBlockHeaders()', () => {
@@ -178,7 +178,6 @@ describe('Aergo', () => {
 
         it('should update nonce after submitting transaction', async () => {
             await aergo.accounts.unlock(testaddress, 'testpass');
-            //console.log(`address: ${testaddress}`);
             const unsignedtx = {
                 nonce: 1,
                 from: testaddress,
@@ -196,7 +195,7 @@ describe('Aergo', () => {
             return aergo.getNonce(testaddress).then((nonce) => {
                 assert.equal(nonce, 1);
             });
-        }).timeout(5000);
+        }).timeout(11000);
 
         it('should return transaction hash in block', async() => {
             const result = await aergo.getBlock(blockhash);
