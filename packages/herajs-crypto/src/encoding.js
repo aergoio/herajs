@@ -7,7 +7,10 @@ import JSBI from 'jsbi';
  * @param {string} hexString
  * @return {Uint8Array} 
  */
-const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+const fromHexString = function(hexString) {
+    if (hexString.length % 2 === 1) hexString = '0' + hexString;
+    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+};
 
 /**
  * Convert Uint8 array to hex string
