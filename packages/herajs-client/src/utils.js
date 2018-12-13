@@ -2,7 +2,10 @@ import rpcTypes from './client/types.js';
 import JSBI from 'jsbi';
 const CommitStatus = rpcTypes.CommitStatus;
 
-const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+const fromHexString = function(hexString) {
+    if (hexString.length % 2 === 1) hexString = '0' + hexString;
+    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+};
 
 const toHexString = function(bytes, format=false) {
     const result = bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');

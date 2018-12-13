@@ -99,7 +99,7 @@ describe('Aergo.Accounts', () => {
                 nonce: 1,
                 from: address,
                 to: address,
-                amount: 123,
+                amount: '123 aer',
                 payload: null,
             };
             // Tx is signed and submitted correctly
@@ -110,7 +110,7 @@ describe('Aergo.Accounts', () => {
             // Tx can be retrieved again from mempool
             const tx2 = await aergo.getTransaction(tx.hash);
             assert.equal(tx2.tx.hash, tx.hash);
-            assert.isTrue(JSBI.equal(tx2.tx.amount, tx.amount));
+            assert.isTrue(JSBI.equal(tx2.tx.amount.value, tx.amount.value));
 
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendSignedTransaction(tx));
@@ -127,7 +127,7 @@ describe('Aergo.Accounts', () => {
                     nonce: i,
                     from: address,
                     to: address,
-                    amount: i,
+                    amount: `${i} aer`,
                     payload: null,
                 };
                 promises.push(new Promise((resolve, reject) => {

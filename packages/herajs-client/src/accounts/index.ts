@@ -1,5 +1,6 @@
 import { Personal, Empty } from '../../types/rpc_pb';
 import { Account } from '../../types/account_pb';
+import { Tx as GrpcTx } from '../../types/blockchain_pb';
 import Tx from '../models/tx';
 import { encodeTxHash } from '../transactions/utils';
 import Address from '../models/address';
@@ -132,7 +133,7 @@ class Accounts {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
-        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then(result => encodeTxHash(result.getHash()));
+        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then((result: GrpcTx) => encodeTxHash(result.getHash_asU8()));
     }
 
     /**
@@ -147,7 +148,7 @@ class Accounts {
         } else {
             tx = _tx;
         }
-        return promisify(this.client.signTX, this.client)(tx.toGrpc()).then(signedtx => Tx.fromGrpc(signedtx));
+        return promisify(this.client.signTX, this.client)(tx.toGrpc()).then((signedtx: GrpcTx) => Tx.fromGrpc(signedtx));
     }
 }
 

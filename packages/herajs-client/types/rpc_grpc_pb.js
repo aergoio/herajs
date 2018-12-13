@@ -163,6 +163,17 @@ function deserialize_types_MetricsRequest(buffer_arg) {
   return metric_pb.MetricsRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_NodeReq(arg) {
+  if (!(arg instanceof rpc_pb.NodeReq)) {
+    throw new Error('Expected argument of type types.NodeReq');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_NodeReq(buffer_arg) {
+  return rpc_pb.NodeReq.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_PeerList(arg) {
   if (!(arg instanceof rpc_pb.PeerList)) {
     throw new Error('Expected argument of type types.PeerList');
@@ -336,10 +347,10 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     path: '/types.AergoRPCService/NodeState',
     requestStream: false,
     responseStream: false,
-    requestType: rpc_pb.SingleBytes,
+    requestType: rpc_pb.NodeReq,
     responseType: rpc_pb.SingleBytes,
-    requestSerialize: serialize_types_SingleBytes,
-    requestDeserialize: deserialize_types_SingleBytes,
+    requestSerialize: serialize_types_NodeReq,
+    requestDeserialize: deserialize_types_NodeReq,
     responseSerialize: serialize_types_SingleBytes,
     responseDeserialize: deserialize_types_SingleBytes,
   },

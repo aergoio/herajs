@@ -151,8 +151,7 @@ describe('Aergo', () => {
         it('should return state info by account address', async () => {
             const state = await aergo.getState(testaddress);
             assert.equal(state.nonce, 0);
-            assert.typeOf(JSBI.toNumber(state.balance), 'number');
-            assert.equal(state.balance.toString(), '10000000000000000000');
+            assert.equal(state.balance.toUnit('aergo').toString(), '10 aergo');
         });
 
         it('should return error for invalid address', () => {
@@ -184,7 +183,7 @@ describe('Aergo', () => {
                 nonce: 1,
                 from: testaddress,
                 to: testaddress,
-                amount: 13371337,
+                amount: '13371337 aer',
                 payload: null,
             };
             const signedtx = await aergo.accounts.signTransaction(unsignedtx);
@@ -203,7 +202,7 @@ describe('Aergo', () => {
             const result = await aergo.getBlock(blockhash);
             const txs = result.body.txsList.filter(tx => tx.hash === txhash);
             assert.equal(txs.length, 1);
-            assert.equal(txs[0].amount, 13371337);
+            assert.equal(txs[0].amount, '13371337 aer');
         });
     });
 
@@ -218,7 +217,7 @@ describe('Aergo', () => {
                 nonce: 1,
                 from: address,
                 to: address,
-                amount: 123,
+                amount: '123 aer',
                 payload: '',
             };
             // Tx is signed and submitted correctly
@@ -243,10 +242,15 @@ describe('Aergo', () => {
             };
             tx.sign = await signTransaction(tx, identity.keyPair);
             tx.hash = await hashTransaction(tx, 'bytes');
+            // TODO: signTransaction only understands unitless number, string, or BigInt for amount
+            // but sendSignedTransaction assumes aergo if no unit given
+            tx.amount = '100 aer';
 
             return aergo.sendSignedTransaction(tx)
-                .then((txhash) => {
+                .then(async (txhash) => {
                     assert.typeOf(txhash, 'string');
+                    const commitedTx = await aergo.getTransaction(txhash);
+                    assert.equal(commitedTx.tx.amount, tx.amount);
                 });
         });
     });

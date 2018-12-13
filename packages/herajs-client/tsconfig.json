@@ -8,6 +8,9 @@
     "declarationDir": "dist",
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "lib": [
+      "es2017"
+    ]
   }
 }

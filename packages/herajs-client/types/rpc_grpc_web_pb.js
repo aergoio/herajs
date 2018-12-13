@@ -18,7 +18,7 @@ AergoRPCService.NodeState = {
   service: AergoRPCService,
   requestStream: false,
   responseStream: false,
-  requestType: rpc_pb.SingleBytes,
+  requestType: rpc_pb.NodeReq,
   responseType: rpc_pb.SingleBytes
 };
 

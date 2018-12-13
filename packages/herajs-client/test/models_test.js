@@ -5,6 +5,7 @@ const assert = chai.assert;
 
 import AergoClient from '../src';
 import Address from '../src/models/address';
+import Amount from '../src/models/amount';
 //import AergoClient, { Address } from '../dist/herajs.esm';
 
 describe('Address', () => {
@@ -25,5 +26,63 @@ describe('Address', () => {
         const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);
         const addr = new Address(encoded);
         assert.deepEqual(addr.asBytes(), bytes);
+    });
+    it('should throw with invalid address', () => {
+        assert.throws(() => new Address('Invalid'), Error, 'Non-base58 character');
+        assert.throws(() => new Address('abc'), Error, 'Invalid checksum');
+    });
+});
+
+describe('Amount', () => {
+    it('should move decimal point', () => {
+        assert.equal(Amount.moveDecimalPoint('1', 4), '10000');
+        assert.equal(Amount.moveDecimalPoint('1', -4), '0.0001');
+        assert.equal(Amount.moveDecimalPoint('0.0001', 4), '1');
+        assert.equal(Amount.moveDecimalPoint('0.0001', -4), '0.00000001');
+        assert.equal(Amount.moveDecimalPoint('10000', -4), '1');
+        assert.equal(Amount.moveDecimalPoint('10000.1', 4), '100001000');
+    });
+    it('should parse amounts from number with default unit', () => {
+        const a = new Amount(100);
+        assert.equal(a.toString(), '100 aergo');
+        assert.equal(a.value.toString(), '100000000000000000000');
+    });
+    it('should parse amounts from string with unit', () => {
+        const a = new Amount('100 aer');
+        assert.equal(a.toString(), '100 aer');
+        assert.equal(a.value.toString(), '100');
+
+        const b = new Amount('100 aergo');
+        assert.equal(b.toString(), '100 aergo');
+        assert.equal(b.value.toString(), '100000000000000000000');
+        assert.deepEqual(Array.from(b.asBytes()), [ 5, 107, 199, 94, 45, 99, 16, 0, 0 ]);
+
+        const c = new Amount('10000 gaer');
+        assert.equal(c.toString(), '10000 gaer');
+        assert.equal(c.value.toString(), '10000000000000');
+        assert.equal(c.toUnit('aergo').toString(), '0.00001 aergo');
+    });
+    it('should convert between units', () => {
+        const a = new Amount('10000 gaer');
+        assert.equal(a.toString(), '10000 gaer');
+        assert.equal(a.toUnit('aergo').toString(), '0.00001 aergo');
+        assert.equal(a.toUnit('gaer').toString(), '10000 gaer');
+        assert.equal(a.toUnit('aer').toString(), '10000000000000 aer');
+    });
+    it('should handle floating point numbers', () => {
+        const a = new Amount('0.1 aergo');
+        assert.equal(a.toUnit('aer').toString(), '100000000000000000 aer');
+
+        const b = new Amount(0.1);
+        assert.equal(b.toUnit('aer').toString(), '100000000000000000 aer');
+    });
+    it('should parse amounts from buffers', () => {
+        const a = new Amount(Buffer.from([ 5, 107, 199, 94, 45, 99, 16, 0, 0 ]));
+        assert.equal(a.value.toString(), '100000000000000000000');
+        assert.equal(a.toString(), '100000000000000000000 aer');
+        assert.equal(a.toUnit('aergo').toString(), '100 aergo');
+    });
+    it('should throw error for unrecognized unit', () => {
+        assert.throws(() => new Amount('100 foo'), TypeError, 'unrecognized unit: foo');
     });
 });

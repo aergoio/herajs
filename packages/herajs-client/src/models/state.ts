@@ -1,10 +1,10 @@
 import { State as GrpcState } from '../../types/blockchain_pb';
-import { fromHexString, toHexString } from '../utils';
-import JSBI from 'jsbi';
+import Amount from '../models/amount';
+
 
 export default class State {
     nonce: number;
-    balance: JSBI;
+    balance: Amount;
     codehash: string;
     storageroot: string;
     sqlrecoverypoint: number;
@@ -16,7 +16,7 @@ export default class State {
     static fromGrpc(grpcObject: GrpcState) {
         return new State({
             nonce: grpcObject.getNonce(),
-            balance: JSBI.BigInt(toHexString(grpcObject.getBalance_asU8(), true)),
+            balance: new Amount(grpcObject.getBalance_asU8()),
             codehash: grpcObject.getCodehash_asB64(),
             storageroot: grpcObject.getStorageroot_asB64(),
             sqlrecoverypoint: grpcObject.getSqlrecoverypoint()

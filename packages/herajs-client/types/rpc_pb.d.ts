@@ -508,6 +508,34 @@ export namespace VoteList {
   }
 }
 
+export class NodeReq extends jspb.Message {
+  getTimeout(): Uint8Array | string;
+  getTimeout_asU8(): Uint8Array;
+  getTimeout_asB64(): string;
+  setTimeout(value: Uint8Array | string): void;
+
+  getComponent(): Uint8Array | string;
+  getComponent_asU8(): Uint8Array;
+  getComponent_asB64(): string;
+  setComponent(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NodeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: NodeReq): NodeReq.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: NodeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NodeReq;
+  static deserializeBinaryFromReader(message: NodeReq, reader: jspb.BinaryReader): NodeReq;
+}
+
+export namespace NodeReq {
+  export type AsObject = {
+    timeout: Uint8Array | string,
+    component: Uint8Array | string,
+  }
+}
+
 export enum CommitStatus {
   TX_OK = 0,
   TX_NONCE_TOO_LOW = 1,

@@ -42,7 +42,7 @@ describe('Contracts', () => {
             const testtx = {
                 from: testAddress,
                 to: testAddress,
-                amount: 1
+                amount: '1 aer'
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);
             await longPolling(async () => 

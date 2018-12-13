@@ -1,39 +1,38 @@
 import { TxBody, Tx as GrpcTx } from '../../types/blockchain_pb';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils';
-import { fromHexString, toHexString } from '../utils';
 import Address from './address';
-import JSBI from 'jsbi';
+import Amount from './amount';
 
 export default class Tx {
     hash: string /*bytes*/;
     nonce: number /*uint64*/;
     from: Address /*bytes*/;
     to: Address /*bytes*/;
-    amount: JSBI /*bytes*/;
+    amount: Amount /*bytes*/;
     payload: Uint8Array /*bytes*/;
     sign: string /*bytes*/;
     type: number /*uint32*/;
     limit: number /*uint64*/;
-    price: JSBI /*uint64*/;
+    price: Amount /*uint64*/;
 
     constructor(data: Partial<Tx>) {
         Object.assign(this, data);
-        this.amount = JSBI.BigInt(this.amount || 0);
-        this.price = JSBI.BigInt(this.price || 0);
+        this.amount = new Amount(<any>this.amount || 0);
+        this.price = new Amount(<any>this.price || 0);
     }
 
     static fromGrpc(grpcObject: GrpcTx) {
         return new Tx({
-            hash: encodeTxHash(grpcObject.getHash()),
+            hash: encodeTxHash(grpcObject.getHash_asU8()),
             nonce: grpcObject.getBody().getNonce(),
             from: new Address(grpcObject.getBody().getAccount_asU8()),
             to: new Address(grpcObject.getBody().getRecipient_asU8()),
-            amount: JSBI.BigInt(toHexString(grpcObject.getBody().getAmount_asU8(), true)),
+            amount: new Amount(grpcObject.getBody().getAmount_asU8()),
             payload: grpcObject.getBody().getPayload_asU8(),
             sign: grpcObject.getBody().getSign_asB64(),
             type: grpcObject.getBody().getType(),
             limit: grpcObject.getBody().getLimit(),
-            price: JSBI.BigInt(toHexString(grpcObject.getBody().getPrice_asU8(), true))
+            price: new Amount(grpcObject.getBody().getPrice_asU8())
         });
     }
     toGrpc() {
@@ -46,7 +45,7 @@ export default class Tx {
         if (typeof this.to !== 'undefined' && this.to !== null) {
             msgtxbody.setRecipient((new Address(this.to)).asBytes());
         }
-        msgtxbody.setAmount(fromHexString(this.amount.toString(16)));
+        msgtxbody.setAmount(this.amount.asBytes());
         if (this.payload != null) {
             msgtxbody.setPayload(Buffer.from(this.payload));
         }
@@ -62,7 +61,7 @@ export default class Tx {
         }
 
         if (typeof this.price !== 'undefined') {
-            msgtxbody.setPrice(fromHexString(this.price.toString(16)));
+            msgtxbody.setPrice(this.price.asBytes());
         }
 
         const msgtx = new GrpcTx();

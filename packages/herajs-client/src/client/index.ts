@@ -1,7 +1,6 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { Empty, PeerList as GrpcPeerList, Peer as GrpcPeer } from '../../types/rpc_pb';
-import { BlockchainStatus as GrpcBlockchainStatus } from '../../types/rpc_pb';
+import { Empty, PeerList as GrpcPeerList, Peer as GrpcPeer, BlockchainStatus as GrpcBlockchainStatus, CommitResultList } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
@@ -216,7 +215,7 @@ class AergoClient {
                 tx = new Tx(tx);
             }
             txs.addTxs(tx.toGrpc(), 0);
-            this.client.commitTX(txs, (err, result) => {
+            this.client.commitTX(txs, (err, result: CommitResultList) => {
                 if (err == null && result.getResultsList()[0].getError()) {
                     err = new Error();
                     err.code = result.getResultsList()[0].getError(); 
@@ -225,7 +224,7 @@ class AergoClient {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(encodeTxHash(result.getResultsList()[0].getHash()));
+                    resolve(encodeTxHash(result.getResultsList()[0].getHash_asU8()));
                 }
             });
         });
