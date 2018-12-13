@@ -122,7 +122,7 @@ describe('Aergo', () => {
                     }
                 });
             });
-        }).timeout(6000);
+        }).timeout(10000);
     });
 
     describe('getBlockHeaders()', () => {

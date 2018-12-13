@@ -40,7 +40,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-typescript": "^7.1.0",
     "@babel/register": "^7.0.0",
-    "@herajs/crypto": "0.0.1",
+    "@herajs/crypto": "0.0.3",
     "@types/google-protobuf": "^3.2.7",
     "@types/rollup-plugin-json": "^3.0.0",
     "async-sema": "^2.1.4",
