@@ -187,9 +187,6 @@ describe('Aergo', () => {
                 to: testaddress,
                 amount: '1337 aer'
             };
-            await waitFor(1000);
-            const status = await aergo.blockchain();
-            console.log('blockchain now at', status.bestHeight);
             txhash = await aergo.accounts.sendTransaction(tx);
             await waitFor(500);
             const txInBlock = await longPolling(async () => {

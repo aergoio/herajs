@@ -53,7 +53,6 @@ describe('Aergo.Accounts', () => {
     });
 
     describe('sendTransaction()', () => {
-
         it('should return hash for signed and comitted tx', async () => {
             await aergo.accounts.unlock(testAddress, 'testpass');
             const testtx = {
