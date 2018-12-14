@@ -1,3 +1,7 @@
+## 0.3.2 (December 14, 2018)
+
+- Introduce Amount utility class for converting amounts with and without units
+
 ## 0.3.1 (December 7, 2018)
 
 - Fixed a possible bug regarding conversion of hex strings
