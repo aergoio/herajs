@@ -70,7 +70,7 @@ export default class Amount {
         return fromHexString(this.value.toString(16));
     }
     toJSON(): string {
-        return this.toString();
+        return this.value.toString();
     }
     toString(): string {
         return `${this.formatNumber()} ${this.unit}`;
