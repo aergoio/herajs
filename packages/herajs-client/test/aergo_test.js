@@ -110,19 +110,23 @@ describe('Aergo', () => {
     });
 
     describe('getBlockStream()', () => {
-        it('should stream new blocks', async () => {
-            return new Promise(resolve => {
+        it('should stream new blocks', (done) => {
+            const stream = aergo.getBlockStream();
+            try {
                 let countBlocks = 3;
-                const stream = aergo.getBlockStream().on('data', (blockHeader) => {
+                stream.on('data', (blockHeader) => {
                     countBlocks -= 1;
                     assert.isTrue(blockHeader.hasOwnProperty('hash'));
                     if (countBlocks == 0) {
                         stream.cancel();
-                        resolve();
+                        done();
                     }
                 });
-            });
-        }).timeout(15000);
+            } catch(e) {
+                stream.cancel();
+                done(e);
+            }
+        }).timeout(5000);
     });
 
     describe('getBlockHeaders()', () => {
