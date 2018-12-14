@@ -169,33 +169,27 @@ describe('Aergo', () => {
         let testaddress;
         let txhash;
         let blockhash;
-        beforeEach(async ()=>{
-            testaddress = await aergo.accounts.create('testpass');
-        });
 
-        it('should return nonce of account address', (done) => {
-            aergo.getNonce(testaddress).then((response) => {
-                assert.equal(response, 0);
-                done();
-            });
+        it('should return nonce of account address', async () => {
+            testaddress = await aergo.accounts.create('testpass');
+            const nonce = await aergo.getNonce(testaddress);
+            assert.equal(nonce, 0);
         });
 
         it('should update nonce after submitting transaction', async () => {
             await aergo.accounts.unlock(testaddress, 'testpass');
-            const unsignedtx = {
-                nonce: 1,
+            const tx = {
                 from: testaddress,
                 to: testaddress,
-                amount: '13371337 aer',
+                amount: '1337 aer',
                 payload: null,
             };
-            const signedtx = await aergo.accounts.signTransaction(unsignedtx);
-            txhash = await aergo.sendSignedTransaction(signedtx);
-            const tx = await longPolling(async () => {
+            txhash = await aergo.accounts.sendTransaction(tx);
+            const txInBlock = await longPolling(async () => {
                 return await aergo.getTransaction(txhash);
             }, result => 'block' in result, 5000);
-            assert.equal(tx.tx.hash, txhash);
-            blockhash = tx.block.hash;
+            assert.equal(txInBlock.tx.hash, txhash);
+            blockhash = txInBlock.block.hash;
             return aergo.getNonce(testaddress).then((nonce) => {
                 assert.equal(nonce, 1);
             });
@@ -205,7 +199,7 @@ describe('Aergo', () => {
             const result = await aergo.getBlock(blockhash);
             const txs = result.body.txsList.filter(tx => tx.hash === txhash);
             assert.equal(txs.length, 1);
-            assert.equal(txs[0].amount, '13371337 aer');
+            assert.equal(txs[0].amount.toString(), '1337 aer');
         });
     });
 
