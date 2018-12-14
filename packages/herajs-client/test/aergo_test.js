@@ -113,7 +113,7 @@ describe('Aergo', () => {
         });
     });
 
-    describe.skip('getBlockStream()', () => {
+    describe('getBlockStream()', () => {
         it('should stream new blocks', (done) => {
             const stream = aergo.getBlockStream();
             try {
