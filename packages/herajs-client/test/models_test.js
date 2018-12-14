@@ -27,6 +27,11 @@ describe('Address', () => {
         const addr = new Address(encoded);
         assert.deepEqual(addr.asBytes(), bytes);
     });
+    it('should encode a null address to an empty string', async () => {
+        const bytes = Buffer.from([]);
+        const addr = new Address(bytes);
+        assert.deepEqual(addr.toString(), '');
+    });
     it('should throw with invalid address', () => {
         assert.throws(() => new Address('Invalid'), Error, 'Non-base58 character');
         assert.throws(() => new Address('abc'), Error, 'Invalid checksum');

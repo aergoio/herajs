@@ -1,5 +1,6 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
+import { TxInBlock, Tx as GrpcTx } from '../../types/blockchain_pb';
 import { Empty, PeerList as GrpcPeerList, Peer as GrpcPeer, BlockchainStatus as GrpcBlockchainStatus, CommitResultList } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -85,9 +86,9 @@ class AergoClient {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
-            this.client.getBlockTX(singleBytes, (err, result) => {
+            this.client.getBlockTX(singleBytes, (err, result: TxInBlock) => {
                 if (err) {
-                    this.client.getTX(singleBytes, (err, result) => {
+                    this.client.getTX(singleBytes, (err, result: GrpcTx) => {
                         if (err) {
                             reject(err);
                         } else {

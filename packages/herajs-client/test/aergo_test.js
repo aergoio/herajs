@@ -193,13 +193,13 @@ describe('Aergo', () => {
             txhash = await aergo.sendSignedTransaction(signedtx);
             const tx = await longPolling(async () => {
                 return await aergo.getTransaction(txhash);
-            }, result => 'block' in result);
+            }, result => 'block' in result, 5000);
             assert.equal(tx.tx.hash, txhash);
             blockhash = tx.block.hash;
             return aergo.getNonce(testaddress).then((nonce) => {
                 assert.equal(nonce, 1);
             });
-        }).timeout(11000);
+        }).timeout(5500);
 
         it('should return transaction hash in block', async() => {
             const result = await aergo.getBlock(blockhash);

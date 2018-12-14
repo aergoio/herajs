@@ -57,7 +57,15 @@ const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250
     let lastError = '';
     try {
         const result = await func();
-        if (!check(result)) throw new Error('Condition not satisfied');
+        if (!check(result)) {
+            let resultStr;
+            try {
+                resultStr = JSON.stringify(result);
+            } catch(e) {
+                resultStr = '' + resultStr;
+            }
+            throw new Error('Condition not satisfied. Last result was ' + resultStr);
+        }
         return result;
     } catch(e) {
         lastError = e;

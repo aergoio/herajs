@@ -83,18 +83,12 @@ describe('Contracts', () => {
             assert.typeOf(deployTxhash, 'string');
             
             // Wait for deployment receipt
-            
             const receipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(deployTxhash)
-            );
+                , result => result.hasOwnProperty('contractaddress'), 2000);
             assert.equal(receipt.status, 'CREATED');
             contractAddress = receipt.contractaddress;
-        });
-
-        it('should encode a null address to an empty string', async () => {
-            const txInfo = await aergo.getTransaction(deployTxhash);
-            assert.equal(txInfo.tx.to, '');
-        });
+        }).timeout(2100);
 
         it('should get a smart contract\'s ABI', async () => {
             const abi = await aergo.getABI(contractAddress);
