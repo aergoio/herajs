@@ -7,7 +7,7 @@
   "browser": "dist/herajs.min.js",
   "types": "dist/platforms/node/index.d.ts",
   "scripts": {
-    "test": "npm run lint && mocha -r babel-register-ts",
+    "test": "npm run lint && mocha --exit -r babel-register-ts",
     "dev": "rollup -w -c scripts/config.js --environment TARGET:node-esm",
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
