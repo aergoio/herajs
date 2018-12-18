@@ -27,14 +27,20 @@ describe('Address', () => {
         const addr = new Address(encoded);
         assert.deepEqual(addr.asBytes(), bytes);
     });
-    it('should encode a null address to an empty string', async () => {
+    it('should encode a null address to an empty string', () => {
         const bytes = Buffer.from([]);
         const addr = new Address(bytes);
-        assert.deepEqual(addr.toString(), '');
+        assert.equal(addr.toString(), '');
     });
     it('should throw with invalid address', () => {
-        assert.throws(() => new Address('Invalid'), Error, 'Non-base58 character');
-        assert.throws(() => new Address('abc'), Error, 'Invalid checksum');
+        assert.throws(() => new Address('InvalidInvalidInvalidInvalid'), Error, 'Non-base58 character');
+        assert.throws(() => new Address('abcabcabcabcabcabc'), Error, 'Invalid checksum');
+    });
+    it('should encode account names', () => {
+        const a1 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109]));
+        assert.equal(a1.toString(), 'aergo.system');
+        const a2 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+        assert.equal(a2.toString(), 'aergo.system');
     });
 });
 

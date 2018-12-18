@@ -54,6 +54,7 @@ export default class Tx {
         } else {
             msgtxbody.setSign(this.sign);
         }
+        
         msgtxbody.setType(this.type);
 
         if (typeof this.limit !== 'undefined') {

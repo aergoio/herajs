@@ -75,6 +75,28 @@ function deserialize_types_BlockHeaderList(buffer_arg) {
   return rpc_pb.BlockHeaderList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_BlockMetadata(arg) {
+  if (!(arg instanceof rpc_pb.BlockMetadata)) {
+    throw new Error('Expected argument of type types.BlockMetadata');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockMetadata(buffer_arg) {
+  return rpc_pb.BlockMetadata.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_BlockMetadataList(arg) {
+  if (!(arg instanceof rpc_pb.BlockMetadataList)) {
+    throw new Error('Expected argument of type types.BlockMetadataList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockMetadataList(buffer_arg) {
+  return rpc_pb.BlockMetadataList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_BlockchainStatus(arg) {
   if (!(arg instanceof rpc_pb.BlockchainStatus)) {
     throw new Error('Expected argument of type types.BlockchainStatus');
@@ -161,6 +183,28 @@ function serialize_types_MetricsRequest(arg) {
 
 function deserialize_types_MetricsRequest(buffer_arg) {
   return metric_pb.MetricsRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_Name(arg) {
+  if (!(arg instanceof rpc_pb.Name)) {
+    throw new Error('Expected argument of type types.Name');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Name(buffer_arg) {
+  return rpc_pb.Name.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_NameInfo(arg) {
+  if (!(arg instanceof rpc_pb.NameInfo)) {
+    throw new Error('Expected argument of type types.NameInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_NameInfo(buffer_arg) {
+  return rpc_pb.NameInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_NodeReq(arg) {
@@ -390,6 +434,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockHeaderList,
     responseDeserialize: deserialize_types_BlockHeaderList,
   },
+  listBlockMetadata: {
+    path: '/types.AergoRPCService/ListBlockMetadata',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.ListParams,
+    responseType: rpc_pb.BlockMetadataList,
+    requestSerialize: serialize_types_ListParams,
+    requestDeserialize: deserialize_types_ListParams,
+    responseSerialize: serialize_types_BlockMetadataList,
+    responseDeserialize: deserialize_types_BlockMetadataList,
+  },
   listBlockStream: {
     path: '/types.AergoRPCService/ListBlockStream',
     requestStream: false,
@@ -400,6 +455,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Empty,
     responseSerialize: serialize_types_Block,
     responseDeserialize: deserialize_types_Block,
+  },
+  listBlockMetadataStream: {
+    path: '/types.AergoRPCService/ListBlockMetadataStream',
+    requestStream: false,
+    responseStream: true,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.BlockMetadata,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_BlockMetadata,
+    responseDeserialize: deserialize_types_BlockMetadata,
   },
   getBlock: {
     path: '/types.AergoRPCService/GetBlock',
@@ -652,6 +718,17 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_Staking,
     responseDeserialize: deserialize_types_Staking,
+  },
+  getNameInfo: {
+    path: '/types.AergoRPCService/GetNameInfo',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Name,
+    responseType: rpc_pb.NameInfo,
+    requestSerialize: serialize_types_Name,
+    requestDeserialize: deserialize_types_Name,
+    responseSerialize: serialize_types_NameInfo,
+    responseDeserialize: deserialize_types_NameInfo,
   },
 };
 

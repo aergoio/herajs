@@ -1,4 +1,4 @@
-import { ADDRESS_PREFIXES } from '../constants.js';
+import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants.js';
 import bs58check from 'bs58check';
 
 /**
@@ -9,14 +9,18 @@ import bs58check from 'bs58check';
 export default class Address {
     value: Buffer;
     encoded: string;
+    isName: boolean;
 
     constructor(address: Address|string|Buffer|Uint8Array) {
         if (address instanceof Address) {
             // Copy buffer
             this.value = Buffer.from(address.value);
         } else if (typeof address === 'string') {
-            // Decode string
-            this.value = Address.decode(address);
+            if (address.length <= ACCOUNT_NAME_LENGTH) {
+                this.value = Buffer.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
+            } else {
+                this.value = Address.decode(address);
+            }
             this.encoded = address;
         } else if (address instanceof Buffer) {
             // Treat array-like as buffer
@@ -27,6 +31,16 @@ export default class Address {
         }  else {
             throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
         }
+
+        // Name test
+        let arrValue = Array.from(this.value);
+        while(arrValue[arrValue.length-1] === 0 && arrValue.length > ACCOUNT_NAME_LENGTH) {
+            arrValue.pop(); // try to remove trailing 0 until length is 12
+        }
+        if (arrValue.length === ACCOUNT_NAME_LENGTH) {
+            this.isName = true;
+            this.value = this.value.slice(0, ACCOUNT_NAME_LENGTH);
+        }
     }
     asBytes(): Buffer {
         return this.value;
@@ -35,9 +49,18 @@ export default class Address {
         return this.toString();
     }
     toString(): string {
-        if (!this.encoded) {
-            this.encoded = Address.encode(this.value);
+        if (typeof this.encoded !== 'undefined' && this.encoded !== null) {
+            return this.encoded;
         }
+    
+        // Account name
+        if (this.isName) {
+            this.encoded = Buffer.from(this.value).toString()
+            return this.encoded;
+        }
+
+        // Account address
+        this.encoded = Address.encode(this.value);
         return this.encoded;
     }
     static decode(bs58string): Buffer {

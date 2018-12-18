@@ -1,10 +1,11 @@
-import { Personal, Empty } from '../../types/rpc_pb';
+import { Personal, Empty, CommitResult } from '../../types/rpc_pb';
 import { Account } from '../../types/account_pb';
 import { Tx as GrpcTx } from '../../types/blockchain_pb';
 import Tx from '../models/tx';
 import { encodeTxHash } from '../transactions/utils';
 import Address from '../models/address';
 import promisify from '../promisify.js';
+import { errorMessageForCode } from '../utils';
 
 /**
  * Accounts controller. It is exposed at `aergoClient.accounts`.
@@ -133,7 +134,14 @@ class Accounts {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
-        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then((result: GrpcTx) => encodeTxHash(result.getHash_asU8()));
+        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then((result: CommitResult) => {
+            const obj = result.toObject();
+            if (obj.error && obj.detail) {
+                throw new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
+            }
+    
+            return encodeTxHash(result.getHash_asU8())
+        });
     }
 
     /**

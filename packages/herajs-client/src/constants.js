@@ -3,6 +3,8 @@ export const ADDRESS_PREFIXES = {
     CONTRACT: 0xC0
 };
 
+export const ACCOUNT_NAME_LENGTH = 12;
+
 export const UNITS = {
     NATIVE_TOKEN: {
         baseLabel: 'Aergo',
@@ -24,5 +26,6 @@ export const UNITS = {
 
 export default {
     ADDRESS_PREFIXES,
-    UNITS
+    UNITS,
+    ACCOUNT_NAME_LENGTH
 };

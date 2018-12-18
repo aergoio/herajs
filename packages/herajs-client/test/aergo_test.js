@@ -6,11 +6,7 @@ const assert = chai.assert;
 import AergoClient from '../src';
 import GrpcProvider from '../src/providers/grpc';
 
-import JSBI from 'jsbi';
-
-//import AergoClient, { GrpcProvider } from '../dist/herajs.esm';
-
-import {createIdentity, signTransaction, hashTransaction} from '@herajs/crypto';
+import { createIdentity, signTransaction, hashTransaction } from '@herajs/crypto';
 import { longPolling } from '../src/utils';
 
 const waitFor = (ms) => new Promise(resolve => {
@@ -133,6 +129,28 @@ describe('Aergo', () => {
         }).timeout(5000);
     });
 
+    describe('getBlockMetadataStream()', () => {
+        it('should stream new block metadata', (done) => {
+            const stream = aergo.getBlockMetadataStream();
+            try {
+                let countBlocks = 3;
+                stream.on('data', (blockMetadata) => {
+                    countBlocks -= 1;
+                    assert.isTrue(blockMetadata.hasOwnProperty('hash'));
+                    assert.isTrue(blockMetadata.header.hasOwnProperty('blockno'));
+                    assert.typeOf(blockMetadata.txcount, 'number');
+                    if (countBlocks == 0) {
+                        stream.cancel();
+                        done();
+                    }
+                });
+            } catch(e) {
+                stream.cancel();
+                done(e);
+            }
+        }).timeout(5000);
+    });
+
     describe('getBlockHeaders()', () => {
         it('should get list of last block headers by block height', async () => {
             const blockchainState = await aergo.blockchain();
@@ -164,7 +182,7 @@ describe('Aergo', () => {
 
         it('should return error for invalid address', () => {
             assert.throws(() => {
-                aergo.getState('invalid');
+                aergo.getState('invalidinvalidinvalid');
             }, Error, 'Non-base58 character');
         });
     });
@@ -255,7 +273,6 @@ describe('Aergo', () => {
                 });
         });
     });
-
     
     describe.skip('getVotingResult()', () => {
         it('should return given number of voting result', async () => {

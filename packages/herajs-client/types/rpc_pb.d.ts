@@ -298,6 +298,60 @@ export namespace BlockHeaderList {
   }
 }
 
+export class BlockMetadata extends jspb.Message {
+  getHash(): Uint8Array | string;
+  getHash_asU8(): Uint8Array;
+  getHash_asB64(): string;
+  setHash(value: Uint8Array | string): void;
+
+  hasHeader(): boolean;
+  clearHeader(): void;
+  getHeader(): blockchain_pb.BlockHeader | undefined;
+  setHeader(value?: blockchain_pb.BlockHeader): void;
+
+  getTxcount(): number;
+  setTxcount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockMetadata.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockMetadata): BlockMetadata.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockMetadata, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockMetadata;
+  static deserializeBinaryFromReader(message: BlockMetadata, reader: jspb.BinaryReader): BlockMetadata;
+}
+
+export namespace BlockMetadata {
+  export type AsObject = {
+    hash: Uint8Array | string,
+    header?: blockchain_pb.BlockHeader.AsObject,
+    txcount: number,
+  }
+}
+
+export class BlockMetadataList extends jspb.Message {
+  clearBlocksList(): void;
+  getBlocksList(): Array<BlockMetadata>;
+  setBlocksList(value: Array<BlockMetadata>): void;
+  addBlocks(value?: BlockMetadata, index?: number): BlockMetadata;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockMetadataList.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockMetadataList): BlockMetadataList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockMetadataList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockMetadataList;
+  static deserializeBinaryFromReader(message: BlockMetadataList, reader: jspb.BinaryReader): BlockMetadataList;
+}
+
+export namespace BlockMetadataList {
+  export type AsObject = {
+    blocksList: Array<BlockMetadata.AsObject>,
+  }
+}
+
 export class CommitResult extends jspb.Message {
   getHash(): Uint8Array | string;
   getHash_asU8(): Uint8Array;
@@ -533,6 +587,54 @@ export namespace NodeReq {
   export type AsObject = {
     timeout: Uint8Array | string,
     component: Uint8Array | string,
+  }
+}
+
+export class Name extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Name.AsObject;
+  static toObject(includeInstance: boolean, msg: Name): Name.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Name, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Name;
+  static deserializeBinaryFromReader(message: Name, reader: jspb.BinaryReader): Name;
+}
+
+export namespace Name {
+  export type AsObject = {
+    name: string,
+  }
+}
+
+export class NameInfo extends jspb.Message {
+  hasName(): boolean;
+  clearName(): void;
+  getName(): Name | undefined;
+  setName(value?: Name): void;
+
+  getOwner(): Uint8Array | string;
+  getOwner_asU8(): Uint8Array;
+  getOwner_asB64(): string;
+  setOwner(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NameInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: NameInfo): NameInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: NameInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NameInfo;
+  static deserializeBinaryFromReader(message: NameInfo, reader: jspb.BinaryReader): NameInfo;
+}
+
+export namespace NameInfo {
+  export type AsObject = {
+    name?: Name.AsObject,
+    owner: Uint8Array | string,
   }
 }
 

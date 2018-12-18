@@ -1,12 +1,17 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
 import { TxInBlock, Tx as GrpcTx } from '../../types/blockchain_pb';
-import { Empty, PeerList as GrpcPeerList, Peer as GrpcPeer, BlockchainStatus as GrpcBlockchainStatus, CommitResultList } from '../../types/rpc_pb';
+import {
+    Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
+    BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
+    Name, NameInfo
+} from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import Tx from '../models/tx';
 import Block from '../models/block';
+import BlockMetadata from '../models/blockmetadata';
 import Address from '../models/address';
 import Peer from '../models/peer';
 import State from '../models/state';
@@ -181,6 +186,26 @@ class AergoClient {
             cancel: () => stream.cancel()
         };
     }
+
+    getBlockMetadataStream () {
+        const empty = new rpcTypes.Empty();
+        const stream = this.client.listBlockMetadataStream(empty);
+        try {
+            stream.on('error', (error) => {
+                if (error.code === 1) { // grpc.status.CANCELLED
+                    return;
+                }
+            });
+        } catch (e) {
+            // ignore. 'error' does not work on grpc-web implementation
+        }
+        return {
+            _stream: stream,
+            on: (ev, callback) => stream.on(ev, data => callback(BlockMetadata.fromGrpc(data))),
+            cancel: () => stream.cancel()
+        };
+    }
+    
     
     /**
      * Retrieve account state, including current balance and nonce.
@@ -218,9 +243,8 @@ class AergoClient {
             txs.addTxs(tx.toGrpc(), 0);
             this.client.commitTX(txs, (err, result: CommitResultList) => {
                 if (err == null && result.getResultsList()[0].getError()) {
-                    err = new Error();
-                    err.code = result.getResultsList()[0].getError(); 
-                    err.message = errorMessageForCode(err.code);
+                    const obj = result.getResultsList()[0].toObject();
+                    err = new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
                 }
                 if (err) {
                     reject(err);
@@ -301,6 +325,24 @@ class AergoClient {
             (grpcObject: GrpcPeerList): Array<Peer> => grpcObject.getPeersList().map(
                 (peer: GrpcPeer): Peer => Peer.fromGrpc(peer)
             )
+        );
+    }
+
+    /**
+     * Return information for account name
+     * @param name 
+     */
+    getNameInfo (name) {
+        const nameObj = new Name();
+        nameObj.setName(name);
+        return promisify(this.client.getNameInfo, this.client)(nameObj).then(
+            (grpcObject: NameInfo) => {
+                const obj = grpcObject.toObject();
+                return {
+                    name: obj.name.name,
+                    owner: new Address(grpcObject.getOwner_asU8())
+                };
+            }
         );
     }
 }

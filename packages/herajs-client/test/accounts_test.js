@@ -4,7 +4,8 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 
 import AergoClient from '../src';
-//import AergoClient from '../dist/herajs.esm';
+
+import { longPolling } from '../src/utils';
 
 import JSBI from 'jsbi';
 
@@ -58,8 +59,7 @@ describe('Aergo.Accounts', () => {
             const testtx = {
                 from: testAddress,
                 to: testAddress,
-                amount: 123,
-                payload: null,
+                amount: '123 aer'
             };
             return aergo.accounts.sendTransaction(testtx)
                 .then((txhash) => {
@@ -69,13 +69,12 @@ describe('Aergo.Accounts', () => {
     });
 
     describe('signTX()', () => {
-
         it('should return tx which has a unlocked account sign', (done) => {
             const testtx = {
                 nonce: 1,
                 from: testAddress,
                 to: testAddress,
-                amount: 123,
+                amount: '123 aer',
                 payload: null,
             };
             aergo.accounts.signTransaction(testtx)
@@ -120,25 +119,40 @@ describe('Aergo.Accounts', () => {
         it('should not timeout', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
-            const promises = [];
             for (let i = 1; i <= 20; i++) {
                 const testtx = {
                     nonce: i,
                     from: address,
-                    to: address,
+                    to: createdAddress,
                     amount: `${i} aer`,
-                    payload: null,
                 };
-                promises.push(new Promise((resolve, reject) => {
-                    aergo.accounts.signTransaction(testtx).then((signedtx) => {
-                        aergo.sendSignedTransaction(signedtx).then((txhash) => {
-                            assert.typeOf(txhash, 'string');
-                            resolve();
-                        }).catch(reject);
-                    }).catch(reject);
-                }));
+                const signedtx = await aergo.accounts.signTransaction(testtx);
+                const txhash = await aergo.sendSignedTransaction(signedtx);
+                assert.typeOf(txhash, 'string');
             }
-            await Promise.all(promises);
         }).timeout(10000);
+    });
+
+    describe('getNameInfo()', () => {
+        it('should return account information for name', async () => {
+            const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
+            await aergo.accounts.unlock(testAddress, 'testpass');
+            const testtx = {
+                from: testAddress,
+                to: 'aergo.name',
+                amount: 0,
+                payload: 'c' + name,
+                type: 1
+            };
+            const txhash = await aergo.accounts.sendTransaction(testtx);
+            await longPolling(async () => {
+                return await aergo.getTransaction(txhash);
+            }, result => 'block' in result, 2000);
+
+            return aergo.getNameInfo(name)
+                .then(async (info) => {
+                    assert.equal(info.owner.toString(), testAddress);
+                });
+        });
     });
 });
