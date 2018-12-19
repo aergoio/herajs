@@ -1,5 +1,5 @@
 /*!
- * herajs v0.4.0
+ * herajs v0.4.1
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -25640,18 +25640,19 @@
 	      this.value = Buffer.from(address);
 	    } else {
 	      throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
-	    } // Name test
+	    } // Test if this is a name
 
 
+	    this.isName = false;
 	    var arrValue = Array.from(this.value);
 
-	    while (arrValue[arrValue.length - 1] === 0 && arrValue.length > ACCOUNT_NAME_LENGTH) {
-	      arrValue.pop(); // try to remove trailing 0 until length is 12
+	    while (arrValue[arrValue.length - 1] === 0) {
+	      arrValue.pop(); // remove trailing 0
 	    }
 
-	    if (arrValue.length === ACCOUNT_NAME_LENGTH) {
+	    if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
 	      this.isName = true;
-	      this.value = this.value.slice(0, ACCOUNT_NAME_LENGTH);
+	      this.value = Buffer.from(arrValue);
 	    }
 	  }
 
