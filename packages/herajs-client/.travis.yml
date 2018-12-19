@@ -9,10 +9,8 @@ before_install:
 install:
   - npm install
 before_script:
-  - sleep 5
+  - sleep 10
 script:
   - npm test
 after_failure:
   - docker logs aergosvr
-after_script:
-  - docker kill aergosvr
