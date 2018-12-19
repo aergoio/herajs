@@ -1,3 +1,7 @@
+## 0.4.1 (December 19, 2018)
+
+- Bugfix: Names with less than 12 characters were not recognized
+
 ## 0.4.0 (December 19, 2018)
 
 - Compatibility with Aergo protocol 0.9.0
