@@ -41,6 +41,8 @@ describe('Address', () => {
         assert.equal(a1.toString(), 'aergo.system');
         const a2 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
         assert.equal(a2.toString(), 'aergo.system');
+        const a3 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 110, 97, 109, 101]));
+        assert.equal(a3.toString(), 'aergo.name');     
     });
 });
 
