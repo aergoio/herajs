@@ -1,5 +1,5 @@
 /*!
- * herajs v0.3.2
+ * herajs v0.4.0
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -3664,8 +3664,8 @@
 	        receiptsroothash: msg.getReceiptsroothash_asB64(),
 	        confirms: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
 	        pubkey: msg.getPubkey_asB64(),
-	        sign: msg.getSign_asB64(),
-	        coinbaseaccount: msg.getCoinbaseaccount_asB64()
+	        coinbaseaccount: msg.getCoinbaseaccount_asB64(),
+	        sign: msg.getSign_asB64()
 	      };
 
 	      if (includeInstance) {
@@ -3772,14 +3772,14 @@
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
-	          msg.setSign(value);
+	          msg.setCoinbaseaccount(value);
 	          break;
 
 	        case 11:
 	          var value =
 	          /** @type {!Uint8Array} */
 	          reader.readBytes();
-	          msg.setCoinbaseaccount(value);
+	          msg.setSign(value);
 	          break;
 
 	        default:
@@ -3866,13 +3866,13 @@
 	      writer.writeBytes(9, f);
 	    }
 
-	    f = message.getSign_asU8();
+	    f = message.getCoinbaseaccount_asU8();
 
 	    if (f.length > 0) {
 	      writer.writeBytes(10, f);
 	    }
 
-	    f = message.getCoinbaseaccount_asU8();
+	    f = message.getSign_asU8();
 
 	    if (f.length > 0) {
 	      writer.writeBytes(11, f);
@@ -4209,53 +4209,7 @@
 	    googleProtobuf.Message.setField(this, 9, value);
 	  };
 	  /**
-	   * optional bytes sign = 10;
-	   * @return {!(string|Uint8Array)}
-	   */
-
-
-	  proto.types.BlockHeader.prototype.getSign = function () {
-	    return (
-	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
-	    );
-	  };
-	  /**
-	   * optional bytes sign = 10;
-	   * This is a type-conversion wrapper around `getSign()`
-	   * @return {string}
-	   */
-
-
-	  proto.types.BlockHeader.prototype.getSign_asB64 = function () {
-	    return (
-	      /** @type {string} */
-	      googleProtobuf.Message.bytesAsB64(this.getSign())
-	    );
-	  };
-	  /**
-	   * optional bytes sign = 10;
-	   * Note that Uint8Array is not supported on all browsers.
-	   * @see http://caniuse.com/Uint8Array
-	   * This is a type-conversion wrapper around `getSign()`
-	   * @return {!Uint8Array}
-	   */
-
-
-	  proto.types.BlockHeader.prototype.getSign_asU8 = function () {
-	    return (
-	      /** @type {!Uint8Array} */
-	      googleProtobuf.Message.bytesAsU8(this.getSign())
-	    );
-	  };
-	  /** @param {!(string|Uint8Array)} value */
-
-
-	  proto.types.BlockHeader.prototype.setSign = function (value) {
-	    googleProtobuf.Message.setField(this, 10, value);
-	  };
-	  /**
-	   * optional bytes coinbaseAccount = 11;
+	   * optional bytes coinbaseAccount = 10;
 	   * @return {!(string|Uint8Array)}
 	   */
 
@@ -4263,11 +4217,11 @@
 	  proto.types.BlockHeader.prototype.getCoinbaseaccount = function () {
 	    return (
 	      /** @type {!(string|Uint8Array)} */
-	      googleProtobuf.Message.getFieldWithDefault(this, 11, "")
+	      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
 	    );
 	  };
 	  /**
-	   * optional bytes coinbaseAccount = 11;
+	   * optional bytes coinbaseAccount = 10;
 	   * This is a type-conversion wrapper around `getCoinbaseaccount()`
 	   * @return {string}
 	   */
@@ -4280,7 +4234,7 @@
 	    );
 	  };
 	  /**
-	   * optional bytes coinbaseAccount = 11;
+	   * optional bytes coinbaseAccount = 10;
 	   * Note that Uint8Array is not supported on all browsers.
 	   * @see http://caniuse.com/Uint8Array
 	   * This is a type-conversion wrapper around `getCoinbaseaccount()`
@@ -4298,6 +4252,52 @@
 
 
 	  proto.types.BlockHeader.prototype.setCoinbaseaccount = function (value) {
+	    googleProtobuf.Message.setField(this, 10, value);
+	  };
+	  /**
+	   * optional bytes sign = 11;
+	   * @return {!(string|Uint8Array)}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getSign = function () {
+	    return (
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 11, "")
+	    );
+	  };
+	  /**
+	   * optional bytes sign = 11;
+	   * This is a type-conversion wrapper around `getSign()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getSign_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getSign())
+	    );
+	  };
+	  /**
+	   * optional bytes sign = 11;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getSign()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.BlockHeader.prototype.getSign_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getSign())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
+
+
+	  proto.types.BlockHeader.prototype.setSign = function (value) {
 	    googleProtobuf.Message.setField(this, 11, value);
 	  };
 	  /**
@@ -15759,6 +15759,8 @@
 	  var global = Function('return this')();
 	  goog.exportSymbol('proto.types.AccountAndRoot', null, global);
 	  goog.exportSymbol('proto.types.BlockHeaderList', null, global);
+	  goog.exportSymbol('proto.types.BlockMetadata', null, global);
+	  goog.exportSymbol('proto.types.BlockMetadataList', null, global);
 	  goog.exportSymbol('proto.types.BlockchainStatus', null, global);
 	  goog.exportSymbol('proto.types.CommitResult', null, global);
 	  goog.exportSymbol('proto.types.CommitResultList', null, global);
@@ -15767,6 +15769,8 @@
 	  goog.exportSymbol('proto.types.ImportFormat', null, global);
 	  goog.exportSymbol('proto.types.Input', null, global);
 	  goog.exportSymbol('proto.types.ListParams', null, global);
+	  goog.exportSymbol('proto.types.Name', null, global);
+	  goog.exportSymbol('proto.types.NameInfo', null, global);
 	  goog.exportSymbol('proto.types.NodeReq', null, global);
 	  goog.exportSymbol('proto.types.Output', null, global);
 	  goog.exportSymbol('proto.types.Peer', null, global);
@@ -18124,6 +18128,424 @@
 	   */
 
 
+	  proto.types.BlockMetadata = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
+	  };
+
+	  goog.inherits(proto.types.BlockMetadata, googleProtobuf.Message);
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.BlockMetadata.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.BlockMetadata.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.BlockMetadata} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.BlockMetadata.toObject = function (includeInstance, msg) {
+	      var f,
+	          obj = {
+	        hash: msg.getHash_asB64(),
+	        header: (f = msg.getHeader()) && blockchain_pb.BlockHeader.toObject(includeInstance, f),
+	        txcount: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0)
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.BlockMetadata}
+	   */
+
+
+	  proto.types.BlockMetadata.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.BlockMetadata();
+	    return proto.types.BlockMetadata.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.BlockMetadata} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.BlockMetadata}
+	   */
+
+
+	  proto.types.BlockMetadata.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value =
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
+	          msg.setHash(value);
+	          break;
+
+	        case 2:
+	          var value = new blockchain_pb.BlockHeader();
+	          reader.readMessage(value, blockchain_pb.BlockHeader.deserializeBinaryFromReader);
+	          msg.setHeader(value);
+	          break;
+
+	        case 3:
+	          var value =
+	          /** @type {number} */
+	          reader.readInt32();
+	          msg.setTxcount(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.BlockMetadata.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.BlockMetadata} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.BlockMetadata.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getHash_asU8();
+
+	    if (f.length > 0) {
+	      writer.writeBytes(1, f);
+	    }
+
+	    f = message.getHeader();
+
+	    if (f != null) {
+	      writer.writeMessage(2, f, blockchain_pb.BlockHeader.serializeBinaryToWriter);
+	    }
+
+	    f = message.getTxcount();
+
+	    if (f !== 0) {
+	      writer.writeInt32(3, f);
+	    }
+	  };
+	  /**
+	   * optional bytes hash = 1;
+	   * @return {!(string|Uint8Array)}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.getHash = function () {
+	    return (
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	    );
+	  };
+	  /**
+	   * optional bytes hash = 1;
+	   * This is a type-conversion wrapper around `getHash()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.getHash_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getHash())
+	    );
+	  };
+	  /**
+	   * optional bytes hash = 1;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getHash()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.getHash_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getHash())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
+
+
+	  proto.types.BlockMetadata.prototype.setHash = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value);
+	  };
+	  /**
+	   * optional BlockHeader header = 2;
+	   * @return {?proto.types.BlockHeader}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.getHeader = function () {
+	    return (
+	      /** @type{?proto.types.BlockHeader} */
+	      googleProtobuf.Message.getWrapperField(this, blockchain_pb.BlockHeader, 2)
+	    );
+	  };
+	  /** @param {?proto.types.BlockHeader|undefined} value */
+
+
+	  proto.types.BlockMetadata.prototype.setHeader = function (value) {
+	    googleProtobuf.Message.setWrapperField(this, 2, value);
+	  };
+
+	  proto.types.BlockMetadata.prototype.clearHeader = function () {
+	    this.setHeader(undefined);
+	  };
+	  /**
+	   * Returns whether this field is set.
+	   * @return {!boolean}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.hasHeader = function () {
+	    return googleProtobuf.Message.getField(this, 2) != null;
+	  };
+	  /**
+	   * optional int32 txcount = 3;
+	   * @return {number}
+	   */
+
+
+	  proto.types.BlockMetadata.prototype.getTxcount = function () {
+	    return (
+	      /** @type {number} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
+	    );
+	  };
+	  /** @param {number} value */
+
+
+	  proto.types.BlockMetadata.prototype.setTxcount = function (value) {
+	    googleProtobuf.Message.setField(this, 3, value);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
+	  proto.types.BlockMetadataList = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.BlockMetadataList.repeatedFields_, null);
+	  };
+
+	  goog.inherits(proto.types.BlockMetadataList, googleProtobuf.Message);
+	  /**
+	   * List of repeated fields within this message type.
+	   * @private {!Array<number>}
+	   * @const
+	   */
+
+
+	  proto.types.BlockMetadataList.repeatedFields_ = [1];
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.BlockMetadataList.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.BlockMetadataList.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.BlockMetadataList} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.BlockMetadataList.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        blocksList: googleProtobuf.Message.toObjectList(msg.getBlocksList(), proto.types.BlockMetadata.toObject, includeInstance)
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.BlockMetadataList}
+	   */
+
+
+	  proto.types.BlockMetadataList.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.BlockMetadataList();
+	    return proto.types.BlockMetadataList.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.BlockMetadataList} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.BlockMetadataList}
+	   */
+
+
+	  proto.types.BlockMetadataList.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value = new proto.types.BlockMetadata();
+	          reader.readMessage(value, proto.types.BlockMetadata.deserializeBinaryFromReader);
+	          msg.addBlocks(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.BlockMetadataList.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.BlockMetadataList.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.BlockMetadataList} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.BlockMetadataList.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getBlocksList();
+
+	    if (f.length > 0) {
+	      writer.writeRepeatedMessage(1, f, proto.types.BlockMetadata.serializeBinaryToWriter);
+	    }
+	  };
+	  /**
+	   * repeated BlockMetadata blocks = 1;
+	   * @return {!Array.<!proto.types.BlockMetadata>}
+	   */
+
+
+	  proto.types.BlockMetadataList.prototype.getBlocksList = function () {
+	    return (
+	      /** @type{!Array.<!proto.types.BlockMetadata>} */
+	      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.BlockMetadata, 1)
+	    );
+	  };
+	  /** @param {!Array.<!proto.types.BlockMetadata>} value */
+
+
+	  proto.types.BlockMetadataList.prototype.setBlocksList = function (value) {
+	    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
+	  };
+	  /**
+	   * @param {!proto.types.BlockMetadata=} opt_value
+	   * @param {number=} opt_index
+	   * @return {!proto.types.BlockMetadata}
+	   */
+
+
+	  proto.types.BlockMetadataList.prototype.addBlocks = function (opt_value, opt_index) {
+	    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.BlockMetadata, opt_index);
+	  };
+
+	  proto.types.BlockMetadataList.prototype.clearBlocksList = function () {
+	    this.setBlocksList([]);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
 	  proto.types.CommitResult = function (opt_data) {
 	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
 	  };
@@ -19964,6 +20386,371 @@
 	    googleProtobuf.Message.setField(this, 2, value);
 	  };
 	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
+	  proto.types.Name = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
+	  };
+
+	  goog.inherits(proto.types.Name, googleProtobuf.Message);
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.Name.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.Name.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.Name} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.Name.toObject = function (includeInstance, msg) {
+	      var obj = {
+	        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, "")
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.Name}
+	   */
+
+
+	  proto.types.Name.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.Name();
+	    return proto.types.Name.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.Name} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.Name}
+	   */
+
+
+	  proto.types.Name.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value =
+	          /** @type {string} */
+	          reader.readString();
+	          msg.setName(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.Name.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.Name.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.Name} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.Name.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getName();
+
+	    if (f.length > 0) {
+	      writer.writeString(1, f);
+	    }
+	  };
+	  /**
+	   * optional string name = 1;
+	   * @return {string}
+	   */
+
+
+	  proto.types.Name.prototype.getName = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
+	    );
+	  };
+	  /** @param {string} value */
+
+
+	  proto.types.Name.prototype.setName = function (value) {
+	    googleProtobuf.Message.setField(this, 1, value);
+	  };
+	  /**
+	   * Generated by JsPbCodeGenerator.
+	   * @param {Array=} opt_data Optional initial data array, typically from a
+	   * server response, or constructed directly in Javascript. The array is used
+	   * in place and becomes part of the constructed object. It is not cloned.
+	   * If no data is provided, the constructed object will be empty, but still
+	   * valid.
+	   * @extends {jspb.Message}
+	   * @constructor
+	   */
+
+
+	  proto.types.NameInfo = function (opt_data) {
+	    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
+	  };
+
+	  goog.inherits(proto.types.NameInfo, googleProtobuf.Message);
+
+	  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
+	    /**
+	     * Creates an object representation of this proto suitable for use in Soy templates.
+	     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+	     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+	     * For the list of reserved names please see:
+	     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+	     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+	     *     for transitional soy proto support: http://goto/soy-param-migration
+	     * @return {!Object}
+	     */
+	    proto.types.NameInfo.prototype.toObject = function (opt_includeInstance) {
+	      return proto.types.NameInfo.toObject(opt_includeInstance, this);
+	    };
+	    /**
+	     * Static version of the {@see toObject} method.
+	     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+	     *     instance for transitional soy proto support:
+	     *     http://goto/soy-param-migration
+	     * @param {!proto.types.NameInfo} msg The msg instance to transform.
+	     * @return {!Object}
+	     * @suppress {unusedLocalVariables} f is only used for nested messages
+	     */
+
+
+	    proto.types.NameInfo.toObject = function (includeInstance, msg) {
+	      var f,
+	          obj = {
+	        name: (f = msg.getName()) && proto.types.Name.toObject(includeInstance, f),
+	        owner: msg.getOwner_asB64()
+	      };
+
+	      if (includeInstance) {
+	        obj.$jspbMessageInstance = msg;
+	      }
+
+	      return obj;
+	    };
+	  }
+	  /**
+	   * Deserializes binary data (in protobuf wire format).
+	   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+	   * @return {!proto.types.NameInfo}
+	   */
+
+
+	  proto.types.NameInfo.deserializeBinary = function (bytes) {
+	    var reader = new googleProtobuf.BinaryReader(bytes);
+	    var msg = new proto.types.NameInfo();
+	    return proto.types.NameInfo.deserializeBinaryFromReader(msg, reader);
+	  };
+	  /**
+	   * Deserializes binary data (in protobuf wire format) from the
+	   * given reader into the given message object.
+	   * @param {!proto.types.NameInfo} msg The message object to deserialize into.
+	   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+	   * @return {!proto.types.NameInfo}
+	   */
+
+
+	  proto.types.NameInfo.deserializeBinaryFromReader = function (msg, reader) {
+	    while (reader.nextField()) {
+	      if (reader.isEndGroup()) {
+	        break;
+	      }
+
+	      var field = reader.getFieldNumber();
+
+	      switch (field) {
+	        case 1:
+	          var value = new proto.types.Name();
+	          reader.readMessage(value, proto.types.Name.deserializeBinaryFromReader);
+	          msg.setName(value);
+	          break;
+
+	        case 2:
+	          var value =
+	          /** @type {!Uint8Array} */
+	          reader.readBytes();
+	          msg.setOwner(value);
+	          break;
+
+	        default:
+	          reader.skipField();
+	          break;
+	      }
+	    }
+
+	    return msg;
+	  };
+	  /**
+	   * Serializes the message to binary data (in protobuf wire format).
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.NameInfo.prototype.serializeBinary = function () {
+	    var writer = new googleProtobuf.BinaryWriter();
+	    proto.types.NameInfo.serializeBinaryToWriter(this, writer);
+	    return writer.getResultBuffer();
+	  };
+	  /**
+	   * Serializes the given message to binary data (in protobuf wire
+	   * format), writing to the given BinaryWriter.
+	   * @param {!proto.types.NameInfo} message
+	   * @param {!jspb.BinaryWriter} writer
+	   * @suppress {unusedLocalVariables} f is only used for nested messages
+	   */
+
+
+	  proto.types.NameInfo.serializeBinaryToWriter = function (message, writer) {
+	    var f = undefined;
+	    f = message.getName();
+
+	    if (f != null) {
+	      writer.writeMessage(1, f, proto.types.Name.serializeBinaryToWriter);
+	    }
+
+	    f = message.getOwner_asU8();
+
+	    if (f.length > 0) {
+	      writer.writeBytes(2, f);
+	    }
+	  };
+	  /**
+	   * optional Name name = 1;
+	   * @return {?proto.types.Name}
+	   */
+
+
+	  proto.types.NameInfo.prototype.getName = function () {
+	    return (
+	      /** @type{?proto.types.Name} */
+	      googleProtobuf.Message.getWrapperField(this, proto.types.Name, 1)
+	    );
+	  };
+	  /** @param {?proto.types.Name|undefined} value */
+
+
+	  proto.types.NameInfo.prototype.setName = function (value) {
+	    googleProtobuf.Message.setWrapperField(this, 1, value);
+	  };
+
+	  proto.types.NameInfo.prototype.clearName = function () {
+	    this.setName(undefined);
+	  };
+	  /**
+	   * Returns whether this field is set.
+	   * @return {!boolean}
+	   */
+
+
+	  proto.types.NameInfo.prototype.hasName = function () {
+	    return googleProtobuf.Message.getField(this, 1) != null;
+	  };
+	  /**
+	   * optional bytes owner = 2;
+	   * @return {!(string|Uint8Array)}
+	   */
+
+
+	  proto.types.NameInfo.prototype.getOwner = function () {
+	    return (
+	      /** @type {!(string|Uint8Array)} */
+	      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
+	    );
+	  };
+	  /**
+	   * optional bytes owner = 2;
+	   * This is a type-conversion wrapper around `getOwner()`
+	   * @return {string}
+	   */
+
+
+	  proto.types.NameInfo.prototype.getOwner_asB64 = function () {
+	    return (
+	      /** @type {string} */
+	      googleProtobuf.Message.bytesAsB64(this.getOwner())
+	    );
+	  };
+	  /**
+	   * optional bytes owner = 2;
+	   * Note that Uint8Array is not supported on all browsers.
+	   * @see http://caniuse.com/Uint8Array
+	   * This is a type-conversion wrapper around `getOwner()`
+	   * @return {!Uint8Array}
+	   */
+
+
+	  proto.types.NameInfo.prototype.getOwner_asU8 = function () {
+	    return (
+	      /** @type {!Uint8Array} */
+	      googleProtobuf.Message.bytesAsU8(this.getOwner())
+	    );
+	  };
+	  /** @param {!(string|Uint8Array)} value */
+
+
+	  proto.types.NameInfo.prototype.setOwner = function (value) {
+	    googleProtobuf.Message.setField(this, 2, value);
+	  };
+	  /**
 	   * @enum {number}
 	   */
 
@@ -19999,6 +20786,7 @@
 	var rpc_pb_7 = rpc_pb.CommitStatus;
 	var rpc_pb_8 = rpc_pb.ListParams;
 	var rpc_pb_9 = rpc_pb.Query;
+	var rpc_pb_10 = rpc_pb.Name;
 
 	var typesNode = /*#__PURE__*/Object.freeze({
 		default: rpc_pb,
@@ -20011,7 +20799,8 @@
 		Tx: rpc_pb_6,
 		CommitStatus: rpc_pb_7,
 		ListParams: rpc_pb_8,
-		Query: rpc_pb_9
+		Query: rpc_pb_9,
+		Name: rpc_pb_10
 	});
 
 	var safeBuffer = createCommonjsModule(function (module, exports) {
@@ -20188,6 +20977,7 @@
 	  ACCOUNT: 0x42,
 	  CONTRACT: 0xC0
 	};
+	var ACCOUNT_NAME_LENGTH = 12;
 	var UNITS = {
 	  NATIVE_TOKEN: {
 	    baseLabel: 'Aergo',
@@ -20209,7 +20999,8 @@
 	};
 	var constants = {
 	  ADDRESS_PREFIXES: ADDRESS_PREFIXES,
-	  UNITS: UNITS
+	  UNITS: UNITS,
+	  ACCOUNT_NAME_LENGTH: ACCOUNT_NAME_LENGTH
 	};
 
 	var inherits_browser = createCommonjsModule(function (module) {
@@ -24828,12 +25619,18 @@
 
 	    _defineProperty(this, "encoded", void 0);
 
+	    _defineProperty(this, "isName", void 0);
+
 	    if (address instanceof Address) {
 	      // Copy buffer
 	      this.value = Buffer.from(address.value);
 	    } else if (typeof address === 'string') {
-	      // Decode string
-	      this.value = Address.decode(address);
+	      if (address.length <= ACCOUNT_NAME_LENGTH) {
+	        this.value = Buffer.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
+	      } else {
+	        this.value = Address.decode(address);
+	      }
+
 	      this.encoded = address;
 	    } else if (address instanceof Buffer) {
 	      // Treat array-like as buffer
@@ -24843,6 +25640,18 @@
 	      this.value = Buffer.from(address);
 	    } else {
 	      throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
+	    } // Name test
+
+
+	    var arrValue = Array.from(this.value);
+
+	    while (arrValue[arrValue.length - 1] === 0 && arrValue.length > ACCOUNT_NAME_LENGTH) {
+	      arrValue.pop(); // try to remove trailing 0 until length is 12
+	    }
+
+	    if (arrValue.length === ACCOUNT_NAME_LENGTH) {
+	      this.isName = true;
+	      this.value = this.value.slice(0, ACCOUNT_NAME_LENGTH);
 	    }
 	  }
 
@@ -24859,10 +25668,18 @@
 	  }, {
 	    key: "toString",
 	    value: function toString() {
-	      if (!this.encoded) {
-	        this.encoded = Address.encode(this.value);
-	      }
+	      if (typeof this.encoded !== 'undefined' && this.encoded !== null) {
+	        return this.encoded;
+	      } // Account name
 
+
+	      if (this.isName) {
+	        this.encoded = Buffer.from(this.value).toString();
+	        return this.encoded;
+	      } // Account address
+
+
+	      this.encoded = Address.encode(this.value);
 	      return this.encoded;
 	    }
 	  }], [{
@@ -25518,6 +26335,12 @@
 	      }
 
 	      return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then(function (result) {
+	        var obj = result.toObject();
+
+	        if (obj.error && obj.detail) {
+	          throw new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
+	        }
+
 	        return encodeTxHash(result.getHash_asU8());
 	      });
 	    }
@@ -25601,6 +26424,45 @@
 	  }]);
 
 	  return Block;
+	}();
+
+	var BlockMetadata =
+	/*#__PURE__*/
+	function () {
+	  function BlockMetadata(data) {
+	    _classCallCheck(this, BlockMetadata);
+
+	    _defineProperty(this, "hash", void 0);
+
+	    _defineProperty(this, "header", void 0);
+
+	    _defineProperty(this, "txcount", void 0);
+
+	    Object.assign(this, data);
+	  }
+
+	  _createClass(BlockMetadata, [{
+	    key: "toGrpc",
+	    value: function toGrpc() {
+	      throw new Error('Not implemented');
+	    }
+	  }], [{
+	    key: "fromGrpc",
+	    value: function fromGrpc(grpcObject) {
+	      var obj = grpcObject.toObject();
+	      return new BlockMetadata({
+	        hash: Block.encodeHash(grpcObject.getHash_asU8()),
+	        header: _objectSpread({}, obj.header, {
+	          chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+	          prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
+	          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8())
+	        }),
+	        txcount: obj.txcount
+	      });
+	    }
+	  }]);
+
+	  return BlockMetadata;
 	}();
 
 	var Peer =
@@ -25887,6 +26749,34 @@
 	        }
 	      };
 	    }
+	  }, {
+	    key: "getBlockMetadataStream",
+	    value: function getBlockMetadataStream() {
+	      var empty = new typesNode.Empty();
+	      var stream = this.client.listBlockMetadataStream(empty);
+
+	      try {
+	        stream.on('error', function (error) {
+	          if (error.code === 1) {
+	            // grpc.status.CANCELLED
+	            return;
+	          }
+	        });
+	      } catch (e) {// ignore. 'error' does not work on grpc-web implementation
+	      }
+
+	      return {
+	        _stream: stream,
+	        on: function on(ev, callback) {
+	          return stream.on(ev, function (data) {
+	            return callback(BlockMetadata.fromGrpc(data));
+	          });
+	        },
+	        cancel: function cancel() {
+	          return stream.cancel();
+	        }
+	      };
+	    }
 	    /**
 	     * Retrieve account state, including current balance and nonce.
 	     * @param {string} address Account address encoded in Base58check
@@ -25943,9 +26833,8 @@
 
 	        _this2.client.commitTX(txs, function (err, result) {
 	          if (err == null && result.getResultsList()[0].getError()) {
-	            err = new Error();
-	            err.code = result.getResultsList()[0].getError();
-	            err.message = errorMessageForCode(err.code);
+	            var obj = result.getResultsList()[0].toObject();
+	            err = new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
 	          }
 
 	          if (err) {
@@ -26039,6 +26928,24 @@
 	        return grpcObject.getPeersList().map(function (peer) {
 	          return Peer.fromGrpc(peer);
 	        });
+	      });
+	    }
+	    /**
+	     * Return information for account name
+	     * @param name 
+	     */
+
+	  }, {
+	    key: "getNameInfo",
+	    value: function getNameInfo(name) {
+	      var nameObj = new rpc_pb_10();
+	      nameObj.setName(name);
+	      return promisify(this.client.getNameInfo, this.client)(nameObj).then(function (grpcObject) {
+	        var obj = grpcObject.toObject();
+	        return {
+	          name: obj.name.name,
+	          owner: new Address(grpcObject.getOwner_asU8())
+	        };
 	      });
 	    }
 	  }]);
@@ -27619,6 +28526,14 @@
 	  requestType: rpc_pb.ListParams,
 	  responseType: rpc_pb.BlockHeaderList
 	};
+	AergoRPCService.ListBlockMetadata = {
+	  methodName: "ListBlockMetadata",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: rpc_pb.ListParams,
+	  responseType: rpc_pb.BlockMetadataList
+	};
 	AergoRPCService.ListBlockStream = {
 	  methodName: "ListBlockStream",
 	  service: AergoRPCService,
@@ -27626,6 +28541,14 @@
 	  responseStream: true,
 	  requestType: rpc_pb.Empty,
 	  responseType: blockchain_pb.Block
+	};
+	AergoRPCService.ListBlockMetadataStream = {
+	  methodName: "ListBlockMetadataStream",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: true,
+	  requestType: rpc_pb.Empty,
+	  responseType: rpc_pb.BlockMetadata
 	};
 	AergoRPCService.GetBlock = {
 	  methodName: "GetBlock",
@@ -27674,6 +28597,22 @@
 	  responseStream: false,
 	  requestType: blockchain_pb.Tx,
 	  responseType: rpc_pb.CommitResult
+	};
+	AergoRPCService.SignTX = {
+	  methodName: "SignTX",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: blockchain_pb.Tx,
+	  responseType: blockchain_pb.Tx
+	};
+	AergoRPCService.VerifyTX = {
+	  methodName: "VerifyTX",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: blockchain_pb.Tx,
+	  responseType: rpc_pb.VerifyResult
 	};
 	AergoRPCService.CommitTX = {
 	  methodName: "CommitTX",
@@ -27747,22 +28686,6 @@
 	  requestType: rpc_pb.Personal,
 	  responseType: rpc_pb.SingleBytes
 	};
-	AergoRPCService.SignTX = {
-	  methodName: "SignTX",
-	  service: AergoRPCService,
-	  requestStream: false,
-	  responseStream: false,
-	  requestType: blockchain_pb.Tx,
-	  responseType: blockchain_pb.Tx
-	};
-	AergoRPCService.VerifyTX = {
-	  methodName: "VerifyTX",
-	  service: AergoRPCService,
-	  requestStream: false,
-	  responseStream: false,
-	  requestType: blockchain_pb.Tx,
-	  responseType: rpc_pb.VerifyResult
-	};
 	AergoRPCService.QueryContract = {
 	  methodName: "QueryContract",
 	  service: AergoRPCService,
@@ -27802,6 +28725,14 @@
 	  responseStream: false,
 	  requestType: rpc_pb.SingleBytes,
 	  responseType: rpc_pb.Staking
+	};
+	AergoRPCService.GetNameInfo = {
+	  methodName: "GetNameInfo",
+	  service: AergoRPCService,
+	  requestStream: false,
+	  responseStream: false,
+	  requestType: rpc_pb.Name,
+	  responseType: rpc_pb.NameInfo
 	};
 
 	function AergoRPCServiceClient(serviceHost, options) {
@@ -27913,6 +28844,32 @@
 	  });
 	};
 
+	AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+
+	  grpc.unary(AergoRPCService.ListBlockMetadata, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), {
+	            code: response.status,
+	            metadata: response.trailers
+	          }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
 	AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
 	  var listeners = {
 	    data: [],
@@ -27920,6 +28877,49 @@
 	    status: []
 	  };
 	  var client = grpc.invoke(AergoRPCService.ListBlockStream, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onMessage: function onMessage(responseMessage) {
+	      listeners.data.forEach(function (handler) {
+	        handler(responseMessage);
+	      });
+	    },
+	    onEnd: function onEnd(status, statusMessage, trailers) {
+	      listeners.end.forEach(function (handler) {
+	        handler();
+	      });
+	      listeners.status.forEach(function (handler) {
+	        handler({
+	          code: status,
+	          details: statusMessage,
+	          metadata: trailers
+	        });
+	      });
+	      listeners = null;
+	    }
+	  });
+	  return {
+	    on: function on(type, handler) {
+	      listeners[type].push(handler);
+	      return this;
+	    },
+	    cancel: function cancel() {
+	      listeners = null;
+	      client.close();
+	    }
+	  };
+	};
+
+	AergoRPCServiceClient.prototype.listBlockMetadataStream = function listBlockMetadataStream(requestMessage, metadata) {
+	  var listeners = {
+	    data: [],
+	    end: [],
+	    status: []
+	  };
+	  var client = grpc.invoke(AergoRPCService.ListBlockMetadataStream, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -28092,6 +29092,58 @@
 	  }
 
 	  grpc.unary(AergoRPCService.SendTX, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), {
+	            code: response.status,
+	            metadata: response.trailers
+	          }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
+	AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+
+	  grpc.unary(AergoRPCService.SignTX, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), {
+	            code: response.status,
+	            metadata: response.trailers
+	          }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
+	AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+
+	  grpc.unary(AergoRPCService.VerifyTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -28346,58 +29398,6 @@
 	  });
 	};
 
-	AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
-	  if (arguments.length === 2) {
-	    callback = arguments[1];
-	  }
-
-	  grpc.unary(AergoRPCService.SignTX, {
-	    request: requestMessage,
-	    host: this.serviceHost,
-	    metadata: metadata,
-	    transport: this.options.transport,
-	    debug: this.options.debug,
-	    onEnd: function onEnd(response) {
-	      if (callback) {
-	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
-	        } else {
-	          callback(null, response.message);
-	        }
-	      }
-	    }
-	  });
-	};
-
-	AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
-	  if (arguments.length === 2) {
-	    callback = arguments[1];
-	  }
-
-	  grpc.unary(AergoRPCService.VerifyTX, {
-	    request: requestMessage,
-	    host: this.serviceHost,
-	    metadata: metadata,
-	    transport: this.options.transport,
-	    debug: this.options.debug,
-	    onEnd: function onEnd(response) {
-	      if (callback) {
-	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
-	        } else {
-	          callback(null, response.message);
-	        }
-	      }
-	    }
-	  });
-	};
-
 	AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
 	  if (arguments.length === 2) {
 	    callback = arguments[1];
@@ -28508,6 +29508,32 @@
 	  }
 
 	  grpc.unary(AergoRPCService.GetStaking, {
+	    request: requestMessage,
+	    host: this.serviceHost,
+	    metadata: metadata,
+	    transport: this.options.transport,
+	    debug: this.options.debug,
+	    onEnd: function onEnd(response) {
+	      if (callback) {
+	        if (response.status !== grpc.Code.OK) {
+	          callback(Object.assign(new Error(response.statusMessage), {
+	            code: response.status,
+	            metadata: response.trailers
+	          }), null);
+	        } else {
+	          callback(null, response.message);
+	        }
+	      }
+	    }
+	  });
+	};
+
+	AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessage, metadata, callback) {
+	  if (arguments.length === 2) {
+	    callback = arguments[1];
+	  }
+
+	  grpc.unary(AergoRPCService.GetNameInfo, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
