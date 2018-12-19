@@ -1,3 +1,9 @@
+## 0.4.0 (December 19, 2018)
+
+- Compatibility with Aergo protocol 0.9.0
+- New API method: getNameInfo()
+- New API method: getBlockMetadataStream()
+
 ## 0.3.2 (December 14, 2018)
 
 - Introduce Amount utility class for converting amounts with and without units

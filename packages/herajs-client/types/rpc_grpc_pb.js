@@ -384,9 +384,11 @@ function deserialize_types_VoteList(buffer_arg) {
 }
 
 
-// BlockService serves APIs that aergosvr provides.
-// Some methods optionally contains context path if it is also provided by REST API.
+// *
+// AergoRPCService is the main RPC service providing endpoints to interact 
+// with the node and blockchain. If not otherwise noted, methods are unary requests.
 var AergoRPCServiceService = exports.AergoRPCServiceService = {
+  // Returns the current state of this node
   nodeState: {
     path: '/types.AergoRPCService/NodeState',
     requestStream: false,
@@ -398,6 +400,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_SingleBytes,
     responseDeserialize: deserialize_types_SingleBytes,
   },
+  // Returns node metrics according to request 
   metric: {
     path: '/types.AergoRPCService/Metric',
     requestStream: false,
@@ -409,6 +412,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Metrics,
     responseDeserialize: deserialize_types_Metrics,
   },
+  // Returns current blockchain status (best block's height and hash)
   blockchain: {
     path: '/types.AergoRPCService/Blockchain',
     requestStream: false,
@@ -420,9 +424,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockchainStatus,
     responseDeserialize: deserialize_types_BlockchainStatus,
   },
-  // option (google.api.http) = {
-  //   get: "/blockchain"
-  // };
+  // Returns list of Blocks without body according to request
   listBlockHeaders: {
     path: '/types.AergoRPCService/ListBlockHeaders',
     requestStream: false,
@@ -434,6 +436,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockHeaderList,
     responseDeserialize: deserialize_types_BlockHeaderList,
   },
+  // Returns list of block metadata (hash, header, and number of transactions) according to request
   listBlockMetadata: {
     path: '/types.AergoRPCService/ListBlockMetadata',
     requestStream: false,
@@ -445,6 +448,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockMetadataList,
     responseDeserialize: deserialize_types_BlockMetadataList,
   },
+  // Returns a stream of new blocks as they get added to the blockchain
   listBlockStream: {
     path: '/types.AergoRPCService/ListBlockStream',
     requestStream: false,
@@ -456,6 +460,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Block,
     responseDeserialize: deserialize_types_Block,
   },
+  // Returns a stream of new block's metadata as they get added to the blockchain
   listBlockMetadataStream: {
     path: '/types.AergoRPCService/ListBlockMetadataStream',
     requestStream: false,
@@ -467,6 +472,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockMetadata,
     responseDeserialize: deserialize_types_BlockMetadata,
   },
+  // Return a single block, queried by hash or number
   getBlock: {
     path: '/types.AergoRPCService/GetBlock',
     requestStream: false,
@@ -478,9 +484,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Block,
     responseDeserialize: deserialize_types_Block,
   },
-  // option (google.api.http) = {
-  //   get: "/blocks/{blockHash}"
-  // };    
+  // Return a single transaction, queried by transaction hash
   getTX: {
     path: '/types.AergoRPCService/GetTX',
     requestStream: false,
@@ -492,9 +496,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Tx,
     responseDeserialize: deserialize_types_Tx,
   },
-  // option (google.api.http) = {
-  //   get: "/transactions/{value}"
-  // };    
+  // Return information about transaction in block, queried by transaction hash
   getBlockTX: {
     path: '/types.AergoRPCService/GetBlockTX',
     requestStream: false,
@@ -506,6 +508,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_TxInBlock,
     responseDeserialize: deserialize_types_TxInBlock,
   },
+  // Return transaction receipt, queried by transaction hash
   getReceipt: {
     path: '/types.AergoRPCService/GetReceipt',
     requestStream: false,
@@ -517,6 +520,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Receipt,
     responseDeserialize: deserialize_types_Receipt,
   },
+  // Return ABI stored at contract address
   getABI: {
     path: '/types.AergoRPCService/GetABI',
     requestStream: false,
@@ -528,6 +532,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_ABI,
     responseDeserialize: deserialize_types_ABI,
   },
+  // Sign and send a transaction from an unlocked account
   sendTX: {
     path: '/types.AergoRPCService/SendTX',
     requestStream: false,
@@ -539,109 +544,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_CommitResult,
     responseDeserialize: deserialize_types_CommitResult,
   },
-  commitTX: {
-    path: '/types.AergoRPCService/CommitTX',
-    requestStream: false,
-    responseStream: false,
-    requestType: blockchain_pb.TxList,
-    responseType: rpc_pb.CommitResultList,
-    requestSerialize: serialize_types_TxList,
-    requestDeserialize: deserialize_types_TxList,
-    responseSerialize: serialize_types_CommitResultList,
-    responseDeserialize: deserialize_types_CommitResultList,
-  },
-  // option (google.api.http) = {
-  //   post: "/transactions"
-  //   body: "transaction"
-  // };    
-  getState: {
-    path: '/types.AergoRPCService/GetState',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.SingleBytes,
-    responseType: blockchain_pb.State,
-    requestSerialize: serialize_types_SingleBytes,
-    requestDeserialize: deserialize_types_SingleBytes,
-    responseSerialize: serialize_types_State,
-    responseDeserialize: deserialize_types_State,
-  },
-  getStateAndProof: {
-    path: '/types.AergoRPCService/GetStateAndProof',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.AccountAndRoot,
-    responseType: blockchain_pb.StateProof,
-    requestSerialize: serialize_types_AccountAndRoot,
-    requestDeserialize: deserialize_types_AccountAndRoot,
-    responseSerialize: serialize_types_StateProof,
-    responseDeserialize: deserialize_types_StateProof,
-  },
-  createAccount: {
-    path: '/types.AergoRPCService/CreateAccount',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.Personal,
-    responseType: account_pb.Account,
-    requestSerialize: serialize_types_Personal,
-    requestDeserialize: deserialize_types_Personal,
-    responseSerialize: serialize_types_Account,
-    responseDeserialize: deserialize_types_Account,
-  },
-  getAccounts: {
-    path: '/types.AergoRPCService/GetAccounts',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.Empty,
-    responseType: account_pb.AccountList,
-    requestSerialize: serialize_types_Empty,
-    requestDeserialize: deserialize_types_Empty,
-    responseSerialize: serialize_types_AccountList,
-    responseDeserialize: deserialize_types_AccountList,
-  },
-  lockAccount: {
-    path: '/types.AergoRPCService/LockAccount',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.Personal,
-    responseType: account_pb.Account,
-    requestSerialize: serialize_types_Personal,
-    requestDeserialize: deserialize_types_Personal,
-    responseSerialize: serialize_types_Account,
-    responseDeserialize: deserialize_types_Account,
-  },
-  unlockAccount: {
-    path: '/types.AergoRPCService/UnlockAccount',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.Personal,
-    responseType: account_pb.Account,
-    requestSerialize: serialize_types_Personal,
-    requestDeserialize: deserialize_types_Personal,
-    responseSerialize: serialize_types_Account,
-    responseDeserialize: deserialize_types_Account,
-  },
-  importAccount: {
-    path: '/types.AergoRPCService/ImportAccount',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.ImportFormat,
-    responseType: account_pb.Account,
-    requestSerialize: serialize_types_ImportFormat,
-    requestDeserialize: deserialize_types_ImportFormat,
-    responseSerialize: serialize_types_Account,
-    responseDeserialize: deserialize_types_Account,
-  },
-  exportAccount: {
-    path: '/types.AergoRPCService/ExportAccount',
-    requestStream: false,
-    responseStream: false,
-    requestType: rpc_pb.Personal,
-    responseType: rpc_pb.SingleBytes,
-    requestSerialize: serialize_types_Personal,
-    requestDeserialize: deserialize_types_Personal,
-    responseSerialize: serialize_types_SingleBytes,
-    responseDeserialize: deserialize_types_SingleBytes,
-  },
+  // Sign transaction with unlocked account
   signTX: {
     path: '/types.AergoRPCService/SignTX',
     requestStream: false,
@@ -653,6 +556,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Tx,
     responseDeserialize: deserialize_types_Tx,
   },
+  // Verify validity of transaction
   verifyTX: {
     path: '/types.AergoRPCService/VerifyTX',
     requestStream: false,
@@ -664,6 +568,115 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_VerifyResult,
     responseDeserialize: deserialize_types_VerifyResult,
   },
+  // Commit a signed transaction
+  commitTX: {
+    path: '/types.AergoRPCService/CommitTX',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.TxList,
+    responseType: rpc_pb.CommitResultList,
+    requestSerialize: serialize_types_TxList,
+    requestDeserialize: deserialize_types_TxList,
+    responseSerialize: serialize_types_CommitResultList,
+    responseDeserialize: deserialize_types_CommitResultList,
+  },
+  // Return state of account
+  getState: {
+    path: '/types.AergoRPCService/GetState',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: blockchain_pb.State,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_State,
+    responseDeserialize: deserialize_types_State,
+  },
+  // Return state of account, including merkle proof
+  getStateAndProof: {
+    path: '/types.AergoRPCService/GetStateAndProof',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.AccountAndRoot,
+    responseType: blockchain_pb.StateProof,
+    requestSerialize: serialize_types_AccountAndRoot,
+    requestDeserialize: deserialize_types_AccountAndRoot,
+    responseSerialize: serialize_types_StateProof,
+    responseDeserialize: deserialize_types_StateProof,
+  },
+  // Create a new account in this node
+  createAccount: {
+    path: '/types.AergoRPCService/CreateAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  // Return list of accounts in this node
+  getAccounts: {
+    path: '/types.AergoRPCService/GetAccounts',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: account_pb.AccountList,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_AccountList,
+    responseDeserialize: deserialize_types_AccountList,
+  },
+  // Lock account in this node
+  lockAccount: {
+    path: '/types.AergoRPCService/LockAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  // Unlock account in this node
+  unlockAccount: {
+    path: '/types.AergoRPCService/UnlockAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  // Import account to this node
+  importAccount: {
+    path: '/types.AergoRPCService/ImportAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.ImportFormat,
+    responseType: account_pb.Account,
+    requestSerialize: serialize_types_ImportFormat,
+    requestDeserialize: deserialize_types_ImportFormat,
+    responseSerialize: serialize_types_Account,
+    responseDeserialize: deserialize_types_Account,
+  },
+  // Export account stored in this node
+  exportAccount: {
+    path: '/types.AergoRPCService/ExportAccount',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Personal,
+    responseType: rpc_pb.SingleBytes,
+    requestSerialize: serialize_types_Personal,
+    requestDeserialize: deserialize_types_Personal,
+    responseSerialize: serialize_types_SingleBytes,
+    responseDeserialize: deserialize_types_SingleBytes,
+  },
+  // Query a contract method
   queryContract: {
     path: '/types.AergoRPCService/QueryContract',
     requestStream: false,
@@ -675,6 +688,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_SingleBytes,
     responseDeserialize: deserialize_types_SingleBytes,
   },
+  // Query contract state
   queryContractState: {
     path: '/types.AergoRPCService/QueryContractState',
     requestStream: false,
@@ -686,6 +700,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_StateQueryProof,
     responseDeserialize: deserialize_types_StateQueryProof,
   },
+  // Return list of peers of this node and their state
   getPeers: {
     path: '/types.AergoRPCService/GetPeers',
     requestStream: false,
@@ -697,6 +712,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_PeerList,
     responseDeserialize: deserialize_types_PeerList,
   },
+  // Return list of votes
   getVotes: {
     path: '/types.AergoRPCService/GetVotes',
     requestStream: false,
@@ -708,6 +724,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_VoteList,
     responseDeserialize: deserialize_types_VoteList,
   },
+  // Return staking information
   getStaking: {
     path: '/types.AergoRPCService/GetStaking',
     requestStream: false,
@@ -719,6 +736,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_Staking,
     responseDeserialize: deserialize_types_Staking,
   },
+  // Return name information
   getNameInfo: {
     path: '/types.AergoRPCService/GetNameInfo',
     requestStream: false,

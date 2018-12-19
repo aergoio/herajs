@@ -341,8 +341,8 @@ proto.types.BlockHeader.toObject = function(includeInstance, msg) {
     receiptsroothash: msg.getReceiptsroothash_asB64(),
     confirms: jspb.Message.getFieldWithDefault(msg, 8, 0),
     pubkey: msg.getPubkey_asB64(),
-    sign: msg.getSign_asB64(),
-    coinbaseaccount: msg.getCoinbaseaccount_asB64()
+    coinbaseaccount: msg.getCoinbaseaccount_asB64(),
+    sign: msg.getSign_asB64()
   };
 
   if (includeInstance) {
@@ -417,11 +417,11 @@ proto.types.BlockHeader.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 10:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setSign(value);
+      msg.setCoinbaseaccount(value);
       break;
     case 11:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setCoinbaseaccount(value);
+      msg.setSign(value);
       break;
     default:
       reader.skipField();
@@ -515,14 +515,14 @@ proto.types.BlockHeader.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getSign_asU8();
+  f = message.getCoinbaseaccount_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       10,
       f
     );
   }
-  f = message.getCoinbaseaccount_asU8();
+  f = message.getSign_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       11,
@@ -812,55 +812,16 @@ proto.types.BlockHeader.prototype.setPubkey = function(value) {
 
 
 /**
- * optional bytes sign = 10;
+ * optional bytes coinbaseAccount = 10;
  * @return {!(string|Uint8Array)}
  */
-proto.types.BlockHeader.prototype.getSign = function() {
+proto.types.BlockHeader.prototype.getCoinbaseaccount = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
 };
 
 
 /**
- * optional bytes sign = 10;
- * This is a type-conversion wrapper around `getSign()`
- * @return {string}
- */
-proto.types.BlockHeader.prototype.getSign_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getSign()));
-};
-
-
-/**
- * optional bytes sign = 10;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getSign()`
- * @return {!Uint8Array}
- */
-proto.types.BlockHeader.prototype.getSign_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getSign()));
-};
-
-
-/** @param {!(string|Uint8Array)} value */
-proto.types.BlockHeader.prototype.setSign = function(value) {
-  jspb.Message.setField(this, 10, value);
-};
-
-
-/**
- * optional bytes coinbaseAccount = 11;
- * @return {!(string|Uint8Array)}
- */
-proto.types.BlockHeader.prototype.getCoinbaseaccount = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
-};
-
-
-/**
- * optional bytes coinbaseAccount = 11;
+ * optional bytes coinbaseAccount = 10;
  * This is a type-conversion wrapper around `getCoinbaseaccount()`
  * @return {string}
  */
@@ -871,7 +832,7 @@ proto.types.BlockHeader.prototype.getCoinbaseaccount_asB64 = function() {
 
 
 /**
- * optional bytes coinbaseAccount = 11;
+ * optional bytes coinbaseAccount = 10;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getCoinbaseaccount()`
@@ -885,6 +846,45 @@ proto.types.BlockHeader.prototype.getCoinbaseaccount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setCoinbaseaccount = function(value) {
+  jspb.Message.setField(this, 10, value);
+};
+
+
+/**
+ * optional bytes sign = 11;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.BlockHeader.prototype.getSign = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * optional bytes sign = 11;
+ * This is a type-conversion wrapper around `getSign()`
+ * @return {string}
+ */
+proto.types.BlockHeader.prototype.getSign_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getSign()));
+};
+
+
+/**
+ * optional bytes sign = 11;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getSign()`
+ * @return {!Uint8Array}
+ */
+proto.types.BlockHeader.prototype.getSign_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getSign()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.BlockHeader.prototype.setSign = function(value) {
   jspb.Message.setField(this, 11, value);
 };
 

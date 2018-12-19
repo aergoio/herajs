@@ -130,6 +130,24 @@ AergoRPCService.SendTX = {
   responseType: rpc_pb.CommitResult
 };
 
+AergoRPCService.SignTX = {
+  methodName: "SignTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: blockchain_pb.Tx
+};
+
+AergoRPCService.VerifyTX = {
+  methodName: "VerifyTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.VerifyResult
+};
+
 AergoRPCService.CommitTX = {
   methodName: "CommitTX",
   service: AergoRPCService,
@@ -209,24 +227,6 @@ AergoRPCService.ExportAccount = {
   responseStream: false,
   requestType: rpc_pb.Personal,
   responseType: rpc_pb.SingleBytes
-};
-
-AergoRPCService.SignTX = {
-  methodName: "SignTX",
-  service: AergoRPCService,
-  requestStream: false,
-  responseStream: false,
-  requestType: blockchain_pb.Tx,
-  responseType: blockchain_pb.Tx
-};
-
-AergoRPCService.VerifyTX = {
-  methodName: "VerifyTX",
-  service: AergoRPCService,
-  requestStream: false,
-  responseStream: false,
-  requestType: blockchain_pb.Tx,
-  responseType: rpc_pb.VerifyResult
 };
 
 AergoRPCService.QueryContract = {
@@ -610,6 +610,50 @@ AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadat
   });
 };
 
+AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.SignTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.VerifyTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
 AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
@@ -791,50 +835,6 @@ AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMe
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.ExportAccount, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-};
-
-AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  grpc.unary(AergoRPCService.SignTX, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-};
-
-AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  grpc.unary(AergoRPCService.VerifyTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

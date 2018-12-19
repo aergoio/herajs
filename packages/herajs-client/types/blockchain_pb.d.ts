@@ -77,15 +77,15 @@ export class BlockHeader extends jspb.Message {
   getPubkey_asB64(): string;
   setPubkey(value: Uint8Array | string): void;
 
-  getSign(): Uint8Array | string;
-  getSign_asU8(): Uint8Array;
-  getSign_asB64(): string;
-  setSign(value: Uint8Array | string): void;
-
   getCoinbaseaccount(): Uint8Array | string;
   getCoinbaseaccount_asU8(): Uint8Array;
   getCoinbaseaccount_asB64(): string;
   setCoinbaseaccount(value: Uint8Array | string): void;
+
+  getSign(): Uint8Array | string;
+  getSign_asU8(): Uint8Array;
+  getSign_asB64(): string;
+  setSign(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockHeader.AsObject;
@@ -108,8 +108,8 @@ export namespace BlockHeader {
     receiptsroothash: Uint8Array | string,
     confirms: number,
     pubkey: Uint8Array | string,
-    sign: Uint8Array | string,
     coinbaseaccount: Uint8Array | string,
+    sign: Uint8Array | string,
   }
 }
 
