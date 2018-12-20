@@ -83,7 +83,7 @@ export default class Amount {
      * @param digits 
      */
     static moveDecimalPoint(str: string, digits: number) {
-        if (digits === 0) return str;
+        if (digits === 0 || str === '0') return str;
         if (str.indexOf('.') === -1) {
             str = str + '.';
         }
