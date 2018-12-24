@@ -1,5 +1,5 @@
 /*!
- * herajs v0.4.1
+ * herajs v0.4.2
  * (c) 2018 AERGO
  * Released under MIT license.
  */
@@ -6701,6 +6701,8 @@ var blockchain_pb_1 = blockchain_pb.TxList;
 var blockchain_pb_2 = blockchain_pb.TxBody;
 var blockchain_pb_3 = blockchain_pb.Tx;
 var blockchain_pb_4 = blockchain_pb.Block;
+var blockchain_pb_5 = blockchain_pb.Query;
+var blockchain_pb_6 = blockchain_pb.StateQuery;
 
 var account_pb = createCommonjsModule(function (module, exports) {
   /**
@@ -21108,7 +21110,7 @@ function () {
   }], [{
     key: "moveDecimalPoint",
     value: function moveDecimalPoint(str, digits) {
-      if (digits === 0) return str;
+      if (digits === 0 || str === '0') return str;
 
       if (str.indexOf('.') === -1) {
         str = str + '.';
@@ -21518,7 +21520,8 @@ function () {
         header: _objectSpread({}, obj.header, {
           chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
-          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8())
+          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
+          pubkey: bs58.encode(grpcObject.getHeader().getPubkey_asU8())
         }),
         body: obj.body
       });
@@ -21567,7 +21570,8 @@ function () {
         header: _objectSpread({}, obj.header, {
           chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
-          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8())
+          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
+          pubkey: bs58.encode(grpcObject.getHeader().getPubkey_asU8())
         }),
         txcount: obj.txcount
       });
@@ -21601,6 +21605,11 @@ function () {
         obj.bestblock.blockhash = Block.encodeHash(bestblock.getBlockhash_asU8());
       }
 
+      obj.address = {
+        address: Buffer.from(grpcObject.getAddress().getAddress_asU8()),
+        port: obj.address.port,
+        peerid: bs58.encode(grpcObject.getAddress().getPeerid_asU8())
+      };
       return new Peer(obj);
     }
   }]);
@@ -21957,13 +21966,40 @@ function () {
         });
       });
     }
+    /**
+     * Return the top voted-for block producer
+     * @param count number
+     */
+
   }, {
-    key: "getVoteResult",
-    value: function getVoteResult(count) {
+    key: "getTopVotes",
+    value: function getTopVotes(count) {
       var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
       return promisify(this.client.getVotes, this.client)(singleBytes).then(function (state) {
-        return state.getVotesList();
+        return state.getVotesList().map(function (item) {
+          return {
+            amount: new Amount(item.getAmount_asU8()),
+            candidate: bs58.encode(item.getCandidate_asU8())
+          };
+        });
+      });
+    }
+    /**
+     * Return information for account name
+     * @param {string} address Account address encoded in Base58check
+     */
+
+  }, {
+    key: "getStaking",
+    value: function getStaking(address) {
+      var singleBytes = new typesNode.SingleBytes();
+      singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
+      return promisify(this.client.getStaking, this.client)(singleBytes).then(function (grpcObject) {
+        return {
+          amount: new Amount(grpcObject.getAmount_asU8()),
+          when: grpcObject.getWhen()
+        };
       });
     }
     /**
@@ -21988,7 +22024,7 @@ function () {
       });
     }
     /**
-     * Query contract state
+     * Query contract ABI
      * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
      */
@@ -21996,11 +22032,35 @@ function () {
   }, {
     key: "queryContract",
     value: function queryContract(functionCall) {
-      var query = new typesNode.Query();
-      query.setContractaddress(Uint8Array.from(new Address(functionCall.contractInstance.address).asBytes()));
-      query.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(functionCall.asQueryInfo()))));
+      var query = functionCall.toGrpc();
       return promisify(this.client.queryContract, this.client)(query).then(function (grpcObject) {
         return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
+      });
+    }
+    /**
+     * Query contract state
+     * This only works vor variables explicitly defines as state variables.
+     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
+     * @returns {Promise<object>} result of query
+     */
+
+  }, {
+    key: "queryContractState",
+    value: function queryContractState(stateQuery) {
+      var query = stateQuery.toGrpc();
+      return promisify(this.client.queryContractState, this.client)(query).then(function (grpcObject) {
+        if (grpcObject.getVarproof().getInclusion() === false) {
+          var addr = new Address(query.getContractaddress_asU8());
+          throw Error("queried variable ".concat(query.getVarname(), " does not exists in state at address ").concat(addr.toString()));
+        }
+
+        var value = grpcObject.getVarproof().getValue_asU8();
+
+        if (value.length > 0) {
+          return JSON.parse(Buffer.from(grpcObject.getVarproof().getValue_asU8()).toString());
+        }
+
+        return null;
       });
     }
     /**
@@ -22909,6 +22969,7 @@ function (_Provider) {
  * You should not need to build these yourself, they are returned from contract instance functions and
  * can be passed to the client.
  */
+
 var FunctionCall =
 /*#__PURE__*/
 function () {
@@ -22987,9 +23048,60 @@ function () {
         Args: this.args
       };
     }
+  }, {
+    key: "toGrpc",
+    value: function toGrpc() {
+      var q = new blockchain_pb_5();
+      q.setContractaddress(Uint8Array.from(new Address(this.contractInstance.address).asBytes()));
+      q.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(this.asQueryInfo()))));
+      return q;
+    }
   }]);
 
   return FunctionCall;
+}();
+/**
+ * Query contract state directlty without using ABI methods.
+ * 
+ * .. code-block:: javascript
+ * 
+ *     import { Contract } from '@herajs/client';
+ *     const contract = Contract.fromAbi(abi).atAddress(address);
+ *     const query = contract.queryState('stateVariableName');
+ *     aergo.queryContractState(query).then(result => {
+ *         console.log(result);
+ *     })
+ */
+
+var StateQuery$$1 =
+/*#__PURE__*/
+function () {
+  function StateQuery$$1(contractInstance, varname, varindex) {
+    _classCallCheck(this, StateQuery$$1);
+
+    _defineProperty(this, "contractInstance", void 0);
+
+    _defineProperty(this, "varname", void 0);
+
+    _defineProperty(this, "varindex", void 0);
+
+    this.contractInstance = contractInstance;
+    this.varname = varname;
+    this.varindex = varindex;
+  }
+
+  _createClass(StateQuery$$1, [{
+    key: "toGrpc",
+    value: function toGrpc() {
+      var q = new blockchain_pb_6();
+      q.setContractaddress(this.contractInstance.address.asBytes());
+      q.setVarname(this.varname);
+      q.setVarindex(this.varindex);
+      return q;
+    }
+  }]);
+
+  return StateQuery$$1;
 }();
 /**
  * Smart contract interface.
@@ -23007,7 +23119,6 @@ function () {
  *     })
  * 
  */
-
 
 var Contract =
 /*#__PURE__*/
@@ -23113,6 +23224,17 @@ function () {
 
 
       return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
+    }
+    /**
+     * Create query object to query contract state.
+     * @param varname 
+     * @param varindex 
+     */
+
+  }, {
+    key: "queryState",
+    value: function queryState(varname, varindex) {
+      return new StateQuery$$1(this, varname, varindex);
     }
   }], [{
     key: "fromCode",
