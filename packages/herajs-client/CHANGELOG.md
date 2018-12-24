@@ -1,3 +1,9 @@
+## 0.4.2 (December 24, 2018)
+
+- New API method: getStaking()
+- New API method: queryContractState()
+- Add block producer's pubkey to Block data
+
 ## 0.4.1 (December 19, 2018)
 
 - Bugfix: Names with less than 12 characters were not recognized
