@@ -2,14 +2,14 @@ import { ADDRESS_PREFIXES } from '../constants.js';
 import bs58check from 'bs58check';
 import { fromNumber } from '../utils.js';
 import Address from './address';
-import { Function } from '../../types/blockchain_pb';
+import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 
 /**
  * Data structure for contract function calls.
  * You should not need to build these yourself, they are returned from contract instance functions and
  * can be passed to the client.
  */
-class FunctionCall {
+export class FunctionCall {
     definition: Function.AsObject;
     args: Array<string|number|boolean>;
     contractInstance: Contract;
@@ -72,6 +72,45 @@ class FunctionCall {
             Name: this.definition.name,
             Args: this.args
         };
+    }
+
+    toGrpc(): Query {
+        const q = new Query();
+        q.setContractaddress(Uint8Array.from((new Address(this.contractInstance.address)).asBytes()));
+        q.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(this.asQueryInfo()))));
+        return q;
+    }
+}
+
+/**
+ * Query contract state directlty without using ABI methods.
+ * 
+ * .. code-block:: javascript
+ * 
+ *     import { Contract } from '@herajs/client';
+ *     const contract = Contract.fromAbi(abi).atAddress(address);
+ *     const query = contract.queryState('stateVariableName');
+ *     aergo.queryContractState(query).then(result => {
+ *         console.log(result);
+ *     })
+ */
+export class StateQuery {
+    contractInstance: Contract;
+    varname: string;
+    varindex: string;
+
+    constructor(contractInstance, varname, varindex) {
+        this.contractInstance = contractInstance;
+        this.varname = varname;
+        this.varindex = varindex;
+    }
+
+    toGrpc() {
+        const q = new GrpcStateQuery();
+        q.setContractaddress(this.contractInstance.address.asBytes());
+        q.setVarname(this.varname);
+        q.setVarindex(this.varindex);
+        return q;
     }
 }
 
@@ -171,6 +210,14 @@ class Contract {
         }
         // First 4 bytes are the length
         return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
+    }
+    /**
+     * Create query object to query contract state.
+     * @param varname 
+     * @param varindex 
+     */
+    queryState(varname: string, varindex: string): StateQuery {
+        return new StateQuery(this, varname, varindex);
     }
     static encodeCode(byteArray: Buffer): string {
         const buf = Buffer.from([ADDRESS_PREFIXES.CONTRACT, ...byteArray]);

@@ -1,10 +1,10 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { TxInBlock, Tx as GrpcTx } from '../../types/blockchain_pb';
+import { TxInBlock, Tx as GrpcTx, StateQueryProof } from '../../types/blockchain_pb';
 import {
     Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
     BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
-    Name, NameInfo
+    Name, NameInfo, Staking
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -15,6 +15,10 @@ import BlockMetadata from '../models/blockmetadata';
 import Address from '../models/address';
 import Peer from '../models/peer';
 import State from '../models/state';
+import Amount from '../models/amount';
+import { FunctionCall, StateQuery } from '../models/contract';
+
+import bs58 from 'bs58';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -255,10 +259,36 @@ class AergoClient {
         });
     }
 
-    getVoteResult(count) {
+    /**
+     * Return the top voted-for block producer
+     * @param count number
+     */
+    getTopVotes(count: number): Promise<any> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
-        return promisify(this.client.getVotes, this.client)(singleBytes).then(state => state.getVotesList());
+        return promisify(this.client.getVotes, this.client)(singleBytes).then(
+            state => state.getVotesList().map(item => ({
+                amount: new Amount(item.getAmount_asU8()),
+                candidate: bs58.encode(item.getCandidate_asU8())
+            }))
+        );
+    }
+
+    /**
+     * Return information for account name
+     * @param {string} address Account address encoded in Base58check
+     */
+    getStaking (address) {
+        const singleBytes = new rpcTypes.SingleBytes();
+        singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
+        return promisify(this.client.getStaking, this.client)(singleBytes).then(
+            (grpcObject: Staking) => {
+                return {
+                    amount: new Amount(grpcObject.getAmount_asU8()),
+                    when: grpcObject.getWhen()
+                };
+            }
+        );
     }
 
     /**
@@ -280,16 +310,37 @@ class AergoClient {
     }
 
     /**
-     * Query contract state
+     * Query contract ABI
      * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
      */
-    queryContract (functionCall) {
-        const query = new rpcTypes.Query();
-        query.setContractaddress(Uint8Array.from((new Address(functionCall.contractInstance.address)).asBytes()));
-        query.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(functionCall.asQueryInfo()))));
+    queryContract (functionCall: FunctionCall) {
+        const query = functionCall.toGrpc();
         return promisify(this.client.queryContract, this.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
+        );
+    }
+
+    /**
+     * Query contract state
+     * This only works vor variables explicitly defines as state variables.
+     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
+     * @returns {Promise<object>} result of query
+     */
+    queryContractState (stateQuery: StateQuery) {
+        const query = stateQuery.toGrpc();
+        return promisify(this.client.queryContractState, this.client)(query).then(
+            (grpcObject: StateQueryProof) => {
+                if (grpcObject.getVarproof().getInclusion() === false) {
+                    const addr = new Address(query.getContractaddress_asU8());
+                    throw Error(`queried variable ${query.getVarname()} does not exists in state at address ${addr.toString()}`);
+                }
+                const value = grpcObject.getVarproof().getValue_asU8();
+                if (value.length > 0) {
+                    return JSON.parse(Buffer.from(grpcObject.getVarproof().getValue_asU8()).toString());
+                }
+                return null;
+            }
         );
     }
 
@@ -345,6 +396,8 @@ class AergoClient {
             }
         );
     }
+
+    
 }
 
 export default AergoClient;

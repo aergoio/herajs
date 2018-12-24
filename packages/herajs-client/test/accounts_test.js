@@ -149,10 +149,34 @@ describe('Aergo.Accounts', () => {
                 return await aergo.getTransaction(txhash);
             }, result => 'block' in result, 2000);
 
-            return aergo.getNameInfo(name)
-                .then(async (info) => {
-                    assert.equal(info.owner.toString(), testAddress);
-                });
+            const info = await aergo.getNameInfo(name);
+            assert.equal(info.owner.toString(), testAddress);
+        });
+    });
+
+    describe('staking', () => {
+        let testaddress;
+
+        it('should stake', async () => {
+            testaddress = await aergo.accounts.create('testpass');
+            await aergo.accounts.unlock(testaddress, 'testpass');
+            const testtx = {
+                from: testaddress,
+                to: 'aergo.system',
+                amount: '1 aergo',
+                payload: 's',
+                type: 1
+            };
+            const txhash = await aergo.accounts.sendTransaction(testtx);
+            await longPolling(async () => {
+                return await aergo.getTransaction(txhash);
+            }, result => 'block' in result, 2000);
+        }).timeout(2500);
+
+        it('should return staking info', async () => {
+            const state = await aergo.getStaking(testaddress);
+            assert.equal(state.amount.toUnit('aergo').toString(), '1 aergo');
+            assert.isTrue(state.when > 0);
         });
     });
 });

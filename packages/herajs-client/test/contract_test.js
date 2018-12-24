@@ -10,6 +10,7 @@ import contractAbi from './fixtures/contract-inc.abi.json';
 //import sqlContractAbi from './fixtures/contract-sql.abi.json';
 import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
+import Address from '../src/models/address';
 
 /*
 
@@ -62,7 +63,7 @@ describe('Contracts', () => {
     });
     
     describe('deploy, call, query a simple contract', () => {
-        const contractCode = 'qMi8Via28nBssysny7p32qMqWC3NSvJRBAtNQ3p66bi5K2xjMU8NLQngrcQe3g1mPRz3n44wa7wKM17SgyMpRSkf3eEw3mzEYSS57FdSAUon7rbSpV56xYsdzuhUBVmGbe41gcPgy3rkf3DC5b7ZhWQJC1z3fQK3JAaGyzFhT7jbwSiufHm6X7c3anS9q2hdrNVzEJDAAMsXar9KsV5pQm57oa8bYE9tMtMmqQFD9tv3bTbTxCwxDwjGZ8t5cxz2ZemUfsuy6La43usHpgokQpSfcCWT4nurtBBfujBeBNRoMaaY3ghGvHLAt9gPBqstTN7Wyv4P4QtaPSvB69MBDZaVM9JHARhKUMZPcoL5p3dHvRuQNybqtKitndu4txRCgR9s4YuWyMCzqHvLwFXzbitc25rGo9bwogRsrKK76F6SLuvdKALZpBbCf9UwXnmGUrbfbRuQtn5qKhYDSDiemxAQ9nCCj1L99SxJnR3q2akSeqxULuKDxdtcTFDL';
+        const contractCode = '2WjtZp4nGF6rPfcu4djeokrgJskgMaz8deWCkUJoZWsf3GpQnPmrnhUYjeNNfcufJKoAvXzgyjyijyWnydwZvxW91k9pnss3g3hqvcYssbSRBFZiQ6FLfeWtfKfpAXZzMPNbuWYj2vwK3bJSVcjZWiVXeKMttMJNDKwahtieKXGRsgx4GE4bUQJ9oP7yfg1je1JBnChZiW9Pt3cMJVpo3gL4vjRQjqrpeq7Fyny8WD6X9Hmqo3vdQtdtGUBmDPVHVYZcpk5mtwopKU9TTTGZuLJ6HJ1GPAuSgygKhVkuEyi6a7WW9dZ5vJwWhKkgUxQYMiW5hVhSzLXrn48CFewf3aE2DBr7ohtJGqexpfPd9v5yDpQEZXhtRjq6obrCykMwrGsqXnj5Hw7MWZKwt56B73tjSMr2AF8gPe15TJknK2X4FXnSfrxSLx9sGLZVUYKc3af9q2pBv7SnTfkV7FxJkDgSN7qU8EZFFdG8Na4pAbYKfimHzPadguGLnkHH2fmbzyj5RTKZCwiCS1316ZNtc2Z4MhA21NtWdzTrq8KZvbom9a6EDCXA3RHXD6oGtQQrBcFrbwZdCzYWXAJm8Ku5hQ5aU8wB5JKwPNngP8fckpervU6fgbdkKpULk7CuTFj5g9eTgHn5ijYPYxkphmWHfSzv1ryMK9';
         let contractAddress;
         let testAddress;
         let deployTxhash;
@@ -127,7 +128,7 @@ describe('Contracts', () => {
             }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
         });
 
-        it('should query a smart contract', async () => {
+        it('should query a smart contract using Getter', async () => {
             // Setup address and ABI
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
@@ -149,7 +150,17 @@ describe('Contracts', () => {
             const result2 = await aergo.queryContract(contract.query('key1'));
             assert.equal(result2, 2);
         }).timeout(3000);
+
+        it('should query a smart contract using state', async () => {
+            // Setup address and ABI
+            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+
+            // Query contract state
+            const result = await aergo.queryContractState(contract.queryState('Value'));
+            assert.equal(result, 2);
+        });
     });
+
 
     /*
     describe('deploy, call, query an sql contract', () => {

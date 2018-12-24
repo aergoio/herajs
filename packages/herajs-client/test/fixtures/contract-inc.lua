@@ -1,17 +1,21 @@
 -- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --abi contract-inc.abi.json contract-inc.lua contract-inc.out
 -- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --payload ./contract-inc.lua > contract-inc.txt
 
+state.var {
+    Value = state.value()
+}
+
+function constructor(init_value)
+    Value:set(0)
+end
+
 function inc()
-    a = system.getItem("key1")
-    if (a == nil) then
-        system.setItem("key1", 1)
-        return
-    end
-    system.setItem("key1", a + 1)
+    a = Value:get()
+    Value:set(a + 1)
 end
 
 function query(a)
-    return system.getItem(a)
+    return Value:get()
 end
 
 abi.register(inc, query)

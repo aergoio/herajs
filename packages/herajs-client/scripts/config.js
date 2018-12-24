@@ -117,7 +117,7 @@ function genConfig (name) {
 
     const namedExports = {
         [resolve('types/rpc_pb.js')]: 'Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name'.split(', '),
-        [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block'.split(', '),
+        [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block, Query, StateQuery'.split(', '),
         [resolve('types/account_pb.js')]: 'Account'.split(', ')
     };
 
