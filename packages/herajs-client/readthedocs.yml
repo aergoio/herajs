@@ -1,4 +1,4 @@
 build:
-    image: latest
+    image: 4.0rc1
 
 requirements_file: docs/requirements.txt
