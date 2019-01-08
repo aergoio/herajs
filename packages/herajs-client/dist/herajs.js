@@ -1,6 +1,6 @@
 /*!
- * herajs v0.4.2
- * (c) 2018 AERGO
+ * herajs v0.4.3
+ * (c) 2019 AERGO
  * Released under MIT license.
  */
 (function (global, factory) {
