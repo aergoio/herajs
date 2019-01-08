@@ -30,7 +30,9 @@ const external = [
     'google-protobuf',
     'grpc-web-client',
     'bs58check',
-    'bs58'
+    'bs58',
+    'buffer',
+    'jsbi'
 ];
 
 // Treating these as external as they are runtime requirements for node only
