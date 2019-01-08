@@ -185,6 +185,13 @@ describe('Aergo', () => {
                 aergo.getState('invalidinvalidinvalid');
             }, Error, 'Non-base58 character');
         });
+
+        /*
+        it('should return error for not found name', async () => {
+            const result = await aergo.getState('notregister');
+            console.log(result);
+        });
+        */
     });
     
     describe('getNonce()', () => {

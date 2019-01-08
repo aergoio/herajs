@@ -22,46 +22,6 @@ aergo.queryContract(FunctionCall) -> Promise<Result>
 describe('Contracts', () => {
     const aergo = new AergoClient();
 
-    describe('error handling', () => {
-        it('should return error when sending payload to empty account', async () => {
-            const testAddress = await aergo.accounts.create('test');
-            await aergo.accounts.unlock(testAddress, 'test');
-            const contract = Contract.fromAbi(contractAbi).setAddress(testAddress);
-            const callTx = contract.inc().asTransaction({
-                from: testAddress
-            });
-            const calltxhash = await aergo.accounts.sendTransaction(callTx);
-            const calltxreceipt = await longPolling(async () => 
-                await aergo.getTransactionReceipt(calltxhash)
-            );
-            assert.equal(calltxreceipt.status, `cannot find contract ${testAddress}`);
-        }).timeout(11000);
-        
-        it('should return error when sending payload to non-contract', async () => {
-            const testAddress = await aergo.accounts.create('test');
-            await aergo.accounts.unlock(testAddress, 'test');
-            const testtx = {
-                from: testAddress,
-                to: testAddress,
-                amount: '1 aer'
-            };
-            const txhash = await aergo.accounts.sendTransaction(testtx);
-            await longPolling(async () => 
-                await aergo.getTransactionReceipt(txhash)
-            );
-            const contract = Contract.fromAbi(contractAbi).setAddress(testAddress);
-            const callTx = contract.inc().asTransaction({
-                from: testAddress
-            });
-            const calltxhash = await aergo.accounts.sendTransaction(callTx);
-            const calltxreceipt = await longPolling(async () => 
-                await aergo.getTransactionReceipt(calltxhash)
-            );
-            assert.equal(calltxreceipt.status, 'account is not a contract');
-        }).timeout(11000);
-        
-    });
-    
     describe('deploy, call, query a simple contract', () => {
         const contractCode = '2WjtZp4nGF6rPfcu4djeokrgJskgMaz8deWCkUJoZWsf3GpQnPmrnhUYjeNNfcufJKoAvXzgyjyijyWnydwZvxW91k9pnss3g3hqvcYssbSRBFZiQ6FLfeWtfKfpAXZzMPNbuWYj2vwK3bJSVcjZWiVXeKMttMJNDKwahtieKXGRsgx4GE4bUQJ9oP7yfg1je1JBnChZiW9Pt3cMJVpo3gL4vjRQjqrpeq7Fyny8WD6X9Hmqo3vdQtdtGUBmDPVHVYZcpk5mtwopKU9TTTGZuLJ6HJ1GPAuSgygKhVkuEyi6a7WW9dZ5vJwWhKkgUxQYMiW5hVhSzLXrn48CFewf3aE2DBr7ohtJGqexpfPd9v5yDpQEZXhtRjq6obrCykMwrGsqXnj5Hw7MWZKwt56B73tjSMr2AF8gPe15TJknK2X4FXnSfrxSLx9sGLZVUYKc3af9q2pBv7SnTfkV7FxJkDgSN7qU8EZFFdG8Na4pAbYKfimHzPadguGLnkHH2fmbzyj5RTKZCwiCS1316ZNtc2Z4MhA21NtWdzTrq8KZvbom9a6EDCXA3RHXD6oGtQQrBcFrbwZdCzYWXAJm8Ku5hQ5aU8wB5JKwPNngP8fckpervU6fgbdkKpULk7CuTFj5g9eTgHn5ijYPYxkphmWHfSzv1ryMK9';
         let contractAddress;
