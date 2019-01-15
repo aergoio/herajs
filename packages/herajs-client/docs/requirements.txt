@@ -1,1 +1,1 @@
-sphinx-js==2.7
+git+git://github.com/graup/sphinx-js@a7e37f6#egg=sphinx-js
