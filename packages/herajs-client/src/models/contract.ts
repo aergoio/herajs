@@ -124,7 +124,7 @@ export class StateQuery {
  * .. code-block:: javascript
  * 
  *     import { Contract } from '@herajs/client';
- *     const contract = Contract.fromAbi(abi).atAddress(address);
+ *     const contract = Contract.fromAbi(abi).setAddress(address);
  *     aergo.queryContract(contract.someAbiFunction()).then(result => {
  *         console.log(result);
  *     })
@@ -149,6 +149,7 @@ class Contract {
             }
         });
     }
+
     /**
      * Create contract instance from code
      * @param {string} bs58checkCode base58-check encoded code
@@ -160,6 +161,7 @@ class Contract {
             code: decoded
         });
     }
+
     /**
      * Create contract instance and set address
      * @param {Address} address 
@@ -170,6 +172,7 @@ class Contract {
         contract.setAddress(address);
         return contract;
     }
+
     /**
      * Create contract instance from ABI
      * @param {obj} abi parsed JSON ABI
@@ -180,6 +183,7 @@ class Contract {
         contract.loadAbi(abi);
         return contract;
     }
+
     /**
      * Set address of contract instance
      * @param {Address|string} address 
@@ -189,6 +193,7 @@ class Contract {
         this.address = new Address(address);
         return this;
     }
+
     /**
      * Load contract ABI
      * @param {obj} abi parsed JSON ABI
@@ -200,6 +205,7 @@ class Contract {
         }
         return this;
     }
+
     /**
      * Return contract code as payload for transaction
      * @return {Buffer} a byte buffer
@@ -211,6 +217,7 @@ class Contract {
         // First 4 bytes are the length
         return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
     }
+
     /**
      * Create query object to query contract state.
      * @param varname 
@@ -219,10 +226,12 @@ class Contract {
     queryState(varname: string, varindex: string): StateQuery {
         return new StateQuery(this, varname, varindex);
     }
+
     static encodeCode(byteArray: Buffer): string {
         const buf = Buffer.from([ADDRESS_PREFIXES.CONTRACT, ...byteArray]);
         return bs58check.encode(buf);
     }
+
     static decodeCode(bs58checkCode: string): Buffer {
         return bs58check.decode(bs58checkCode).slice(1);
         //return bs58.decode(bs58checkCode);
