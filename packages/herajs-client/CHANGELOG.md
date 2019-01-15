@@ -1,3 +1,7 @@
+## 0.4.3 (January 8, 2019)
+
+- Bugfix: Encoding tx hashes was broken in node.js environments (https://github.com/aergoio/herajs/pull/15)
+
 ## 0.4.2 (December 24, 2018)
 
 - New API method: getStaking()
