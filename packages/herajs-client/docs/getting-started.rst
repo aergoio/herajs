@@ -78,3 +78,9 @@ For Web:
     const aergo = new AergoClient({}, new GrpcWebProvider({url: 'http://localhost:12345'}));
 
 The web transport also supports https.
+
+.. warning::
+
+    To repeat, :code:`GrpcProvider` does not work in browser environments and 
+    :code:`GrpcWebProvider` does not work in node environments. When you configure a custom provider,
+    use the correct class.
