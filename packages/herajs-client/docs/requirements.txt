@@ -1,1 +1,1 @@
-git+git://github.com/graup/sphinx-js@a7e37f6#egg=sphinx-js
+git+git://github.com/graup/sphinx-js@fix-90#egg=sphinx-js
