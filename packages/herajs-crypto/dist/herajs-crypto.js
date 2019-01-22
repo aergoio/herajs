@@ -351,7 +351,7 @@ function deprecate(r,e){if(config("noDeprecation"))return r;var o=!1;return func
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],83:[function(require,module,exports){
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.ADDRESS_PREFIXES=void 0;var ADDRESS_PREFIXES={ACCOUNT:66,PRIVATE_KEY:170,ACCOUNT_NAME_LENGTH:12};exports.ADDRESS_PREFIXES=ADDRESS_PREFIXES;
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.ACCOUNT_NAME_LENGTH=exports.ADDRESS_PREFIXES=void 0;var ADDRESS_PREFIXES={ACCOUNT:66,PRIVATE_KEY:170};exports.ADDRESS_PREFIXES=ADDRESS_PREFIXES;var ACCOUNT_NAME_LENGTH=12;exports.ACCOUNT_NAME_LENGTH=ACCOUNT_NAME_LENGTH;
 
 },{}],84:[function(require,module,exports){
 (function (Buffer){
