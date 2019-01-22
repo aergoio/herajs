@@ -1,5 +1,5 @@
 import bs58check from 'bs58check';
-import { ADDRESS_PREFIXES } from './constants';
+import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from './constants';
 import JSBI from 'jsbi';
 
 /**
@@ -48,16 +48,22 @@ const fromBigInt = (d) => fromHexString(JSBI.BigInt(d).toString(16));
  * @param {string} address
  */
 const encodeAddress = (byteArray) => {
+    if (byteArray.length <= ACCOUNT_NAME_LENGTH) {
+        return Buffer.from(byteArray).toString();
+    }
     const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
     return bs58check.encode(buf);
 };
 
 /**
  * Decodes address from string to byte array.
- * @param {string} address base58check encoded address 
+ * @param {string} address base58check encoded address or name
  * @return {number[]} byte array
  */
 const decodeAddress = (address) => {
+    if (address.length <= ACCOUNT_NAME_LENGTH) {
+        return Buffer.from(address);
+    }
     return bs58check.decode(address).slice(1);
 };
 

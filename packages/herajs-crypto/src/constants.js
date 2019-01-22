@@ -1,4 +1,5 @@
 export const ADDRESS_PREFIXES = {
     ACCOUNT: 0x42,
-    PRIVATE_KEY: 0xAA
+    PRIVATE_KEY: 0xAA,
+    ACCOUNT_NAME_LENGTH: 12
 };
