@@ -1,6 +1,6 @@
 {
   "name": "@herajs/client",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
