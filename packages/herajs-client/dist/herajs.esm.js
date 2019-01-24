@@ -1,5 +1,5 @@
 /*!
- * herajs v0.4.4
+ * herajs v0.4.5
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -19556,10 +19556,10 @@ function () {
       return new Block({
         hash: Block.encodeHash(grpcObject.getHash_asU8()),
         header: _objectSpread({}, obj.header, {
-          chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
           coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
-          pubkey: bs58.encode(grpcObject.getHeader().getPubkey_asU8())
+          pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
         }),
         body: obj.body
       });
@@ -19567,7 +19567,7 @@ function () {
   }, {
     key: "encodeHash",
     value: function encodeHash(bytes) {
-      return bs58.encode(bytes);
+      return bs58.encode(Buffer$1.from(bytes));
     }
   }, {
     key: "decodeHash",
@@ -19606,10 +19606,10 @@ function () {
       return new BlockMetadata({
         hash: Block.encodeHash(grpcObject.getHash_asU8()),
         header: _objectSpread({}, obj.header, {
-          chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
           coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
-          pubkey: bs58.encode(grpcObject.getHeader().getPubkey_asU8())
+          pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
         }),
         txcount: obj.txcount
       });
