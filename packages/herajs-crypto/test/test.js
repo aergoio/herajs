@@ -4,16 +4,33 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 import 'regenerator-runtime/runtime';
 
-import {createIdentity, signTransaction, hashTransaction, verifySignature, identifyFromPrivateKey, decryptPrivateKey, decodePrivateKey} from '../src';
+import {
+    createIdentity,
+    signTransaction, hashTransaction,
+    verifySignature,
+    verifyTxSignature,
+    identifyFromPrivateKey,
+    decryptPrivateKey, encryptPrivateKey,
+    decodePrivateKey, encodePrivateKey,
+    publicKeyFromAddress
+} from '../src';
 
 
 describe('createIdentity()', () => {
     it('should return a new identity', () => {
         const identity = createIdentity();
-        //console.log(identity);
         assert.isTrue('address' in identity);
         assert.isTrue('privateKey' in identity);
         assert.isTrue('publicKey' in identity);
+    });
+});
+
+describe('hashTransaction()', () => {
+    it('should fail with invalid amount', async () => {
+        const tx = {
+            amount: '100000 aergo',
+        };
+        return assert.isRejected(hashTransaction(tx), Error, 'Can only hash amounts provided in the base unit (aer), not 100000 aergo. Convert to aer or remove unit.');
     });
 });
 
@@ -24,16 +41,12 @@ describe('signTransaction()', () => {
             nonce: 1,
             from: identity.address,
             to: identity.address,
-            amount: 100,
+            amount: '100000 aer',
             payload: '',
         };
         tx.signature = await signTransaction(tx, identity.keyPair);
         tx.hash = await hashTransaction(tx);
-
-        //console.log(JSON.stringify(tx));
-
-        const verify = await verifySignature(tx, identity.keyPair, tx.signature);
-        assert.isTrue(verify);
+        assert.isTrue(await verifyTxSignature(tx, identity.keyPair, tx.signature));
     });
 });
 
@@ -53,5 +66,32 @@ describe('identifyFromPrivateKey', () => {
         const decryptedBytes = await decryptPrivateKey(encryptedBytes, password);
         const identity = identifyFromPrivateKey(decryptedBytes);
         assert.equal(address, identity.address);
+    });
+    it('should export a private key', async () => {
+        const encrypted = '47tZTi84VZeH6AjXnXDrhhoTKyVHfQWQFN6pf29wVYCvFBQWbrX94sbmWKcP1rMpkdUhQr3Ak';
+        const password = 'test';
+        const encryptedBytes = decodePrivateKey(encrypted);
+
+        const decryptedBytes = await decryptPrivateKey(encryptedBytes, password);
+
+        const encryptedCheck = encodePrivateKey(await encryptPrivateKey(decryptedBytes, password));
+        assert.equal(encrypted, encryptedCheck);
+    });
+});
+
+describe('verifySignatureWithAddress', () => {
+    it('should verify tx signature using address', async () => {
+        const identity = createIdentity();
+        const tx = {
+            nonce: 1,
+            from: identity.address,
+            to: identity.address,
+            amount: '100000 aer',
+            payload: '',
+        };
+        const signature = await signTransaction(tx, identity.keyPair);
+        
+        const pubkey = publicKeyFromAddress(identity.address);
+        assert.isTrue(await verifyTxSignature(tx, pubkey, signature));
     });
 });
