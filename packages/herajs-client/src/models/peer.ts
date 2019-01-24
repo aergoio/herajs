@@ -1,6 +1,7 @@
 import bs58 from 'bs58';
 import { Peer as GrpcPeer} from '../../types/rpc_pb';
 import Block from './block';
+import { Buffer } from 'buffer';
 
 export default class Peer {
     constructor(data: Partial<Peer>) {

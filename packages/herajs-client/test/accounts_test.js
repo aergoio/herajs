@@ -140,7 +140,7 @@ describe('Aergo.Accounts', () => {
             const testtx = {
                 from: testAddress,
                 to: 'aergo.name',
-                amount: 0,
+                amount: '1 aergo',
                 payload: 'c' + name,
                 type: 1
             };

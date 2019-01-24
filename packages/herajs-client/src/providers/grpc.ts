@@ -29,6 +29,10 @@ class GrpcProvider extends Provider {
             ...this.defaultConfig,
             ...config
         };
+        const urlScheme = this.config.url.match(/^([a-z0-9]+):\/\//);
+        if (urlScheme) {
+            throw new Error(`URL for GrpcProvider should be provided without scheme (not ${urlScheme[1]})`);
+        }
         this.client = new AergoRPCServiceClient(this.config.url, grpc.credentials.createInsecure()); 
     }
 

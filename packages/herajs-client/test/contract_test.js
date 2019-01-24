@@ -23,7 +23,7 @@ describe('Contracts', () => {
     const aergo = new AergoClient();
 
     describe('deploy, call, query a simple contract', () => {
-        const contractCode = '2WjtZp4nGF6rPfcu4djeokrgJskgMaz8deWCkUJoZWsf3GpQnPmrnhUYjeNNfcufJKoAvXzgyjyijyWnydwZvxW91k9pnss3g3hqvcYssbSRBFZiQ6FLfeWtfKfpAXZzMPNbuWYj2vwK3bJSVcjZWiVXeKMttMJNDKwahtieKXGRsgx4GE4bUQJ9oP7yfg1je1JBnChZiW9Pt3cMJVpo3gL4vjRQjqrpeq7Fyny8WD6X9Hmqo3vdQtdtGUBmDPVHVYZcpk5mtwopKU9TTTGZuLJ6HJ1GPAuSgygKhVkuEyi6a7WW9dZ5vJwWhKkgUxQYMiW5hVhSzLXrn48CFewf3aE2DBr7ohtJGqexpfPd9v5yDpQEZXhtRjq6obrCykMwrGsqXnj5Hw7MWZKwt56B73tjSMr2AF8gPe15TJknK2X4FXnSfrxSLx9sGLZVUYKc3af9q2pBv7SnTfkV7FxJkDgSN7qU8EZFFdG8Na4pAbYKfimHzPadguGLnkHH2fmbzyj5RTKZCwiCS1316ZNtc2Z4MhA21NtWdzTrq8KZvbom9a6EDCXA3RHXD6oGtQQrBcFrbwZdCzYWXAJm8Ku5hQ5aU8wB5JKwPNngP8fckpervU6fgbdkKpULk7CuTFj5g9eTgHn5ijYPYxkphmWHfSzv1ryMK9';
+        const contractCode = '2WjtZp4nGF6rQJc1zfaCqC8LL6oy3s1sfKQogaBndciKSaewfveibxW2tgFR1xdmWYEBfR22dMmP2px3WynTkywMgJDaQ3Db1jFfzk7yycNLGq3uU5MNHJzR4CoM7J5eXT3tvAufGM6E5vX2PB4BE3SSC6s4GXDoJa8jkCynava4t39VocervwEPU6N1j7cg5YHNN7nJy65WLmVLziehdm9UGuFubctih2owYXEEaj5kxuSFQZL5Cup7jtpmpFGztkkiG83wPdBLU6wdUjtB7rJunTCV3v7gmUA9zB5RhHmE5SD5wzNyiuAC6bzXYKfjTU2xgeqeJBDTtP1K2k3KdGLCsJS2f7SeqUoiWstfNdCGg5aMi12hqfTSjcsM5ndUoY92uWZGmyTaC87LtKVe7h9XJyDkKcS41guRpxwdE7imsffCYweo7zLUY7uhxdpGrcswAZunXs5X7g4F3ytxXBzeXDAPzZYMfVoWUDzbnj2NGZ3C4Y6jgvhbcU4UsFvNWk582QceiS1fzJWEoKruJM4TBSBBgRwju39BVBHwsgYcYCRkb4fbyoEExRSAw4TmrAaUFcE2GcJCWHurx5uHDrbqmpwz4TWxN3QWp7FkBs4AgbSmkDj7Q8wNAXVYCfeaBoFqBE1npQYNUaZ5z41CKU7EV8XtsH';
         let contractAddress;
         let testAddress;
         let deployTxhash;
@@ -118,6 +118,8 @@ describe('Contracts', () => {
             // Query contract state
             const result = await aergo.queryContractState(contract.queryState('Value'));
             assert.equal(result, 2);
+
+            // TODO changed api!
         });
     });
 

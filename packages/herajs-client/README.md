@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client)
 
 Tested with aergo server version
-[0.9.0](https://github.com/aergoio/aergo/tree/release/0.9)
+[0.10.0](https://github.com/aergoio/aergo/tree/release/0.10)
 
 [Documentation](https://herajs.readthedocs.io/)
 

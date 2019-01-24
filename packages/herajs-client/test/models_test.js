@@ -35,6 +35,7 @@ describe('Address', () => {
     it('should throw with invalid address', () => {
         assert.throws(() => new Address('InvalidInvalidInvalidInvalid'), Error, 'Non-base58 character');
         assert.throws(() => new Address('abcabcabcabcabcabc'), Error, 'Invalid checksum');
+        assert.throws(() => new Address('2DEMLvmHGwDgSSjYAgDS57YLM6YnrSbjswrnzXXXQD6Wa9nuUT63AcY1MV3DqyANrd2T4CEGF'), Error, 'invalid address length (48)');
     });
     it('should encode account names', () => {
         const a1 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109]));

@@ -33,6 +33,17 @@ describe('Aergo invalid config', () => {
             assert.equal(invalidAergo.client.config.url, invalidUrl);
         });
     });
+
+    describe('GrpcProvider', () => {
+        it('should throw error when protocol is included', () => {
+            assert.throws(() => {
+                new GrpcProvider({url: 'http://foo.bar'});
+            }, Error, 'URL for GrpcProvider should be provided without scheme (not http)');
+            assert.throws(() => {
+                new GrpcProvider({url: 'https://foo.bar'});
+            }, Error, 'URL for GrpcProvider should be provided without scheme (not https)');
+        });
+    });
 });
 
 describe('Aergo', () => {
@@ -263,7 +274,7 @@ describe('Aergo', () => {
                 nonce: 1,
                 from: identity.address,
                 to: identity.address,
-                amount: 100,
+                amount: '100',
                 payload: '',
             };
             tx.sign = await signTransaction(tx, identity.keyPair);
@@ -272,12 +283,10 @@ describe('Aergo', () => {
             // but sendSignedTransaction assumes aergo if no unit given
             tx.amount = '100 aer';
 
-            return aergo.sendSignedTransaction(tx)
-                .then(async (txhash) => {
-                    assert.typeOf(txhash, 'string');
-                    const commitedTx = await aergo.getTransaction(txhash);
-                    assert.equal(commitedTx.tx.amount, tx.amount);
-                });
+            const txhash = await aergo.sendSignedTransaction(tx);
+            assert.typeOf(txhash, 'string');
+            const commitedTx = await aergo.getTransaction(txhash);
+            assert.equal(commitedTx.tx.amount, tx.amount);
         });
     });
     

@@ -1,5 +1,6 @@
 import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants.js';
 import bs58check from 'bs58check';
+import { Buffer } from 'buffer';
 
 /**
  * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
@@ -65,7 +66,10 @@ export default class Address {
         return this.encoded;
     }
     static decode(bs58string): Buffer {
-        return bs58check.decode(bs58string).slice(1);
+        const decoded = bs58check.decode(bs58string);
+        if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error(`invalid address prefix (${decoded[0]})`);
+        if (decoded.length !== 33 + 1) throw new Error(`invalid address length (${decoded.length-1})`);
+        return Buffer.from(decoded.slice(1));
     }
     static encode(byteArray): string {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
