@@ -1,7 +1,7 @@
-import bs58 from 'bs58';
 import { BlockMetadata as GrpcBlockMetadata } from '../../types/rpc_pb';
 import Address from './address';
 import Block, { BlockHeader } from './block';
+import { Buffer } from 'buffer';
 
 export default class BlockMetadata {
     hash: string;
@@ -21,7 +21,7 @@ export default class BlockMetadata {
                 chainid: Buffer.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
                 prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
                 coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
-                pubkey: bs58.encode(grpcObject.getHeader().getPubkey_asU8()),
+                pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8()),
             },
             txcount: obj.txcount
         });
