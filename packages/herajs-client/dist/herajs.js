@@ -1,5 +1,5 @@
 /*!
- * herajs v0.4.3
+ * herajs v0.4.4
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -25625,21 +25625,21 @@
 
 	    if (address instanceof Address) {
 	      // Copy buffer
-	      this.value = Buffer.from(address.value);
+	      this.value = Buffer$1.from(address.value);
 	    } else if (typeof address === 'string') {
 	      if (address.length <= ACCOUNT_NAME_LENGTH) {
-	        this.value = Buffer.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
+	        this.value = Buffer$1.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
 	      } else {
 	        this.value = Address.decode(address);
 	      }
 
 	      this.encoded = address;
-	    } else if (address instanceof Buffer) {
+	    } else if (address instanceof Buffer$1) {
 	      // Treat array-like as buffer
 	      this.value = address;
 	    } else if (address instanceof Uint8Array) {
 	      // Treat array-like as buffer
-	      this.value = Buffer.from(address);
+	      this.value = Buffer$1.from(address);
 	    } else {
 	      throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
 	    } // Test if this is a name
@@ -25654,7 +25654,7 @@
 
 	    if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
 	      this.isName = true;
-	      this.value = Buffer.from(arrValue);
+	      this.value = Buffer$1.from(arrValue);
 	    }
 	  }
 
@@ -25677,7 +25677,7 @@
 
 
 	      if (this.isName) {
-	        this.encoded = Buffer.from(this.value).toString();
+	        this.encoded = Buffer$1.from(this.value).toString();
 	        return this.encoded;
 	      } // Account address
 
@@ -25688,14 +25688,17 @@
 	  }], [{
 	    key: "decode",
 	    value: function decode(bs58string) {
-	      return bs58check.decode(bs58string).slice(1);
+	      var decoded = bs58check.decode(bs58string);
+	      if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error("invalid address prefix (".concat(decoded[0], ")"));
+	      if (decoded.length !== 33 + 1) throw new Error("invalid address length (".concat(decoded.length - 1, ")"));
+	      return Buffer$1.from(decoded.slice(1));
 	    }
 	  }, {
 	    key: "encode",
 	    value: function encode(byteArray) {
 	      if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
 
-	      var buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
+	      var buf = Buffer$1.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
 	      return bs58check.encode(buf);
 	    }
 	  }]);
@@ -26082,11 +26085,11 @@
 	      msgtxbody.setAmount(this.amount.asBytes());
 
 	      if (this.payload != null) {
-	        msgtxbody.setPayload(Buffer.from(this.payload));
+	        msgtxbody.setPayload(Buffer$1.from(this.payload));
 	      }
 
 	      if (typeof this.sign === 'string') {
-	        msgtxbody.setSign(Buffer.from(this.sign, 'base64'));
+	        msgtxbody.setSign(Buffer$1.from(this.sign, 'base64'));
 	      } else {
 	        msgtxbody.setSign(this.sign);
 	      }
@@ -26108,9 +26111,9 @@
 	        var hashBuffer;
 
 	        if (typeof hash === 'string') {
-	          hashBuffer = Buffer.from(decodeTxHash(hash));
+	          hashBuffer = new Uint8Array(Buffer$1.from(decodeTxHash(hash)));
 	        } else {
-	          hashBuffer = Buffer.from(hash);
+	          hashBuffer = new Uint8Array(Buffer$1.from(hash));
 	        }
 
 	        msgtx.setHash(hashBuffer);
@@ -26495,7 +26498,7 @@
 	      }
 
 	      obj.address = {
-	        address: Buffer.from(grpcObject.getAddress().getAddress_asU8()),
+	        address: Buffer$1.from(grpcObject.getAddress().getAddress_asU8()),
 	        port: obj.address.port,
 	        peerid: bs58.encode(grpcObject.getAddress().getPeerid_asU8())
 	      };
@@ -29817,7 +29820,7 @@
 	 * .. code-block:: javascript
 	 * 
 	 *     import { Contract } from '@herajs/client';
-	 *     const contract = Contract.fromAbi(abi).atAddress(address);
+	 *     const contract = Contract.fromAbi(abi).setAddress(address);
 	 *     aergo.queryContract(contract.someAbiFunction()).then(result => {
 	 *         console.log(result);
 	 *     })
