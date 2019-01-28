@@ -1,4 +1,3 @@
-import Provider from './base';
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_web_pb';
 import { grpc } from 'grpc-web-client';
 
@@ -11,7 +10,7 @@ interface GrpcWebProviderConfig {
  * This is compatible with both Web browser and Node.js environments.
  * Note that the transport is considerably slower than over standard GRPC.
  */
-class GrpcWebProvider extends Provider {
+class GrpcWebProvider {
     client: AergoRPCServiceClient;
     config: GrpcWebProviderConfig;
 
@@ -24,7 +23,6 @@ class GrpcWebProvider extends Provider {
      * @param {GrpcWebProviderConfig} config
      */
     constructor(config: GrpcWebProviderConfig = {}) {
-        super();
         this.config = {
             ...this.defaultConfig,
             ...config

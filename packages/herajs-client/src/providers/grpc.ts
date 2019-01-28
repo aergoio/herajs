@@ -1,4 +1,3 @@
-import Provider from './base.js';
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_pb.js';
 import grpc from 'grpc';
 
@@ -11,7 +10,7 @@ interface GrpcProviderConfig {
  * Provider for standard GRPC connections over HTTP2.
  * This is only compatible with Node.js environments.
  */
-class GrpcProvider extends Provider {
+class GrpcProvider {
     client: AergoRPCServiceClient;
     config: any;
 
@@ -24,7 +23,6 @@ class GrpcProvider extends Provider {
      * @param {GrpcProviderConfig} config
      */
     constructor(config: GrpcProviderConfig = {}) {
-        super();
         this.config = {
             ...this.defaultConfig,
             ...config

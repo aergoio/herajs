@@ -27,7 +27,7 @@ class Accounts {
             const personal = new Personal();
             personal.setPassphrase(passphrase);
             try {
-                this.client.createAccount(personal, (err, rsp) => {
+                this.client.client.createAccount(personal, (err, rsp) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -49,7 +49,7 @@ class Accounts {
         return new Promise((resolve, reject) => {
             const empty = new Empty();
             try {
-                this.client.getAccounts(empty, (err, rsp) => {
+                this.client.client.getAccounts(empty, (err, rsp) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -80,7 +80,7 @@ class Accounts {
             personal.setAccount(account);
 
             try {
-                this.client.unlockAccount(personal, (err, rsp) => {
+                this.client.client.unlockAccount(personal, (err, rsp) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -110,7 +110,7 @@ class Accounts {
             personal.setAccount(account);
 
             try {
-                this.client.lockAccount(personal, (err, rsp) => {
+                this.client.client.lockAccount(personal, (err, rsp) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -134,7 +134,7 @@ class Accounts {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
-        return promisify(this.client.sendTX, this.client)(tx.toGrpc()).then((result: CommitResult) => {
+        return promisify(this.client.client.sendTX, this.client.client)(tx.toGrpc()).then((result: CommitResult) => {
             const obj = result.toObject();
             if (obj.error && obj.detail) {
                 throw new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
@@ -156,7 +156,7 @@ class Accounts {
         } else {
             tx = _tx;
         }
-        return promisify(this.client.signTX, this.client)(tx.toGrpc()).then((signedtx: GrpcTx) => Tx.fromGrpc(signedtx));
+        return promisify(this.client.client.signTX, this.client.client)(tx.toGrpc()).then((signedtx: GrpcTx) => Tx.fromGrpc(signedtx));
     }
 }
 

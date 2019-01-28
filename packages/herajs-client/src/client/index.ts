@@ -79,7 +79,7 @@ class AergoClient {
      */
     blockchain (): Promise<GrpcBlockchainStatus.AsObject> {
         const empty = new Empty();
-        return promisify(this.client.blockchain, this.client)(empty).then(result => ({
+        return promisify(this.client.client.blockchain, this.client.client)(empty).then(result => ({
             ...result.toObject(),
             bestBlockHash: Block.encodeHash(result.getBestBlockHash_asU8())
         }));
@@ -95,9 +95,9 @@ class AergoClient {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
-            this.client.getBlockTX(singleBytes, (err, result: TxInBlock) => {
+            this.client.client.getBlockTX(singleBytes, (err, result: TxInBlock) => {
                 if (err) {
-                    this.client.getTX(singleBytes, (err, result: GrpcTx) => {
+                    this.client.client.getTX(singleBytes, (err, result: GrpcTx) => {
                         if (err) {
                             reject(err);
                         } else {
@@ -140,7 +140,7 @@ class AergoClient {
         }
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(hashOrNumber));
-        return promisify(this.client.getBlock, this.client)(singleBytes).then(result => Block.fromGrpc(result));
+        return promisify(this.client.client.getBlock, this.client.client)(singleBytes).then(result => Block.fromGrpc(result));
     }
 
     /**
@@ -167,14 +167,14 @@ class AergoClient {
         params.setSize(size);
         params.setOffset(offset);
         params.setAsc(!desc);
-        return promisify(this.client.listBlockHeaders, this.client)(params).then(result => {
+        return promisify(this.client.client.listBlockHeaders, this.client.client)(params).then(result => {
             return result.getBlocksList().map(item => Block.fromGrpc(item));
         });
     }
 
     getBlockStream () {
         const empty = new rpcTypes.Empty();
-        const stream = this.client.listBlockStream(empty);
+        const stream = this.client.client.listBlockStream(empty);
         try {
             stream.on('error', (error) => {
                 if (error.code === 1) { // grpc.status.CANCELLED
@@ -193,7 +193,7 @@ class AergoClient {
 
     getBlockMetadataStream () {
         const empty = new rpcTypes.Empty();
-        const stream = this.client.listBlockMetadataStream(empty);
+        const stream = this.client.client.listBlockMetadataStream(empty);
         try {
             stream.on('error', (error) => {
                 if (error.code === 1) { // grpc.status.CANCELLED
@@ -219,18 +219,18 @@ class AergoClient {
     getState (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getState, this.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
+        return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
     }
     
     getNonce(address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getState, this.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
+        return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
     }
 
     verifyTransaction (/*tx*/) {
         // Untested
-        return promisify(this.client.verifyTX, this.client)()(grpcObject => Tx.fromGrpc(grpcObject));
+        return promisify(this.client.client.verifyTX, this.client.client)()(grpcObject => Tx.fromGrpc(grpcObject));
     }
 
     /**
@@ -245,7 +245,7 @@ class AergoClient {
                 tx = new Tx(tx);
             }
             txs.addTxs(tx.toGrpc(), 0);
-            this.client.commitTX(txs, (err, result: CommitResultList) => {
+            this.client.client.commitTX(txs, (err, result: CommitResultList) => {
                 if (err == null && result.getResultsList()[0].getError()) {
                     const obj = result.getResultsList()[0].toObject();
                     err = new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
@@ -266,7 +266,7 @@ class AergoClient {
     getTopVotes(count: number): Promise<any> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
-        return promisify(this.client.getVotes, this.client)(singleBytes).then(
+        return promisify(this.client.client.getVotes, this.client.client)(singleBytes).then(
             state => state.getVotesList().map(item => ({
                 amount: new Amount(item.getAmount_asU8()),
                 candidate: bs58.encode(item.getCandidate_asU8())
@@ -281,7 +281,7 @@ class AergoClient {
     getStaking (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getStaking, this.client)(singleBytes).then(
+        return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(
             (grpcObject: Staking) => {
                 return {
                     amount: new Amount(grpcObject.getAmount_asU8()),
@@ -299,7 +299,7 @@ class AergoClient {
     getTransactionReceipt (txhash) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
-        return promisify(this.client.getReceipt, this.client)(singleBytes).then(grpcObject => {
+        return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then(grpcObject => {
             const obj = grpcObject.toObject();
             return {
                 contractaddress: new Address(grpcObject.getContractaddress_asU8()),
@@ -316,7 +316,7 @@ class AergoClient {
      */
     queryContract (functionCall: FunctionCall) {
         const query = functionCall.toGrpc();
-        return promisify(this.client.queryContract, this.client)(query).then(
+        return promisify(this.client.client.queryContract, this.client.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
         );
     }
@@ -329,7 +329,7 @@ class AergoClient {
      */
     queryContractState (stateQuery: StateQuery) {
         const query = stateQuery.toGrpc();
-        return promisify(this.client.queryContractState, this.client)(query).then(
+        return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: StateQueryProof) => {
                 if (grpcObject.getVarproof().getInclusion() === false) {
                     const addr = new Address(query.getContractaddress_asU8());
@@ -352,7 +352,7 @@ class AergoClient {
     getABI (address) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.getABI, this.client)(singleBytes).then(
+        return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(
             grpcObject => {
                 const obj = grpcObject.toObject();
                 return {
@@ -372,7 +372,7 @@ class AergoClient {
      */
     getPeers () {
         const empty = new rpcTypes.Empty();
-        return promisify(this.client.getPeers, this.client)(empty).then(
+        return promisify(this.client.client.getPeers, this.client.client)(empty).then(
             (grpcObject: GrpcPeerList): Array<Peer> => grpcObject.getPeersList().map(
                 (peer: GrpcPeer): Peer => Peer.fromGrpc(peer)
             )
@@ -386,7 +386,7 @@ class AergoClient {
     getNameInfo (name) {
         const nameObj = new Name();
         nameObj.setName(name);
-        return promisify(this.client.getNameInfo, this.client)(nameObj).then(
+        return promisify(this.client.client.getNameInfo, this.client.client)(nameObj).then(
             (grpcObject: NameInfo) => {
                 const obj = grpcObject.toObject();
                 return {
