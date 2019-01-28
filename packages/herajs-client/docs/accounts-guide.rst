@@ -53,6 +53,10 @@ Unlock account
 
     // Address {}
 
+.. warning::
+
+    Only create and unlock accounts on access-controlled servers. This method is not safe to use on publicly accessible nodes.
+
 Client-side
 -----------
 
@@ -85,7 +89,8 @@ Create a new account
         keyPair: <Key priv: ... pub: <EC Point x: ... y: ...> >
     }
 
-Security
-^^^^^^^^
+.. warning::
 
-Be aware that if you keep private keys in the browser, any program that has access to your Javascript environment (for example browser extensions) can potentially read your keys which is dangerous.
+    Be aware that if you keep private keys in the browser, any program that has access to your Javascript environment 
+    (for example browser extensions) can potentially read your keys which is dangerous. Take care of storing private keys
+    in a safe way.

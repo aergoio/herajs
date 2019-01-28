@@ -15,6 +15,7 @@ Currently, there is herajs, heraj, and herapy. They all implement similar API bu
    accounts-guide
    transactions
    contract-guide
+   examples
 
 
 .. toctree::

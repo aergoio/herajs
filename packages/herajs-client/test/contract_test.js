@@ -10,14 +10,6 @@ import contractAbi from './fixtures/contract-inc.abi.json';
 //import sqlContractAbi from './fixtures/contract-sql.abi.json';
 import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
-import Address from '../src/models/address';
-
-/*
-
-contract.functions.inc() -> FunctionCall
-aergo.accounts.sendTransaction(FunctionCall.asTransaction({from: address}) -> Promise<Transaction>
-aergo.queryContract(FunctionCall) -> Promise<Result>
-*/
 
 describe('Contracts', () => {
     const aergo = new AergoClient();
