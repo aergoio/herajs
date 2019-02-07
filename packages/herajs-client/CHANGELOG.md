@@ -1,6 +1,7 @@
 ## 0.5.0 (February 7, 2019)
 
 - New API method: getChainInfo() (https://github.com/aergoio/herajs/pull/16)
+- Compatability with aergosvr 0.11
 - Various small bug fixes
 
 ## 0.4.6 (January 28, 2019)
@@ -31,7 +32,7 @@
 
 ## 0.4.0 (December 19, 2018)
 
-- Compatibility with Aergo protocol 0.9.0
+- Compatibility with Aergo protocol 0.9
 - New API method: getNameInfo()
 - New API method: getBlockMetadataStream()
 
