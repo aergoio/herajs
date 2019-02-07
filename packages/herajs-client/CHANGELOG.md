@@ -1,3 +1,20 @@
+## 0.5.0 (February 7, 2019)
+
+- New API method: getChainInfo() (https://github.com/aergoio/herajs/pull/16)
+- Various small bug fixes
+
+## 0.4.6 (January 28, 2019)
+
+- Remove Proxy from provider classes to save code and enable future IE support
+
+## 0.4.5 (January 24, 2019)
+
+- Fix usage of Buffer in Node.js environments
+
+## 0.4.4 (January 24, 2019)
+
+- Compatability with aergosvr 0.10 (https://github.com/aergoio/herajs/pull/17)
+
 ## 0.4.3 (January 8, 2019)
 
 - Bugfix: Encoding tx hashes was broken in node.js environments (https://github.com/aergoio/herajs/pull/15)
