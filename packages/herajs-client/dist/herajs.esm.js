@@ -1,5 +1,5 @@
 /*!
- * herajs v0.4.6
+ * herajs v0.5.0
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -911,6 +911,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   var goog = jspb;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.ABI', null, global);
+  goog.exportSymbol('proto.types.AccountProof', null, global);
   goog.exportSymbol('proto.types.Block', null, global);
   goog.exportSymbol('proto.types.BlockBody', null, global);
   goog.exportSymbol('proto.types.BlockHeader', null, global);
@@ -920,7 +921,6 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   goog.exportSymbol('proto.types.Query', null, global);
   goog.exportSymbol('proto.types.Receipt', null, global);
   goog.exportSymbol('proto.types.State', null, global);
-  goog.exportSymbol('proto.types.StateProof', null, global);
   goog.exportSymbol('proto.types.StateQuery', null, global);
   goog.exportSymbol('proto.types.StateQueryProof', null, global);
   goog.exportSymbol('proto.types.StateVar', null, global);
@@ -3820,14 +3820,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateProof.repeatedFields_, null);
+  proto.types.AccountProof = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.AccountProof.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.StateProof, jspb.Message);
+  goog.inherits(proto.types.AccountProof, jspb.Message);
 
   if (goog.DEBUG && !COMPILED) {
-    proto.types.StateProof.displayName = 'proto.types.StateProof';
+    proto.types.AccountProof.displayName = 'proto.types.AccountProof';
   }
   /**
    * List of repeated fields within this message type.
@@ -3836,7 +3836,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.repeatedFields_ = [7];
+  proto.types.AccountProof.repeatedFields_ = [8];
 
   if (jspb.Message.GENERATE_TO_OBJECT) {
     /**
@@ -3849,29 +3849,30 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
      *     for transitional soy proto support: http://goto/soy-param-migration
      * @return {!Object}
      */
-    proto.types.StateProof.prototype.toObject = function (opt_includeInstance) {
-      return proto.types.StateProof.toObject(opt_includeInstance, this);
+    proto.types.AccountProof.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.AccountProof.toObject(opt_includeInstance, this);
     };
     /**
      * Static version of the {@see toObject} method.
      * @param {boolean|undefined} includeInstance Whether to include the JSPB
      *     instance for transitional soy proto support:
      *     http://goto/soy-param-migration
-     * @param {!proto.types.StateProof} msg The msg instance to transform.
+     * @param {!proto.types.AccountProof} msg The msg instance to transform.
      * @return {!Object}
      * @suppress {unusedLocalVariables} f is only used for nested messages
      */
 
 
-    proto.types.StateProof.toObject = function (includeInstance, msg) {
+    proto.types.AccountProof.toObject = function (includeInstance, msg) {
       var f,
           obj = {
         state: (f = msg.getState()) && proto.types.State.toObject(includeInstance, f),
         inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
+        key: msg.getKey_asB64(),
         proofkey: msg.getProofkey_asB64(),
         proofval: msg.getProofval_asB64(),
         bitmap: msg.getBitmap_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        height: jspb.Message.getFieldWithDefault(msg, 7, 0),
         auditpathList: msg.getAuditpathList_asB64()
       };
 
@@ -3885,25 +3886,25 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /**
    * Deserializes binary data (in protobuf wire format).
    * @param {jspb.ByteSource} bytes The bytes to deserialize.
-   * @return {!proto.types.StateProof}
+   * @return {!proto.types.AccountProof}
    */
 
 
-  proto.types.StateProof.deserializeBinary = function (bytes) {
+  proto.types.AccountProof.deserializeBinary = function (bytes) {
     var reader = new jspb.BinaryReader(bytes);
-    var msg = new proto.types.StateProof();
-    return proto.types.StateProof.deserializeBinaryFromReader(msg, reader);
+    var msg = new proto.types.AccountProof();
+    return proto.types.AccountProof.deserializeBinaryFromReader(msg, reader);
   };
   /**
    * Deserializes binary data (in protobuf wire format) from the
    * given reader into the given message object.
-   * @param {!proto.types.StateProof} msg The message object to deserialize into.
+   * @param {!proto.types.AccountProof} msg The message object to deserialize into.
    * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-   * @return {!proto.types.StateProof}
+   * @return {!proto.types.AccountProof}
    */
 
 
-  proto.types.StateProof.deserializeBinaryFromReader = function (msg, reader) {
+  proto.types.AccountProof.deserializeBinaryFromReader = function (msg, reader) {
     while (reader.nextField()) {
       if (reader.isEndGroup()) {
         break;
@@ -3929,31 +3930,38 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
-          msg.setProofkey(value);
+          msg.setKey(value);
           break;
 
         case 4:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
-          msg.setProofval(value);
+          msg.setProofkey(value);
           break;
 
         case 5:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
-          msg.setBitmap(value);
+          msg.setProofval(value);
           break;
 
         case 6:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setBitmap(value);
+          break;
+
+        case 7:
           var value =
           /** @type {number} */
           reader.readUint32();
           msg.setHeight(value);
           break;
 
-        case 7:
+        case 8:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
@@ -3974,21 +3982,21 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.serializeBinary = function () {
+  proto.types.AccountProof.prototype.serializeBinary = function () {
     var writer = new jspb.BinaryWriter();
-    proto.types.StateProof.serializeBinaryToWriter(this, writer);
+    proto.types.AccountProof.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
   /**
    * Serializes the given message to binary data (in protobuf wire
    * format), writing to the given BinaryWriter.
-   * @param {!proto.types.StateProof} message
+   * @param {!proto.types.AccountProof} message
    * @param {!jspb.BinaryWriter} writer
    * @suppress {unusedLocalVariables} f is only used for nested messages
    */
 
 
-  proto.types.StateProof.serializeBinaryToWriter = function (message, writer) {
+  proto.types.AccountProof.serializeBinaryToWriter = function (message, writer) {
     var f = undefined;
     f = message.getState();
 
@@ -4002,34 +4010,40 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       writer.writeBool(2, f);
     }
 
-    f = message.getProofkey_asU8();
+    f = message.getKey_asU8();
 
     if (f.length > 0) {
       writer.writeBytes(3, f);
     }
 
-    f = message.getProofval_asU8();
+    f = message.getProofkey_asU8();
 
     if (f.length > 0) {
       writer.writeBytes(4, f);
     }
 
-    f = message.getBitmap_asU8();
+    f = message.getProofval_asU8();
 
     if (f.length > 0) {
       writer.writeBytes(5, f);
     }
 
+    f = message.getBitmap_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(6, f);
+    }
+
     f = message.getHeight();
 
     if (f !== 0) {
-      writer.writeUint32(6, f);
+      writer.writeUint32(7, f);
     }
 
     f = message.getAuditpathList_asU8();
 
     if (f.length > 0) {
-      writer.writeRepeatedBytes(7, f);
+      writer.writeRepeatedBytes(8, f);
     }
   };
   /**
@@ -4038,7 +4052,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getState = function () {
+  proto.types.AccountProof.prototype.getState = function () {
     return (
       /** @type{?proto.types.State} */
       jspb.Message.getWrapperField(this, proto.types.State, 1)
@@ -4047,11 +4061,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {?proto.types.State|undefined} value */
 
 
-  proto.types.StateProof.prototype.setState = function (value) {
+  proto.types.AccountProof.prototype.setState = function (value) {
     jspb.Message.setWrapperField(this, 1, value);
   };
 
-  proto.types.StateProof.prototype.clearState = function () {
+  proto.types.AccountProof.prototype.clearState = function () {
     this.setState(undefined);
   };
   /**
@@ -4060,7 +4074,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.hasState = function () {
+  proto.types.AccountProof.prototype.hasState = function () {
     return jspb.Message.getField(this, 1) != null;
   };
   /**
@@ -4071,7 +4085,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getInclusion = function () {
+  proto.types.AccountProof.prototype.getInclusion = function () {
     return (
       /** @type {boolean} */
       jspb.Message.getFieldWithDefault(this, 2, false)
@@ -4080,36 +4094,82 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {boolean} value */
 
 
-  proto.types.StateProof.prototype.setInclusion = function (value) {
+  proto.types.AccountProof.prototype.setInclusion = function (value) {
     jspb.Message.setField(this, 2, value);
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional bytes key = 3;
    * @return {!(string|Uint8Array)}
    */
 
 
-  proto.types.StateProof.prototype.getProofkey = function () {
+  proto.types.AccountProof.prototype.getKey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
       jspb.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional bytes key = 3;
+   * This is a type-conversion wrapper around `getKey()`
+   * @return {string}
+   */
+
+
+  proto.types.AccountProof.prototype.getKey_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getKey())
+    );
+  };
+  /**
+   * optional bytes key = 3;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getKey()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.AccountProof.prototype.getKey_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getKey())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.AccountProof.prototype.setKey = function (value) {
+    jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bytes proofKey = 4;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.AccountProof.prototype.getProofkey = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 4, "")
+    );
+  };
+  /**
+   * optional bytes proofKey = 4;
    * This is a type-conversion wrapper around `getProofkey()`
    * @return {string}
    */
 
 
-  proto.types.StateProof.prototype.getProofkey_asB64 = function () {
+  proto.types.AccountProof.prototype.getProofkey_asB64 = function () {
     return (
       /** @type {string} */
       jspb.Message.bytesAsB64(this.getProofkey())
     );
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional bytes proofKey = 4;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getProofkey()`
@@ -4117,7 +4177,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getProofkey_asU8 = function () {
+  proto.types.AccountProof.prototype.getProofkey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
       jspb.Message.bytesAsU8(this.getProofkey())
@@ -4126,36 +4186,36 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {!(string|Uint8Array)} value */
 
 
-  proto.types.StateProof.prototype.setProofkey = function (value) {
-    jspb.Message.setField(this, 3, value);
+  proto.types.AccountProof.prototype.setProofkey = function (value) {
+    jspb.Message.setField(this, 4, value);
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * @return {!(string|Uint8Array)}
    */
 
 
-  proto.types.StateProof.prototype.getProofval = function () {
+  proto.types.AccountProof.prototype.getProofval = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      jspb.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * This is a type-conversion wrapper around `getProofval()`
    * @return {string}
    */
 
 
-  proto.types.StateProof.prototype.getProofval_asB64 = function () {
+  proto.types.AccountProof.prototype.getProofval_asB64 = function () {
     return (
       /** @type {string} */
       jspb.Message.bytesAsB64(this.getProofval())
     );
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getProofval()`
@@ -4163,7 +4223,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getProofval_asU8 = function () {
+  proto.types.AccountProof.prototype.getProofval_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
       jspb.Message.bytesAsU8(this.getProofval())
@@ -4172,36 +4232,36 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {!(string|Uint8Array)} value */
 
 
-  proto.types.StateProof.prototype.setProofval = function (value) {
-    jspb.Message.setField(this, 4, value);
+  proto.types.AccountProof.prototype.setProofval = function (value) {
+    jspb.Message.setField(this, 5, value);
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * @return {!(string|Uint8Array)}
    */
 
 
-  proto.types.StateProof.prototype.getBitmap = function () {
+  proto.types.AccountProof.prototype.getBitmap = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      jspb.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * This is a type-conversion wrapper around `getBitmap()`
    * @return {string}
    */
 
 
-  proto.types.StateProof.prototype.getBitmap_asB64 = function () {
+  proto.types.AccountProof.prototype.getBitmap_asB64 = function () {
     return (
       /** @type {string} */
       jspb.Message.bytesAsB64(this.getBitmap())
     );
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getBitmap()`
@@ -4209,7 +4269,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getBitmap_asU8 = function () {
+  proto.types.AccountProof.prototype.getBitmap_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
       jspb.Message.bytesAsU8(this.getBitmap())
@@ -4218,54 +4278,54 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {!(string|Uint8Array)} value */
 
 
-  proto.types.StateProof.prototype.setBitmap = function (value) {
-    jspb.Message.setField(this, 5, value);
+  proto.types.AccountProof.prototype.setBitmap = function (value) {
+    jspb.Message.setField(this, 6, value);
   };
   /**
-   * optional uint32 height = 6;
+   * optional uint32 height = 7;
    * @return {number}
    */
 
 
-  proto.types.StateProof.prototype.getHeight = function () {
+  proto.types.AccountProof.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 6, 0)
+      jspb.Message.getFieldWithDefault(this, 7, 0)
     );
   };
   /** @param {number} value */
 
 
-  proto.types.StateProof.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 6, value);
+  proto.types.AccountProof.prototype.setHeight = function (value) {
+    jspb.Message.setField(this, 7, value);
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * @return {!(Array<!Uint8Array>|Array<string>)}
    */
 
 
-  proto.types.StateProof.prototype.getAuditpathList = function () {
+  proto.types.AccountProof.prototype.getAuditpathList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 7)
+      jspb.Message.getRepeatedField(this, 8)
     );
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * This is a type-conversion wrapper around `getAuditpathList()`
    * @return {!Array.<string>}
    */
 
 
-  proto.types.StateProof.prototype.getAuditpathList_asB64 = function () {
+  proto.types.AccountProof.prototype.getAuditpathList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
       jspb.Message.bytesListAsB64(this.getAuditpathList())
     );
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getAuditpathList()`
@@ -4273,7 +4333,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.getAuditpathList_asU8 = function () {
+  proto.types.AccountProof.prototype.getAuditpathList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
       jspb.Message.bytesListAsU8(this.getAuditpathList())
@@ -4282,8 +4342,8 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
-  proto.types.StateProof.prototype.setAuditpathList = function (value) {
-    jspb.Message.setField(this, 7, value || []);
+  proto.types.AccountProof.prototype.setAuditpathList = function (value) {
+    jspb.Message.setField(this, 8, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -4291,11 +4351,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.StateProof.prototype.addAuditpath = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 7, value, opt_index);
+  proto.types.AccountProof.prototype.addAuditpath = function (value, opt_index) {
+    jspb.Message.addToRepeatedField(this, 8, value, opt_index);
   };
 
-  proto.types.StateProof.prototype.clearAuditpathList = function () {
+  proto.types.AccountProof.prototype.clearAuditpathList = function () {
     this.setAuditpathList([]);
   };
   /**
@@ -4326,7 +4386,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
 
-  proto.types.ContractVarProof.repeatedFields_ = [7];
+  proto.types.ContractVarProof.repeatedFields_ = [8];
 
   if (jspb.Message.GENERATE_TO_OBJECT) {
     /**
@@ -4357,10 +4417,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       var obj = {
         value: msg.getValue_asB64(),
         inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
+        key: jspb.Message.getFieldWithDefault(msg, 3, ""),
         proofkey: msg.getProofkey_asB64(),
         proofval: msg.getProofval_asB64(),
         bitmap: msg.getBitmap_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        height: jspb.Message.getFieldWithDefault(msg, 7, 0),
         auditpathList: msg.getAuditpathList_asB64()
       };
 
@@ -4417,33 +4478,40 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
         case 3:
           var value =
-          /** @type {!Uint8Array} */
-          reader.readBytes();
-          msg.setProofkey(value);
+          /** @type {string} */
+          reader.readString();
+          msg.setKey(value);
           break;
 
         case 4:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
-          msg.setProofval(value);
+          msg.setProofkey(value);
           break;
 
         case 5:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
-          msg.setBitmap(value);
+          msg.setProofval(value);
           break;
 
         case 6:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setBitmap(value);
+          break;
+
+        case 7:
           var value =
           /** @type {number} */
           reader.readUint32();
           msg.setHeight(value);
           break;
 
-        case 7:
+        case 8:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
@@ -4492,34 +4560,40 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       writer.writeBool(2, f);
     }
 
-    f = message.getProofkey_asU8();
+    f = message.getKey();
 
     if (f.length > 0) {
-      writer.writeBytes(3, f);
+      writer.writeString(3, f);
     }
 
-    f = message.getProofval_asU8();
+    f = message.getProofkey_asU8();
 
     if (f.length > 0) {
       writer.writeBytes(4, f);
     }
 
-    f = message.getBitmap_asU8();
+    f = message.getProofval_asU8();
 
     if (f.length > 0) {
       writer.writeBytes(5, f);
     }
 
+    f = message.getBitmap_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(6, f);
+    }
+
     f = message.getHeight();
 
     if (f !== 0) {
-      writer.writeUint32(6, f);
+      writer.writeUint32(7, f);
     }
 
     f = message.getAuditpathList_asU8();
 
     if (f.length > 0) {
-      writer.writeRepeatedBytes(7, f);
+      writer.writeRepeatedBytes(8, f);
     }
   };
   /**
@@ -4589,7 +4663,25 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     jspb.Message.setField(this, 2, value);
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional string key = 3;
+   * @return {string}
+   */
+
+
+  proto.types.ContractVarProof.prototype.getKey = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.getFieldWithDefault(this, 3, "")
+    );
+  };
+  /** @param {string} value */
+
+
+  proto.types.ContractVarProof.prototype.setKey = function (value) {
+    jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bytes proofKey = 4;
    * @return {!(string|Uint8Array)}
    */
 
@@ -4597,11 +4689,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofkey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      jspb.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional bytes proofKey = 4;
    * This is a type-conversion wrapper around `getProofkey()`
    * @return {string}
    */
@@ -4614,7 +4706,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     );
   };
   /**
-   * optional bytes proofKey = 3;
+   * optional bytes proofKey = 4;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getProofkey()`
@@ -4632,10 +4724,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.setProofkey = function (value) {
-    jspb.Message.setField(this, 3, value);
+    jspb.Message.setField(this, 4, value);
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * @return {!(string|Uint8Array)}
    */
 
@@ -4643,11 +4735,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofval = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      jspb.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * This is a type-conversion wrapper around `getProofval()`
    * @return {string}
    */
@@ -4660,7 +4752,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     );
   };
   /**
-   * optional bytes proofVal = 4;
+   * optional bytes proofVal = 5;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getProofval()`
@@ -4678,10 +4770,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.setProofval = function (value) {
-    jspb.Message.setField(this, 4, value);
+    jspb.Message.setField(this, 5, value);
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * @return {!(string|Uint8Array)}
    */
 
@@ -4689,11 +4781,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getBitmap = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      jspb.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * This is a type-conversion wrapper around `getBitmap()`
    * @return {string}
    */
@@ -4706,7 +4798,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     );
   };
   /**
-   * optional bytes bitmap = 5;
+   * optional bytes bitmap = 6;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getBitmap()`
@@ -4724,10 +4816,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.setBitmap = function (value) {
-    jspb.Message.setField(this, 5, value);
+    jspb.Message.setField(this, 6, value);
   };
   /**
-   * optional uint32 height = 6;
+   * optional uint32 height = 7;
    * @return {number}
    */
 
@@ -4735,17 +4827,17 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 6, 0)
+      jspb.Message.getFieldWithDefault(this, 7, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ContractVarProof.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 6, value);
+    jspb.Message.setField(this, 7, value);
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * @return {!(Array<!Uint8Array>|Array<string>)}
    */
 
@@ -4753,11 +4845,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getAuditpathList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 7)
+      jspb.Message.getRepeatedField(this, 8)
     );
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * This is a type-conversion wrapper around `getAuditpathList()`
    * @return {!Array.<string>}
    */
@@ -4770,7 +4862,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     );
   };
   /**
-   * repeated bytes auditPath = 7;
+   * repeated bytes auditPath = 8;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getAuditpathList()`
@@ -4788,7 +4880,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.setAuditpathList = function (value) {
-    jspb.Message.setField(this, 7, value || []);
+    jspb.Message.setField(this, 8, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -4797,7 +4889,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.addAuditpath = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 7, value, opt_index);
+    jspb.Message.addToRepeatedField(this, 8, value, opt_index);
   };
 
   proto.types.ContractVarProof.prototype.clearAuditpathList = function () {
@@ -4816,7 +4908,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQueryProof.repeatedFields_, null);
   };
 
   goog.inherits(proto.types.StateQueryProof, jspb.Message);
@@ -4824,6 +4916,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   if (goog.DEBUG && !COMPILED) {
     proto.types.StateQueryProof.displayName = 'proto.types.StateQueryProof';
   }
+  /**
+   * List of repeated fields within this message type.
+   * @private {!Array<number>}
+   * @const
+   */
+
+
+  proto.types.StateQueryProof.repeatedFields_ = [2];
 
   if (jspb.Message.GENERATE_TO_OBJECT) {
     /**
@@ -4853,8 +4953,8 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.StateQueryProof.toObject = function (includeInstance, msg) {
       var f,
           obj = {
-        contractproof: (f = msg.getContractproof()) && proto.types.StateProof.toObject(includeInstance, f),
-        varproof: (f = msg.getVarproof()) && proto.types.ContractVarProof.toObject(includeInstance, f)
+        contractproof: (f = msg.getContractproof()) && proto.types.AccountProof.toObject(includeInstance, f),
+        varproofsList: jspb.Message.toObjectList(msg.getVarproofsList(), proto.types.ContractVarProof.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -4895,15 +4995,15 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
       switch (field) {
         case 1:
-          var value = new proto.types.StateProof();
-          reader.readMessage(value, proto.types.StateProof.deserializeBinaryFromReader);
+          var value = new proto.types.AccountProof();
+          reader.readMessage(value, proto.types.AccountProof.deserializeBinaryFromReader);
           msg.setContractproof(value);
           break;
 
         case 2:
           var value = new proto.types.ContractVarProof();
           reader.readMessage(value, proto.types.ContractVarProof.deserializeBinaryFromReader);
-          msg.setVarproof(value);
+          msg.addVarproofs(value);
           break;
 
         default:
@@ -4939,28 +5039,28 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     f = message.getContractproof();
 
     if (f != null) {
-      writer.writeMessage(1, f, proto.types.StateProof.serializeBinaryToWriter);
+      writer.writeMessage(1, f, proto.types.AccountProof.serializeBinaryToWriter);
     }
 
-    f = message.getVarproof();
+    f = message.getVarproofsList();
 
-    if (f != null) {
-      writer.writeMessage(2, f, proto.types.ContractVarProof.serializeBinaryToWriter);
+    if (f.length > 0) {
+      writer.writeRepeatedMessage(2, f, proto.types.ContractVarProof.serializeBinaryToWriter);
     }
   };
   /**
-   * optional StateProof contractProof = 1;
-   * @return {?proto.types.StateProof}
+   * optional AccountProof contractProof = 1;
+   * @return {?proto.types.AccountProof}
    */
 
 
   proto.types.StateQueryProof.prototype.getContractproof = function () {
     return (
-      /** @type{?proto.types.StateProof} */
-      jspb.Message.getWrapperField(this, proto.types.StateProof, 1)
+      /** @type{?proto.types.AccountProof} */
+      jspb.Message.getWrapperField(this, proto.types.AccountProof, 1)
     );
   };
-  /** @param {?proto.types.StateProof|undefined} value */
+  /** @param {?proto.types.AccountProof|undefined} value */
 
 
   proto.types.StateQueryProof.prototype.setContractproof = function (value) {
@@ -4980,35 +5080,36 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     return jspb.Message.getField(this, 1) != null;
   };
   /**
-   * optional ContractVarProof varProof = 2;
-   * @return {?proto.types.ContractVarProof}
+   * repeated ContractVarProof varProofs = 2;
+   * @return {!Array.<!proto.types.ContractVarProof>}
    */
 
 
-  proto.types.StateQueryProof.prototype.getVarproof = function () {
+  proto.types.StateQueryProof.prototype.getVarproofsList = function () {
     return (
-      /** @type{?proto.types.ContractVarProof} */
-      jspb.Message.getWrapperField(this, proto.types.ContractVarProof, 2)
+      /** @type{!Array.<!proto.types.ContractVarProof>} */
+      jspb.Message.getRepeatedWrapperField(this, proto.types.ContractVarProof, 2)
     );
   };
-  /** @param {?proto.types.ContractVarProof|undefined} value */
+  /** @param {!Array.<!proto.types.ContractVarProof>} value */
 
 
-  proto.types.StateQueryProof.prototype.setVarproof = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
-  };
-
-  proto.types.StateQueryProof.prototype.clearVarproof = function () {
-    this.setVarproof(undefined);
+  proto.types.StateQueryProof.prototype.setVarproofsList = function (value) {
+    jspb.Message.setRepeatedWrapperField(this, 2, value);
   };
   /**
-   * Returns whether this field is set.
-   * @return {!boolean}
+   * @param {!proto.types.ContractVarProof=} opt_value
+   * @param {number=} opt_index
+   * @return {!proto.types.ContractVarProof}
    */
 
 
-  proto.types.StateQueryProof.prototype.hasVarproof = function () {
-    return jspb.Message.getField(this, 2) != null;
+  proto.types.StateQueryProof.prototype.addVarproofs = function (opt_value, opt_index) {
+    return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.ContractVarProof, opt_index);
+  };
+
+  proto.types.StateQueryProof.prototype.clearVarproofsList = function () {
+    this.setVarproofsList([]);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -6318,7 +6419,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQuery.repeatedFields_, null);
   };
 
   goog.inherits(proto.types.StateQuery, jspb.Message);
@@ -6326,6 +6427,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   if (goog.DEBUG && !COMPILED) {
     proto.types.StateQuery.displayName = 'proto.types.StateQuery';
   }
+  /**
+   * List of repeated fields within this message type.
+   * @private {!Array<number>}
+   * @const
+   */
+
+
+  proto.types.StateQuery.repeatedFields_ = [2];
 
   if (jspb.Message.GENERATE_TO_OBJECT) {
     /**
@@ -6355,10 +6464,9 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.StateQuery.toObject = function (includeInstance, msg) {
       var obj = {
         contractaddress: msg.getContractaddress_asB64(),
-        varname: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        varindex: jspb.Message.getFieldWithDefault(msg, 3, ""),
+        storagekeysList: jspb.Message.getRepeatedField(msg, 2),
         root: msg.getRoot_asB64(),
-        compressed: jspb.Message.getFieldWithDefault(msg, 5, false)
+        compressed: jspb.Message.getFieldWithDefault(msg, 4, false)
       };
 
       if (includeInstance) {
@@ -6409,24 +6517,17 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
           var value =
           /** @type {string} */
           reader.readString();
-          msg.setVarname(value);
+          msg.addStoragekeys(value);
           break;
 
         case 3:
-          var value =
-          /** @type {string} */
-          reader.readString();
-          msg.setVarindex(value);
-          break;
-
-        case 4:
           var value =
           /** @type {!Uint8Array} */
           reader.readBytes();
           msg.setRoot(value);
           break;
 
-        case 5:
+        case 4:
           var value =
           /** @type {boolean} */
           reader.readBool();
@@ -6469,28 +6570,22 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       writer.writeBytes(1, f);
     }
 
-    f = message.getVarname();
+    f = message.getStoragekeysList();
 
     if (f.length > 0) {
-      writer.writeString(2, f);
-    }
-
-    f = message.getVarindex();
-
-    if (f.length > 0) {
-      writer.writeString(3, f);
+      writer.writeRepeatedString(2, f);
     }
 
     f = message.getRoot_asU8();
 
     if (f.length > 0) {
-      writer.writeBytes(4, f);
+      writer.writeBytes(3, f);
     }
 
     f = message.getCompressed();
 
     if (f) {
-      writer.writeBool(5, f);
+      writer.writeBool(4, f);
     }
   };
   /**
@@ -6540,43 +6635,38 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     jspb.Message.setField(this, 1, value);
   };
   /**
-   * optional string varName = 2;
-   * @return {string}
+   * repeated string storageKeys = 2;
+   * @return {!Array.<string>}
    */
 
 
-  proto.types.StateQuery.prototype.getVarname = function () {
+  proto.types.StateQuery.prototype.getStoragekeysList = function () {
     return (
-      /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      /** @type {!Array.<string>} */
+      jspb.Message.getRepeatedField(this, 2)
     );
   };
-  /** @param {string} value */
+  /** @param {!Array.<string>} value */
 
 
-  proto.types.StateQuery.prototype.setVarname = function (value) {
-    jspb.Message.setField(this, 2, value);
+  proto.types.StateQuery.prototype.setStoragekeysList = function (value) {
+    jspb.Message.setField(this, 2, value || []);
   };
   /**
-   * optional string varIndex = 3;
-   * @return {string}
+   * @param {!string} value
+   * @param {number=} opt_index
    */
 
 
-  proto.types.StateQuery.prototype.getVarindex = function () {
-    return (
-      /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
-    );
+  proto.types.StateQuery.prototype.addStoragekeys = function (value, opt_index) {
+    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
   };
-  /** @param {string} value */
 
-
-  proto.types.StateQuery.prototype.setVarindex = function (value) {
-    jspb.Message.setField(this, 3, value);
+  proto.types.StateQuery.prototype.clearStoragekeysList = function () {
+    this.setStoragekeysList([]);
   };
   /**
-   * optional bytes root = 4;
+   * optional bytes root = 3;
    * @return {!(string|Uint8Array)}
    */
 
@@ -6584,11 +6674,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getRoot = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      jspb.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
-   * optional bytes root = 4;
+   * optional bytes root = 3;
    * This is a type-conversion wrapper around `getRoot()`
    * @return {string}
    */
@@ -6601,7 +6691,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     );
   };
   /**
-   * optional bytes root = 4;
+   * optional bytes root = 3;
    * Note that Uint8Array is not supported on all browsers.
    * @see http://caniuse.com/Uint8Array
    * This is a type-conversion wrapper around `getRoot()`
@@ -6619,10 +6709,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery.prototype.setRoot = function (value) {
-    jspb.Message.setField(this, 4, value);
+    jspb.Message.setField(this, 3, value);
   };
   /**
-   * optional bool compressed = 5;
+   * optional bool compressed = 4;
    * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
    * You should avoid comparisons like {@code val === true/false} in those cases.
    * @return {boolean}
@@ -6632,14 +6722,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getCompressed = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 5, false)
+      jspb.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.StateQuery.prototype.setCompressed = function (value) {
-    jspb.Message.setField(this, 5, value);
+    jspb.Message.setField(this, 4, value);
   };
   /**
    * @enum {number}
@@ -7085,7 +7175,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.PeerAddress.toObject = function (includeInstance, msg) {
       var obj = {
-        address: msg.getAddress_asB64(),
+        address: jspb.Message.getFieldWithDefault(msg, 1, ""),
         port: jspb.Message.getFieldWithDefault(msg, 2, 0),
         peerid: msg.getPeerid_asB64()
       };
@@ -7129,8 +7219,8 @@ var node_pb = createCommonjsModule(function (module, exports) {
       switch (field) {
         case 1:
           var value =
-          /** @type {!Uint8Array} */
-          reader.readBytes();
+          /** @type {string} */
+          reader.readString();
           msg.setAddress(value);
           break;
 
@@ -7178,10 +7268,10 @@ var node_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.PeerAddress.serializeBinaryToWriter = function (message, writer) {
     var f = undefined;
-    f = message.getAddress_asU8();
+    f = message.getAddress();
 
     if (f.length > 0) {
-      writer.writeBytes(1, f);
+      writer.writeString(1, f);
     }
 
     f = message.getPort();
@@ -7197,46 +7287,18 @@ var node_pb = createCommonjsModule(function (module, exports) {
     }
   };
   /**
-   * optional bytes address = 1;
-   * @return {!(string|Uint8Array)}
+   * optional string address = 1;
+   * @return {string}
    */
 
 
   proto.types.PeerAddress.prototype.getAddress = function () {
     return (
-      /** @type {!(string|Uint8Array)} */
+      /** @type {string} */
       jspb.Message.getFieldWithDefault(this, 1, "")
     );
   };
-  /**
-   * optional bytes address = 1;
-   * This is a type-conversion wrapper around `getAddress()`
-   * @return {string}
-   */
-
-
-  proto.types.PeerAddress.prototype.getAddress_asB64 = function () {
-    return (
-      /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAddress())
-    );
-  };
-  /**
-   * optional bytes address = 1;
-   * Note that Uint8Array is not supported on all browsers.
-   * @see http://caniuse.com/Uint8Array
-   * This is a type-conversion wrapper around `getAddress()`
-   * @return {!Uint8Array}
-   */
-
-
-  proto.types.PeerAddress.prototype.getAddress_asU8 = function () {
-    return (
-      /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAddress())
-    );
-  };
-  /** @param {!(string|Uint8Array)} value */
+  /** @param {string} value */
 
 
   proto.types.PeerAddress.prototype.setAddress = function (value) {
@@ -7323,6 +7385,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   var global = Function('return this')();
   goog.exportSymbol('proto.types.AddressesRequest', null, global);
   goog.exportSymbol('proto.types.AddressesResponse', null, global);
+  goog.exportSymbol('proto.types.BlockProducedNotice', null, global);
   goog.exportSymbol('proto.types.GetAncestorRequest', null, global);
   goog.exportSymbol('proto.types.GetAncestorResponse', null, global);
   goog.exportSymbol('proto.types.GetBlockHeadersRequest', null, global);
@@ -8531,7 +8594,8 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
           obj = {
         sender: (f = msg.getSender()) && node_pb.PeerAddress.toObject(includeInstance, f),
         bestblockhash: msg.getBestblockhash_asB64(),
-        bestheight: jspb.Message.getFieldWithDefault(msg, 3, 0)
+        bestheight: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        chainid: msg.getChainid_asB64()
       };
 
       if (includeInstance) {
@@ -8591,6 +8655,13 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
           msg.setBestheight(value);
           break;
 
+        case 4:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setChainid(value);
+          break;
+
         default:
           reader.skipField();
           break;
@@ -8637,6 +8708,12 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     if (f !== 0) {
       writer.writeUint64(3, f);
+    }
+
+    f = message.getChainid_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(4, f);
     }
   };
   /**
@@ -8733,6 +8810,52 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Status.prototype.setBestheight = function (value) {
     jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bytes chainID = 4;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.Status.prototype.getChainid = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 4, "")
+    );
+  };
+  /**
+   * optional bytes chainID = 4;
+   * This is a type-conversion wrapper around `getChainid()`
+   * @return {string}
+   */
+
+
+  proto.types.Status.prototype.getChainid_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getChainid())
+    );
+  };
+  /**
+   * optional bytes chainID = 4;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getChainid()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.Status.prototype.getChainid_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getChainid())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.Status.prototype.setChainid = function (value) {
+    jspb.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -9491,6 +9614,261 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.NewBlockNotice.prototype.setBlockno = function (value) {
     jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.BlockProducedNotice = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.BlockProducedNotice, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.BlockProducedNotice.displayName = 'proto.types.BlockProducedNotice';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.BlockProducedNotice.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.BlockProducedNotice.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.BlockProducedNotice} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.BlockProducedNotice.toObject = function (includeInstance, msg) {
+      var f,
+          obj = {
+        producerid: msg.getProducerid_asB64(),
+        blockno: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        block: (f = msg.getBlock()) && blockchain_pb.Block.toObject(includeInstance, f)
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.BlockProducedNotice}
+   */
+
+
+  proto.types.BlockProducedNotice.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.BlockProducedNotice();
+    return proto.types.BlockProducedNotice.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.BlockProducedNotice} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.BlockProducedNotice}
+   */
+
+
+  proto.types.BlockProducedNotice.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setProducerid(value);
+          break;
+
+        case 2:
+          var value =
+          /** @type {number} */
+          reader.readUint64();
+          msg.setBlockno(value);
+          break;
+
+        case 3:
+          var value = new blockchain_pb.Block();
+          reader.readMessage(value, blockchain_pb.Block.deserializeBinaryFromReader);
+          msg.setBlock(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.BlockProducedNotice.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.BlockProducedNotice} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.BlockProducedNotice.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getProducerid_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(1, f);
+    }
+
+    f = message.getBlockno();
+
+    if (f !== 0) {
+      writer.writeUint64(2, f);
+    }
+
+    f = message.getBlock();
+
+    if (f != null) {
+      writer.writeMessage(3, f, blockchain_pb.Block.serializeBinaryToWriter);
+    }
+  };
+  /**
+   * optional bytes producerID = 1;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.getProducerid = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 1, "")
+    );
+  };
+  /**
+   * optional bytes producerID = 1;
+   * This is a type-conversion wrapper around `getProducerid()`
+   * @return {string}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.getProducerid_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getProducerid())
+    );
+  };
+  /**
+   * optional bytes producerID = 1;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getProducerid()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.getProducerid_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getProducerid())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.BlockProducedNotice.prototype.setProducerid = function (value) {
+    jspb.Message.setField(this, 1, value);
+  };
+  /**
+   * optional uint64 blockNo = 2;
+   * @return {number}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.getBlockno = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 2, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.BlockProducedNotice.prototype.setBlockno = function (value) {
+    jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * optional Block block = 3;
+   * @return {?proto.types.Block}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.getBlock = function () {
+    return (
+      /** @type{?proto.types.Block} */
+      jspb.Message.getWrapperField(this, blockchain_pb.Block, 3)
+    );
+  };
+  /** @param {?proto.types.Block|undefined} value */
+
+
+  proto.types.BlockProducedNotice.prototype.setBlock = function (value) {
+    jspb.Message.setWrapperField(this, 3, value);
+  };
+
+  proto.types.BlockProducedNotice.prototype.clearBlock = function () {
+    this.setBlock(undefined);
+  };
+  /**
+   * Returns whether this field is set.
+   * @return {!boolean}
+   */
+
+
+  proto.types.BlockProducedNotice.prototype.hasBlock = function () {
+    return jspb.Message.getField(this, 3) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -13534,10 +13912,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   var goog = jspb;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.AccountAndRoot', null, global);
+  goog.exportSymbol('proto.types.BlockBodyPaged', null, global);
+  goog.exportSymbol('proto.types.BlockBodyParams', null, global);
   goog.exportSymbol('proto.types.BlockHeaderList', null, global);
   goog.exportSymbol('proto.types.BlockMetadata', null, global);
   goog.exportSymbol('proto.types.BlockMetadataList', null, global);
   goog.exportSymbol('proto.types.BlockchainStatus', null, global);
+  goog.exportSymbol('proto.types.ChainId', null, global);
+  goog.exportSymbol('proto.types.ChainInfo', null, global);
   goog.exportSymbol('proto.types.CommitResult', null, global);
   goog.exportSymbol('proto.types.CommitResultList', null, global);
   goog.exportSymbol('proto.types.CommitStatus', null, global);
@@ -13549,6 +13931,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   goog.exportSymbol('proto.types.NameInfo', null, global);
   goog.exportSymbol('proto.types.NodeReq', null, global);
   goog.exportSymbol('proto.types.Output', null, global);
+  goog.exportSymbol('proto.types.PageParams', null, global);
   goog.exportSymbol('proto.types.Peer', null, global);
   goog.exportSymbol('proto.types.PeerList', null, global);
   goog.exportSymbol('proto.types.Personal', null, global);
@@ -13766,6 +14149,663 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.BlockchainStatus.prototype.setBestHeight = function (value) {
     jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.ChainId = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.ChainId, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.ChainId.displayName = 'proto.types.ChainId';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.ChainId.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.ChainId.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.ChainId} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.ChainId.toObject = function (includeInstance, msg) {
+      var obj = {
+        magic: jspb.Message.getFieldWithDefault(msg, 1, ""),
+        pb_public: jspb.Message.getFieldWithDefault(msg, 2, false),
+        mainnet: jspb.Message.getFieldWithDefault(msg, 3, false),
+        coinbasefee: msg.getCoinbasefee_asB64(),
+        consensus: jspb.Message.getFieldWithDefault(msg, 5, "")
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.ChainId}
+   */
+
+
+  proto.types.ChainId.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.ChainId();
+    return proto.types.ChainId.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.ChainId} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.ChainId}
+   */
+
+
+  proto.types.ChainId.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value =
+          /** @type {string} */
+          reader.readString();
+          msg.setMagic(value);
+          break;
+
+        case 2:
+          var value =
+          /** @type {boolean} */
+          reader.readBool();
+          msg.setPublic(value);
+          break;
+
+        case 3:
+          var value =
+          /** @type {boolean} */
+          reader.readBool();
+          msg.setMainnet(value);
+          break;
+
+        case 4:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setCoinbasefee(value);
+          break;
+
+        case 5:
+          var value =
+          /** @type {string} */
+          reader.readString();
+          msg.setConsensus(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.ChainId.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.ChainId.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.ChainId} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.ChainId.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getMagic();
+
+    if (f.length > 0) {
+      writer.writeString(1, f);
+    }
+
+    f = message.getPublic();
+
+    if (f) {
+      writer.writeBool(2, f);
+    }
+
+    f = message.getMainnet();
+
+    if (f) {
+      writer.writeBool(3, f);
+    }
+
+    f = message.getCoinbasefee_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(4, f);
+    }
+
+    f = message.getConsensus();
+
+    if (f.length > 0) {
+      writer.writeString(5, f);
+    }
+  };
+  /**
+   * optional string magic = 1;
+   * @return {string}
+   */
+
+
+  proto.types.ChainId.prototype.getMagic = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.getFieldWithDefault(this, 1, "")
+    );
+  };
+  /** @param {string} value */
+
+
+  proto.types.ChainId.prototype.setMagic = function (value) {
+    jspb.Message.setField(this, 1, value);
+  };
+  /**
+   * optional bool public = 2;
+   * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+   * You should avoid comparisons like {@code val === true/false} in those cases.
+   * @return {boolean}
+   */
+
+
+  proto.types.ChainId.prototype.getPublic = function () {
+    return (
+      /** @type {boolean} */
+      jspb.Message.getFieldWithDefault(this, 2, false)
+    );
+  };
+  /** @param {boolean} value */
+
+
+  proto.types.ChainId.prototype.setPublic = function (value) {
+    jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * optional bool mainnet = 3;
+   * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+   * You should avoid comparisons like {@code val === true/false} in those cases.
+   * @return {boolean}
+   */
+
+
+  proto.types.ChainId.prototype.getMainnet = function () {
+    return (
+      /** @type {boolean} */
+      jspb.Message.getFieldWithDefault(this, 3, false)
+    );
+  };
+  /** @param {boolean} value */
+
+
+  proto.types.ChainId.prototype.setMainnet = function (value) {
+    jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bytes coinbasefee = 4;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.ChainId.prototype.getCoinbasefee = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 4, "")
+    );
+  };
+  /**
+   * optional bytes coinbasefee = 4;
+   * This is a type-conversion wrapper around `getCoinbasefee()`
+   * @return {string}
+   */
+
+
+  proto.types.ChainId.prototype.getCoinbasefee_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getCoinbasefee())
+    );
+  };
+  /**
+   * optional bytes coinbasefee = 4;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getCoinbasefee()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.ChainId.prototype.getCoinbasefee_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getCoinbasefee())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.ChainId.prototype.setCoinbasefee = function (value) {
+    jspb.Message.setField(this, 4, value);
+  };
+  /**
+   * optional string consensus = 5;
+   * @return {string}
+   */
+
+
+  proto.types.ChainId.prototype.getConsensus = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.getFieldWithDefault(this, 5, "")
+    );
+  };
+  /** @param {string} value */
+
+
+  proto.types.ChainId.prototype.setConsensus = function (value) {
+    jspb.Message.setField(this, 5, value);
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.ChainInfo = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.ChainInfo, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.ChainInfo.displayName = 'proto.types.ChainInfo';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.ChainInfo.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.ChainInfo.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.ChainInfo} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.ChainInfo.toObject = function (includeInstance, msg) {
+      var f,
+          obj = {
+        chainid: (f = msg.getChainid()) && proto.types.ChainId.toObject(includeInstance, f),
+        bpnumber: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        maxblocksize: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        maxtokens: msg.getMaxtokens_asB64(),
+        stakingminimum: msg.getStakingminimum_asB64()
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.ChainInfo}
+   */
+
+
+  proto.types.ChainInfo.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.ChainInfo();
+    return proto.types.ChainInfo.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.ChainInfo} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.ChainInfo}
+   */
+
+
+  proto.types.ChainInfo.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value = new proto.types.ChainId();
+          reader.readMessage(value, proto.types.ChainId.deserializeBinaryFromReader);
+          msg.setChainid(value);
+          break;
+
+        case 2:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setBpnumber(value);
+          break;
+
+        case 3:
+          var value =
+          /** @type {number} */
+          reader.readUint64();
+          msg.setMaxblocksize(value);
+          break;
+
+        case 4:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setMaxtokens(value);
+          break;
+
+        case 5:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setStakingminimum(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.ChainInfo.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.ChainInfo.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.ChainInfo} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.ChainInfo.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getChainid();
+
+    if (f != null) {
+      writer.writeMessage(1, f, proto.types.ChainId.serializeBinaryToWriter);
+    }
+
+    f = message.getBpnumber();
+
+    if (f !== 0) {
+      writer.writeUint32(2, f);
+    }
+
+    f = message.getMaxblocksize();
+
+    if (f !== 0) {
+      writer.writeUint64(3, f);
+    }
+
+    f = message.getMaxtokens_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(4, f);
+    }
+
+    f = message.getStakingminimum_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(5, f);
+    }
+  };
+  /**
+   * optional ChainId chainid = 1;
+   * @return {?proto.types.ChainId}
+   */
+
+
+  proto.types.ChainInfo.prototype.getChainid = function () {
+    return (
+      /** @type{?proto.types.ChainId} */
+      jspb.Message.getWrapperField(this, proto.types.ChainId, 1)
+    );
+  };
+  /** @param {?proto.types.ChainId|undefined} value */
+
+
+  proto.types.ChainInfo.prototype.setChainid = function (value) {
+    jspb.Message.setWrapperField(this, 1, value);
+  };
+
+  proto.types.ChainInfo.prototype.clearChainid = function () {
+    this.setChainid(undefined);
+  };
+  /**
+   * Returns whether this field is set.
+   * @return {!boolean}
+   */
+
+
+  proto.types.ChainInfo.prototype.hasChainid = function () {
+    return jspb.Message.getField(this, 1) != null;
+  };
+  /**
+   * optional uint32 bpnumber = 2;
+   * @return {number}
+   */
+
+
+  proto.types.ChainInfo.prototype.getBpnumber = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 2, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.ChainInfo.prototype.setBpnumber = function (value) {
+    jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * optional uint64 maxblocksize = 3;
+   * @return {number}
+   */
+
+
+  proto.types.ChainInfo.prototype.getMaxblocksize = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 3, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.ChainInfo.prototype.setMaxblocksize = function (value) {
+    jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bytes maxtokens = 4;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.ChainInfo.prototype.getMaxtokens = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 4, "")
+    );
+  };
+  /**
+   * optional bytes maxtokens = 4;
+   * This is a type-conversion wrapper around `getMaxtokens()`
+   * @return {string}
+   */
+
+
+  proto.types.ChainInfo.prototype.getMaxtokens_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getMaxtokens())
+    );
+  };
+  /**
+   * optional bytes maxtokens = 4;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getMaxtokens()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.ChainInfo.prototype.getMaxtokens_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getMaxtokens())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.ChainInfo.prototype.setMaxtokens = function (value) {
+    jspb.Message.setField(this, 4, value);
+  };
+  /**
+   * optional bytes stakingminimum = 5;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.ChainInfo.prototype.getStakingminimum = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 5, "")
+    );
+  };
+  /**
+   * optional bytes stakingminimum = 5;
+   * This is a type-conversion wrapper around `getStakingminimum()`
+   * @return {string}
+   */
+
+
+  proto.types.ChainInfo.prototype.getStakingminimum_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getStakingminimum())
+    );
+  };
+  /**
+   * optional bytes stakingminimum = 5;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getStakingminimum()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.ChainInfo.prototype.getStakingminimum_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getStakingminimum())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.ChainInfo.prototype.setStakingminimum = function (value) {
+    jspb.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -15095,7 +16135,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
           obj = {
         address: (f = msg.getAddress()) && node_pb.PeerAddress.toObject(includeInstance, f),
         bestblock: (f = msg.getBestblock()) && p2p_pb.NewBlockNotice.toObject(includeInstance, f),
-        state: jspb.Message.getFieldWithDefault(msg, 3, 0)
+        state: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        hidden: jspb.Message.getFieldWithDefault(msg, 4, false)
       };
 
       if (includeInstance) {
@@ -15154,6 +16195,13 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
           msg.setState(value);
           break;
 
+        case 4:
+          var value =
+          /** @type {boolean} */
+          reader.readBool();
+          msg.setHidden(value);
+          break;
+
         default:
           reader.skipField();
           break;
@@ -15200,6 +16248,12 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     if (f !== 0) {
       writer.writeInt32(3, f);
+    }
+
+    f = message.getHidden();
+
+    if (f) {
+      writer.writeBool(4, f);
     }
   };
   /**
@@ -15281,6 +16335,26 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Peer.prototype.setState = function (value) {
     jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional bool hidden = 4;
+   * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+   * You should avoid comparisons like {@code val === true/false} in those cases.
+   * @return {boolean}
+   */
+
+
+  proto.types.Peer.prototype.getHidden = function () {
+    return (
+      /** @type {boolean} */
+      jspb.Message.getFieldWithDefault(this, 4, false)
+    );
+  };
+  /** @param {boolean} value */
+
+
+  proto.types.Peer.prototype.setHidden = function (value) {
+    jspb.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -15760,6 +16834,670 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.ListParams.prototype.setAsc = function (value) {
     jspb.Message.setField(this, 5, value);
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.PageParams = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.PageParams, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.PageParams.displayName = 'proto.types.PageParams';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.PageParams.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.PageParams.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.PageParams} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.PageParams.toObject = function (includeInstance, msg) {
+      var obj = {
+        offset: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        size: jspb.Message.getFieldWithDefault(msg, 2, 0)
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.PageParams}
+   */
+
+
+  proto.types.PageParams.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.PageParams();
+    return proto.types.PageParams.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.PageParams} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.PageParams}
+   */
+
+
+  proto.types.PageParams.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setOffset(value);
+          break;
+
+        case 2:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setSize(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.PageParams.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.PageParams.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.PageParams} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.PageParams.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getOffset();
+
+    if (f !== 0) {
+      writer.writeUint32(1, f);
+    }
+
+    f = message.getSize();
+
+    if (f !== 0) {
+      writer.writeUint32(2, f);
+    }
+  };
+  /**
+   * optional uint32 offset = 1;
+   * @return {number}
+   */
+
+
+  proto.types.PageParams.prototype.getOffset = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 1, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.PageParams.prototype.setOffset = function (value) {
+    jspb.Message.setField(this, 1, value);
+  };
+  /**
+   * optional uint32 size = 2;
+   * @return {number}
+   */
+
+
+  proto.types.PageParams.prototype.getSize = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 2, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.PageParams.prototype.setSize = function (value) {
+    jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.BlockBodyPaged = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.BlockBodyPaged, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.BlockBodyPaged.displayName = 'proto.types.BlockBodyPaged';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.BlockBodyPaged.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.BlockBodyPaged.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.BlockBodyPaged} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.BlockBodyPaged.toObject = function (includeInstance, msg) {
+      var f,
+          obj = {
+        total: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        offset: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        size: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        body: (f = msg.getBody()) && blockchain_pb.BlockBody.toObject(includeInstance, f)
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.BlockBodyPaged}
+   */
+
+
+  proto.types.BlockBodyPaged.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.BlockBodyPaged();
+    return proto.types.BlockBodyPaged.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.BlockBodyPaged} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.BlockBodyPaged}
+   */
+
+
+  proto.types.BlockBodyPaged.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setTotal(value);
+          break;
+
+        case 2:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setOffset(value);
+          break;
+
+        case 3:
+          var value =
+          /** @type {number} */
+          reader.readUint32();
+          msg.setSize(value);
+          break;
+
+        case 4:
+          var value = new blockchain_pb.BlockBody();
+          reader.readMessage(value, blockchain_pb.BlockBody.deserializeBinaryFromReader);
+          msg.setBody(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.BlockBodyPaged.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.BlockBodyPaged} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.BlockBodyPaged.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getTotal();
+
+    if (f !== 0) {
+      writer.writeUint32(1, f);
+    }
+
+    f = message.getOffset();
+
+    if (f !== 0) {
+      writer.writeUint32(2, f);
+    }
+
+    f = message.getSize();
+
+    if (f !== 0) {
+      writer.writeUint32(3, f);
+    }
+
+    f = message.getBody();
+
+    if (f != null) {
+      writer.writeMessage(4, f, blockchain_pb.BlockBody.serializeBinaryToWriter);
+    }
+  };
+  /**
+   * optional uint32 total = 1;
+   * @return {number}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.getTotal = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 1, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.BlockBodyPaged.prototype.setTotal = function (value) {
+    jspb.Message.setField(this, 1, value);
+  };
+  /**
+   * optional uint32 offset = 2;
+   * @return {number}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.getOffset = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 2, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.BlockBodyPaged.prototype.setOffset = function (value) {
+    jspb.Message.setField(this, 2, value);
+  };
+  /**
+   * optional uint32 size = 3;
+   * @return {number}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.getSize = function () {
+    return (
+      /** @type {number} */
+      jspb.Message.getFieldWithDefault(this, 3, 0)
+    );
+  };
+  /** @param {number} value */
+
+
+  proto.types.BlockBodyPaged.prototype.setSize = function (value) {
+    jspb.Message.setField(this, 3, value);
+  };
+  /**
+   * optional BlockBody body = 4;
+   * @return {?proto.types.BlockBody}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.getBody = function () {
+    return (
+      /** @type{?proto.types.BlockBody} */
+      jspb.Message.getWrapperField(this, blockchain_pb.BlockBody, 4)
+    );
+  };
+  /** @param {?proto.types.BlockBody|undefined} value */
+
+
+  proto.types.BlockBodyPaged.prototype.setBody = function (value) {
+    jspb.Message.setWrapperField(this, 4, value);
+  };
+
+  proto.types.BlockBodyPaged.prototype.clearBody = function () {
+    this.setBody(undefined);
+  };
+  /**
+   * Returns whether this field is set.
+   * @return {!boolean}
+   */
+
+
+  proto.types.BlockBodyPaged.prototype.hasBody = function () {
+    return jspb.Message.getField(this, 4) != null;
+  };
+  /**
+   * Generated by JsPbCodeGenerator.
+   * @param {Array=} opt_data Optional initial data array, typically from a
+   * server response, or constructed directly in Javascript. The array is used
+   * in place and becomes part of the constructed object. It is not cloned.
+   * If no data is provided, the constructed object will be empty, but still
+   * valid.
+   * @extends {jspb.Message}
+   * @constructor
+   */
+
+
+  proto.types.BlockBodyParams = function (opt_data) {
+    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  };
+
+  goog.inherits(proto.types.BlockBodyParams, jspb.Message);
+
+  if (goog.DEBUG && !COMPILED) {
+    proto.types.BlockBodyParams.displayName = 'proto.types.BlockBodyParams';
+  }
+
+  if (jspb.Message.GENERATE_TO_OBJECT) {
+    /**
+     * Creates an object representation of this proto suitable for use in Soy templates.
+     * Field names that are reserved in JavaScript and will be renamed to pb_name.
+     * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+     * For the list of reserved names please see:
+     *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+     * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+     *     for transitional soy proto support: http://goto/soy-param-migration
+     * @return {!Object}
+     */
+    proto.types.BlockBodyParams.prototype.toObject = function (opt_includeInstance) {
+      return proto.types.BlockBodyParams.toObject(opt_includeInstance, this);
+    };
+    /**
+     * Static version of the {@see toObject} method.
+     * @param {boolean|undefined} includeInstance Whether to include the JSPB
+     *     instance for transitional soy proto support:
+     *     http://goto/soy-param-migration
+     * @param {!proto.types.BlockBodyParams} msg The msg instance to transform.
+     * @return {!Object}
+     * @suppress {unusedLocalVariables} f is only used for nested messages
+     */
+
+
+    proto.types.BlockBodyParams.toObject = function (includeInstance, msg) {
+      var f,
+          obj = {
+        hashornumber: msg.getHashornumber_asB64(),
+        paging: (f = msg.getPaging()) && proto.types.PageParams.toObject(includeInstance, f)
+      };
+
+      if (includeInstance) {
+        obj.$jspbMessageInstance = msg;
+      }
+
+      return obj;
+    };
+  }
+  /**
+   * Deserializes binary data (in protobuf wire format).
+   * @param {jspb.ByteSource} bytes The bytes to deserialize.
+   * @return {!proto.types.BlockBodyParams}
+   */
+
+
+  proto.types.BlockBodyParams.deserializeBinary = function (bytes) {
+    var reader = new jspb.BinaryReader(bytes);
+    var msg = new proto.types.BlockBodyParams();
+    return proto.types.BlockBodyParams.deserializeBinaryFromReader(msg, reader);
+  };
+  /**
+   * Deserializes binary data (in protobuf wire format) from the
+   * given reader into the given message object.
+   * @param {!proto.types.BlockBodyParams} msg The message object to deserialize into.
+   * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+   * @return {!proto.types.BlockBodyParams}
+   */
+
+
+  proto.types.BlockBodyParams.deserializeBinaryFromReader = function (msg, reader) {
+    while (reader.nextField()) {
+      if (reader.isEndGroup()) {
+        break;
+      }
+
+      var field = reader.getFieldNumber();
+
+      switch (field) {
+        case 1:
+          var value =
+          /** @type {!Uint8Array} */
+          reader.readBytes();
+          msg.setHashornumber(value);
+          break;
+
+        case 2:
+          var value = new proto.types.PageParams();
+          reader.readMessage(value, proto.types.PageParams.deserializeBinaryFromReader);
+          msg.setPaging(value);
+          break;
+
+        default:
+          reader.skipField();
+          break;
+      }
+    }
+
+    return msg;
+  };
+  /**
+   * Serializes the message to binary data (in protobuf wire format).
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.serializeBinary = function () {
+    var writer = new jspb.BinaryWriter();
+    proto.types.BlockBodyParams.serializeBinaryToWriter(this, writer);
+    return writer.getResultBuffer();
+  };
+  /**
+   * Serializes the given message to binary data (in protobuf wire
+   * format), writing to the given BinaryWriter.
+   * @param {!proto.types.BlockBodyParams} message
+   * @param {!jspb.BinaryWriter} writer
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+
+
+  proto.types.BlockBodyParams.serializeBinaryToWriter = function (message, writer) {
+    var f = undefined;
+    f = message.getHashornumber_asU8();
+
+    if (f.length > 0) {
+      writer.writeBytes(1, f);
+    }
+
+    f = message.getPaging();
+
+    if (f != null) {
+      writer.writeMessage(2, f, proto.types.PageParams.serializeBinaryToWriter);
+    }
+  };
+  /**
+   * optional bytes hashornumber = 1;
+   * @return {!(string|Uint8Array)}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.getHashornumber = function () {
+    return (
+      /** @type {!(string|Uint8Array)} */
+      jspb.Message.getFieldWithDefault(this, 1, "")
+    );
+  };
+  /**
+   * optional bytes hashornumber = 1;
+   * This is a type-conversion wrapper around `getHashornumber()`
+   * @return {string}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.getHashornumber_asB64 = function () {
+    return (
+      /** @type {string} */
+      jspb.Message.bytesAsB64(this.getHashornumber())
+    );
+  };
+  /**
+   * optional bytes hashornumber = 1;
+   * Note that Uint8Array is not supported on all browsers.
+   * @see http://caniuse.com/Uint8Array
+   * This is a type-conversion wrapper around `getHashornumber()`
+   * @return {!Uint8Array}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.getHashornumber_asU8 = function () {
+    return (
+      /** @type {!Uint8Array} */
+      jspb.Message.bytesAsU8(this.getHashornumber())
+    );
+  };
+  /** @param {!(string|Uint8Array)} value */
+
+
+  proto.types.BlockBodyParams.prototype.setHashornumber = function (value) {
+    jspb.Message.setField(this, 1, value);
+  };
+  /**
+   * optional PageParams paging = 2;
+   * @return {?proto.types.PageParams}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.getPaging = function () {
+    return (
+      /** @type{?proto.types.PageParams} */
+      jspb.Message.getWrapperField(this, proto.types.PageParams, 2)
+    );
+  };
+  /** @param {?proto.types.PageParams|undefined} value */
+
+
+  proto.types.BlockBodyParams.prototype.setPaging = function (value) {
+    jspb.Message.setWrapperField(this, 2, value);
+  };
+
+  proto.types.BlockBodyParams.prototype.clearPaging = function () {
+    this.setPaging(undefined);
+  };
+  /**
+   * Returns whether this field is set.
+   * @return {!boolean}
+   */
+
+
+  proto.types.BlockBodyParams.prototype.hasPaging = function () {
+    return jspb.Message.getField(this, 2) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -19648,6 +21386,53 @@ function () {
   return State;
 }();
 
+var ChainInfo =
+/*#__PURE__*/
+function () {
+  function ChainInfo(data) {
+    _classCallCheck(this, ChainInfo);
+
+    _defineProperty(this, "chainid", void 0);
+
+    _defineProperty(this, "bpnumber", void 0);
+
+    _defineProperty(this, "maxblocksize", void 0);
+
+    _defineProperty(this, "maxtokens", void 0);
+
+    _defineProperty(this, "stakingminimum", void 0);
+
+    Object.assign(this, data);
+  }
+
+  _createClass(ChainInfo, [{
+    key: "toGrpc",
+    value: function toGrpc() {
+      throw new Error('Not implemented');
+    }
+  }], [{
+    key: "fromGrpc",
+    value: function fromGrpc(grpcObject) {
+      var chainid = grpcObject.getChainid();
+      return new ChainInfo({
+        chainid: {
+          magic: chainid.getMagic(),
+          public: chainid.getPublic(),
+          mainnet: chainid.getMainnet(),
+          coinbasefee: new Amount(chainid.getCoinbasefee_asU8()),
+          consensus: chainid.getConsensus()
+        },
+        bpnumber: grpcObject.getBpnumber(),
+        maxblocksize: grpcObject.getMaxblocksize(),
+        maxtokens: new Amount(grpcObject.getMaxtokens_asU8()),
+        stakingminimum: new Amount(grpcObject.getStakingminimum_asU8())
+      });
+    }
+  }]);
+
+  return ChainInfo;
+}();
+
 var CommitStatus$1 = typesNode.CommitStatus;
 /**
  * Main aergo client controller.
@@ -19724,6 +21509,19 @@ function () {
         return _objectSpread({}, result.toObject(), {
           bestBlockHash: Block.encodeHash(result.getBestBlockHash_asU8())
         });
+      });
+    }
+    /**
+     * Request current status of blockchain.
+     * @returns {Promise<object>} an object detailing the current status
+     */
+
+  }, {
+    key: "getChainInfo",
+    value: function getChainInfo() {
+      var empty = new rpc_pb_1();
+      return promisify(this.client.client.getChainInfo, this.client.client)(empty).then(function (grpcObject) {
+        return ChainInfo.fromGrpc(grpcObject);
       });
     }
     /**
@@ -20040,15 +21838,17 @@ function () {
     value: function queryContractState(stateQuery) {
       var query = stateQuery.toGrpc();
       return promisify(this.client.client.queryContractState, this.client.client)(query).then(function (grpcObject) {
-        if (grpcObject.getVarproof().getInclusion() === false) {
+        var varProof = grpcObject.getVarproofsList()[0];
+
+        if (varProof.getInclusion() === false) {
           var addr = new Address(query.getContractaddress_asU8());
-          throw Error("queried variable ".concat(query.getVarname(), " does not exists in state at address ").concat(addr.toString()));
+          throw Error("queried variable ".concat(query.getStoragekeysList()[0], " does not exists in state at address ").concat(addr.toString()));
         }
 
-        var value = grpcObject.getVarproof().getValue_asU8();
+        var value = varProof.getValue_asU8();
 
         if (value.length > 0) {
-          return JSON.parse(Buffer.from(grpcObject.getVarproof().getValue_asU8()).toString());
+          return JSON.parse(Buffer.from(varProof.getValue_asU8()).toString());
         }
 
         return null;
@@ -22131,6 +23931,18 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
     return account_pb.AccountList.deserializeBinary(new Uint8Array(buffer_arg));
   }
 
+  function serialize_types_AccountProof(arg) {
+    if (!(arg instanceof blockchain_pb.AccountProof)) {
+      throw new Error('Expected argument of type types.AccountProof');
+    }
+
+    return new Buffer$2(arg.serializeBinary());
+  }
+
+  function deserialize_types_AccountProof(buffer_arg) {
+    return blockchain_pb.AccountProof.deserializeBinary(new Uint8Array(buffer_arg));
+  }
+
   function serialize_types_Block(arg) {
     if (!(arg instanceof blockchain_pb.Block)) {
       throw new Error('Expected argument of type types.Block');
@@ -22141,6 +23953,30 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
 
   function deserialize_types_Block(buffer_arg) {
     return blockchain_pb.Block.deserializeBinary(new Uint8Array(buffer_arg));
+  }
+
+  function serialize_types_BlockBodyPaged(arg) {
+    if (!(arg instanceof rpc_pb.BlockBodyPaged)) {
+      throw new Error('Expected argument of type types.BlockBodyPaged');
+    }
+
+    return new Buffer$2(arg.serializeBinary());
+  }
+
+  function deserialize_types_BlockBodyPaged(buffer_arg) {
+    return rpc_pb.BlockBodyPaged.deserializeBinary(new Uint8Array(buffer_arg));
+  }
+
+  function serialize_types_BlockBodyParams(arg) {
+    if (!(arg instanceof rpc_pb.BlockBodyParams)) {
+      throw new Error('Expected argument of type types.BlockBodyParams');
+    }
+
+    return new Buffer$2(arg.serializeBinary());
+  }
+
+  function deserialize_types_BlockBodyParams(buffer_arg) {
+    return rpc_pb.BlockBodyParams.deserializeBinary(new Uint8Array(buffer_arg));
   }
 
   function serialize_types_BlockHeaderList(arg) {
@@ -22189,6 +24025,18 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
 
   function deserialize_types_BlockchainStatus(buffer_arg) {
     return rpc_pb.BlockchainStatus.deserializeBinary(new Uint8Array(buffer_arg));
+  }
+
+  function serialize_types_ChainInfo(arg) {
+    if (!(arg instanceof rpc_pb.ChainInfo)) {
+      throw new Error('Expected argument of type types.ChainInfo');
+    }
+
+    return new Buffer$2(arg.serializeBinary());
+  }
+
+  function deserialize_types_ChainInfo(buffer_arg) {
+    return rpc_pb.ChainInfo.deserializeBinary(new Uint8Array(buffer_arg));
   }
 
   function serialize_types_CommitResult(arg) {
@@ -22395,18 +24243,6 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
     return blockchain_pb.State.deserializeBinary(new Uint8Array(buffer_arg));
   }
 
-  function serialize_types_StateProof(arg) {
-    if (!(arg instanceof blockchain_pb.StateProof)) {
-      throw new Error('Expected argument of type types.StateProof');
-    }
-
-    return new Buffer$2(arg.serializeBinary());
-  }
-
-  function deserialize_types_StateProof(buffer_arg) {
-    return blockchain_pb.StateProof.deserializeBinary(new Uint8Array(buffer_arg));
-  }
-
   function serialize_types_StateQuery(arg) {
     if (!(arg instanceof blockchain_pb.StateQuery)) {
       throw new Error('Expected argument of type types.StateQuery');
@@ -22531,6 +24367,18 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       responseSerialize: serialize_types_BlockchainStatus,
       responseDeserialize: deserialize_types_BlockchainStatus
     },
+    // Returns current blockchain's basic information
+    getChainInfo: {
+      path: '/types.AergoRPCService/GetChainInfo',
+      requestStream: false,
+      responseStream: false,
+      requestType: rpc_pb.Empty,
+      responseType: rpc_pb.ChainInfo,
+      requestSerialize: serialize_types_Empty,
+      requestDeserialize: deserialize_types_Empty,
+      responseSerialize: serialize_types_ChainInfo,
+      responseDeserialize: deserialize_types_ChainInfo
+    },
     // Returns list of Blocks without body according to request
     listBlockHeaders: {
       path: '/types.AergoRPCService/ListBlockHeaders',
@@ -22579,7 +24427,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       responseSerialize: serialize_types_BlockMetadata,
       responseDeserialize: deserialize_types_BlockMetadata
     },
-    // Return a single block, queried by hash or number
+    // Return a single block incl. header and body, queried by hash or number
     getBlock: {
       path: '/types.AergoRPCService/GetBlock',
       requestStream: false,
@@ -22590,6 +24438,30 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       requestDeserialize: deserialize_types_SingleBytes,
       responseSerialize: serialize_types_Block,
       responseDeserialize: deserialize_types_Block
+    },
+    // Return a single block's metdata (hash, header, and number of transactions), queried by hash or number
+    getBlockMetadata: {
+      path: '/types.AergoRPCService/GetBlockMetadata',
+      requestStream: false,
+      responseStream: false,
+      requestType: rpc_pb.SingleBytes,
+      responseType: rpc_pb.BlockMetadata,
+      requestSerialize: serialize_types_SingleBytes,
+      requestDeserialize: deserialize_types_SingleBytes,
+      responseSerialize: serialize_types_BlockMetadata,
+      responseDeserialize: deserialize_types_BlockMetadata
+    },
+    // Return a single block's body, queried by hash or number and list parameters
+    getBlockBody: {
+      path: '/types.AergoRPCService/GetBlockBody',
+      requestStream: false,
+      responseStream: false,
+      requestType: rpc_pb.BlockBodyParams,
+      responseType: rpc_pb.BlockBodyPaged,
+      requestSerialize: serialize_types_BlockBodyParams,
+      requestDeserialize: deserialize_types_BlockBodyParams,
+      responseSerialize: serialize_types_BlockBodyPaged,
+      responseDeserialize: deserialize_types_BlockBodyPaged
     },
     // Return a single transaction, queried by transaction hash
     getTX: {
@@ -22705,11 +24577,11 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       requestStream: false,
       responseStream: false,
       requestType: rpc_pb.AccountAndRoot,
-      responseType: blockchain_pb.StateProof,
+      responseType: blockchain_pb.AccountProof,
       requestSerialize: serialize_types_AccountAndRoot,
       requestDeserialize: deserialize_types_AccountAndRoot,
-      responseSerialize: serialize_types_StateProof,
-      responseDeserialize: deserialize_types_StateProof
+      responseSerialize: serialize_types_AccountProof,
+      responseDeserialize: deserialize_types_AccountProof
     },
     // Create a new account in this node
     createAccount: {
@@ -23019,18 +24891,15 @@ function () {
 var StateQuery$$1 =
 /*#__PURE__*/
 function () {
-  function StateQuery$$1(contractInstance, varname, varindex) {
+  function StateQuery$$1(contractInstance, storageKey) {
     _classCallCheck(this, StateQuery$$1);
 
     _defineProperty(this, "contractInstance", void 0);
 
-    _defineProperty(this, "varname", void 0);
-
-    _defineProperty(this, "varindex", void 0);
+    _defineProperty(this, "storageKey", void 0);
 
     this.contractInstance = contractInstance;
-    this.varname = varname;
-    this.varindex = varindex;
+    this.storageKey = storageKey;
   }
 
   _createClass(StateQuery$$1, [{
@@ -23038,8 +24907,7 @@ function () {
     value: function toGrpc() {
       var q = new blockchain_pb_6();
       q.setContractaddress(this.contractInstance.address.asBytes());
-      q.setVarname(this.varname);
-      q.setVarindex(this.varindex);
+      q.setStoragekeysList([this.storageKey]);
       return q;
     }
   }]);
