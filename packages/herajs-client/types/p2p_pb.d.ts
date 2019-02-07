@@ -157,6 +157,11 @@ export class Status extends jspb.Message {
   getBestheight(): number;
   setBestheight(value: number): void;
 
+  getChainid(): Uint8Array | string;
+  getChainid_asU8(): Uint8Array;
+  getChainid_asB64(): string;
+  setChainid(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Status.AsObject;
   static toObject(includeInstance: boolean, msg: Status): Status.AsObject;
@@ -172,6 +177,7 @@ export namespace Status {
     sender?: node_pb.PeerAddress.AsObject,
     bestblockhash: Uint8Array | string,
     bestheight: number,
+    chainid: Uint8Array | string,
   }
 }
 
@@ -270,6 +276,38 @@ export namespace NewBlockNotice {
   export type AsObject = {
     blockhash: Uint8Array | string,
     blockno: number,
+  }
+}
+
+export class BlockProducedNotice extends jspb.Message {
+  getProducerid(): Uint8Array | string;
+  getProducerid_asU8(): Uint8Array;
+  getProducerid_asB64(): string;
+  setProducerid(value: Uint8Array | string): void;
+
+  getBlockno(): number;
+  setBlockno(value: number): void;
+
+  hasBlock(): boolean;
+  clearBlock(): void;
+  getBlock(): blockchain_pb.Block | undefined;
+  setBlock(value?: blockchain_pb.Block): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockProducedNotice.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockProducedNotice): BlockProducedNotice.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockProducedNotice, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockProducedNotice;
+  static deserializeBinaryFromReader(message: BlockProducedNotice, reader: jspb.BinaryReader): BlockProducedNotice;
+}
+
+export namespace BlockProducedNotice {
+  export type AsObject = {
+    producerid: Uint8Array | string,
+    blockno: number,
+    block?: blockchain_pb.Block.AsObject,
   }
 }
 

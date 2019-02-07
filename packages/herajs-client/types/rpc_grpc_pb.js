@@ -53,6 +53,17 @@ function deserialize_types_AccountList(buffer_arg) {
   return account_pb.AccountList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_AccountProof(arg) {
+  if (!(arg instanceof blockchain_pb.AccountProof)) {
+    throw new Error('Expected argument of type types.AccountProof');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_AccountProof(buffer_arg) {
+  return blockchain_pb.AccountProof.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_Block(arg) {
   if (!(arg instanceof blockchain_pb.Block)) {
     throw new Error('Expected argument of type types.Block');
@@ -62,6 +73,28 @@ function serialize_types_Block(arg) {
 
 function deserialize_types_Block(buffer_arg) {
   return blockchain_pb.Block.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_BlockBodyPaged(arg) {
+  if (!(arg instanceof rpc_pb.BlockBodyPaged)) {
+    throw new Error('Expected argument of type types.BlockBodyPaged');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockBodyPaged(buffer_arg) {
+  return rpc_pb.BlockBodyPaged.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_BlockBodyParams(arg) {
+  if (!(arg instanceof rpc_pb.BlockBodyParams)) {
+    throw new Error('Expected argument of type types.BlockBodyParams');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_BlockBodyParams(buffer_arg) {
+  return rpc_pb.BlockBodyParams.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_BlockHeaderList(arg) {
@@ -106,6 +139,17 @@ function serialize_types_BlockchainStatus(arg) {
 
 function deserialize_types_BlockchainStatus(buffer_arg) {
   return rpc_pb.BlockchainStatus.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_ChainInfo(arg) {
+  if (!(arg instanceof rpc_pb.ChainInfo)) {
+    throw new Error('Expected argument of type types.ChainInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ChainInfo(buffer_arg) {
+  return rpc_pb.ChainInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_CommitResult(arg) {
@@ -295,17 +339,6 @@ function deserialize_types_State(buffer_arg) {
   return blockchain_pb.State.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_types_StateProof(arg) {
-  if (!(arg instanceof blockchain_pb.StateProof)) {
-    throw new Error('Expected argument of type types.StateProof');
-  }
-  return new Buffer(arg.serializeBinary());
-}
-
-function deserialize_types_StateProof(buffer_arg) {
-  return blockchain_pb.StateProof.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_types_StateQuery(arg) {
   if (!(arg instanceof blockchain_pb.StateQuery)) {
     throw new Error('Expected argument of type types.StateQuery');
@@ -424,6 +457,18 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockchainStatus,
     responseDeserialize: deserialize_types_BlockchainStatus,
   },
+  // Returns current blockchain's basic information
+  getChainInfo: {
+    path: '/types.AergoRPCService/GetChainInfo',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.ChainInfo,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_ChainInfo,
+    responseDeserialize: deserialize_types_ChainInfo,
+  },
   // Returns list of Blocks without body according to request
   listBlockHeaders: {
     path: '/types.AergoRPCService/ListBlockHeaders',
@@ -472,7 +517,7 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_BlockMetadata,
     responseDeserialize: deserialize_types_BlockMetadata,
   },
-  // Return a single block, queried by hash or number
+  // Return a single block incl. header and body, queried by hash or number
   getBlock: {
     path: '/types.AergoRPCService/GetBlock',
     requestStream: false,
@@ -483,6 +528,30 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_SingleBytes,
     responseSerialize: serialize_types_Block,
     responseDeserialize: deserialize_types_Block,
+  },
+  // Return a single block's metdata (hash, header, and number of transactions), queried by hash or number
+  getBlockMetadata: {
+    path: '/types.AergoRPCService/GetBlockMetadata',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: rpc_pb.BlockMetadata,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_BlockMetadata,
+    responseDeserialize: deserialize_types_BlockMetadata,
+  },
+  // Return a single block's body, queried by hash or number and list parameters
+  getBlockBody: {
+    path: '/types.AergoRPCService/GetBlockBody',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.BlockBodyParams,
+    responseType: rpc_pb.BlockBodyPaged,
+    requestSerialize: serialize_types_BlockBodyParams,
+    requestDeserialize: deserialize_types_BlockBodyParams,
+    responseSerialize: serialize_types_BlockBodyPaged,
+    responseDeserialize: deserialize_types_BlockBodyPaged,
   },
   // Return a single transaction, queried by transaction hash
   getTX: {
@@ -598,11 +667,11 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestStream: false,
     responseStream: false,
     requestType: rpc_pb.AccountAndRoot,
-    responseType: blockchain_pb.StateProof,
+    responseType: blockchain_pb.AccountProof,
     requestSerialize: serialize_types_AccountAndRoot,
     requestDeserialize: deserialize_types_AccountAndRoot,
-    responseSerialize: serialize_types_StateProof,
-    responseDeserialize: deserialize_types_StateProof,
+    responseSerialize: serialize_types_AccountProof,
+    responseDeserialize: deserialize_types_AccountProof,
   },
   // Create a new account in this node
   createAccount: {

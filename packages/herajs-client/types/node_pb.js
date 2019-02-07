@@ -59,7 +59,7 @@ proto.types.PeerAddress.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.PeerAddress.toObject = function(includeInstance, msg) {
   var f, obj = {
-    address: msg.getAddress_asB64(),
+    address: jspb.Message.getFieldWithDefault(msg, 1, ""),
     port: jspb.Message.getFieldWithDefault(msg, 2, 0),
     peerid: msg.getPeerid_asB64()
   };
@@ -99,7 +99,7 @@ proto.types.PeerAddress.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setAddress(value);
       break;
     case 2:
@@ -139,9 +139,9 @@ proto.types.PeerAddress.prototype.serializeBinary = function() {
  */
 proto.types.PeerAddress.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAddress_asU8();
+  f = message.getAddress();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
@@ -164,39 +164,15 @@ proto.types.PeerAddress.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes address = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.types.PeerAddress.prototype.getAddress = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes address = 1;
- * This is a type-conversion wrapper around `getAddress()`
+ * optional string address = 1;
  * @return {string}
  */
-proto.types.PeerAddress.prototype.getAddress_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getAddress()));
+proto.types.PeerAddress.prototype.getAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
-/**
- * optional bytes address = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getAddress()`
- * @return {!Uint8Array}
- */
-proto.types.PeerAddress.prototype.getAddress_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getAddress()));
-};
-
-
-/** @param {!(string|Uint8Array)} value */
+/** @param {string} value */
 proto.types.PeerAddress.prototype.setAddress = function(value) {
   jspb.Message.setField(this, 1, value);
 };

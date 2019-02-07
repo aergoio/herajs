@@ -4,10 +4,8 @@
 import * as jspb from "google-protobuf";
 
 export class PeerAddress extends jspb.Message {
-  getAddress(): Uint8Array | string;
-  getAddress_asU8(): Uint8Array;
-  getAddress_asB64(): string;
-  setAddress(value: Uint8Array | string): void;
+  getAddress(): string;
+  setAddress(value: string): void;
 
   getPort(): number;
   setPort(value: number): void;
@@ -29,7 +27,7 @@ export class PeerAddress extends jspb.Message {
 
 export namespace PeerAddress {
   export type AsObject = {
-    address: Uint8Array | string,
+    address: string,
     port: number,
     peerid: Uint8Array | string,
   }

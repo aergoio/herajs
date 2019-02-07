@@ -12,6 +12,7 @@ var goog = jspb;
 var global = Function('return this')();
 
 goog.exportSymbol('proto.types.ABI', null, global);
+goog.exportSymbol('proto.types.AccountProof', null, global);
 goog.exportSymbol('proto.types.Block', null, global);
 goog.exportSymbol('proto.types.BlockBody', null, global);
 goog.exportSymbol('proto.types.BlockHeader', null, global);
@@ -21,7 +22,6 @@ goog.exportSymbol('proto.types.Function', null, global);
 goog.exportSymbol('proto.types.Query', null, global);
 goog.exportSymbol('proto.types.Receipt', null, global);
 goog.exportSymbol('proto.types.State', null, global);
-goog.exportSymbol('proto.types.StateProof', null, global);
 goog.exportSymbol('proto.types.StateQuery', null, global);
 goog.exportSymbol('proto.types.StateQueryProof', null, global);
 goog.exportSymbol('proto.types.StateVar', null, global);
@@ -2666,19 +2666,19 @@ proto.types.State.prototype.setSqlrecoverypoint = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.types.StateProof = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateProof.repeatedFields_, null);
+proto.types.AccountProof = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.AccountProof.repeatedFields_, null);
 };
-goog.inherits(proto.types.StateProof, jspb.Message);
+goog.inherits(proto.types.AccountProof, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.types.StateProof.displayName = 'proto.types.StateProof';
+  proto.types.AccountProof.displayName = 'proto.types.AccountProof';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.types.StateProof.repeatedFields_ = [7];
+proto.types.AccountProof.repeatedFields_ = [8];
 
 
 
@@ -2693,8 +2693,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.types.StateProof.prototype.toObject = function(opt_includeInstance) {
-  return proto.types.StateProof.toObject(opt_includeInstance, this);
+proto.types.AccountProof.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.AccountProof.toObject(opt_includeInstance, this);
 };
 
 
@@ -2703,18 +2703,19 @@ proto.types.StateProof.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.types.StateProof} msg The msg instance to transform.
+ * @param {!proto.types.AccountProof} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.types.StateProof.toObject = function(includeInstance, msg) {
+proto.types.AccountProof.toObject = function(includeInstance, msg) {
   var f, obj = {
     state: (f = msg.getState()) && proto.types.State.toObject(includeInstance, f),
     inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
+    key: msg.getKey_asB64(),
     proofkey: msg.getProofkey_asB64(),
     proofval: msg.getProofval_asB64(),
     bitmap: msg.getBitmap_asB64(),
-    height: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 7, 0),
     auditpathList: msg.getAuditpathList_asB64()
   };
 
@@ -2729,23 +2730,23 @@ proto.types.StateProof.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.types.StateProof}
+ * @return {!proto.types.AccountProof}
  */
-proto.types.StateProof.deserializeBinary = function(bytes) {
+proto.types.AccountProof.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.types.StateProof;
-  return proto.types.StateProof.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.types.AccountProof;
+  return proto.types.AccountProof.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.types.StateProof} msg The message object to deserialize into.
+ * @param {!proto.types.AccountProof} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.types.StateProof}
+ * @return {!proto.types.AccountProof}
  */
-proto.types.StateProof.deserializeBinaryFromReader = function(msg, reader) {
+proto.types.AccountProof.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2763,21 +2764,25 @@ proto.types.StateProof.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setProofkey(value);
+      msg.setKey(value);
       break;
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setProofval(value);
+      msg.setProofkey(value);
       break;
     case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setBitmap(value);
+      msg.setProofval(value);
       break;
     case 6:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBitmap(value);
+      break;
+    case 7:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setHeight(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addAuditpath(value);
       break;
@@ -2794,9 +2799,9 @@ proto.types.StateProof.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.types.StateProof.prototype.serializeBinary = function() {
+proto.types.AccountProof.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.types.StateProof.serializeBinaryToWriter(this, writer);
+  proto.types.AccountProof.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2804,11 +2809,11 @@ proto.types.StateProof.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.types.StateProof} message
+ * @param {!proto.types.AccountProof} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.types.StateProof.serializeBinaryToWriter = function(message, writer) {
+proto.types.AccountProof.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getState();
   if (f != null) {
@@ -2825,38 +2830,45 @@ proto.types.StateProof.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getProofkey_asU8();
+  f = message.getKey_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
       f
     );
   }
-  f = message.getProofval_asU8();
+  f = message.getProofkey_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       4,
       f
     );
   }
-  f = message.getBitmap_asU8();
+  f = message.getProofval_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       5,
       f
     );
   }
+  f = message.getBitmap_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      6,
+      f
+    );
+  }
   f = message.getHeight();
   if (f !== 0) {
     writer.writeUint32(
-      6,
+      7,
       f
     );
   }
   f = message.getAuditpathList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
-      7,
+      8,
       f
     );
   }
@@ -2867,19 +2879,19 @@ proto.types.StateProof.serializeBinaryToWriter = function(message, writer) {
  * optional State state = 1;
  * @return {?proto.types.State}
  */
-proto.types.StateProof.prototype.getState = function() {
+proto.types.AccountProof.prototype.getState = function() {
   return /** @type{?proto.types.State} */ (
     jspb.Message.getWrapperField(this, proto.types.State, 1));
 };
 
 
 /** @param {?proto.types.State|undefined} value */
-proto.types.StateProof.prototype.setState = function(value) {
+proto.types.AccountProof.prototype.setState = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.types.StateProof.prototype.clearState = function() {
+proto.types.AccountProof.prototype.clearState = function() {
   this.setState(undefined);
 };
 
@@ -2888,7 +2900,7 @@ proto.types.StateProof.prototype.clearState = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.types.StateProof.prototype.hasState = function() {
+proto.types.AccountProof.prototype.hasState = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -2899,185 +2911,224 @@ proto.types.StateProof.prototype.hasState = function() {
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.types.StateProof.prototype.getInclusion = function() {
+proto.types.AccountProof.prototype.getInclusion = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
 };
 
 
 /** @param {boolean} value */
-proto.types.StateProof.prototype.setInclusion = function(value) {
+proto.types.AccountProof.prototype.setInclusion = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
 /**
- * optional bytes proofKey = 3;
+ * optional bytes key = 3;
  * @return {!(string|Uint8Array)}
  */
-proto.types.StateProof.prototype.getProofkey = function() {
+proto.types.AccountProof.prototype.getKey = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes proofKey = 3;
- * This is a type-conversion wrapper around `getProofkey()`
+ * optional bytes key = 3;
+ * This is a type-conversion wrapper around `getKey()`
  * @return {string}
  */
-proto.types.StateProof.prototype.getProofkey_asB64 = function() {
+proto.types.AccountProof.prototype.getKey_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getProofkey()));
+      this.getKey()));
 };
 
 
 /**
- * optional bytes proofKey = 3;
+ * optional bytes key = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getProofkey()`
+ * This is a type-conversion wrapper around `getKey()`
  * @return {!Uint8Array}
  */
-proto.types.StateProof.prototype.getProofkey_asU8 = function() {
+proto.types.AccountProof.prototype.getKey_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getProofkey()));
+      this.getKey()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.types.StateProof.prototype.setProofkey = function(value) {
+proto.types.AccountProof.prototype.setKey = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
 
 /**
- * optional bytes proofVal = 4;
+ * optional bytes proofKey = 4;
  * @return {!(string|Uint8Array)}
  */
-proto.types.StateProof.prototype.getProofval = function() {
+proto.types.AccountProof.prototype.getProofkey = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes proofVal = 4;
- * This is a type-conversion wrapper around `getProofval()`
+ * optional bytes proofKey = 4;
+ * This is a type-conversion wrapper around `getProofkey()`
  * @return {string}
  */
-proto.types.StateProof.prototype.getProofval_asB64 = function() {
+proto.types.AccountProof.prototype.getProofkey_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getProofval()));
+      this.getProofkey()));
 };
 
 
 /**
- * optional bytes proofVal = 4;
+ * optional bytes proofKey = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getProofval()`
+ * This is a type-conversion wrapper around `getProofkey()`
  * @return {!Uint8Array}
  */
-proto.types.StateProof.prototype.getProofval_asU8 = function() {
+proto.types.AccountProof.prototype.getProofkey_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getProofval()));
+      this.getProofkey()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.types.StateProof.prototype.setProofval = function(value) {
+proto.types.AccountProof.prototype.setProofkey = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes proofVal = 5;
  * @return {!(string|Uint8Array)}
  */
-proto.types.StateProof.prototype.getBitmap = function() {
+proto.types.AccountProof.prototype.getProofval = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes proofVal = 5;
+ * This is a type-conversion wrapper around `getProofval()`
+ * @return {string}
+ */
+proto.types.AccountProof.prototype.getProofval_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getProofval()));
+};
+
+
+/**
+ * optional bytes proofVal = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getProofval()`
+ * @return {!Uint8Array}
+ */
+proto.types.AccountProof.prototype.getProofval_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getProofval()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.AccountProof.prototype.setProofval = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * optional bytes bitmap = 6;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.AccountProof.prototype.getBitmap = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * optional bytes bitmap = 6;
  * This is a type-conversion wrapper around `getBitmap()`
  * @return {string}
  */
-proto.types.StateProof.prototype.getBitmap_asB64 = function() {
+proto.types.AccountProof.prototype.getBitmap_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getBitmap()));
 };
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes bitmap = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBitmap()`
  * @return {!Uint8Array}
  */
-proto.types.StateProof.prototype.getBitmap_asU8 = function() {
+proto.types.AccountProof.prototype.getBitmap_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getBitmap()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.types.StateProof.prototype.setBitmap = function(value) {
-  jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * optional uint32 height = 6;
- * @return {number}
- */
-proto.types.StateProof.prototype.getHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
-};
-
-
-/** @param {number} value */
-proto.types.StateProof.prototype.setHeight = function(value) {
+proto.types.AccountProof.prototype.setBitmap = function(value) {
   jspb.Message.setField(this, 6, value);
 };
 
 
 /**
- * repeated bytes auditPath = 7;
- * @return {!(Array<!Uint8Array>|Array<string>)}
+ * optional uint32 height = 7;
+ * @return {number}
  */
-proto.types.StateProof.prototype.getAuditpathList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 7));
+proto.types.AccountProof.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {number} value */
+proto.types.AccountProof.prototype.setHeight = function(value) {
+  jspb.Message.setField(this, 7, value);
 };
 
 
 /**
- * repeated bytes auditPath = 7;
+ * repeated bytes auditPath = 8;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.types.AccountProof.prototype.getAuditpathList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 8));
+};
+
+
+/**
+ * repeated bytes auditPath = 8;
  * This is a type-conversion wrapper around `getAuditpathList()`
  * @return {!Array.<string>}
  */
-proto.types.StateProof.prototype.getAuditpathList_asB64 = function() {
+proto.types.AccountProof.prototype.getAuditpathList_asB64 = function() {
   return /** @type {!Array.<string>} */ (jspb.Message.bytesListAsB64(
       this.getAuditpathList()));
 };
 
 
 /**
- * repeated bytes auditPath = 7;
+ * repeated bytes auditPath = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuditpathList()`
  * @return {!Array.<!Uint8Array>}
  */
-proto.types.StateProof.prototype.getAuditpathList_asU8 = function() {
+proto.types.AccountProof.prototype.getAuditpathList_asU8 = function() {
   return /** @type {!Array.<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
       this.getAuditpathList()));
 };
 
 
 /** @param {!(Array<!Uint8Array>|Array<string>)} value */
-proto.types.StateProof.prototype.setAuditpathList = function(value) {
-  jspb.Message.setField(this, 7, value || []);
+proto.types.AccountProof.prototype.setAuditpathList = function(value) {
+  jspb.Message.setField(this, 8, value || []);
 };
 
 
@@ -3085,12 +3136,12 @@ proto.types.StateProof.prototype.setAuditpathList = function(value) {
  * @param {!(string|Uint8Array)} value
  * @param {number=} opt_index
  */
-proto.types.StateProof.prototype.addAuditpath = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 7, value, opt_index);
+proto.types.AccountProof.prototype.addAuditpath = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 8, value, opt_index);
 };
 
 
-proto.types.StateProof.prototype.clearAuditpathList = function() {
+proto.types.AccountProof.prototype.clearAuditpathList = function() {
   this.setAuditpathList([]);
 };
 
@@ -3118,7 +3169,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.types.ContractVarProof.repeatedFields_ = [7];
+proto.types.ContractVarProof.repeatedFields_ = [8];
 
 
 
@@ -3151,10 +3202,11 @@ proto.types.ContractVarProof.toObject = function(includeInstance, msg) {
   var f, obj = {
     value: msg.getValue_asB64(),
     inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
+    key: jspb.Message.getFieldWithDefault(msg, 3, ""),
     proofkey: msg.getProofkey_asB64(),
     proofval: msg.getProofval_asB64(),
     bitmap: msg.getBitmap_asB64(),
-    height: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 7, 0),
     auditpathList: msg.getAuditpathList_asB64()
   };
 
@@ -3201,22 +3253,26 @@ proto.types.ContractVarProof.deserializeBinaryFromReader = function(msg, reader)
       msg.setInclusion(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setProofkey(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setKey(value);
       break;
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setProofval(value);
+      msg.setProofkey(value);
       break;
     case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setBitmap(value);
+      msg.setProofval(value);
       break;
     case 6:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBitmap(value);
+      break;
+    case 7:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setHeight(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addAuditpath(value);
       break;
@@ -3263,38 +3319,45 @@ proto.types.ContractVarProof.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
-  f = message.getProofkey_asU8();
+  f = message.getKey();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
   }
-  f = message.getProofval_asU8();
+  f = message.getProofkey_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       4,
       f
     );
   }
-  f = message.getBitmap_asU8();
+  f = message.getProofval_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       5,
       f
     );
   }
+  f = message.getBitmap_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      6,
+      f
+    );
+  }
   f = message.getHeight();
   if (f !== 0) {
     writer.writeUint32(
-      6,
+      7,
       f
     );
   }
   f = message.getAuditpathList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
-      7,
+      8,
       f
     );
   }
@@ -3358,16 +3421,31 @@ proto.types.ContractVarProof.prototype.setInclusion = function(value) {
 
 
 /**
- * optional bytes proofKey = 3;
- * @return {!(string|Uint8Array)}
+ * optional string key = 3;
+ * @return {string}
  */
-proto.types.ContractVarProof.prototype.getProofkey = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.types.ContractVarProof.prototype.getKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.types.ContractVarProof.prototype.setKey = function(value) {
+  jspb.Message.setField(this, 3, value);
 };
 
 
 /**
- * optional bytes proofKey = 3;
+ * optional bytes proofKey = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ContractVarProof.prototype.getProofkey = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes proofKey = 4;
  * This is a type-conversion wrapper around `getProofkey()`
  * @return {string}
  */
@@ -3378,7 +3456,7 @@ proto.types.ContractVarProof.prototype.getProofkey_asB64 = function() {
 
 
 /**
- * optional bytes proofKey = 3;
+ * optional bytes proofKey = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getProofkey()`
@@ -3392,21 +3470,21 @@ proto.types.ContractVarProof.prototype.getProofkey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setProofkey = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setField(this, 4, value);
 };
 
 
 /**
- * optional bytes proofVal = 4;
+ * optional bytes proofVal = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.types.ContractVarProof.prototype.getProofval = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes proofVal = 4;
+ * optional bytes proofVal = 5;
  * This is a type-conversion wrapper around `getProofval()`
  * @return {string}
  */
@@ -3417,7 +3495,7 @@ proto.types.ContractVarProof.prototype.getProofval_asB64 = function() {
 
 
 /**
- * optional bytes proofVal = 4;
+ * optional bytes proofVal = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getProofval()`
@@ -3431,21 +3509,21 @@ proto.types.ContractVarProof.prototype.getProofval_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setProofval = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setField(this, 5, value);
 };
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes bitmap = 6;
  * @return {!(string|Uint8Array)}
  */
 proto.types.ContractVarProof.prototype.getBitmap = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes bitmap = 6;
  * This is a type-conversion wrapper around `getBitmap()`
  * @return {string}
  */
@@ -3456,7 +3534,7 @@ proto.types.ContractVarProof.prototype.getBitmap_asB64 = function() {
 
 
 /**
- * optional bytes bitmap = 5;
+ * optional bytes bitmap = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBitmap()`
@@ -3470,36 +3548,36 @@ proto.types.ContractVarProof.prototype.getBitmap_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setBitmap = function(value) {
-  jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * optional uint32 height = 6;
- * @return {number}
- */
-proto.types.ContractVarProof.prototype.getHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
-};
-
-
-/** @param {number} value */
-proto.types.ContractVarProof.prototype.setHeight = function(value) {
   jspb.Message.setField(this, 6, value);
 };
 
 
 /**
- * repeated bytes auditPath = 7;
- * @return {!(Array<!Uint8Array>|Array<string>)}
+ * optional uint32 height = 7;
+ * @return {number}
  */
-proto.types.ContractVarProof.prototype.getAuditpathList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 7));
+proto.types.ContractVarProof.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {number} value */
+proto.types.ContractVarProof.prototype.setHeight = function(value) {
+  jspb.Message.setField(this, 7, value);
 };
 
 
 /**
- * repeated bytes auditPath = 7;
+ * repeated bytes auditPath = 8;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.types.ContractVarProof.prototype.getAuditpathList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 8));
+};
+
+
+/**
+ * repeated bytes auditPath = 8;
  * This is a type-conversion wrapper around `getAuditpathList()`
  * @return {!Array.<string>}
  */
@@ -3510,7 +3588,7 @@ proto.types.ContractVarProof.prototype.getAuditpathList_asB64 = function() {
 
 
 /**
- * repeated bytes auditPath = 7;
+ * repeated bytes auditPath = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuditpathList()`
@@ -3524,7 +3602,7 @@ proto.types.ContractVarProof.prototype.getAuditpathList_asU8 = function() {
 
 /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 proto.types.ContractVarProof.prototype.setAuditpathList = function(value) {
-  jspb.Message.setField(this, 7, value || []);
+  jspb.Message.setField(this, 8, value || []);
 };
 
 
@@ -3533,7 +3611,7 @@ proto.types.ContractVarProof.prototype.setAuditpathList = function(value) {
  * @param {number=} opt_index
  */
 proto.types.ContractVarProof.prototype.addAuditpath = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 7, value, opt_index);
+  jspb.Message.addToRepeatedField(this, 8, value, opt_index);
 };
 
 
@@ -3554,12 +3632,19 @@ proto.types.ContractVarProof.prototype.clearAuditpathList = function() {
  * @constructor
  */
 proto.types.StateQueryProof = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQueryProof.repeatedFields_, null);
 };
 goog.inherits(proto.types.StateQueryProof, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.types.StateQueryProof.displayName = 'proto.types.StateQueryProof';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.StateQueryProof.repeatedFields_ = [2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -3589,8 +3674,9 @@ proto.types.StateQueryProof.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.StateQueryProof.toObject = function(includeInstance, msg) {
   var f, obj = {
-    contractproof: (f = msg.getContractproof()) && proto.types.StateProof.toObject(includeInstance, f),
-    varproof: (f = msg.getVarproof()) && proto.types.ContractVarProof.toObject(includeInstance, f)
+    contractproof: (f = msg.getContractproof()) && proto.types.AccountProof.toObject(includeInstance, f),
+    varproofsList: jspb.Message.toObjectList(msg.getVarproofsList(),
+    proto.types.ContractVarProof.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3628,14 +3714,14 @@ proto.types.StateQueryProof.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.types.StateProof;
-      reader.readMessage(value,proto.types.StateProof.deserializeBinaryFromReader);
+      var value = new proto.types.AccountProof;
+      reader.readMessage(value,proto.types.AccountProof.deserializeBinaryFromReader);
       msg.setContractproof(value);
       break;
     case 2:
       var value = new proto.types.ContractVarProof;
       reader.readMessage(value,proto.types.ContractVarProof.deserializeBinaryFromReader);
-      msg.setVarproof(value);
+      msg.addVarproofs(value);
       break;
     default:
       reader.skipField();
@@ -3671,12 +3757,12 @@ proto.types.StateQueryProof.serializeBinaryToWriter = function(message, writer) 
     writer.writeMessage(
       1,
       f,
-      proto.types.StateProof.serializeBinaryToWriter
+      proto.types.AccountProof.serializeBinaryToWriter
     );
   }
-  f = message.getVarproof();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getVarproofsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       2,
       f,
       proto.types.ContractVarProof.serializeBinaryToWriter
@@ -3686,16 +3772,16 @@ proto.types.StateQueryProof.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * optional StateProof contractProof = 1;
- * @return {?proto.types.StateProof}
+ * optional AccountProof contractProof = 1;
+ * @return {?proto.types.AccountProof}
  */
 proto.types.StateQueryProof.prototype.getContractproof = function() {
-  return /** @type{?proto.types.StateProof} */ (
-    jspb.Message.getWrapperField(this, proto.types.StateProof, 1));
+  return /** @type{?proto.types.AccountProof} */ (
+    jspb.Message.getWrapperField(this, proto.types.AccountProof, 1));
 };
 
 
-/** @param {?proto.types.StateProof|undefined} value */
+/** @param {?proto.types.AccountProof|undefined} value */
 proto.types.StateQueryProof.prototype.setContractproof = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
@@ -3716,32 +3802,33 @@ proto.types.StateQueryProof.prototype.hasContractproof = function() {
 
 
 /**
- * optional ContractVarProof varProof = 2;
- * @return {?proto.types.ContractVarProof}
+ * repeated ContractVarProof varProofs = 2;
+ * @return {!Array.<!proto.types.ContractVarProof>}
  */
-proto.types.StateQueryProof.prototype.getVarproof = function() {
-  return /** @type{?proto.types.ContractVarProof} */ (
-    jspb.Message.getWrapperField(this, proto.types.ContractVarProof, 2));
+proto.types.StateQueryProof.prototype.getVarproofsList = function() {
+  return /** @type{!Array.<!proto.types.ContractVarProof>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.types.ContractVarProof, 2));
 };
 
 
-/** @param {?proto.types.ContractVarProof|undefined} value */
-proto.types.StateQueryProof.prototype.setVarproof = function(value) {
-  jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-proto.types.StateQueryProof.prototype.clearVarproof = function() {
-  this.setVarproof(undefined);
+/** @param {!Array.<!proto.types.ContractVarProof>} value */
+proto.types.StateQueryProof.prototype.setVarproofsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {!boolean}
+ * @param {!proto.types.ContractVarProof=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.types.ContractVarProof}
  */
-proto.types.StateQueryProof.prototype.hasVarproof = function() {
-  return jspb.Message.getField(this, 2) != null;
+proto.types.StateQueryProof.prototype.addVarproofs = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.ContractVarProof, opt_index);
+};
+
+
+proto.types.StateQueryProof.prototype.clearVarproofsList = function() {
+  this.setVarproofsList([]);
 };
 
 
@@ -4968,12 +5055,19 @@ proto.types.Query.prototype.setQueryinfo = function(value) {
  * @constructor
  */
 proto.types.StateQuery = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQuery.repeatedFields_, null);
 };
 goog.inherits(proto.types.StateQuery, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.types.StateQuery.displayName = 'proto.types.StateQuery';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.StateQuery.repeatedFields_ = [2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -5004,10 +5098,9 @@ proto.types.StateQuery.prototype.toObject = function(opt_includeInstance) {
 proto.types.StateQuery.toObject = function(includeInstance, msg) {
   var f, obj = {
     contractaddress: msg.getContractaddress_asB64(),
-    varname: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    varindex: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    storagekeysList: jspb.Message.getRepeatedField(msg, 2),
     root: msg.getRoot_asB64(),
-    compressed: jspb.Message.getFieldWithDefault(msg, 5, false)
+    compressed: jspb.Message.getFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -5050,17 +5143,13 @@ proto.types.StateQuery.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setVarname(value);
+      msg.addStoragekeys(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setVarindex(value);
-      break;
-    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setRoot(value);
       break;
-    case 5:
+    case 4:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setCompressed(value);
       break;
@@ -5100,31 +5189,24 @@ proto.types.StateQuery.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getVarname();
+  f = message.getStoragekeysList();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeRepeatedString(
       2,
-      f
-    );
-  }
-  f = message.getVarindex();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
       f
     );
   }
   f = message.getRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      4,
+      3,
       f
     );
   }
   f = message.getCompressed();
   if (f) {
     writer.writeBool(
-      5,
+      4,
       f
     );
   }
@@ -5171,46 +5253,45 @@ proto.types.StateQuery.prototype.setContractaddress = function(value) {
 
 
 /**
- * optional string varName = 2;
- * @return {string}
+ * repeated string storageKeys = 2;
+ * @return {!Array.<string>}
  */
-proto.types.StateQuery.prototype.getVarname = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.types.StateQuery.prototype.getStoragekeysList = function() {
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
-/** @param {string} value */
-proto.types.StateQuery.prototype.setVarname = function(value) {
-  jspb.Message.setField(this, 2, value);
+/** @param {!Array.<string>} value */
+proto.types.StateQuery.prototype.setStoragekeysList = function(value) {
+  jspb.Message.setField(this, 2, value || []);
 };
 
 
 /**
- * optional string varIndex = 3;
- * @return {string}
+ * @param {!string} value
+ * @param {number=} opt_index
  */
-proto.types.StateQuery.prototype.getVarindex = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.types.StateQuery.prototype.addStoragekeys = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
-/** @param {string} value */
-proto.types.StateQuery.prototype.setVarindex = function(value) {
-  jspb.Message.setField(this, 3, value);
+proto.types.StateQuery.prototype.clearStoragekeysList = function() {
+  this.setStoragekeysList([]);
 };
 
 
 /**
- * optional bytes root = 4;
+ * optional bytes root = 3;
  * @return {!(string|Uint8Array)}
  */
 proto.types.StateQuery.prototype.getRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes root = 4;
+ * optional bytes root = 3;
  * This is a type-conversion wrapper around `getRoot()`
  * @return {string}
  */
@@ -5221,7 +5302,7 @@ proto.types.StateQuery.prototype.getRoot_asB64 = function() {
 
 
 /**
- * optional bytes root = 4;
+ * optional bytes root = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getRoot()`
@@ -5235,24 +5316,24 @@ proto.types.StateQuery.prototype.getRoot_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.StateQuery.prototype.setRoot = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setField(this, 3, value);
 };
 
 
 /**
- * optional bool compressed = 5;
+ * optional bool compressed = 4;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
 proto.types.StateQuery.prototype.getCompressed = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
 };
 
 
 /** @param {boolean} value */
 proto.types.StateQuery.prototype.setCompressed = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setField(this, 4, value);
 };
 
 

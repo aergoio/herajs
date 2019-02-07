@@ -345,7 +345,7 @@ export namespace State {
   }
 }
 
-export class StateProof extends jspb.Message {
+export class AccountProof extends jspb.Message {
   hasState(): boolean;
   clearState(): void;
   getState(): State | undefined;
@@ -353,6 +353,11 @@ export class StateProof extends jspb.Message {
 
   getInclusion(): boolean;
   setInclusion(value: boolean): void;
+
+  getKey(): Uint8Array | string;
+  getKey_asU8(): Uint8Array;
+  getKey_asB64(): string;
+  setKey(value: Uint8Array | string): void;
 
   getProofkey(): Uint8Array | string;
   getProofkey_asU8(): Uint8Array;
@@ -380,19 +385,20 @@ export class StateProof extends jspb.Message {
   addAuditpath(value: Uint8Array | string, index?: number): Uint8Array | string;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StateProof.AsObject;
-  static toObject(includeInstance: boolean, msg: StateProof): StateProof.AsObject;
+  toObject(includeInstance?: boolean): AccountProof.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountProof): AccountProof.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: StateProof, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StateProof;
-  static deserializeBinaryFromReader(message: StateProof, reader: jspb.BinaryReader): StateProof;
+  static serializeBinaryToWriter(message: AccountProof, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountProof;
+  static deserializeBinaryFromReader(message: AccountProof, reader: jspb.BinaryReader): AccountProof;
 }
 
-export namespace StateProof {
+export namespace AccountProof {
   export type AsObject = {
     state?: State.AsObject,
     inclusion: boolean,
+    key: Uint8Array | string,
     proofkey: Uint8Array | string,
     proofval: Uint8Array | string,
     bitmap: Uint8Array | string,
@@ -409,6 +415,9 @@ export class ContractVarProof extends jspb.Message {
 
   getInclusion(): boolean;
   setInclusion(value: boolean): void;
+
+  getKey(): string;
+  setKey(value: string): void;
 
   getProofkey(): Uint8Array | string;
   getProofkey_asU8(): Uint8Array;
@@ -449,6 +458,7 @@ export namespace ContractVarProof {
   export type AsObject = {
     value: Uint8Array | string,
     inclusion: boolean,
+    key: string,
     proofkey: Uint8Array | string,
     proofval: Uint8Array | string,
     bitmap: Uint8Array | string,
@@ -460,13 +470,13 @@ export namespace ContractVarProof {
 export class StateQueryProof extends jspb.Message {
   hasContractproof(): boolean;
   clearContractproof(): void;
-  getContractproof(): StateProof | undefined;
-  setContractproof(value?: StateProof): void;
+  getContractproof(): AccountProof | undefined;
+  setContractproof(value?: AccountProof): void;
 
-  hasVarproof(): boolean;
-  clearVarproof(): void;
-  getVarproof(): ContractVarProof | undefined;
-  setVarproof(value?: ContractVarProof): void;
+  clearVarproofsList(): void;
+  getVarproofsList(): Array<ContractVarProof>;
+  setVarproofsList(value: Array<ContractVarProof>): void;
+  addVarproofs(value?: ContractVarProof, index?: number): ContractVarProof;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StateQueryProof.AsObject;
@@ -480,8 +490,8 @@ export class StateQueryProof extends jspb.Message {
 
 export namespace StateQueryProof {
   export type AsObject = {
-    contractproof?: StateProof.AsObject,
-    varproof?: ContractVarProof.AsObject,
+    contractproof?: AccountProof.AsObject,
+    varproofsList: Array<ContractVarProof.AsObject>,
   }
 }
 
@@ -655,11 +665,10 @@ export class StateQuery extends jspb.Message {
   getContractaddress_asB64(): string;
   setContractaddress(value: Uint8Array | string): void;
 
-  getVarname(): string;
-  setVarname(value: string): void;
-
-  getVarindex(): string;
-  setVarindex(value: string): void;
+  clearStoragekeysList(): void;
+  getStoragekeysList(): Array<string>;
+  setStoragekeysList(value: Array<string>): void;
+  addStoragekeys(value: string, index?: number): string;
 
   getRoot(): Uint8Array | string;
   getRoot_asU8(): Uint8Array;
@@ -682,8 +691,7 @@ export class StateQuery extends jspb.Message {
 export namespace StateQuery {
   export type AsObject = {
     contractaddress: Uint8Array | string,
-    varname: string,
-    varindex: string,
+    storagekeysList: Array<string>,
     root: Uint8Array | string,
     compressed: boolean,
   }

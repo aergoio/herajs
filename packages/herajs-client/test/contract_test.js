@@ -108,7 +108,7 @@ describe('Contracts', () => {
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
             // Query contract state
-            const result = await aergo.queryContractState(contract.queryState('Value'));
+            const result = await aergo.queryContractState(contract.queryState('_sv_Value'));
             assert.equal(result, 2);
 
             // TODO changed api!

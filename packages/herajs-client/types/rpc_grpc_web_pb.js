@@ -40,6 +40,15 @@ AergoRPCService.Blockchain = {
   responseType: rpc_pb.BlockchainStatus
 };
 
+AergoRPCService.GetChainInfo = {
+  methodName: "GetChainInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.ChainInfo
+};
+
 AergoRPCService.ListBlockHeaders = {
   methodName: "ListBlockHeaders",
   service: AergoRPCService,
@@ -83,6 +92,24 @@ AergoRPCService.GetBlock = {
   responseStream: false,
   requestType: rpc_pb.SingleBytes,
   responseType: blockchain_pb.Block
+};
+
+AergoRPCService.GetBlockMetadata = {
+  methodName: "GetBlockMetadata",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.BlockMetadata
+};
+
+AergoRPCService.GetBlockBody = {
+  methodName: "GetBlockBody",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.BlockBodyParams,
+  responseType: rpc_pb.BlockBodyPaged
 };
 
 AergoRPCService.GetTX = {
@@ -172,7 +199,7 @@ AergoRPCService.GetStateAndProof = {
   requestStream: false,
   responseStream: false,
   requestType: rpc_pb.AccountAndRoot,
-  responseType: blockchain_pb.StateProof
+  responseType: blockchain_pb.AccountProof
 };
 
 AergoRPCService.CreateAccount = {
@@ -356,6 +383,28 @@ AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage,
   });
 };
 
+AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetChainInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
 AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
@@ -483,6 +532,50 @@ AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, met
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetBlock, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetBlockMetadata, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.GetBlockBody, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

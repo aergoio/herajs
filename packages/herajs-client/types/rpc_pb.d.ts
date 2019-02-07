@@ -34,6 +34,86 @@ export namespace BlockchainStatus {
   }
 }
 
+export class ChainId extends jspb.Message {
+  getMagic(): string;
+  setMagic(value: string): void;
+
+  getPublic(): boolean;
+  setPublic(value: boolean): void;
+
+  getMainnet(): boolean;
+  setMainnet(value: boolean): void;
+
+  getCoinbasefee(): Uint8Array | string;
+  getCoinbasefee_asU8(): Uint8Array;
+  getCoinbasefee_asB64(): string;
+  setCoinbasefee(value: Uint8Array | string): void;
+
+  getConsensus(): string;
+  setConsensus(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChainId.AsObject;
+  static toObject(includeInstance: boolean, msg: ChainId): ChainId.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ChainId, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChainId;
+  static deserializeBinaryFromReader(message: ChainId, reader: jspb.BinaryReader): ChainId;
+}
+
+export namespace ChainId {
+  export type AsObject = {
+    magic: string,
+    pb_public: boolean,
+    mainnet: boolean,
+    coinbasefee: Uint8Array | string,
+    consensus: string,
+  }
+}
+
+export class ChainInfo extends jspb.Message {
+  hasChainid(): boolean;
+  clearChainid(): void;
+  getChainid(): ChainId | undefined;
+  setChainid(value?: ChainId): void;
+
+  getBpnumber(): number;
+  setBpnumber(value: number): void;
+
+  getMaxblocksize(): number;
+  setMaxblocksize(value: number): void;
+
+  getMaxtokens(): Uint8Array | string;
+  getMaxtokens_asU8(): Uint8Array;
+  getMaxtokens_asB64(): string;
+  setMaxtokens(value: Uint8Array | string): void;
+
+  getStakingminimum(): Uint8Array | string;
+  getStakingminimum_asU8(): Uint8Array;
+  getStakingminimum_asB64(): string;
+  setStakingminimum(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChainInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ChainInfo): ChainInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ChainInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChainInfo;
+  static deserializeBinaryFromReader(message: ChainInfo, reader: jspb.BinaryReader): ChainInfo;
+}
+
+export namespace ChainInfo {
+  export type AsObject = {
+    chainid?: ChainId.AsObject,
+    bpnumber: number,
+    maxblocksize: number,
+    maxtokens: Uint8Array | string,
+    stakingminimum: Uint8Array | string,
+  }
+}
+
 export class Input extends jspb.Message {
   getHash(): Uint8Array | string;
   getHash_asU8(): Uint8Array;
@@ -198,6 +278,9 @@ export class Peer extends jspb.Message {
   getState(): number;
   setState(value: number): void;
 
+  getHidden(): boolean;
+  setHidden(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Peer.AsObject;
   static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
@@ -213,6 +296,7 @@ export namespace Peer {
     address?: node_pb.PeerAddress.AsObject,
     bestblock?: p2p_pb.NewBlockNotice.AsObject,
     state: number,
+    hidden: boolean,
   }
 }
 
@@ -273,6 +357,92 @@ export namespace ListParams {
     size: number,
     offset: number,
     asc: boolean,
+  }
+}
+
+export class PageParams extends jspb.Message {
+  getOffset(): number;
+  setOffset(value: number): void;
+
+  getSize(): number;
+  setSize(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PageParams.AsObject;
+  static toObject(includeInstance: boolean, msg: PageParams): PageParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PageParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PageParams;
+  static deserializeBinaryFromReader(message: PageParams, reader: jspb.BinaryReader): PageParams;
+}
+
+export namespace PageParams {
+  export type AsObject = {
+    offset: number,
+    size: number,
+  }
+}
+
+export class BlockBodyPaged extends jspb.Message {
+  getTotal(): number;
+  setTotal(value: number): void;
+
+  getOffset(): number;
+  setOffset(value: number): void;
+
+  getSize(): number;
+  setSize(value: number): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): blockchain_pb.BlockBody | undefined;
+  setBody(value?: blockchain_pb.BlockBody): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockBodyPaged.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockBodyPaged): BlockBodyPaged.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockBodyPaged, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockBodyPaged;
+  static deserializeBinaryFromReader(message: BlockBodyPaged, reader: jspb.BinaryReader): BlockBodyPaged;
+}
+
+export namespace BlockBodyPaged {
+  export type AsObject = {
+    total: number,
+    offset: number,
+    size: number,
+    body?: blockchain_pb.BlockBody.AsObject,
+  }
+}
+
+export class BlockBodyParams extends jspb.Message {
+  getHashornumber(): Uint8Array | string;
+  getHashornumber_asU8(): Uint8Array;
+  getHashornumber_asB64(): string;
+  setHashornumber(value: Uint8Array | string): void;
+
+  hasPaging(): boolean;
+  clearPaging(): void;
+  getPaging(): PageParams | undefined;
+  setPaging(value?: PageParams): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockBodyParams.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockBodyParams): BlockBodyParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockBodyParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockBodyParams;
+  static deserializeBinaryFromReader(message: BlockBodyParams, reader: jspb.BinaryReader): BlockBodyParams;
+}
+
+export namespace BlockBodyParams {
+  export type AsObject = {
+    hashornumber: Uint8Array | string,
+    paging?: PageParams.AsObject,
   }
 }
 
