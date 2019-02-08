@@ -12,11 +12,6 @@ Javascript client SDK for AERGO blockchain.
 
 This package supports both Node.js and Web platforms. Please refer to the documentation how to select the platform.
 
-Roadmap:
-
-- Typescript support
-- Middleware architecture
-
 ## Quick start
 
 ```console
@@ -33,7 +28,7 @@ aergo.blockchain().then(result => {
 });
 ```
 
-Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import AergoClient from 'herajs/dist/herajs.js';` or create an alias in your bundler configuration. Many bundlers like Webpack automatically pick the browser version, so you don't need to configure anything.
+Note that this by default imports the Node.js version which is not compatible with browsers. If you target web browsers, either `import AergoClient from '@herajs/client/dist/herajs.js';` or create an alias in your bundler configuration. Many bundlers like Webpack automatically pick the browser version, so you don't need to configure anything.
 
 You can also directly import the pre-built bundle in HTML using `<script src="herajs/dist/herajs.min.js"></script>` and use the global `herajs` variable.
 
