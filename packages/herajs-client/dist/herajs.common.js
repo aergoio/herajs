@@ -1,5 +1,5 @@
 /*!
- * herajs v0.5.0
+ * herajs v0.5.1
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -21341,7 +21341,7 @@ function () {
       }
 
       obj.address = {
-        address: buffer.Buffer.from(grpcObject.getAddress().getAddress_asU8()),
+        address: obj.address.address,
         port: obj.address.port,
         peerid: bs58.encode(grpcObject.getAddress().getPeerid_asU8())
       };
@@ -25050,8 +25050,8 @@ function () {
 
   }, {
     key: "queryState",
-    value: function queryState(varname, varindex) {
-      return new StateQuery$$1(this, varname, varindex);
+    value: function queryState(key) {
+      return new StateQuery$$1(this, key);
     }
   }], [{
     key: "fromCode",
