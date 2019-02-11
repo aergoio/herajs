@@ -220,8 +220,8 @@ class Contract {
      * @param varname 
      * @param varindex 
      */
-    queryState(varname: string, varindex: string): StateQuery {
-        return new StateQuery(this, varname, varindex);
+    queryState(key: string): StateQuery {
+        return new StateQuery(this, key);
     }
 
     static encodeCode(byteArray: Buffer): string {
