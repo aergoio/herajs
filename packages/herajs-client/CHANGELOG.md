@@ -1,3 +1,7 @@
+## 0.5.1 (February 11, 2019)
+
+- Compatability with aergosvr 0.11: changed address of Peer
+
 ## 0.5.0 (February 7, 2019)
 
 - New API method: getChainInfo() (https://github.com/aergoio/herajs/pull/16)
