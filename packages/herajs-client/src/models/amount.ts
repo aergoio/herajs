@@ -1,4 +1,4 @@
-import { UNITS } from '../constants.js';
+import { UNITS } from '../constants';
 import JSBI from 'jsbi';
 import { fromHexString, toHexString } from '../utils';
 
@@ -124,5 +124,10 @@ export default class Amount {
      */
     toUnit(unit: string): Amount {
         return new Amount(this.value, '', unit);
+    }
+
+    compare(otherAmount) {
+        const [a, b] = [this.toUnit('aer').value, otherAmount.toUnit('aer').value];
+        return JSBI.lessThan(a, b) ? -1 : (JSBI.equal(a, b) ? 0 : 1);
     }
 }

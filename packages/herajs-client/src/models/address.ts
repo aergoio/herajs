@@ -1,4 +1,4 @@
-import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants.js';
+import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants';
 import bs58check from 'bs58check';
 import { Buffer } from 'buffer';
 

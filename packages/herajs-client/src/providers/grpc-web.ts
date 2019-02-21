@@ -11,7 +11,7 @@ interface GrpcWebProviderConfig {
  * Note that the transport is considerably slower than over standard GRPC.
  */
 class GrpcWebProvider {
-    client: AergoRPCServiceClient;
+    client: any;
     config: GrpcWebProviderConfig;
 
     /**

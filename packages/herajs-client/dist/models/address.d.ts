@@ -7,6 +7,7 @@
 export default class Address {
     value: Buffer;
     encoded: string;
+    isName: boolean;
     constructor(address: Address | string | Buffer | Uint8Array);
     asBytes(): Buffer;
     toJSON(): string;

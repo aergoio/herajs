@@ -20842,6 +20842,14 @@ function () {
     value: function toUnit(unit) {
       return new Amount(this.value, '', unit);
     }
+  }, {
+    key: "compare",
+    value: function compare(otherAmount) {
+      var _ref = [this.toUnit('aer').value, otherAmount.toUnit('aer').value],
+          a = _ref[0],
+          b = _ref[1];
+      return JSBI.lessThan(a, b) ? -1 : JSBI.equal(a, b) ? 0 : 1;
+    }
   }], [{
     key: "moveDecimalPoint",
     value: function moveDecimalPoint(str, digits) {

@@ -12,7 +12,9 @@
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
     "release": "bash scripts/release.sh",
-    "build": "babel-node scripts/build.js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel-node scripts/build.js",
+    "build": "npm run build:types && npm run build:js",
     "docs": "cd docs && make html",
     "type-check": "tsc --noEmit src/index",
     "type-check:watch": "npm run type-check -- --watch"

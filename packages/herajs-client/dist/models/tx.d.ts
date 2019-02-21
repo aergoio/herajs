@@ -1,18 +1,18 @@
-/// <reference types="node" />
 import { Tx as GrpcTx } from '../../types/blockchain_pb';
 import Address from './address';
+import Amount from './amount';
 export default class Tx {
     hash: string;
     nonce: number;
     from: Address;
     to: Address;
-    amount: number;
-    payload: Buffer;
-    sign: Buffer;
+    amount: Amount;
+    payload: Uint8Array;
+    sign: string;
     type: number;
     limit: number;
-    price: number;
+    price: Amount;
     constructor(data: Partial<Tx>);
-    static fromGrpc(grpcObject: any): Tx;
+    static fromGrpc(grpcObject: GrpcTx): Tx;
     toGrpc(): GrpcTx;
 }

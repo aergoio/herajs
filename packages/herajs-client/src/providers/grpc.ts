@@ -1,17 +1,16 @@
-import { AergoRPCServiceClient } from '../../types/rpc_grpc_pb.js';
+import { AergoRPCServiceClient } from '../../types/rpc_grpc_pb';
 import grpc from 'grpc';
 
 interface GrpcProviderConfig {
     url?: string;
 }
 
-
 /**
  * Provider for standard GRPC connections over HTTP2.
  * This is only compatible with Node.js environments.
  */
 class GrpcProvider {
-    client: AergoRPCServiceClient;
+    client: any;
     config: any;
 
     /**

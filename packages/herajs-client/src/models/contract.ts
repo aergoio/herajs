@@ -1,4 +1,4 @@
-import { ADDRESS_PREFIXES } from '../constants.js';
+import { ADDRESS_PREFIXES } from '../constants';
 import bs58check from 'bs58check';
 import { fromNumber } from '../utils.js';
 import Address from './address';

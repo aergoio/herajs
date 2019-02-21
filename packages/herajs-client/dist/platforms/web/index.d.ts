@@ -4,4 +4,5 @@ import GrpcWebProvider from '../../providers/grpc-web';
 import constants from '../../constants';
 import Contract from '../../models/contract';
 import Address from '../../models/address';
-export { AergoClient, GrpcWebProvider, constants, Address, Contract, AergoClient as default };
+import Amount from '../../models/amount';
+export { AergoClient, GrpcWebProvider, constants, Address, Amount, Contract, AergoClient as default };
