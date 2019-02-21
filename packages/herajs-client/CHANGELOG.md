@@ -1,3 +1,7 @@
+## 0.5.2 (February 21, 2019)
+
+- Fix Typescript definitions
+
 ## 0.5.1 (February 11, 2019)
 
 - Compatability with aergosvr 0.11: changed address of Peer
