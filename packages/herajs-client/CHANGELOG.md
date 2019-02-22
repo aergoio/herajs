@@ -1,3 +1,8 @@
+## 0.5.3 (February 22, 2019)
+
+- Add option to contract.asPayload() to pass constructor arguments
+- Fix response of getABI, was missing state_variables.
+
 ## 0.5.2 (February 21, 2019)
 
 - Fix Typescript definitions
