@@ -1,6 +1,8 @@
 /// <reference types="node" />
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
+declare type _PrimitiveType = string | number | boolean;
+declare type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
 /**
  * Data structure for contract function calls.
  * You should not need to build these yourself, they are returned from contract instance functions and
@@ -8,7 +10,7 @@ import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/block
  */
 export declare class FunctionCall {
     definition: Function.AsObject;
-    args: Array<string | number | boolean>;
+    args: Array<PrimitiveType>;
     contractInstance: Contract;
     constructor(contractInstance: any, definition: any, args: any);
     /**
@@ -46,7 +48,7 @@ export declare class FunctionCall {
      */
     asQueryInfo(): {
         Name: string;
-        Args: import("google-protobuf").ScalarFieldType[];
+        Args: PrimitiveType[];
     };
     toGrpc(): Query;
 }
@@ -121,9 +123,10 @@ declare class Contract {
     loadAbi(abi: any): Contract;
     /**
      * Return contract code as payload for transaction
+     * @param {args}
      * @return {Buffer} a byte buffer
      */
-    asPayload(): Buffer;
+    asPayload(args?: Array<PrimitiveType>): Buffer;
     /**
      * Create query object to query contract state.
      * @param varname

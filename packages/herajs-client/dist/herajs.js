@@ -1,5 +1,5 @@
 /*!
- * herajs v0.5.2
+ * herajs v0.5.3
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -28713,7 +28713,8 @@
 	              name: item.name,
 	              arguments: item.argumentsList
 	            };
-	          })
+	          }),
+	          state_variables: obj.stateVariablesList
 	        };
 	      });
 	    }
@@ -31496,7 +31497,6 @@
 	 * You should not need to build these yourself, they are returned from contract instance functions and
 	 * can be passed to the client.
 	 */
-
 	var FunctionCall =
 	/*#__PURE__*/
 	function () {
@@ -31735,18 +31735,26 @@
 	    }
 	    /**
 	     * Return contract code as payload for transaction
+	     * @param {args}
 	     * @return {Buffer} a byte buffer
 	     */
 
 	  }, {
 	    key: "asPayload",
-	    value: function asPayload() {
+	    value: function asPayload(args) {
 	      if (!this.code || !this.code.length) {
 	        throw new Error('Code is required to generate payload');
-	      } // First 4 bytes are the length
+	      } // First 4 bytes are the length of code (incl. ABI)
 
 
-	      return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
+	      var len = Buffer.from(fromNumber(4 + this.code.length, 4));
+
+	      if (typeof args !== 'undefined') {
+	        var argsDecoded = Buffer.from(JSON.stringify(args));
+	        return Buffer.concat([len, this.code, argsDecoded]);
+	      }
+
+	      return Buffer.concat([len, this.code]);
 	    }
 	    /**
 	     * Create query object to query contract state.
