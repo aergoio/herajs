@@ -1,7 +1,1 @@
-{
-    "version":"0.2",
-    "language":"lua",
-    "functions":[
-        {"name":"inc","arguments":[]},
-        {"name":"query","arguments":[{"name":"a"}]}]
-}
+{"version":"0.2","language":"lua","functions":[{"name":"inc","arguments":[]},{"name":"query","arguments":[{"name":"a"}]}],"state_variables":[{"name":"Value","type":"value"}]}

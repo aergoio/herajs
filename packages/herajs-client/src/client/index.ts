@@ -1,10 +1,10 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { TxInBlock, Tx as GrpcTx, StateQueryProof } from '../../types/blockchain_pb';
+import { TxInBlock, Tx as GrpcTx, StateQueryProof, ABI as GrpcABI } from '../../types/blockchain_pb';
 import {
     Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
     BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
-    Name, NameInfo, Staking, ChainInfo as GrpcChainInfo
+    Name, NameInfo, Staking, ChainInfo as GrpcChainInfo,
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -365,7 +365,7 @@ class AergoClient {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(
-            grpcObject => {
+            (grpcObject: GrpcABI) => {
                 const obj = grpcObject.toObject();
                 return {
                     language: obj.language,
@@ -373,7 +373,8 @@ class AergoClient {
                     functions: obj.functionsList.map(item => ({
                         name: item.name,
                         arguments: item.argumentsList
-                    }))
+                    })),
+                    state_variables: obj.stateVariablesList
                 };
             }
         );

@@ -4,6 +4,9 @@ import { fromNumber } from '../utils.js';
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 
+type _PrimitiveType = string | number | boolean;
+type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
+
 /**
  * Data structure for contract function calls.
  * You should not need to build these yourself, they are returned from contract instance functions and
@@ -11,7 +14,7 @@ import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/block
  */
 export class FunctionCall {
     definition: Function.AsObject;
-    args: Array<string|number|boolean>;
+    args: Array<PrimitiveType>;
     contractInstance: Contract;
 
     constructor(contractInstance, definition, args) {
@@ -205,14 +208,20 @@ class Contract {
 
     /**
      * Return contract code as payload for transaction
+     * @param {args}
      * @return {Buffer} a byte buffer
      */
-    asPayload(): Buffer {
+    asPayload(args?: Array<PrimitiveType>): Buffer {
         if (!this.code || !this.code.length) {
             throw new Error('Code is required to generate payload');
         }
-        // First 4 bytes are the length
-        return Buffer.concat([Buffer.from(fromNumber(4 + this.code.length, 4)), this.code]);
+        // First 4 bytes are the length of code (incl. ABI)
+        const len = Buffer.from(fromNumber(4 + this.code.length, 4));
+        if (typeof args !== 'undefined') {
+            const argsDecoded = Buffer.from(JSON.stringify(args));
+            return Buffer.concat([len, this.code, argsDecoded]);
+        }
+        return Buffer.concat([len, this.code]);
     }
 
     /**

@@ -15,7 +15,7 @@ describe('Contracts', () => {
     const aergo = new AergoClient();
 
     describe('deploy, call, query a simple contract', () => {
-        const contractCode = '2WjtZp4nGF6rQJc1zfaCqC8LL6oy3s1sfKQogaBndciKSaewfveibxW2tgFR1xdmWYEBfR22dMmP2px3WynTkywMgJDaQ3Db1jFfzk7yycNLGq3uU5MNHJzR4CoM7J5eXT3tvAufGM6E5vX2PB4BE3SSC6s4GXDoJa8jkCynava4t39VocervwEPU6N1j7cg5YHNN7nJy65WLmVLziehdm9UGuFubctih2owYXEEaj5kxuSFQZL5Cup7jtpmpFGztkkiG83wPdBLU6wdUjtB7rJunTCV3v7gmUA9zB5RhHmE5SD5wzNyiuAC6bzXYKfjTU2xgeqeJBDTtP1K2k3KdGLCsJS2f7SeqUoiWstfNdCGg5aMi12hqfTSjcsM5ndUoY92uWZGmyTaC87LtKVe7h9XJyDkKcS41guRpxwdE7imsffCYweo7zLUY7uhxdpGrcswAZunXs5X7g4F3ytxXBzeXDAPzZYMfVoWUDzbnj2NGZ3C4Y6jgvhbcU4UsFvNWk582QceiS1fzJWEoKruJM4TBSBBgRwju39BVBHwsgYcYCRkb4fbyoEExRSAw4TmrAaUFcE2GcJCWHurx5uHDrbqmpwz4TWxN3QWp7FkBs4AgbSmkDj7Q8wNAXVYCfeaBoFqBE1npQYNUaZ5z41CKU7EV8XtsH';
+        const contractCode = '2WjtZp4nGF6rQJc1zfaCqC8LL6oy3s1sfKQogaBndcWSsXza162KmHSxTCaEWn3xiWPPSbBGGKUwf8b4PWCoYT8FqRxqKuKyUijA3PPxckL7xcjdFDq98xCXud86AiFffDoeJQUuZ1ShKbeQKCqyj9GFuJPdHgWG2FarXWANyUxE3kNp5feXWV9hLf9FhedFpxPAMDnEJyiuHV7qTKrnmDduhXqrSCWThfyjT3J6T26GUAQcXdoFBLPtrSWMGgKZWHxeFzcMvTvoJ6eMbcFwgRGtQq4aWnXmsJHC6fMiPzR41csgcnVtGtoF1rUVQjtL6hVe46sme5Ep99qPxNWSKUkup1RKC52DgGGnMvwCe8QKDjskhqdq87kQDgRKGW3u7oykqiVrBmxcMDZ1fY5dK45Bs5HQrjWympGu8dXKjDZfQcbH74GfRGHq8VtccKFRwFRRNR777xSFGWca5ZtYzfZSrJkwWGtSqhSMozK4unwbJnHbp7SntEQvGi8tvMS3GDpbgPdrroEQqiEwyZqfa9CscUpHwwC7UcQ8rBoyq7tNpSxEyDEb4zaLpqace9CUZX22e8hTJ59jKtLoqJzB5AoBnYXe2h3yDN4aSzzKo3ZD5zbq6YVnrMnsUp9XkoZsc8WGVKoYYviHcwh87kU3J4Pt7Rqmcf';
         let contractAddress;
         let testAddress;
         let deployTxhash;
@@ -30,7 +30,7 @@ describe('Contracts', () => {
                 from: testAddress,
                 to: null,
                 amount: 0,
-                payload: contract.asPayload(),
+                payload: contract.asPayload([10]),
             };
             deployTxhash = await aergo.accounts.sendTransaction(testtx);
             assert.typeOf(deployTxhash, 'string');
@@ -86,7 +86,7 @@ describe('Contracts', () => {
 
             // Query contract
             const result1 = await aergo.queryContract(contract.query('key1'));
-            assert.equal(result1, 1);
+            assert.equal(result1, 11);
 
             // Call contract again
             const callTx = contract.inc().asTransaction({
@@ -100,7 +100,7 @@ describe('Contracts', () => {
 
             // Query contract
             const result2 = await aergo.queryContract(contract.query('key1'));
-            assert.equal(result2, 2);
+            assert.equal(result2, 12);
         }).timeout(3000);
 
         it('should query a smart contract using state', async () => {
@@ -109,7 +109,7 @@ describe('Contracts', () => {
 
             // Query contract state
             const result = await aergo.queryContractState(contract.queryState('_sv_Value'));
-            assert.equal(result, 2);
+            assert.equal(result, 12);
 
             // TODO changed api!
         });

@@ -6,7 +6,7 @@ state.var {
 }
 
 function constructor(init_value)
-    Value:set(0)
+    Value:set(init_value)
 end
 
 function inc()
