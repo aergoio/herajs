@@ -1,1 +1,1 @@
-{"version":"0.2","language":"lua","functions":[{"name":"inc","arguments":[]},{"name":"query","arguments":[{"name":"a"}]}],"state_variables":[{"name":"Value","type":"value"}]}
+{"version":"0.2","language":"lua","functions":[{"name":"inc","arguments":[]},{"name":"constructor","arguments":[{"name":"init_value"}]},{"name":"query","arguments":[{"name":"a"}]}],"state_variables":[{"name":"Value","type":"value"}]}
