@@ -97,33 +97,40 @@ describe('Aergo', () => {
             });
         });
         it('should throw error when hash invalid', () => {
-            assert.throws(() => {
-                aergo.getBlock('111');
-            }, Error, 'Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+            return assert.isRejected(
+                aergo.getBlock('111'),
+                Error,
+                'Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?'
+            );
         });
         it('should throw error when argument is missing', () => {
-            assert.throws(() => {
-                aergo.getBlock();
-            }, Error, 'Missing argument block hash or number');
+            return assert.isRejected(
+                // @ts-ignore
+                aergo.getBlock(),
+                Error,
+                'Missing argument block hash or number'
+            );
         });
         it('should throw error when block not found by number', async () => {
             return assert.isRejected(
                 aergo.getBlock(0xFFFFFFFFFFFFFFF),
-                Error, '13 INTERNAL: block not found: blockNo=1152921504606846976'
+                Error,
+                '13 INTERNAL: block not found: blockNo=1152921504606846976'
             );
         });
-        /*
         it('should throw error when block not found by hash', async () => {
             return assert.isRejected(
                 aergo.getBlock('3ntLyinxwZ3W51AWms4UPjjBHW4CDQHqmrP5NmgmmEZ4'),
-                Error, 'block not found'
+                Error,
+                'block not found'
             );
         });
-        */
         it('should throw error when number out of range', () => {
-            assert.throws(() => {
-                aergo.getBlock(0xFFFFFFFFFFFFFFFF);
-            }, Error, 'Number exeeds range');
+            return assert.isRejected(
+                aergo.getBlock(0xFFFFFFFFFFFFFFFF),
+                Error,
+                'Number exeeds range'
+            );
         });
     });
 
@@ -283,6 +290,8 @@ describe('Aergo', () => {
                 to: identity.address,
                 amount: '100',
                 payload: '',
+                sign: null,
+                hash: null
             };
             tx.sign = await signTransaction(tx, identity.keyPair);
             tx.hash = await hashTransaction(tx, 'bytes');
@@ -299,7 +308,7 @@ describe('Aergo', () => {
     
     describe.skip('getVotingResult()', () => {
         it('should return given number of voting result', async () => {
-            const voteList = await aergo.getVoteResult(10);
+            const voteList = await aergo.getTopVotes(10);
             assert.typeOf(voteList, 'Array');
         });
     });

@@ -1,11 +1,13 @@
 {
   "include": [
-    "src"
+    "src",
+    "test"
   ],
   "compilerOptions": {
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "declarationDir": "dist",
+    "resolveJsonModule": true,
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",

@@ -6,6 +6,7 @@ const assert = chai.assert;
 import AergoClient from '../src';
 //import AergoClient from '../dist/herajs.esm';
 
+// @ts-ignore
 import contractAbi from './fixtures/contract-inc.abi.json';
 //import sqlContractAbi from './fixtures/contract-sql.abi.json';
 import Contract from '../src/models/contract';
@@ -51,6 +52,7 @@ describe('Contracts', () => {
         it('should load ABI from smart contract', async () => {
             const contract = Contract.atAddress(contractAddress);
             contract.loadAbi(await aergo.getABI(contractAddress));
+            // @ts-ignore
             assert.typeOf(contract.inc, 'function');
         });
 
@@ -59,6 +61,7 @@ describe('Contracts', () => {
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
             // Call contract
+            // @ts-ignore
             const callTx = contract.inc().asTransaction({
                 from: testAddress
             });
@@ -71,9 +74,11 @@ describe('Contracts', () => {
 
             // Test missing from address
             assert.throws(() => {
+                // @ts-ignore
                 aergo.accounts.sendTransaction(contract.inc().asTransaction());
             }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
             assert.throws(() => {
+                // @ts-ignore
                 aergo.accounts.sendTransaction(contract.inc().asTransaction({
                     from: null
                 }));
@@ -85,10 +90,12 @@ describe('Contracts', () => {
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
             // Query contract
+            // @ts-ignore
             const result1 = await aergo.queryContract(contract.query('key1'));
             assert.equal(result1, 11);
 
             // Call contract again
+            // @ts-ignore
             const callTx = contract.inc().asTransaction({
                 from: testAddress
             });
@@ -99,6 +106,7 @@ describe('Contracts', () => {
             assert.equal(callTxReceipt.status, 'SUCCESS');
 
             // Query contract
+            // @ts-ignore
             const result2 = await aergo.queryContract(contract.query('key1'));
             assert.equal(result2, 12);
         }).timeout(3000);

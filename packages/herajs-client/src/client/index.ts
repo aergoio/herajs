@@ -1,10 +1,11 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { TxInBlock, Tx as GrpcTx, StateQueryProof, ABI as GrpcABI } from '../../types/blockchain_pb';
+import { TxInBlock, Tx as GrpcTx, StateQueryProof, ABI as GrpcABI, Block as GrpcBlock } from '../../types/blockchain_pb';
 import {
     Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
     BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
     Name, NameInfo, Staking, ChainInfo as GrpcChainInfo,
+    SingleBytes
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -23,6 +24,20 @@ import bs58 from 'bs58';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
+
+type PromiseFunction = (n: any) => Promise<any>;
+function waterfall(fns: PromiseFunction[]) {
+    return async function(input: any): Promise<any> {
+        let result = input;
+        for (const fn of fns) {
+            result = await fn(result);
+        }
+        return result;
+    }
+}
+async function marshalEmpty(): Promise<Empty> {
+    return new Empty();
+}
 
 /**
  * Main aergo client controller.
@@ -44,7 +59,7 @@ class AergoClient {
      * @param [object] configuration. Unused at the moment.
      * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
      */
-    constructor (config, provider = null) {
+    constructor (config = {}, provider = null) {
         this.config = {
             ...config
         };
@@ -71,7 +86,12 @@ class AergoClient {
     }
 
     isConnected () {
+        // FIXME
         return false;
+    }
+
+    grpcMethod<I, O>(method: Function): (request: I) => Promise<O> {
+        return (request: I) => promisify(method, this.client.client)(request);
     }
 
     /**
@@ -79,11 +99,16 @@ class AergoClient {
      * @returns {Promise<object>} an object detailing the current status
      */
     blockchain (): Promise<GrpcBlockchainStatus.AsObject> {
-        const empty = new Empty();
-        return promisify(this.client.client.blockchain, this.client.client)(empty).then(result => ({
-            ...result.toObject(),
-            bestBlockHash: Block.encodeHash(result.getBestBlockHash_asU8())
-        }));
+        return waterfall([
+            marshalEmpty,
+            this.grpcMethod<Empty, GrpcBlockchainStatus>(this.client.client.blockchain),
+            async function unmarshal(response: GrpcBlockchainStatus): Promise<GrpcBlockchainStatus.AsObject> {
+                return {
+                    ...response.toObject(),
+                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+                };
+            }
+        ])({});
     }
 
     /**
@@ -91,10 +116,14 @@ class AergoClient {
      * @returns {Promise<object>} an object detailing the current status
      */
     getChainInfo (): Promise<ChainInfo> {
-        const empty = new Empty();
-        return promisify(this.client.client.getChainInfo, this.client.client)(empty).then((grpcObject: GrpcChainInfo): ChainInfo => ChainInfo.fromGrpc(grpcObject));
+        return waterfall([
+            marshalEmpty,
+            this.grpcMethod<Empty, GrpcChainInfo>(this.client.client.getChainInfo),
+            async function unmarshal(response: GrpcChainInfo): Promise<ChainInfo> {
+                return ChainInfo.fromGrpc(response);
+            }
+        ])({});
     }
-
 
     /**
      * Get transaction information in the aergo node. 
@@ -102,7 +131,7 @@ class AergoClient {
      * @param {string} txhash transaction hash
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
-    getTransaction (txhash) {
+    getTransaction (txhash): Promise<any> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
@@ -136,22 +165,31 @@ class AergoClient {
      * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @returns {Promise<Block>} block details
      */
-    getBlock (hashOrNumber) {
-        if (typeof hashOrNumber === 'undefined') {
-            throw new Error('Missing argument block hash or number');
-        }
-        if (typeof hashOrNumber === 'string') {
-            hashOrNumber = Block.decodeHash(hashOrNumber);
-        } else
-        if (typeof hashOrNumber === 'number') {
-            hashOrNumber = fromNumber(hashOrNumber);
-        }
-        if (hashOrNumber.length != 32 && hashOrNumber.length != 8) {
-            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-        }
-        const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(Uint8Array.from(hashOrNumber));
-        return promisify(this.client.client.getBlock, this.client.client)(singleBytes).then(result => Block.fromGrpc(result));
+    getBlock (hashOrNumber: string | number): Promise<Block> {
+        return waterfall([
+            async function marshal(hashOrNumber: string | number): Promise<SingleBytes> {
+                if (typeof hashOrNumber === 'undefined') {
+                    throw new Error('Missing argument block hash or number');
+                }
+                let input;
+                if (typeof hashOrNumber === 'string') {
+                    input = Block.decodeHash(hashOrNumber);
+                } else
+                if (typeof hashOrNumber === 'number') {
+                    input = fromNumber(hashOrNumber);
+                }
+                if (input.length != 32 && input.length != 8) {
+                    throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+                }
+                const singleBytes = new SingleBytes();
+                singleBytes.setValue(Uint8Array.from(input));
+                return singleBytes;
+            },
+            this.grpcMethod<SingleBytes, GrpcBlock>(this.client.client.getBlock),
+            async function unmarshal(response: GrpcBlock): Promise<Block> {
+                return Block.fromGrpc(response);
+            }
+        ])(hashOrNumber);
     }
 
     /**

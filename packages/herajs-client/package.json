@@ -7,7 +7,8 @@
   "browser": "dist/herajs.min.js",
   "types": "dist/platforms/node/index.d.ts",
   "scripts": {
-    "test": "npm run lint && mocha --exit -r babel-register-ts",
+    "test:ts": "mocha --exit  -r babel-register-ts test/*.ts",
+    "test": "npm run lint && npm run type-check && npm run test:ts",
     "dev": "rollup -w -c scripts/config.js --environment TARGET:node-esm",
     "lint": "eslint --fix src scripts test",
     "grpc": "./scripts/gen_proto.sh",
@@ -16,7 +17,7 @@
     "build:js": "babel-node scripts/build.js",
     "build": "npm run build:types && npm run build:js",
     "docs": "cd docs && make html",
-    "type-check": "tsc --noEmit src/index",
+    "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
   },
   "repository": {
@@ -40,6 +41,7 @@
     "@babel/preset-typescript": "^7.1.0",
     "@babel/register": "^7.0.0",
     "@herajs/crypto": "0.0.3",
+    "@types/mocha": "^5.2.6",
     "@types/rollup-plugin-json": "^3.0.0",
     "async-sema": "^2.1.4",
     "babel-register-ts": "^7.0.0",

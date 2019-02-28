@@ -4,6 +4,7 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 
 import AergoClient from '../src';
+import Address from '../src/models/address';
 
 import { longPolling } from '../src/utils';
 
@@ -11,7 +12,7 @@ import JSBI from 'jsbi';
 
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
-    let testAddress = 'INVALIDADDRESS';
+    let testAddress: string | Address = 'INVALIDADDRESS';
     beforeEach(async ()=>{
         const created = await aergo.accounts.create('testpass');
         const unlocked = await aergo.accounts.unlock(created, 'testpass');
@@ -80,7 +81,7 @@ describe('Aergo.Accounts', () => {
             aergo.accounts.signTransaction(testtx)
                 .then((result) => {
                     assert.equal(testtx.nonce, result.nonce);
-                    assert.deepEqual(testtx.from.value, result.from.value);
+                    assert.deepEqual(testtx.from.toString(), result.from.toString());
                     assert.typeOf(result.sign, 'string');
                     assert.equal(result.sign.length, 96);
                     done();
