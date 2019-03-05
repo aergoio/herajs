@@ -1,11 +1,18 @@
 import Accounts from '../accounts';
 import rpcTypes from './types';
-import { TxInBlock, Tx as GrpcTx, StateQueryProof, ABI as GrpcABI, Block as GrpcBlock } from '../../types/blockchain_pb';
+import {
+    TxInBlock, Tx as GrpcTx,
+    StateQueryProof,
+    ABI as GrpcABI,
+    Block as GrpcBlock
+} from '../../types/blockchain_pb';
 import {
     Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
     BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
     Name, NameInfo, Staking, ChainInfo as GrpcChainInfo,
-    SingleBytes
+    SingleBytes,
+    EventList,
+    PeersParams
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -18,7 +25,9 @@ import Peer from '../models/peer';
 import State from '../models/state';
 import Amount from '../models/amount';
 import ChainInfo from '../models/chaininfo';
+import Event from '../models/event';
 import { FunctionCall, StateQuery } from '../models/contract';
+import FilterInfo from '../models/filterinfo';
 
 import bs58 from 'bs58';
 
@@ -258,6 +267,41 @@ class AergoClient {
             cancel: () => stream.cancel()
         };
     }
+
+    /**
+     * Returns a stream that yields new events matching the specified filter in real-time.
+     * 
+     * .. code-block:: javascript
+     * 
+     *      const stream = aergo.getEventStream({
+     *          address: 'Am....'
+     *      });
+     *      stream.on('data', (event) => {
+     *         console.log(event);
+     *         stream.cancel();
+     *      });
+     * 
+     * @param filter FilterInfo
+     */
+    getEventStream (filter: Partial<FilterInfo>) {
+        const fi = new FilterInfo(filter);
+        const query = fi.toGrpc();
+        const stream = this.client.client.listEventStream(query);
+        try {
+            stream.on('error', (error) => {
+                if (error.code === 1) { // grpc.status.CANCELLED
+                    return;
+                }
+            });
+        } catch (e) {
+            // ignore. 'error' does not work on grpc-web implementation
+        }
+        return {
+            _stream: stream,
+            on: (ev, callback) => stream.on(ev, data => callback(Event.fromGrpc(data))),
+            cancel: () => stream.cancel()
+        };
+    }
     
     
     /**
@@ -395,6 +439,24 @@ class AergoClient {
     }
 
     /**
+     * Query contract state
+     * This only works vor variables explicitly defines as state variables.
+     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
+     * @returns {Promise<object>} result of query
+     */
+    getEvents (filter: Partial<FilterInfo>) {
+        const fi = new FilterInfo(filter);
+        const query = fi.toGrpc();
+        return promisify(this.client.client.listEvents, this.client.client)(query).then(
+            (grpcObject: EventList) => {
+                const list = grpcObject.getEventsList();
+                return list.map(item => Event.fromGrpc(item));
+            }
+        );
+    }
+    
+
+    /**
      * Query contract ABI
      * @param {string} address of contract
      * @returns {Promise<object>} abi
@@ -421,9 +483,11 @@ class AergoClient {
     /**
      * Get list of peers of connected node
      */
-    getPeers () {
-        const empty = new rpcTypes.Empty();
-        return promisify(this.client.client.getPeers, this.client.client)(empty).then(
+    getPeers (showself = true, showhidden = true) {
+        const query = new PeersParams();
+        query.setNohidden(!showhidden);
+        query.setShowself(showself);
+        return promisify(this.client.client.getPeers, this.client.client)(query).then(
             (grpcObject: GrpcPeerList): Array<Peer> => grpcObject.getPeersList().map(
                 (peer: GrpcPeer): Peer => Peer.fromGrpc(peer)
             )

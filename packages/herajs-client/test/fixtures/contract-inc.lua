@@ -1,5 +1,5 @@
--- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --abi contract-inc.abi.json contract-inc.lua contract-inc.out
--- $GOPATH/src/github.com/aergoio/aergo/bin/aergoluac --payload ./contract-inc.lua > contract-inc.txt
+-- aergoluac --abi contract-inc.abi.json contract-inc.lua contract-inc.out
+-- aergoluac --payload ./contract-inc.lua > contract-inc.txt
 
 state.var {
     Value = state.value()
@@ -12,6 +12,7 @@ end
 function inc()
     a = Value:get()
     Value:set(a + 1)
+    contract.event("incremented", a, a + 1) 
 end
 
 function query(a)

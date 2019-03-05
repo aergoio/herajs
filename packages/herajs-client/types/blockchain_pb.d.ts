@@ -507,6 +507,52 @@ export class Receipt extends jspb.Message {
   getRet(): string;
   setRet(value: string): void;
 
+  getTxhash(): Uint8Array | string;
+  getTxhash_asU8(): Uint8Array;
+  getTxhash_asB64(): string;
+  setTxhash(value: Uint8Array | string): void;
+
+  getFeeused(): Uint8Array | string;
+  getFeeused_asU8(): Uint8Array;
+  getFeeused_asB64(): string;
+  setFeeused(value: Uint8Array | string): void;
+
+  getCumulativefeeused(): Uint8Array | string;
+  getCumulativefeeused_asU8(): Uint8Array;
+  getCumulativefeeused_asB64(): string;
+  setCumulativefeeused(value: Uint8Array | string): void;
+
+  getBloom(): Uint8Array | string;
+  getBloom_asU8(): Uint8Array;
+  getBloom_asB64(): string;
+  setBloom(value: Uint8Array | string): void;
+
+  clearEventsList(): void;
+  getEventsList(): Array<Event>;
+  setEventsList(value: Array<Event>): void;
+  addEvents(value?: Event, index?: number): Event;
+
+  getBlockno(): number;
+  setBlockno(value: number): void;
+
+  getBlockhash(): Uint8Array | string;
+  getBlockhash_asU8(): Uint8Array;
+  getBlockhash_asB64(): string;
+  setBlockhash(value: Uint8Array | string): void;
+
+  getTxindex(): number;
+  setTxindex(value: number): void;
+
+  getFrom(): Uint8Array | string;
+  getFrom_asU8(): Uint8Array;
+  getFrom_asB64(): string;
+  setFrom(value: Uint8Array | string): void;
+
+  getTo(): Uint8Array | string;
+  getTo_asU8(): Uint8Array;
+  getTo_asB64(): string;
+  setTo(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Receipt.AsObject;
   static toObject(includeInstance: boolean, msg: Receipt): Receipt.AsObject;
@@ -522,6 +568,70 @@ export namespace Receipt {
     contractaddress: Uint8Array | string,
     status: string,
     ret: string,
+    txhash: Uint8Array | string,
+    feeused: Uint8Array | string,
+    cumulativefeeused: Uint8Array | string,
+    bloom: Uint8Array | string,
+    eventsList: Array<Event.AsObject>,
+    blockno: number,
+    blockhash: Uint8Array | string,
+    txindex: number,
+    from: Uint8Array | string,
+    to: Uint8Array | string,
+  }
+}
+
+export class Event extends jspb.Message {
+  getContractaddress(): Uint8Array | string;
+  getContractaddress_asU8(): Uint8Array;
+  getContractaddress_asB64(): string;
+  setContractaddress(value: Uint8Array | string): void;
+
+  getEventname(): string;
+  setEventname(value: string): void;
+
+  getJsonargs(): string;
+  setJsonargs(value: string): void;
+
+  getEventidx(): number;
+  setEventidx(value: number): void;
+
+  getTxhash(): Uint8Array | string;
+  getTxhash_asU8(): Uint8Array;
+  getTxhash_asB64(): string;
+  setTxhash(value: Uint8Array | string): void;
+
+  getBlockhash(): Uint8Array | string;
+  getBlockhash_asU8(): Uint8Array;
+  getBlockhash_asB64(): string;
+  setBlockhash(value: Uint8Array | string): void;
+
+  getBlockno(): number;
+  setBlockno(value: number): void;
+
+  getTxindex(): number;
+  setTxindex(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Event.AsObject;
+  static toObject(includeInstance: boolean, msg: Event): Event.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Event, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Event;
+  static deserializeBinaryFromReader(message: Event, reader: jspb.BinaryReader): Event;
+}
+
+export namespace Event {
+  export type AsObject = {
+    contractaddress: Uint8Array | string,
+    eventname: string,
+    jsonargs: string,
+    eventidx: number,
+    txhash: Uint8Array | string,
+    blockhash: Uint8Array | string,
+    blockno: number,
+    txindex: number,
   }
 }
 
@@ -694,6 +804,50 @@ export namespace StateQuery {
     storagekeysList: Array<string>,
     root: Uint8Array | string,
     compressed: boolean,
+  }
+}
+
+export class FilterInfo extends jspb.Message {
+  getContractaddress(): Uint8Array | string;
+  getContractaddress_asU8(): Uint8Array;
+  getContractaddress_asB64(): string;
+  setContractaddress(value: Uint8Array | string): void;
+
+  getEventname(): string;
+  setEventname(value: string): void;
+
+  getBlockfrom(): number;
+  setBlockfrom(value: number): void;
+
+  getBlockto(): number;
+  setBlockto(value: number): void;
+
+  getDesc(): boolean;
+  setDesc(value: boolean): void;
+
+  getArgfilter(): Uint8Array | string;
+  getArgfilter_asU8(): Uint8Array;
+  getArgfilter_asB64(): string;
+  setArgfilter(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FilterInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: FilterInfo): FilterInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FilterInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FilterInfo;
+  static deserializeBinaryFromReader(message: FilterInfo, reader: jspb.BinaryReader): FilterInfo;
+}
+
+export namespace FilterInfo {
+  export type AsObject = {
+    contractaddress: Uint8Array | string,
+    eventname: string,
+    blockfrom: number,
+    blockto: number,
+    desc: boolean,
+    argfilter: Uint8Array | string,
   }
 }
 

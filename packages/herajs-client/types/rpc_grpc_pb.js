@@ -185,6 +185,39 @@ function deserialize_types_Empty(buffer_arg) {
   return rpc_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_Event(arg) {
+  if (!(arg instanceof blockchain_pb.Event)) {
+    throw new Error('Expected argument of type types.Event');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_Event(buffer_arg) {
+  return blockchain_pb.Event.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_EventList(arg) {
+  if (!(arg instanceof rpc_pb.EventList)) {
+    throw new Error('Expected argument of type types.EventList');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_EventList(buffer_arg) {
+  return rpc_pb.EventList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_FilterInfo(arg) {
+  if (!(arg instanceof blockchain_pb.FilterInfo)) {
+    throw new Error('Expected argument of type types.FilterInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_FilterInfo(buffer_arg) {
+  return blockchain_pb.FilterInfo.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_ImportFormat(arg) {
   if (!(arg instanceof rpc_pb.ImportFormat)) {
     throw new Error('Expected argument of type types.ImportFormat');
@@ -271,6 +304,17 @@ function serialize_types_PeerList(arg) {
 
 function deserialize_types_PeerList(buffer_arg) {
   return rpc_pb.PeerList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_PeersParams(arg) {
+  if (!(arg instanceof rpc_pb.PeersParams)) {
+    throw new Error('Expected argument of type types.PeersParams');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_PeersParams(buffer_arg) {
+  return rpc_pb.PeersParams.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Personal(arg) {
@@ -774,10 +818,10 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     path: '/types.AergoRPCService/GetPeers',
     requestStream: false,
     responseStream: false,
-    requestType: rpc_pb.Empty,
+    requestType: rpc_pb.PeersParams,
     responseType: rpc_pb.PeerList,
-    requestSerialize: serialize_types_Empty,
-    requestDeserialize: deserialize_types_Empty,
+    requestSerialize: serialize_types_PeersParams,
+    requestDeserialize: deserialize_types_PeersParams,
     responseSerialize: serialize_types_PeerList,
     responseDeserialize: deserialize_types_PeerList,
   },
@@ -816,6 +860,30 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Name,
     responseSerialize: serialize_types_NameInfo,
     responseDeserialize: deserialize_types_NameInfo,
+  },
+  // Returns a stream of event as they get added to the blockchain
+  listEventStream: {
+    path: '/types.AergoRPCService/ListEventStream',
+    requestStream: false,
+    responseStream: true,
+    requestType: blockchain_pb.FilterInfo,
+    responseType: blockchain_pb.Event,
+    requestSerialize: serialize_types_FilterInfo,
+    requestDeserialize: deserialize_types_FilterInfo,
+    responseSerialize: serialize_types_Event,
+    responseDeserialize: deserialize_types_Event,
+  },
+  // Returns list of event
+  listEvents: {
+    path: '/types.AergoRPCService/ListEvents',
+    requestStream: false,
+    responseStream: false,
+    requestType: blockchain_pb.FilterInfo,
+    responseType: rpc_pb.EventList,
+    requestSerialize: serialize_types_FilterInfo,
+    requestDeserialize: deserialize_types_FilterInfo,
+    responseSerialize: serialize_types_EventList,
+    responseDeserialize: deserialize_types_EventList,
   },
 };
 

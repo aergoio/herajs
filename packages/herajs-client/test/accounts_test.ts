@@ -142,7 +142,7 @@ describe('Aergo.Accounts', () => {
                 from: testAddress,
                 to: 'aergo.name',
                 amount: '1 aergo',
-                payload: 'c' + name,
+                payload: `{"Name":"v1createName","Args":["${name}"]}`,
                 type: 1
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);
@@ -165,7 +165,7 @@ describe('Aergo.Accounts', () => {
                 from: testaddress,
                 to: 'aergo.system',
                 amount: '1 aergo',
-                payload: 's',
+                payload: '{"Name":"v1stake"}',
                 type: 1
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);

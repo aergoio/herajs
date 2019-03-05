@@ -9,7 +9,7 @@ export default class Address {
     encoded: string;
     isName: boolean;
     constructor(address: Address | string | Buffer | Uint8Array);
-    asBytes(): Buffer;
+    asBytes(): Uint8Array;
     toJSON(): string;
     toString(): string;
     static decode(bs58string: any): Buffer;

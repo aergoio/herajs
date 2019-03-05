@@ -11,7 +11,7 @@ export default function promisify(original, context) {
         context = this;
     }
     if (typeof original !== 'function') {
-        throw new Error('original', 'Function', original);
+        throw new Error('original is not a function', 'Function', original);
     }
 
     function fn(...args) {

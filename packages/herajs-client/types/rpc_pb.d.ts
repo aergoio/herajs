@@ -281,6 +281,12 @@ export class Peer extends jspb.Message {
   getHidden(): boolean;
   setHidden(value: boolean): void;
 
+  getLashcheck(): number;
+  setLashcheck(value: number): void;
+
+  getSelfpeer(): boolean;
+  setSelfpeer(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Peer.AsObject;
   static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
@@ -297,6 +303,8 @@ export namespace Peer {
     bestblock?: p2p_pb.NewBlockNotice.AsObject,
     state: number,
     hidden: boolean,
+    lashcheck: number,
+    selfpeer: boolean,
   }
 }
 
@@ -791,6 +799,11 @@ export class NameInfo extends jspb.Message {
   getOwner_asB64(): string;
   setOwner(value: Uint8Array | string): void;
 
+  getDestination(): Uint8Array | string;
+  getDestination_asU8(): Uint8Array;
+  getDestination_asB64(): string;
+  setDestination(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): NameInfo.AsObject;
   static toObject(includeInstance: boolean, msg: NameInfo): NameInfo.AsObject;
@@ -805,6 +818,53 @@ export namespace NameInfo {
   export type AsObject = {
     name?: Name.AsObject,
     owner: Uint8Array | string,
+    destination: Uint8Array | string,
+  }
+}
+
+export class PeersParams extends jspb.Message {
+  getNohidden(): boolean;
+  setNohidden(value: boolean): void;
+
+  getShowself(): boolean;
+  setShowself(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PeersParams.AsObject;
+  static toObject(includeInstance: boolean, msg: PeersParams): PeersParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PeersParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PeersParams;
+  static deserializeBinaryFromReader(message: PeersParams, reader: jspb.BinaryReader): PeersParams;
+}
+
+export namespace PeersParams {
+  export type AsObject = {
+    nohidden: boolean,
+    showself: boolean,
+  }
+}
+
+export class EventList extends jspb.Message {
+  clearEventsList(): void;
+  getEventsList(): Array<blockchain_pb.Event>;
+  setEventsList(value: Array<blockchain_pb.Event>): void;
+  addEvents(value?: blockchain_pb.Event, index?: number): blockchain_pb.Event;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EventList.AsObject;
+  static toObject(includeInstance: boolean, msg: EventList): EventList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EventList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EventList;
+  static deserializeBinaryFromReader(message: EventList, reader: jspb.BinaryReader): EventList;
+}
+
+export namespace EventList {
+  export type AsObject = {
+    eventsList: Array<blockchain_pb.Event.AsObject>,
   }
 }
 

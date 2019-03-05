@@ -279,7 +279,7 @@ AergoRPCService.GetPeers = {
   service: AergoRPCService,
   requestStream: false,
   responseStream: false,
-  requestType: rpc_pb.Empty,
+  requestType: rpc_pb.PeersParams,
   responseType: rpc_pb.PeerList
 };
 
@@ -308,6 +308,24 @@ AergoRPCService.GetNameInfo = {
   responseStream: false,
   requestType: rpc_pb.Name,
   responseType: rpc_pb.NameInfo
+};
+
+AergoRPCService.ListEventStream = {
+  methodName: "ListEventStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: blockchain_pb.Event
+};
+
+AergoRPCService.ListEvents = {
+  methodName: "ListEvents",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: rpc_pb.EventList
 };
 
 exports.AergoRPCService = AergoRPCService;
@@ -1060,6 +1078,67 @@ AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessag
     callback = arguments[1];
   }
   grpc.unary(AergoRPCService.GetNameInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+AergoRPCServiceClient.prototype.listEventStream = function listEventStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListEventStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function (responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function (status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function (type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function () {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(AergoRPCService.ListEvents, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

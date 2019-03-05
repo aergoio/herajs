@@ -5,7 +5,7 @@ import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 
 type _PrimitiveType = string | number | boolean;
-type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
+export type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
 
 /**
  * Data structure for contract function calls.

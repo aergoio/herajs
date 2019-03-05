@@ -1,7 +1,9 @@
 import Accounts from '../accounts';
 import { BlockchainStatus as GrpcBlockchainStatus } from '../../types/rpc_pb';
+import Block from '../models/block';
 import ChainInfo from '../models/chaininfo';
 import { FunctionCall, StateQuery } from '../models/contract';
+import FilterInfo from '../models/filterinfo';
 declare const CommitStatus: any;
 export { CommitStatus };
 /**
@@ -23,7 +25,7 @@ declare class AergoClient {
      * @param [object] configuration. Unused at the moment.
      * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
      */
-    constructor(config: any, provider?: any);
+    constructor(config?: {}, provider?: any);
     defaultProvider(): void;
     /**
      * Set a new provider
@@ -32,6 +34,7 @@ declare class AergoClient {
     setProvider(provider: any): void;
     getConfig(): object;
     isConnected(): boolean;
+    grpcMethod<I, O>(method: Function): (request: I) => Promise<O>;
     /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
@@ -48,14 +51,14 @@ declare class AergoClient {
      * @param {string} txhash transaction hash
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
-    getTransaction(txhash: any): Promise<{}>;
+    getTransaction(txhash: any): Promise<any>;
     /**
      * Retrieve information about a block.
      *
      * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @returns {Promise<Block>} block details
      */
-    getBlock(hashOrNumber: any): any;
+    getBlock(hashOrNumber: string | number): Promise<Block>;
     /**
      * Retrieve the last n blocks, beginning from given block .
      *
@@ -70,6 +73,26 @@ declare class AergoClient {
         cancel: () => any;
     };
     getBlockMetadataStream(): {
+        _stream: any;
+        on: (ev: any, callback: any) => any;
+        cancel: () => any;
+    };
+    /**
+     * Returns a stream that yields new events matching the specified filter in real-time.
+     *
+     * .. code-block:: javascript
+     *
+     *      const stream = aergo.getEventStream({
+     *          address: 'Am....'
+     *      });
+     *      stream.on('data', (event) => {
+     *         console.log(event);
+     *         stream.cancel();
+     *      });
+     *
+     * @param filter FilterInfo
+     */
+    getEventStream(filter: Partial<FilterInfo>): {
         _stream: any;
         on: (ev: any, callback: any) => any;
         cancel: () => any;
@@ -118,6 +141,13 @@ declare class AergoClient {
      */
     queryContractState(stateQuery: StateQuery): any;
     /**
+     * Query contract state
+     * This only works vor variables explicitly defines as state variables.
+     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
+     * @returns {Promise<object>} result of query
+     */
+    getEvents(filter: Partial<FilterInfo>): any;
+    /**
      * Query contract ABI
      * @param {string} address of contract
      * @returns {Promise<object>} abi
@@ -126,7 +156,7 @@ declare class AergoClient {
     /**
      * Get list of peers of connected node
      */
-    getPeers(): any;
+    getPeers(showself?: boolean, showhidden?: boolean): any;
     /**
      * Return information for account name
      * @param name

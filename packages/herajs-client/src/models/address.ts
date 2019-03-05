@@ -44,8 +44,8 @@ export default class Address {
             this.value = Buffer.from(arrValue);
         }
     }
-    asBytes(): Buffer {
-        return this.value;
+    asBytes(): Uint8Array {
+        return new Uint8Array(this.value);
     }
     toJSON(): string {
         return this.toString();

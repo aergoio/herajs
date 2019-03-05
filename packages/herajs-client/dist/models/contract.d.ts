@@ -2,7 +2,7 @@
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 declare type _PrimitiveType = string | number | boolean;
-declare type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
+export declare type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
 /**
  * Data structure for contract function calls.
  * You should not need to build these yourself, they are returned from contract instance functions and
