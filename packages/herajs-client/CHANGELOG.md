@@ -1,3 +1,10 @@
+## 0.6.0 (March 8, 2019)
+
+- Compatability with aergosvr 0.12
+  - getPeers has additonal parameters
+  - Governance tx format has changed
+- New methods: getEvents, getEventStream
+
 ## 0.5.3 (February 22, 2019)
 
 - Add option to contract.asPayload() to pass constructor arguments
