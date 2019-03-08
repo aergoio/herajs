@@ -1,5 +1,5 @@
 /*!
- * herajs v0.5.3
+ * herajs v0.6.0
  * (c) 2019 AERGO
  * Released under MIT license.
  */
