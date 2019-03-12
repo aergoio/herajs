@@ -5,7 +5,7 @@ var rpc_pb = require("./rpc_pb");
 var blockchain_pb = require("./blockchain_pb");
 var account_pb = require("./account_pb");
 var metric_pb = require("./metric_pb");
-var grpc = require("grpc-web-client").grpc;
+var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var AergoRPCService = (function () {
   function AergoRPCService() {}
@@ -339,7 +339,7 @@ AergoRPCServiceClient.prototype.nodeState = function nodeState(requestMessage, m
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.NodeState, {
+  var client = grpc.unary(AergoRPCService.NodeState, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -348,20 +348,29 @@ AergoRPCServiceClient.prototype.nodeState = function nodeState(requestMessage, m
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.Metric, {
+  var client = grpc.unary(AergoRPCService.Metric, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -370,20 +379,29 @@ AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadat
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.Blockchain, {
+  var client = grpc.unary(AergoRPCService.Blockchain, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -392,20 +410,29 @@ AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetChainInfo, {
+  var client = grpc.unary(AergoRPCService.GetChainInfo, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -414,20 +441,29 @@ AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMess
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.ListBlockHeaders, {
+  var client = grpc.unary(AergoRPCService.ListBlockHeaders, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -436,20 +472,29 @@ AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(req
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.ListBlockMetadata, {
+  var client = grpc.unary(AergoRPCService.ListBlockMetadata, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -458,13 +503,22 @@ AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(r
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
@@ -549,7 +603,7 @@ AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, met
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetBlock, {
+  var client = grpc.unary(AergoRPCService.GetBlock, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -558,20 +612,29 @@ AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetBlockMetadata, {
+  var client = grpc.unary(AergoRPCService.GetBlockMetadata, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -580,20 +643,29 @@ AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(req
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetBlockBody, {
+  var client = grpc.unary(AergoRPCService.GetBlockBody, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -602,20 +674,29 @@ AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMess
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getTX = function getTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetTX, {
+  var client = grpc.unary(AergoRPCService.GetTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -624,20 +705,29 @@ AergoRPCServiceClient.prototype.getTX = function getTX(requestMessage, metadata,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetBlockTX, {
+  var client = grpc.unary(AergoRPCService.GetBlockTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -646,20 +736,29 @@ AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetReceipt, {
+  var client = grpc.unary(AergoRPCService.GetReceipt, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -668,20 +767,29 @@ AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetABI, {
+  var client = grpc.unary(AergoRPCService.GetABI, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -690,20 +798,29 @@ AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadat
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.SendTX, {
+  var client = grpc.unary(AergoRPCService.SendTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -712,20 +829,29 @@ AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadat
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.SignTX, {
+  var client = grpc.unary(AergoRPCService.SignTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -734,20 +860,29 @@ AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadat
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.VerifyTX, {
+  var client = grpc.unary(AergoRPCService.VerifyTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -756,20 +891,29 @@ AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.CommitTX, {
+  var client = grpc.unary(AergoRPCService.CommitTX, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -778,20 +922,29 @@ AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getState = function getState(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetState, {
+  var client = grpc.unary(AergoRPCService.GetState, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -800,20 +953,29 @@ AergoRPCServiceClient.prototype.getState = function getState(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetStateAndProof, {
+  var client = grpc.unary(AergoRPCService.GetStateAndProof, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -822,20 +984,29 @@ AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(req
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.createAccount = function createAccount(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.CreateAccount, {
+  var client = grpc.unary(AergoRPCService.CreateAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -844,20 +1015,29 @@ AergoRPCServiceClient.prototype.createAccount = function createAccount(requestMe
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getAccounts = function getAccounts(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetAccounts, {
+  var client = grpc.unary(AergoRPCService.GetAccounts, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -866,20 +1046,29 @@ AergoRPCServiceClient.prototype.getAccounts = function getAccounts(requestMessag
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.lockAccount = function lockAccount(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.LockAccount, {
+  var client = grpc.unary(AergoRPCService.LockAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -888,20 +1077,29 @@ AergoRPCServiceClient.prototype.lockAccount = function lockAccount(requestMessag
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.UnlockAccount, {
+  var client = grpc.unary(AergoRPCService.UnlockAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -910,20 +1108,29 @@ AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMe
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.ImportAccount, {
+  var client = grpc.unary(AergoRPCService.ImportAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -932,20 +1139,29 @@ AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMe
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.ExportAccount, {
+  var client = grpc.unary(AergoRPCService.ExportAccount, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -954,20 +1170,29 @@ AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMe
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.QueryContract, {
+  var client = grpc.unary(AergoRPCService.QueryContract, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -976,20 +1201,29 @@ AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMe
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.queryContractState = function queryContractState(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.QueryContractState, {
+  var client = grpc.unary(AergoRPCService.QueryContractState, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -998,20 +1232,29 @@ AergoRPCServiceClient.prototype.queryContractState = function queryContractState
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetPeers, {
+  var client = grpc.unary(AergoRPCService.GetPeers, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -1020,20 +1263,29 @@ AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetVotes, {
+  var client = grpc.unary(AergoRPCService.GetVotes, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -1042,20 +1294,29 @@ AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, met
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetStaking, {
+  var client = grpc.unary(AergoRPCService.GetStaking, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -1064,20 +1325,29 @@ AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.GetNameInfo, {
+  var client = grpc.unary(AergoRPCService.GetNameInfo, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -1086,13 +1356,22 @@ AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessag
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 AergoRPCServiceClient.prototype.listEventStream = function listEventStream(requestMessage, metadata) {
@@ -1138,7 +1417,7 @@ AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage,
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  grpc.unary(AergoRPCService.ListEvents, {
+  var client = grpc.unary(AergoRPCService.ListEvents, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -1147,13 +1426,22 @@ AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage,
     onEnd: function (response) {
       if (callback) {
         if (response.status !== grpc.Code.OK) {
-          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
         } else {
           callback(null, response.message);
         }
       }
     }
   });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
 };
 
 exports.AergoRPCServiceClient = AergoRPCServiceClient;

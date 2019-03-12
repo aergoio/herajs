@@ -1,5 +1,5 @@
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_web_pb';
-import { grpc } from 'grpc-web-client';
+import { grpc } from "@improbable-eng/grpc-web";
 
 interface GrpcWebProviderConfig {
     url?: string;
@@ -28,7 +28,7 @@ class GrpcWebProvider {
             ...config
         };
         const options = {
-            transport: grpc.WebsocketTransportFactory
+            transport: grpc.WebsocketTransport()
         };
         this.client = new AergoRPCServiceClient(this.config.url, options);
     }
