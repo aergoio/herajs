@@ -120,7 +120,8 @@ function genConfig (name) {
     const namedExports = {
         [resolve('types/rpc_pb.js')]: 'Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name, PeersParams'.split(', '),
         [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block, Query, StateQuery, FilterInfo'.split(', '),
-        [resolve('types/account_pb.js')]: 'Account'.split(', ')
+        [resolve('types/account_pb.js')]: 'Account'.split(', '),
+        [resolve('node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(',')
     };
 
     const config = {

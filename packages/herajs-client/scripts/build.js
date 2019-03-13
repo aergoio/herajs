@@ -32,11 +32,11 @@ function buildEntry (config) {
     const output = config.output;
     const { file, banner } = output;
     const isProd = /min\.js$/.test(file);
-    return rollup(config).then(bundle => bundle.generate(output)).then(({ code }) => {
+    return rollup(config).then(bundle => bundle.generate(output)).then(({ output }) => {
         if (isProd) {
-            return write(file, (banner ? banner + "\n" : "") + code, true);
+            return write(file, (banner ? banner + "\n" : "") + output[0].code, true);
         } else {
-            return write(file, code);
+            return write(file, output[0].code);
         }
     });
 }
