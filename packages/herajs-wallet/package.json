@@ -1,0 +1,56 @@
+{
+  "name": "@herajs/wallet",
+  "version": "0.1.0",
+  "description": "SDK for making Aergo wallet applications",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "npm run lint && npm run build:types && npm run build:js",
+    "lint": "eslint --fix src/**/*.ts test/**/*.ts",
+    "test:ts": "mocha -r babel-register-ts test/*.ts",
+    "test": "npm run lint && npm run type-check && npm run test:ts"
+  },
+  "main": "dist/rollup-plugin-babel.cjs.js",
+  "module": "dist/rollup-plugin-babel.esm.js",
+  "browser": "dist/rollup-plugin-babel.iife.js",
+  "types": "dist/types/index.d.ts",
+  "author": {
+    "name": "Alexander T.",
+    "email": "alexander.tarasyuk@outlook.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "7.2.2",
+    "@babel/plugin-proposal-class-properties": "7.3.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.3.1",
+    "@babel/preset-env": "7.3.1",
+    "@babel/preset-typescript": "7.1.0",
+    "@babel/register": "^7.0.0",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.6",
+    "@typescript-eslint/eslint-plugin": "^1.4.0",
+    "@typescript-eslint/parser": "^1.4.0",
+    "babel-register-ts": "^7.0.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^5.2.0",
+    "mocha": "^5.2.0",
+    "regenerator-runtime": "^0.13.1",
+    "rollup": "1.1.2",
+    "rollup-plugin-babel": "4.3.2",
+    "rollup-plugin-commonjs": "9.2.0",
+    "rollup-plugin-node-resolve": "4.0.0",
+    "typescript": "3.3.1"
+  },
+  "dependencies": {
+    "@elderapo/typed-event-emitter": "^1.4.1",
+    "@herajs/client": "^0.5.2",
+    "@herajs/crypto": "^0.1.0",
+    "@types/google-protobuf": "^3.2.7",
+    "@types/hashmap": "^2.0.29",
+    "hashmap": "^2.3.0"
+  }
+}

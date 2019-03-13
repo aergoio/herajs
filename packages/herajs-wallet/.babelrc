@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["@babel/env", {"exclude": ["@babel/plugin-transform-regenerator"]}],
+    "@babel/typescript"
+  ],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread"
+  ]
+}
