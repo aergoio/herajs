@@ -6,6 +6,8 @@ import 'regenerator-runtime/runtime';
 
 import { Wallet } from '../src/wallet';
 import { Contract } from '@herajs/client';
+import { createIdentity, encryptPrivateKey, encodePrivateKey } from '@herajs/crypto';
+import { NodeTransactionScanner } from '../src/datasources/node-tx-scanner';
 //import MemoryStorage from '../src/storages/memory';
 
 import fs from 'fs';
@@ -13,10 +15,15 @@ import { resolve } from 'path';
 const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.txt')).toString().trim();
 import contractAbi from './fixtures/contract.abi.json';
 
-const address = 'AmPEBfW7rRrLXV497236nAbv4zUs7wWF5uBqEPMA9sVF98Yc2NyH';
-const encprivkey = 'MPFZ86x9ZBQG1pHM7Ws5qdvqruXcDsHTuHYKjK28BNgzqGg59qdyJ1nq8TkbmzcP9jUHz43aDMbMZJ';
 
-describe('Wallet scenarios', () => {
+describe('Wallet scenarios', async () => {
+    const ids = [createIdentity(), createIdentity()];
+    const address = ids[0].address;
+    const encprivkey = encodePrivateKey(await encryptPrivateKey(ids[0].privateKey, ''));
+
+    const address2 = ids[1].address;
+    const encprivkey2 = encodePrivateKey(await encryptPrivateKey(ids[1].privateKey, ''));
+
     it('reads balance (loads address, gets balance, tracks updates)', (done) => {
         const wallet = new Wallet();
         wallet.useChain({
@@ -28,10 +35,9 @@ describe('Wallet scenarios', () => {
             const testAccountSpec = { chainId: 'testnet.localhost', address: 'AmQLSEi7oeW9LztxGa8pXKQDrenzK2JdDrXsJoCAh6PXyzdBtnVJ' };
             wallet.accountManager.addAccount(testAccountSpec);
             const accountTracker = await wallet.accountManager.trackAccount(testAccountSpec);
-            accountTracker.on('update', account => {
+            accountTracker.once('update', account => {
                 assert.deepEqual(account.data.spec, testAccountSpec);
                 assert.equal(account.balance.toUnit('aergo').toString(), '10 aergo');
-                console.log(account.balance.toUnit('aergo').toString(), account.nonce);
                 wallet.accountManager.pause();
                 done();
             });
@@ -161,4 +167,46 @@ describe('Wallet scenarios', () => {
         const callTxReceipt = await callTxTracker.getReceipt();
         assert.equal(callTxReceipt.status, '[string "lua contract"]:0: failed as expected');
     }).timeout(5000);
+
+    it('tracks account transactions', async () => {
+        // Config
+        const wallet = new Wallet();
+        wallet.useChain({
+            chainId: 'testnet.localhost',
+            nodeUrl: '127.0.0.1:7845'
+        });
+
+        // Send a tx from another account
+        const account2 = await wallet.accountManager.addAccount({ address: address2 });
+        await wallet.keyManager.importKey({
+            account: account2,
+            b58encrypted: encprivkey2,
+            password: ''
+        });
+        const txTracker = await wallet.sendTransaction(account2, { 
+            from: address2,
+            to: address,
+            amount: '123 aer'
+        });
+        const receipt = await txTracker.getReceipt();
+        console.log('receipt', receipt);
+        
+        // Set up readonly account
+        const account = await wallet.accountManager.addAccount({ address });
+        await assert.isRejected(
+            wallet.transactionManager.getAccountTransactions(account),
+            Error, 'no data source for account transactions. Please configure a data source such as NodeTransactionScanner.'
+        );
+        wallet.use(NodeTransactionScanner);
+        const txs = await wallet.transactionManager.getAccountTransactions(account);
+        for (const tx of txs) {
+            console.log(`${tx.from}  [${tx.nonce}]  ->  ${tx.to}  ${tx.hash}  ${tx.amount}`);
+        }
+        assert.equal(txs[0].from, address2);
+        /*
+        wallet.use(...)
+        const accountTxTracker = wallet.transactionManager.trackAccount(account);
+        console.log(accountTxTracker);
+        */
+    }).timeout(30000);
 });

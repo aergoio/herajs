@@ -11,12 +11,13 @@ import { DEFAULT_CHAIN } from './defaults';
 
 interface ChainConfig {
     chainId: string;
-    nodeUrl: string;
+    nodeUrl?: string;
+    provider?: any;
 };
 
 export class Wallet extends MiddlewareConsumer {
     defaultChainId: string = DEFAULT_CHAIN;
-    chains: HashMap<string, ChainConfig> = new HashMap();
+    chainConfigs: HashMap<string, ChainConfig> = new HashMap();
     keyManager: KeyManager;
     transactionManager: TransactionManager;
     accountManager: AccountManager;
@@ -30,11 +31,24 @@ export class Wallet extends MiddlewareConsumer {
         this.accountManager = new AccountManager(this);
     }
 
+    /**
+     * Add a chain configuration.
+     * Sets new chain as default if first to be added and default chain was unchanged.
+     * @param chainConfig 
+     */
     useChain(chainConfig: ChainConfig): void {
-        this.chains.set(chainConfig.chainId, chainConfig);
-        // Set as default chain if it is the first one to be added and default chain was unchanged
+        
+        if (typeof chainConfig.provider === 'undefined') {
+            chainConfig.provider = GrpcProvider;
+        }
+
+        if (typeof chainConfig.provider === 'function' && typeof chainConfig.nodeUrl === 'undefined') {
+            throw new Error('supply nodeUrl in chain config or instantiate provider manually');
+        }
+
+        this.chainConfigs.set(chainConfig.chainId, chainConfig);
         if (
-            this.chains.size === 1 &&
+            this.chainConfigs.size === 1 &&
             this.defaultChainId === DEFAULT_CHAIN &&
             chainConfig.chainId !== DEFAULT_CHAIN
         ) {
@@ -47,20 +61,32 @@ export class Wallet extends MiddlewareConsumer {
      * @param chainId 
      */
     setDefaultChain(chainId: string): void {
-        if (!this.chains.has(chainId)) {
+        if (!this.chainConfigs.has(chainId)) {
             throw new Error(`configure chain ${chainId} using useChain() before setting it as default`);
         }
         this.defaultChainId = chainId;
     }
 
-    getChainClient(chainId: string): AergoClient {
-        if (!this.chains.has(chainId)) {
+    /**
+     * Get AergoClient for chainId.
+     * If called the first time, create AergoClient instance.
+     * @param chainId 
+     */
+    getClient(chainId?: string): AergoClient {
+        if (typeof chainId === 'undefined') {
+            chainId = this.defaultChainId;
+        }
+        if (!this.chainConfigs.has(chainId)) {
             throw new Error(`trying to use not configured chainId ${chainId}`);
         }
-        const chainConfig = this.chains.get(chainId) as ChainConfig;
+        const chainConfig = this.chainConfigs.get(chainId) as ChainConfig;
 
         if (!this.clients.has(chainId)) {
-            const client = new AergoClient({}, new GrpcProvider({url: chainConfig.nodeUrl}));
+            let provider = chainConfig.provider;
+            if (typeof provider === 'function') {
+                provider = new provider({url: chainConfig.nodeUrl});
+            }
+            const client = new AergoClient({}, provider);
             this.clients.set(chainId, client);
             return client;
         }
@@ -68,6 +94,11 @@ export class Wallet extends MiddlewareConsumer {
         return this.clients.get(chainId) as AergoClient;
     }
 
+    /**
+     * Prepare a transaction from given account specified by simple TxBody.
+     * @param account 
+     * @param transaction 
+     */
     async prepareTransaction(account: Account | AccountSpec, transaction: Partial<TxBody>): Promise<SignedTransaction> {
         if (!(<Account>account).data) account = await this.accountManager.addAccount(<AccountSpec>account);
         const preparedTx = await this.accountManager.prepareTransaction(<Account>account, transaction);
@@ -75,6 +106,12 @@ export class Wallet extends MiddlewareConsumer {
         return signedTx;
     }
 
+    /**
+     * Send a transaction to the network using the specified account.
+     * Prepares TxBody if not already prepared.
+     * @param account 
+     * @param transaction 
+     */
     async sendTransaction(account: Account | AccountSpec, transaction: Partial<TxBody> | SignedTransaction): Promise<TransactionTracker> {
         let signedTransaction: SignedTransaction;
         if (transaction instanceof SignedTransaction) {
@@ -101,14 +138,10 @@ wallet.accountManager -> tracks balances and nonces
 wallet.transactionManager -> tracks txs
 wallet.keyManager -> signs/verifies, keeps keys
 
-wallet.setDefaultChain('testnet.aergo.io');
-
-always define chain in parmaters (can default to defaultChain, testnet.aergo.io)
 
 const key = await this.keystore.get(account);
 //tx.hash -> getter that calculates hash when necessary
 //tx.unsignedHash
-
 const signedTx = key.signTransaction(tx);
 
 this.keystore.put(account);
@@ -117,65 +150,11 @@ this.datastore.transactions.get(hash)
 this.datastore.transactions.put(tx);
 this.datastore.transactions.filterIndex(['from', 'to'], address)
 
-const wallet = new Wallet();
-wallet.useChain({
-    chainId: 'testnet.aergo.io',
-    nodeUrl: 'testnet.aergo.io'
-});
-//wallet.use(new GrpcWebProvider('testnet.aergo.io'));
-wallet.use(LocalKeyManager);
-const account = wallet.accountManager.getOrAddAccount({ chainId: 'testnet.aergo.io', address: 'Amvmfmf' });
-// can do const account = wallet.accountManager.getOrAddAccount({ chainId: 'testnet.aergo.io', address: 'Amvmfmf' }); if set default chain
-wallet.keyManager.addKey({
-    account: account,
-    key: ...
-});
-const key = wallet.keyManager.get(account);
-const tx = new Transaction({
-    account,
-    recipient: account,
-    amount: "1 aergo",
-    nonce: wallet.accountManager.getNextNonce(account) // Max(remote, local) + 1
-});
-const signedTx = key.signTransaction(tx);
-const txTracker = wallet.sendTransaction(signedTx);
-txTracker.hash
-txTracker.on('block', (block) => {
-
-});
-txTracker.on('receipt', (receipt) => {
-
-});
-txTracker.on('error', (error) => {
-
-});
-// exponential back off for polling
-
-wallet.accountManager.trackAccount(account); // implicit add and resume()
-wallet.accountManager.on('added', (account) => {
-
-});
-wallet.accountManager.on('changed', (accounts) => {
-
-});
-wallet.accountManager.on('update', (account) => {
-
-});
-wallet.accountManager.pause()
-wallet.accountManager.resume()
-
-wallet.transactionManager.getOrAddTransaction('hash'); // 
-wallet.transactionManager.addTransaction(signedTx)
-
-wallet.transactionManager.on('update', (transaction) => {
-
-})
-
 wallet.transactionManager.trackAccount(account)
--> Error: No data source for account transactions. E.g.
+-> Error: no data source for account transactions. Please configure a data source such as AergoNodeSource.
 
 // maybe add this inefficient data source?
-wallet.use(new AergoNodeSource(chainId => ..))
+wallet.use(new AergoNodeSource(chainId => wallet.getClient(chainId)));
 wallet.transactionManager.trackAccount(account)
 -> tracking transactions for account by reading blockchain. inefficient.
 

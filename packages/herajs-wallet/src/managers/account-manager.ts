@@ -28,7 +28,7 @@ class AccountTracker extends PausableTypedEventEmitter<TrackerEvents> {
     }
 
     async load(): Promise<Account> {
-        const client = this.manager.wallet.getChainClient(this.account.data.spec.chainId);
+        const client = this.manager.wallet.getClient(this.account.data.spec.chainId);
         const state = await client.getState(this.account.data.spec.address);
         this.account.data.balance = state.balance.toString();
         this.account.data.nonce = state.nonce;
@@ -79,7 +79,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         }
     }
 
-    private getCompleteAccountSpec(accountSpec: AccountSpec): CompleteAccountSpec {
+    getCompleteAccountSpec(accountSpec: AccountSpec): CompleteAccountSpec {
         const chainId = typeof accountSpec.chainId !== 'undefined' ? accountSpec.chainId : this.wallet.defaultChainId;
         return {
             address: accountSpec.address,
@@ -137,7 +137,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
 
     async getNonceForAccount(account: Account): Promise<number> {
         // TODO: smart caching
-        const client = this.wallet.getChainClient(account.data.spec.chainId);
+        const client = this.wallet.getClient(account.data.spec.chainId);
         return 1 + await client.getNonce(account.data.spec.address);
     }
 

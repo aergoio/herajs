@@ -5,7 +5,8 @@ Manager -> Events
 
 */
 
-import { Transaction, SignedTransaction } from '../models/transaction';
+import { Transaction, SignedTransaction, TxBody } from '../models/transaction';
+import { Account, CompleteAccountSpec } from '../models/account';
 import { Wallet } from '../wallet';
 import { PausableTypedEventEmitter, backoffIntervalStep } from '../utils';
 import { Address } from '@herajs/client';
@@ -72,7 +73,7 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
      * Emits events according to changed status.
      */
     async load(): Promise<void> {
-        const client = this.manager.wallet.getChainClient(this.transaction.data.chainId);
+        const client = this.manager.wallet.getClient(this.transaction.data.chainId);
         const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
         if (typeof result.block !== 'undefined') {
             this.transaction.data.status = Transaction.Status.Confirmed;
@@ -124,8 +125,29 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
 
     }
 
+    /**
+     * Track transactions for account.
+     * There is no default implementation for this. The only generally available
+     * method would be to scan the entire blockchain which is highly inefficient.
+     * If you want that, use your own full node and add the data source using
+     * wallet.use(NodeTransactionScanner);
+     * @param account 
+     */
+    trackAccount(account: Account) {
+        console.log(account);
+    }
+
+    async getAccountTransactions(account: Account): Promise<TxBody[]> {
+        const accountSpec = this.wallet.accountManager.getCompleteAccountSpec(account.data.spec);
+        return await this.wallet.applyMiddlewares<CompleteAccountSpec, Promise<TxBody[]>>('getAccountTransactions')(
+            () => {
+                throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
+            }
+        )(accountSpec);
+    }
+
     async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> { // implicit send, add, and track
-        const client = this.wallet.getChainClient(transaction.data.chainId);
+        const client = this.wallet.getClient(transaction.data.chainId);
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
         transaction.key = txhash;
         transaction.data.hash = txhash;

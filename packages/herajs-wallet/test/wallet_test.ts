@@ -5,6 +5,7 @@ const assert = chai.assert;
 import 'regenerator-runtime/runtime';
 
 import { Wallet } from '../src/wallet';
+import { GrpcProvider } from '@herajs/client';
 
 describe('Wallet: chain configuration', () => {
     it('uses default chain', () => {
@@ -18,6 +19,24 @@ describe('Wallet: chain configuration', () => {
             nodeUrl: 'foobarchain.com:7845'
         });
         assert.equal(wallet.defaultChainId, 'foobarchain');
+    });
+    it('throws error on config missing nodeUrl', () => {
+        const wallet = new Wallet();
+        assert.throws(() => {
+            wallet.useChain({
+                chainId: 'foobarchain'
+            });
+        }, Error, 'supply nodeUrl in chain config or instantiate provider manually');
+    });
+    it('uses custom provider', async () => {
+        const wallet = new Wallet();
+        wallet.useChain({
+            chainId: 'foobarchain',
+            provider: new GrpcProvider({ url: '127.0.0.1:7845' })
+        });
+        assert.equal(wallet.defaultChainId, 'foobarchain');
+        const chainInfo = await wallet.getClient().getChainInfo();
+        assert.equal(chainInfo.chainid.magic, 'dev.chain');
     });
     it('throws when using not defined chain', () => {
         const wallet = new Wallet();

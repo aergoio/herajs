@@ -12,7 +12,7 @@ interface KeymanagerMiddleware {
 interface SomeOtherMiddleware {
     middlewareRequired: MiddlewareMethod<string, boolean>;
 }
-class LocalstorageKeyManager extends Middleware implements KeymanagerMiddleware {
+class LocalstorageKeyManager extends Middleware<Client> implements KeymanagerMiddleware {
     getSomeValue(): MiddlewareFunc<string, number> {
         return (next: MiddlewareNextFunc<string, number>) => (key: string) => {
             console.log('middleware was here');
@@ -21,7 +21,7 @@ class LocalstorageKeyManager extends Middleware implements KeymanagerMiddleware 
     }
 }
 // a middleware that provides a value, it doesn't call next.
-class TestMiddleware extends Middleware implements SomeOtherMiddleware {
+class TestMiddleware extends Middleware<Client> implements SomeOtherMiddleware {
     middlewareRequired(): MiddlewareFunc<string, boolean> {
         return () => (key?: string) => {
             if (key === 'bar') return true;
@@ -54,7 +54,7 @@ describe('Middleware', () => {
         const client = new Client();
         client.use(LocalstorageKeyManager);
         client.use({
-            getSomeValue: logger as MiddlewareMethod<any, any>
+            getSomeValue: logger as MiddlewareMethod<any, any, Client>
         });
         const result = client.getSomeValue('bar');
         console.log(result);
@@ -63,7 +63,7 @@ describe('Middleware', () => {
         });
         client.use(TestMiddleware);
         client.use({
-            middlewareRequired: logger as MiddlewareMethod<any, any>
+            middlewareRequired: logger as MiddlewareMethod<any, any, Client>
         });
         const result2 = client.middlewareRequired('bar');
         console.log(result2);

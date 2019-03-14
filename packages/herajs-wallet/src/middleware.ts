@@ -5,27 +5,28 @@ type MiddlewareNextFuncInput<I, O> = (input: I) => O;
 export type MiddlewareNextFunc<I, O> = MiddlewareNextFuncInput<I, O> | MiddlewareNextFuncNoInput<O>;
 export type MiddlewareFunc<I, O> = (next: MiddlewareNextFunc<I, O>) => MiddlewareNextFunc<I, O>;
 type MiddlewareMainFunc<I, O> = (next?: MiddlewareNextFunc<I, O>) => MiddlewareNextFunc<I, O>;
-export type MiddlewareMethod<I, O> = (consumer: MiddlewareConsumer) => MiddlewareFunc<I, O>;
+export type MiddlewareMethod<I, O, ConsumerT = MiddlewareConsumer> = (consumer: ConsumerT) => MiddlewareFunc<I, O>;
 
-export interface MiddlewareInterface {
-    readonly [key: string]: MiddlewareMethod<any, any>
+export interface MiddlewareInterface<ConsumerT = MiddlewareConsumer> {
+    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>
 }
-export class Middleware implements MiddlewareInterface {
-    readonly [key: string]: MiddlewareMethod<any, any>
+export class Middleware<ConsumerT = MiddlewareConsumer> implements MiddlewareInterface<ConsumerT> {
+    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>
 }
-interface MiddlewareConstructor {
-    new (): MiddlewareInterface;
+interface MiddlewareConstructor<ConsumerT = MiddlewareConsumer> {
+    new (): MiddlewareInterface<ConsumerT>;
 }
-function isMiddlewareConstructor(arg: Middleware | MiddlewareInterface | MiddlewareConstructor): arg is MiddlewareConstructor {
+function isMiddlewareConstructor<ConsumerT = MiddlewareConsumer>(
+    arg: Middleware<ConsumerT> | MiddlewareInterface<ConsumerT> | MiddlewareConstructor<ConsumerT>
+    ): arg is MiddlewareConstructor<ConsumerT> {
     return (typeof arg === 'function');
 }
 
-
 export class MiddlewareConsumer {
-    middlewares: MiddlewareInterface[] = [];
+    middlewares: MiddlewareInterface<this>[] = [];
 
-    use(middleware: Middleware | MiddlewareInterface | MiddlewareConstructor) {
-        if (isMiddlewareConstructor(middleware)) {
+    use(middleware: Middleware<this> | MiddlewareInterface<this> | MiddlewareConstructor<this>) {
+        if (isMiddlewareConstructor<this>(middleware)) {
             middleware = new middleware();
         }
         this.middlewares.push(middleware);
