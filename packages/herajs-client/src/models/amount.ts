@@ -126,8 +126,21 @@ export default class Amount {
         return new Amount(this.value, '', unit);
     }
 
-    compare(otherAmount) {
+    compare(otherAmount: Amount | number | JSBI ): number {
+        if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
         const [a, b] = [this.toUnit('aer').value, otherAmount.toUnit('aer').value];
         return JSBI.lessThan(a, b) ? -1 : (JSBI.equal(a, b) ? 0 : 1);
+    }
+
+    add(otherAmount: Amount | number | JSBI): Amount {
+        const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
+        const sum = JSBI.add(this.value, otherValue);
+        return new Amount(sum, this.unit);
+    }
+
+    sub(otherAmount: Amount | number | JSBI): Amount {
+        const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
+        const sum = JSBI.subtract(this.value, otherValue);
+        return new Amount(sum, this.unit);
     }
 }

@@ -76,4 +76,13 @@ export default class Address {
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);
     }
+
+    private static valueEqual(a: Buffer, b: Buffer) {
+        return a.length == b.length && a.every((a_i, i) => a_i === b[i]);
+    }
+
+    equal(_otherAddress: string | Address) {
+        const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+        return Address.valueEqual(this.value, otherAddress.value);
+    }
 }
