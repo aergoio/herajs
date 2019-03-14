@@ -1,6 +1,6 @@
 # Multi-purpose javascript crypto library for aergo
 
-It is used by herajs and the official wallet to manage keys and sign transactions offline.
+It is used by Aergo dapps to manage keys and sign transactions offline.
 
 ## How to use
 
