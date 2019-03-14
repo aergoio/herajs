@@ -41,6 +41,7 @@
     "@babel/preset-typescript": "^7.1.0",
     "@babel/register": "^7.0.0",
     "@herajs/crypto": "0.1.0",
+    "@improbable-eng/grpc-web-node-http-transport": "^0.9.1",
     "@types/mocha": "^5.2.6",
     "@types/rollup-plugin-json": "^3.0.0",
     "async-sema": "^3.0.0",
