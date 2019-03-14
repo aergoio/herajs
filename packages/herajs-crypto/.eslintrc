@@ -1,15 +1,18 @@
-module.exports = {
+{
     "env": {
         "browser": true,
         "es6": true,
         "node": true,
-        "mocha": true,
+        "mocha": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "./tsconfig.json"
     },
+    "plugins": ["@typescript-eslint"],
     "rules": {
         "no-console": [
             "warn"
@@ -34,9 +37,14 @@ module.exports = {
             "error",
             "1tbs"
         ],
+        "object-curly-spacing": [
+            "warn", 
+            "always"
+        ],
         "prefer-arrow-callback": "warn",
         "prefer-const": "warn",
         "no-var": "error",
-        "no-unused-vars": "warn"
+        "@typescript-eslint/explicit-member-accessibility": 0,
+        "@typescript-eslint/no-explicit-any": 0
     }
-};
+}

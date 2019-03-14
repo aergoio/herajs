@@ -7,7 +7,6 @@ import 'regenerator-runtime/runtime';
 import {
     createIdentity,
     signTransaction, hashTransaction,
-    verifySignature,
     verifyTxSignature,
     identifyFromPrivateKey,
     decryptPrivateKey, encryptPrivateKey,
@@ -43,6 +42,8 @@ describe('signTransaction()', () => {
             to: identity.address,
             amount: '100000 aer',
             payload: '',
+            signature: '',
+            hash: ''
         };
         tx.signature = await signTransaction(tx, identity.keyPair);
         tx.hash = await hashTransaction(tx);
@@ -77,6 +78,14 @@ describe('identifyFromPrivateKey', () => {
         const encryptedCheck = encodePrivateKey(await encryptPrivateKey(decryptedBytes, password));
         assert.equal(encrypted, encryptedCheck);
     });
+    it('should export a new private key', async () => {
+        const identity = createIdentity();
+        const encKey = await encryptPrivateKey(identity.privateKey, 'pass');
+        const privkey = encodePrivateKey(Buffer.from(encKey));
+        const decryptedBytes = await decryptPrivateKey(decodePrivateKey(privkey), 'pass');
+        const identityCheck = identifyFromPrivateKey(decryptedBytes);
+        assert.equal(identity.address, identityCheck.address);
+    });
 });
 
 describe('verifySignatureWithAddress', () => {
@@ -90,7 +99,7 @@ describe('verifySignatureWithAddress', () => {
             payload: '',
         };
         const signature = await signTransaction(tx, identity.keyPair);
-        
+
         const pubkey = publicKeyFromAddress(identity.address);
         assert.isTrue(await verifyTxSignature(tx, pubkey, signature));
     });
