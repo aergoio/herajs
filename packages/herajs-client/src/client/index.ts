@@ -48,6 +48,20 @@ async function marshalEmpty(): Promise<Empty> {
     return new Empty();
 }
 
+interface GetTxResult {
+    block?: {
+        hash: string;
+        idx: number;
+    }
+    tx: Tx
+};
+
+interface GetReceiptResult {
+    contractaddress: Address;
+    result: string;
+    status: string;
+};
+
 /**
  * Main aergo client controller.
  */
@@ -140,7 +154,7 @@ class AergoClient {
      * @param {string} txhash transaction hash
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
-    getTransaction (txhash): Promise<any> {
+    getTransaction (txhash): Promise<GetTxResult> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
@@ -309,13 +323,13 @@ class AergoClient {
      * @param {string} address Account address encoded in Base58check
      * @returns {Promise<object>} account state
      */
-    getState (address) {
+    getState (address): Promise<State> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
     }
     
-    getNonce(address) {
+    getNonce(address): Promise<number> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
@@ -331,7 +345,7 @@ class AergoClient {
      * @param {Tx} tx signed transaction
      * @returns {Promise<string>} transaction hash
      */
-    sendSignedTransaction (tx) {
+    sendSignedTransaction (tx): Promise<string> {
         return new Promise((resolve, reject) => {
             const txs = new rpcTypes.TxList();
             if (!(tx instanceof Tx)) {
@@ -389,14 +403,14 @@ class AergoClient {
      * @param {string} txhash transaction hash
      * @return {Promise<object>} transaction receipt
      */
-    getTransactionReceipt (txhash) {
+    getTransactionReceipt (txhash): Promise<GetReceiptResult> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then(grpcObject => {
             const obj = grpcObject.toObject();
             return {
                 contractaddress: new Address(grpcObject.getContractaddress_asU8()),
-                result: obj.ret, //JSON.parse(obj.ret),
+                result: obj.ret,
                 status: obj.status
             };
         });

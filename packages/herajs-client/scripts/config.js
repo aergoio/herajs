@@ -28,11 +28,12 @@ const resolve = p => _resolve(__dirname, '../', p);
 const external = [
     'grpc',
     'google-protobuf',
-    'grpc-web-client',
     'bs58check',
     'bs58',
     'buffer',
-    'jsbi'
+    'jsbi',
+    '@improbable-eng/grpc-web',
+    '@improbable-eng/grpc-web-node-http-transport'
 ];
 
 // Treating these as external as they are runtime requirements for node only

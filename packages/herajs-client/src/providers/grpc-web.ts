@@ -7,7 +7,7 @@ interface GrpcWebProviderConfig {
 
 /**
  * Provider for GRPC-WEB connections over HTTP.
- * This is compatible with both Web browser and Node.js environments.
+ * This is compatible with Web browsers.
  * Note that the transport is considerably slower than over standard GRPC.
  */
 class GrpcWebProvider {

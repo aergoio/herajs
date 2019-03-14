@@ -13,4 +13,12 @@ AergoClient.prototype.defaultProvider = () => {
     return new GrpcWebProvider(); 
 };
 
-export { AergoClient, GrpcWebProvider, constants, Address, Amount, Contract, AergoClient as default };
+export {
+    AergoClient,
+    GrpcWebProvider,
+    constants,
+    Contract,
+    Address,
+    Amount,
+    AergoClient as default
+};

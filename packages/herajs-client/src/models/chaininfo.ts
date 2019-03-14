@@ -10,7 +10,7 @@ export type ChainId = {
 }
 
 export default class ChainInfo {
-    chainid?: ChainId;
+    chainid: ChainId;
     bpnumber: number;
     maxblocksize: number;
     maxtokens: Amount;

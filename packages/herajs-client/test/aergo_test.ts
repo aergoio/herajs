@@ -303,7 +303,7 @@ describe('Aergo', () => {
             const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
             const commitedTx = await aergo.getTransaction(txhash);
-            assert.equal(commitedTx.tx.amount, tx.amount);
+            assert.equal(commitedTx.tx.amount.toString(), tx.amount.toString());
         });
     });
     
