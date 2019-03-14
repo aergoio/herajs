@@ -1,5 +1,7 @@
 # Multi-purpose javascript crypto library for aergo
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs-crypto.svg)](https://greenkeeper.io/)
+
 It is used by Aergo dapps to manage keys and sign transactions offline.
 
 ## How to use
