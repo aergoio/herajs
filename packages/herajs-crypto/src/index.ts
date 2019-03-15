@@ -1,10 +1,11 @@
-import {
+export {
     encodeAddress,
     decodeAddress,
     encodePrivateKey,
     decodePrivateKey
 } from './encoding';
-import {
+
+export {
     createIdentity,
     identifyFromPrivateKey,
     addressFromPublicKey,
@@ -12,28 +13,14 @@ import {
     decryptPrivateKey,
     encryptPrivateKey
 } from './keys';
-import {
-    signTransaction,
-    verifyTxSignature,
-    verifySignature
-} from './signing';
-import {
-    hashTransaction
-} from './hashing';
 
 export {
-    createIdentity,
-    identifyFromPrivateKey,
-    addressFromPublicKey,
-    publicKeyFromAddress,
-    encodeAddress,
-    decodeAddress,
+    signMessage,
     signTransaction,
-    hashTransaction,
     verifySignature,
-    verifyTxSignature,
-    decryptPrivateKey,
-    encryptPrivateKey,
-    encodePrivateKey,
-    decodePrivateKey,
-};
+    verifyTxSignature
+} from './signing';
+
+export {
+    hashTransaction
+} from './hashing';
