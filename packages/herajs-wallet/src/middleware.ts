@@ -1,5 +1,3 @@
-// execute with npx babel-node middleware.js
-
 type MiddlewareNextFuncNoInput<O> = () => O;
 type MiddlewareNextFuncInput<I, O> = (input: I) => O;
 export type MiddlewareNextFunc<I, O> = MiddlewareNextFuncInput<I, O> | MiddlewareNextFuncNoInput<O>;

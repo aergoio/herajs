@@ -22,6 +22,10 @@ export interface AccountData extends Data {
     balance: string;
     nonce: number;
     name: string;
+    lastSync: {
+        blockno: number;
+        timestamp: number;
+    } | null;
 }
 
 export class Account extends Record<AccountData> {

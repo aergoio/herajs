@@ -5,11 +5,13 @@ Manager -> Events
 
 */
 
-import { Transaction, SignedTransaction, TxBody } from '../models/transaction';
-import { Account, CompleteAccountSpec } from '../models/account';
+import { Transaction, SignedTransaction } from '../models/transaction';
+import { Account } from '../models/account';
 import { Wallet } from '../wallet';
 import { PausableTypedEventEmitter, backoffIntervalStep } from '../utils';
 import { Address } from '@herajs/client';
+import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
+import { GetAccountTxParams } from '../datasources/types';
 
 export interface Events {
     'add': Transaction;
@@ -22,6 +24,10 @@ export interface TrackerEvents {
     'receipt': GetReceiptResult;
     'error': Error;
     'timeout': Error;
+}
+
+export interface AccountTrackerEvents {
+    'transaction': SignedTransaction;
 }
 
 // TODO: remove
@@ -37,6 +43,7 @@ interface GetReceiptResult {
     result: string;
     status: string;
 }
+
 
 
 export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents> {
@@ -106,6 +113,50 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
     }
 }
 
+
+class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTrackerEvents> {
+    private manager: TransactionManager;
+    private intervalId?: NodeJS.Timeout;
+    private account: Account;
+
+    constructor(manager: TransactionManager, account: Account) {
+        super();
+        this.manager = manager;
+        this.account = account;
+    }
+
+    async load(): Promise<Account> {
+        const client = this.manager.wallet.getClient(this.account.data.spec.chainId);
+        const lastSyncBlockno = this.account.data.lastSync ? this.account.data.lastSync.blockno + 1 : 0;
+        const { bestHeight } = await client.blockchain();
+        if (lastSyncBlockno >= bestHeight) return this.account;
+        console.log(`[track] sync from block ${lastSyncBlockno} .. ${bestHeight}`);
+        const transactions = await this.manager.getAccountTransactionsAfter(this.account, lastSyncBlockno, bestHeight);
+        for (const tx of transactions) {
+            this.emit('transaction', tx);
+        }
+        this.account.data.lastSync = {
+            blockno: bestHeight,
+            timestamp: +new Date()
+        };
+        return this.account;
+    }
+
+    resume(): void {
+        this.load();
+        this.intervalId = setInterval(() => {
+            this.load();
+        }, ACCOUNT_UPDATE_INTERVAL);
+    }
+
+    pause(): void {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+        }
+    }
+}
+
+
 /**
  * TransactionManager manages and tracks single transactions
  */
@@ -121,9 +172,6 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
 
     }
 
-    trackTransaction() {
-
-    }
 
     /**
      * Track transactions for account.
@@ -134,16 +182,37 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
      * @param account 
      */
     trackAccount(account: Account) {
-        console.log(account);
+        const tracker = new AccountTransactionTracker(this, account);
+        tracker.resume();
+        return tracker;
     }
 
-    async getAccountTransactions(account: Account): Promise<TxBody[]> {
-        const accountSpec = this.wallet.accountManager.getCompleteAccountSpec(account.data.spec);
-        return await this.wallet.applyMiddlewares<CompleteAccountSpec, Promise<TxBody[]>>('getAccountTransactions')(
+    async getAccountTransactions(account: Account): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<Account, Promise<SignedTransaction[]>>('getAccountTransactions')(
             () => {
                 throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
             }
-        )(accountSpec);
+        )(account);
+    }
+
+    async getAccountTransactionsAfter(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('getAccountTransactionsAfter')(
+            () => {
+                throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
+            }
+        )({ account, blockno, limit });
+    }
+
+    async getAccountTransactionsBefore(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('getAccountTransactionsBefore')(
+            () => {
+                throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
+            }
+        )({ account, blockno, limit });
+    }
+
+    async trackTransaction(transaction: SignedTransaction): Promise<TransactionTracker> {
+        return new TransactionTracker(this, transaction);
     }
 
     async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> { // implicit send, add, and track
@@ -151,7 +220,7 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
         transaction.key = txhash;
         transaction.data.hash = txhash;
-        // TODO add() and track()
-        return new TransactionTracker(this, transaction);
+        // TODO add() 
+        return this.trackTransaction(transaction);
     }
 }

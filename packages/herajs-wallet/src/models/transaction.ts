@@ -4,7 +4,7 @@ import { Record, Data } from './record';
 import { Address, Amount } from '@herajs/client';
 import { hashTransaction } from '@herajs/crypto';
 
-export enum Status {
+enum Status {
     Pending = 'pending',
     Confirmed = 'confirmed',
     Error = 'error',
@@ -18,6 +18,7 @@ interface TransactionData extends Data {
     hash: string | null;
     ts: string;
     blockhash: string | null;
+    blockno: number | null;
     amount: string;
     type: number;
     status: Status;
@@ -104,5 +105,20 @@ export class SignedTransaction extends Transaction {
         const hash = await hashTransaction({ ...this.txBody }, 'base58') as string;
         this._signedHash = hash;
         return hash;
+    }
+
+    static fromTxBody(txBody: TxBody, chainId: string): SignedTransaction {
+        return new SignedTransaction(txBody.hash ? txBody.hash : '', {
+            chainId,
+            from: ''+txBody.from,
+            to: ''+txBody.to,
+            hash: ''+txBody.hash,
+            ts: '',
+            blockhash: null,
+            blockno: null,
+            amount: ''+txBody.amount,
+            type: txBody.type ? txBody.type : 0,
+            status: Transaction.Status.Confirmed,
+        }, txBody, txBody.sign ? txBody.sign : '');
     }
 }

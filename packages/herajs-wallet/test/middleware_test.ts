@@ -3,7 +3,6 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
-import { Counter } from '../src/counter/counter';
 import { MiddlewareConsumer, Middleware, MiddlewareNextFunc, MiddlewareMethod, MiddlewareFunc } from '../src/middleware';
 
 interface KeymanagerMiddleware {
@@ -77,41 +76,3 @@ describe('Middleware', () => {
         console.log(client.keystore);
     });
 });
-
-
-
-describe('Counter', () => {
-    it('should work', () => {
-        const counter = new Counter();
-        counter.add();
-        counter.add();
-        counter.add();
-
-        assert.equal(counter.getValue(), 3);
-
-        counter.subtract();
-        counter.subtract();
-        
-        assert.equal(counter.getValue(), 1);
-    });
-});
-
-/*
-describe('Account', () => {
-    it('should work', () => {
-        const account = new Account('Abcdef');
-        account.data.balance = new Amount('1 aergo');
-    });
-});
-*/
-
-/*
-describe('Wallet', () => {
-    it('should work', () => {
-        const client = new AergoClient({});
-        const wallet = new Wallet({
-            client
-        });
-        wallet.use(LocalStorageKeymanager);
-    });
-});*/

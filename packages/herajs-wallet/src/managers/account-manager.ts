@@ -98,16 +98,21 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return account;
     }
 
-    async trackAccount(accountSpec: AccountSpec): Promise<AccountTracker> {
-        this.resume();
-        const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
-        
+    async getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec): Promise<Account> {
+        const completeAccountSpec = accountSpec.chainId && accountSpec.address ? accountSpec as CompleteAccountSpec : this.getCompleteAccountSpec(accountSpec);
         let account: Account;
         if (!this.accounts.has(completeAccountSpec)) {
             account = await this.addAccount(completeAccountSpec);
         } else {
             account = await this.accounts.get(completeAccountSpec) as Account;
         }
+        return account;
+    }
+
+    async trackAccount(accountSpec: AccountSpec): Promise<AccountTracker> {
+        this.resume();
+        const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
+        const account = await this.getOrAddAccount(completeAccountSpec);
         
         if (this.trackers.has(completeAccountSpec)) {
             return this.trackers.get(completeAccountSpec) as AccountTracker;
@@ -130,7 +135,8 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
                 publicKey: [],
                 balance: '',
                 nonce: 0,
-                name: ''
+                name: '',
+                lastSync: null
             }
         );
     }
@@ -166,6 +172,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             hash: '',
             ts: '',
             blockhash: null,
+            blockno: null,
             amount: new Amount(tx.amount).toString(),
             type: 0,
             status: Transaction.Status.Pending

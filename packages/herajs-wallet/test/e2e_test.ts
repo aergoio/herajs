@@ -14,6 +14,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.txt')).toString().trim();
 import contractAbi from './fixtures/contract.abi.json';
+import { SignedTransaction } from '../src/models/transaction';
 
 
 describe('Wallet scenarios', async () => {
@@ -168,7 +169,7 @@ describe('Wallet scenarios', async () => {
         assert.equal(callTxReceipt.status, '[string "lua contract"]:0: failed as expected');
     }).timeout(5000);
 
-    it('tracks account transactions', async () => {
+    it('get account transactions', async () => {
         // Config
         const wallet = new Wallet();
         wallet.useChain({
@@ -200,13 +201,56 @@ describe('Wallet scenarios', async () => {
         wallet.use(NodeTransactionScanner);
         const txs = await wallet.transactionManager.getAccountTransactions(account);
         for (const tx of txs) {
-            console.log(`${tx.from}  [${tx.nonce}]  ->  ${tx.to}  ${tx.hash}  ${tx.amount}`);
+            console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
         }
-        assert.equal(txs[0].from, address2);
-        /*
-        wallet.use(...)
+        assert.equal(txs[0].data.from, address2);
+    }).timeout(30000);
+
+    it('tracks account transactions', async () => {
+        // Config
+        const wallet = new Wallet();
+        wallet.useChain({
+            chainId: 'testnet.localhost',
+            nodeUrl: '127.0.0.1:7845'
+        });
+
+        let txhash = '';
+
+        // Set up readonly account
+        const account = await wallet.accountManager.addAccount({ address });
+        // Manually set last sync to save some time
+        const { bestHeight } = await wallet.getClient().blockchain();
+        account.data.lastSync = {
+            blockno: bestHeight,
+            timestamp: + new Date()
+        };
+        wallet.use(NodeTransactionScanner);
         const accountTxTracker = wallet.transactionManager.trackAccount(account);
-        console.log(accountTxTracker);
-        */
+        const p = new Promise(resolve => {
+            accountTxTracker.on('transaction', (tx: SignedTransaction) => {
+                console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
+                if (tx.hash === txhash) {
+                    accountTxTracker.pause();
+                    resolve();
+                }
+            });
+        });
+
+        // Send a tx from another account
+        const account2 = await wallet.accountManager.addAccount({ address: address2 });
+        await wallet.keyManager.importKey({
+            account: account2,
+            b58encrypted: encprivkey2,
+            password: ''
+        });
+        const txTracker = await wallet.sendTransaction(account2, { 
+            from: address2,
+            to: address,
+            amount: '123 aer'
+        });
+        txhash = txTracker.transaction.hash;
+        console.log(`Waiting for hash ${txhash}...`);
+        await txTracker.getReceipt();
+        return p;
     }).timeout(30000);
 });
