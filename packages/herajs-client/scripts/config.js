@@ -159,7 +159,8 @@ function genConfig (name) {
                 ],
                 presets: [
                     ["@babel/preset-env", {
-                        "modules": false
+                        "modules": false,
+                        "exclude": ["transform-regenerator"]
                     }],
                     "@babel/typescript"
                 ]

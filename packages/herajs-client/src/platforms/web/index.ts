@@ -6,6 +6,7 @@ import constants from '../../constants';
 import Contract from '../../models/contract';
 import Address from '../../models/address';
 import Amount from '../../models/amount';
+import Tx from '../../models/tx';
 
 AergoClient.prototype.target = 'web';
 
@@ -20,5 +21,6 @@ export {
     Contract,
     Address,
     Amount,
+    Tx,
     AergoClient as default
 };
