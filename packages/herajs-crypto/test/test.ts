@@ -2,7 +2,6 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
-import 'regenerator-runtime/runtime';
 
 import {
     createIdentity,
@@ -13,7 +12,6 @@ import {
     decodePrivateKey, encodePrivateKey,
     publicKeyFromAddress
 } from '../src';
-
 
 describe('createIdentity()', () => {
     it('should return a new identity', () => {

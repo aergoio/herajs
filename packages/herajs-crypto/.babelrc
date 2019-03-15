@@ -1,6 +1,6 @@
 {
     "presets": [
-      "@babel/env",
+      ["@babel/env", {"exclude": ["transform-regenerator"]}],
       "@babel/typescript"
     ],
     "plugins": [
