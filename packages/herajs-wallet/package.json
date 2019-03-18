@@ -48,8 +48,8 @@
   },
   "dependencies": {
     "@elderapo/typed-event-emitter": "^1.4.1",
-    "@herajs/client": "^0.5.2",
-    "@herajs/crypto": "^0.1.0",
+    "@herajs/client": "^0.7.1",
+    "@herajs/crypto": "^0.2.0",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "hashmap": "^2.3.0",
