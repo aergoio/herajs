@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "10"
+sudo: required
+services:
+  - docker
+before_install:
+  - docker run -d -p 7845:7845 --name aergosvr aergo/node:0.13.0-rc aergosvr --config /aergo/testmode.toml
+install:
+  - npm install
+before_script:
+  - sleep 10
+script:
+  - npm test
+after_failure:
+  - docker logs aergosvr
