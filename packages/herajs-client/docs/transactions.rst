@@ -20,7 +20,7 @@ First unlock an account, then send a transaction using that account.
 .. code-block:: javascript
 
     const address = 'AmNrsAqkXhQfE6sGxTutQkf9ekaYowaJFLekEm8qvDr1RB1AnsiM';
-    aergo.accounts.unlock(address, 'testpass').then(unlockedAddress => 
+    aergo.accounts.unlock(address, 'testpass').then(unlockedAddress => {
         const testtx = {
             from: unlockedAddress,
             to: unlockedAddress,
@@ -28,7 +28,7 @@ First unlock an account, then send a transaction using that account.
         };
         aergo.accounts.sendTransaction(testtx).then(txhash => {
             console.log(txhash);
-        })
+        });
     });
 
     // 9YBYY1onL9RLeEFxV9AdnCReV8i1k689KKsosS3eAx3X
