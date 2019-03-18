@@ -3,16 +3,17 @@ interface GrpcWebProviderConfig {
 }
 /**
  * Provider for GRPC-WEB connections over HTTP.
- * This is compatible with Web browsers.
- * Note that the transport is considerably slower than over standard GRPC.
+ * This is compatible with Node.js environments.
+ * Streaming methods are not supported.
+ * This is mostly for testing, for productiomn use use GrpcWebProvider or GrpcProvider.
  */
-declare class GrpcWebProvider {
+declare class GrpcWebNodeProvider {
     client: any;
     config: GrpcWebProviderConfig;
     /**
      * .. code-block:: javascript
      *
-     *     import { GrpcWebProvider } from '@herajs/client';
+     *     import { GrpcWebNodeProvider } from '@herajs/client';
      *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
      *
      * @param {GrpcWebProviderConfig} config
@@ -20,4 +21,4 @@ declare class GrpcWebProvider {
     constructor(config?: GrpcWebProviderConfig);
     readonly defaultConfig: GrpcWebProviderConfig;
 }
-export default GrpcWebProvider;
+export default GrpcWebNodeProvider;

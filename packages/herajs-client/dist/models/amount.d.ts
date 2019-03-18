@@ -30,5 +30,7 @@ export default class Amount {
      * @param unit string (aer, gaer, aergo)
      */
     toUnit(unit: string): Amount;
-    compare(otherAmount: any): 0 | 1 | -1;
+    compare(otherAmount: Amount | number | JSBI): number;
+    add(otherAmount: Amount | number | JSBI): Amount;
+    sub(otherAmount: Amount | number | JSBI): Amount;
 }

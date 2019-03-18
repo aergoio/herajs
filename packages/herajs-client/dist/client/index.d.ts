@@ -1,11 +1,26 @@
 import Accounts from '../accounts';
 import { BlockchainStatus as GrpcBlockchainStatus } from '../../types/rpc_pb';
+import Tx from '../models/tx';
 import Block from '../models/block';
+import Address from '../models/address';
+import State from '../models/state';
 import ChainInfo from '../models/chaininfo';
 import { FunctionCall, StateQuery } from '../models/contract';
 import FilterInfo from '../models/filterinfo';
 declare const CommitStatus: any;
 export { CommitStatus };
+interface GetTxResult {
+    block?: {
+        hash: string;
+        idx: number;
+    };
+    tx: Tx;
+}
+interface GetReceiptResult {
+    contractaddress: Address;
+    result: string;
+    status: string;
+}
 /**
  * Main aergo client controller.
  */
@@ -51,7 +66,7 @@ declare class AergoClient {
      * @param {string} txhash transaction hash
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
-    getTransaction(txhash: any): Promise<any>;
+    getTransaction(txhash: any): Promise<GetTxResult>;
     /**
      * Retrieve information about a block.
      *
@@ -102,15 +117,15 @@ declare class AergoClient {
      * @param {string} address Account address encoded in Base58check
      * @returns {Promise<object>} account state
      */
-    getState(address: any): any;
-    getNonce(address: any): any;
+    getState(address: any): Promise<State>;
+    getNonce(address: any): Promise<number>;
     verifyTransaction(): any;
     /**
      * Send a signed transaction to the network.
      * @param {Tx} tx signed transaction
      * @returns {Promise<string>} transaction hash
      */
-    sendSignedTransaction(tx: any): Promise<{}>;
+    sendSignedTransaction(tx: any): Promise<string>;
     /**
      * Return the top voted-for block producer
      * @param count number
@@ -126,7 +141,7 @@ declare class AergoClient {
      * @param {string} txhash transaction hash
      * @return {Promise<object>} transaction receipt
      */
-    getTransactionReceipt(txhash: any): any;
+    getTransactionReceipt(txhash: any): Promise<GetReceiptResult>;
     /**
      * Query contract ABI
      * @param {FunctionCall} functionCall call details

@@ -1,17 +1,13 @@
 /*!
- * herajs v0.6.0
+ * herajs v0.7.0
  * (c) 2019 AERGO
  * Released under MIT license.
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('http'), require('https'), require('url')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'http', 'https', 'url'], factory) :
-	(factory((global.herajs = {}),global.http,global.https,global.url));
-}(this, (function (exports,http,https,url) { 'use strict';
-
-	http = http && http.hasOwnProperty('default') ? http['default'] : http;
-	https = https && https.hasOwnProperty('default') ? https['default'] : https;
-	url = url && url.hasOwnProperty('default') ? url['default'] : url;
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(global = global || self, factory(global.herajs = {}));
+}(this, function (exports) { 'use strict';
 
 	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -31,30 +27,15 @@
 	 * LICENSE file in the root directory of this source tree.
 	 */
 
-	!(function(global) {
+	var regeneratorRuntime = (function (exports) {
 
 	  var Op = Object.prototype;
 	  var hasOwn = Op.hasOwnProperty;
-	  var undefined; // More compressible than void 0.
+	  var undefined$1; // More compressible than void 0.
 	  var $Symbol = typeof Symbol === "function" ? Symbol : {};
 	  var iteratorSymbol = $Symbol.iterator || "@@iterator";
 	  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
 	  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-	  var runtime = global.regeneratorRuntime;
-	  if (runtime) {
-	    {
-	      // If regeneratorRuntime is defined globally and we're in a module,
-	      // make the exports object identical to regeneratorRuntime.
-	      module.exports = runtime;
-	    }
-	    // Don't bother evaluating the rest of this file if the runtime was
-	    // already defined globally.
-	    return;
-	  }
-
-	  // Define the runtime globally (as expected by generated code) as either
-	  // module.exports (if we're in a module) or a new, empty object.
-	  runtime = global.regeneratorRuntime = module.exports;
 
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
 	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -68,7 +49,7 @@
 
 	    return generator;
 	  }
-	  runtime.wrap = wrap;
+	  exports.wrap = wrap;
 
 	  // Try/catch helper to minimize deoptimizations. Returns a completion
 	  // record like context.tryEntries[i].completion. This interface could
@@ -139,7 +120,7 @@
 	    });
 	  }
 
-	  runtime.isGeneratorFunction = function(genFun) {
+	  exports.isGeneratorFunction = function(genFun) {
 	    var ctor = typeof genFun === "function" && genFun.constructor;
 	    return ctor
 	      ? ctor === GeneratorFunction ||
@@ -149,7 +130,7 @@
 	      : false;
 	  };
 
-	  runtime.mark = function(genFun) {
+	  exports.mark = function(genFun) {
 	    if (Object.setPrototypeOf) {
 	      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
 	    } else {
@@ -166,7 +147,7 @@
 	  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
 	  // `hasOwn.call(value, "__await")` to determine if the yielded value is
 	  // meant to be awaited.
-	  runtime.awrap = function(arg) {
+	  exports.awrap = function(arg) {
 	    return { __await: arg };
 	  };
 
@@ -241,17 +222,17 @@
 	  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
 	    return this;
 	  };
-	  runtime.AsyncIterator = AsyncIterator;
+	  exports.AsyncIterator = AsyncIterator;
 
 	  // Note that simple async functions are implemented on top of
 	  // AsyncIterator objects; they just return a Promise for the value of
 	  // the final result produced by the iterator.
-	  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+	  exports.async = function(innerFn, outerFn, self, tryLocsList) {
 	    var iter = new AsyncIterator(
 	      wrap(innerFn, outerFn, self, tryLocsList)
 	    );
 
-	    return runtime.isGeneratorFunction(outerFn)
+	    return exports.isGeneratorFunction(outerFn)
 	      ? iter // If outerFn is a generator, return the full iterator.
 	      : iter.next().then(function(result) {
 	          return result.done ? result.value : iter.next();
@@ -342,17 +323,18 @@
 	  // setting context.delegate to null, and returning the ContinueSentinel.
 	  function maybeInvokeDelegate(delegate, context) {
 	    var method = delegate.iterator[context.method];
-	    if (method === undefined) {
+	    if (method === undefined$1) {
 	      // A .throw or .return when the delegate iterator has no .throw
 	      // method always terminates the yield* loop.
 	      context.delegate = null;
 
 	      if (context.method === "throw") {
-	        if (delegate.iterator.return) {
+	        // Note: ["return"] must be used for ES3 parsing compatibility.
+	        if (delegate.iterator["return"]) {
 	          // If the delegate iterator has a return method, give it a
 	          // chance to clean up.
 	          context.method = "return";
-	          context.arg = undefined;
+	          context.arg = undefined$1;
 	          maybeInvokeDelegate(delegate, context);
 
 	          if (context.method === "throw") {
@@ -404,7 +386,7 @@
 	      // outer generator.
 	      if (context.method !== "return") {
 	        context.method = "next";
-	        context.arg = undefined;
+	        context.arg = undefined$1;
 	      }
 
 	    } else {
@@ -468,7 +450,7 @@
 	    this.reset(true);
 	  }
 
-	  runtime.keys = function(object) {
+	  exports.keys = function(object) {
 	    var keys = [];
 	    for (var key in object) {
 	      keys.push(key);
@@ -516,7 +498,7 @@
 	            }
 	          }
 
-	          next.value = undefined;
+	          next.value = undefined$1;
 	          next.done = true;
 
 	          return next;
@@ -529,10 +511,10 @@
 	    // Return an iterator with no values.
 	    return { next: doneResult };
 	  }
-	  runtime.values = values;
+	  exports.values = values;
 
 	  function doneResult() {
-	    return { value: undefined, done: true };
+	    return { value: undefined$1, done: true };
 	  }
 
 	  Context.prototype = {
@@ -543,12 +525,12 @@
 	      this.next = 0;
 	      // Resetting context._sent for legacy support of Babel's
 	      // function.sent implementation.
-	      this.sent = this._sent = undefined;
+	      this.sent = this._sent = undefined$1;
 	      this.done = false;
 	      this.delegate = null;
 
 	      this.method = "next";
-	      this.arg = undefined;
+	      this.arg = undefined$1;
 
 	      this.tryEntries.forEach(resetTryEntry);
 
@@ -558,7 +540,7 @@
 	          if (name.charAt(0) === "t" &&
 	              hasOwn.call(this, name) &&
 	              !isNaN(+name.slice(1))) {
-	            this[name] = undefined;
+	            this[name] = undefined$1;
 	          }
 	        }
 	      }
@@ -591,7 +573,7 @@
 	          // If the dispatched exception was caught by a catch block,
 	          // then let that catch block handle the exception normally.
 	          context.method = "next";
-	          context.arg = undefined;
+	          context.arg = undefined$1;
 	        }
 
 	        return !! caught;
@@ -728,20 +710,26 @@
 	      if (this.method === "next") {
 	        // Deliberately forget the last sent value so that we don't
 	        // accidentally pass it on to the delegate.
-	        this.arg = undefined;
+	        this.arg = undefined$1;
 	      }
 
 	      return ContinueSentinel;
 	    }
 	  };
-	})(
-	  // In sloppy mode, unbound `this` refers to the global object, fallback to
-	  // Function constructor if we're in global strict mode. That is sadly a form
-	  // of indirect eval which violates Content Security Policy.
-	  (function() {
-	    return this || (typeof self === "object" && self);
-	  })() || Function("return this")()
-	);
+
+	  // Regardless of whether this script is executing as a CommonJS module
+	  // or not, return the runtime object so that we can declare the variable
+	  // regeneratorRuntime in the outer scope, which allows this module to be
+	  // injected easily by `bin/regenerator --include-runtime script.js`.
+	  return exports;
+
+	}(
+	  // If this script is executing as a CommonJS module, use module.exports
+	  // as the regeneratorRuntime namespace. Otherwise create a new empty
+	  // object. Either way, the resulting object will be used to initialize
+	  // the regeneratorRuntime variable at the top of this file.
+	  module.exports
+	));
 	});
 
 	function _typeof(obj) {
@@ -1812,7 +1800,7 @@
 	    }
 	  }
 
-	  function read$$1 (buf, i) {
+	  function read (buf, i) {
 	    if (indexSize === 1) {
 	      return buf[i]
 	    } else {
@@ -1824,7 +1812,7 @@
 	  if (dir) {
 	    var foundIndex = -1;
 	    for (i = byteOffset; i < arrLength; i++) {
-	      if (read$$1(arr, i) === read$$1(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+	      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
 	        if (foundIndex === -1) foundIndex = i;
 	        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
 	      } else {
@@ -1837,7 +1825,7 @@
 	    for (i = byteOffset; i >= 0; i--) {
 	      var found = true;
 	      for (var j = 0; j < valLength; j++) {
-	        if (read$$1(arr, i + j) !== read$$1(val, j)) {
+	        if (read(arr, i + j) !== read(val, j)) {
 	          found = false;
 	          break
 	        }
@@ -1908,7 +1896,7 @@
 	  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 	}
 
-	Buffer$1.prototype.write = function write$$1 (string, offset, length, encoding) {
+	Buffer$1.prototype.write = function write (string, offset, length, encoding) {
 	  // Buffer#write(string)
 	  if (offset === undefined) {
 	    encoding = 'utf8';
@@ -2885,7 +2873,7 @@
 	  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isFastBuffer(obj.slice(0, 0))
 	}
 
-	var require$$0 = /*#__PURE__*/Object.freeze({
+	var bufferEs6 = /*#__PURE__*/Object.freeze({
 		INSPECT_MAX_BYTES: INSPECT_MAX_BYTES,
 		kMaxLength: _kMaxLength,
 		Buffer: Buffer$1,
@@ -2929,7 +2917,7 @@
 	$jscomp.string.codePointAt=function(a){var b=$jscomp.checkStringArgs(this,null,"codePointAt"),c=b.length;a=Number(a)||0;if(0<=a&&a<c){a|=0;var d=b.charCodeAt(a);if(55296>d||56319<d||a+1===c)return d;a=b.charCodeAt(a+1);return 56320>a||57343<a?d:1024*(d-55296)+a+9216}};$jscomp.string.codePointAt$install=function(){String.prototype.codePointAt||(String.prototype.codePointAt=$jscomp.string.codePointAt);};
 	$jscomp.string.includes=function(a,b){return -1!==$jscomp.checkStringArgs(this,a,"includes").indexOf(a,b||0)};$jscomp.string.includes$install=function(){String.prototype.includes||(String.prototype.includes=$jscomp.string.includes);};$jscomp.string.startsWith=function(a,b){var c=$jscomp.checkStringArgs(this,a,"startsWith");a+="";for(var d=c.length,e=a.length,f=Math.max(0,Math.min(b|0,c.length)),g=0;g<e&&f<d;)if(c[f++]!=a[g++])return !1;return g>=e};
 	$jscomp.string.startsWith$install=function(){String.prototype.startsWith||(String.prototype.startsWith=$jscomp.string.startsWith);};$jscomp.string.endsWith=function(a,b){var c=$jscomp.checkStringArgs(this,a,"endsWith");a+="";void 0===b&&(b=c.length);for(var d=Math.max(0,Math.min(b|0,c.length)),e=a.length;0<e&&0<d;)if(c[--d]!=a[--e])return !1;return 0>=e};$jscomp.string.endsWith$install=function(){String.prototype.endsWith||(String.prototype.endsWith=$jscomp.string.endsWith);};
-	var COMPILED$1=!0,goog=goog||{};goog.global=commonjsGlobal;goog.isDef=function(a){return void 0!==a};goog.exportPath_=function(a,b,c){a=a.split(".");c=c||goog.global;a[0]in c||!c.execScript||c.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)!a.length&&goog.isDef(b)?c[d]=b:c=c[d]?c[d]:c[d]={};};
+	var COMPILED=!0,goog=goog||{};goog.global=commonjsGlobal;goog.isDef=function(a){return void 0!==a};goog.exportPath_=function(a,b,c){a=a.split(".");c=c||goog.global;a[0]in c||!c.execScript||c.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)!a.length&&goog.isDef(b)?c[d]=b:c=c[d]?c[d]:c[d]={};};
 	goog.define=function(a,b){var c=b;goog.exportPath_(a,c);};goog.DEBUG=!0;goog.LOCALE="en";goog.TRUSTED_SITE=!0;goog.STRICT_MODE_COMPATIBLE=!1;goog.DISALLOW_TEST_ONLY_CODE=!goog.DEBUG;
 	goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING=!1;goog.provide=function(a){goog.constructNamespace_(a);};goog.constructNamespace_=function(a,b){goog.exportPath_(a,b);};goog.VALID_MODULE_RE_=/^[a-zA-Z_$][a-zA-Z0-9._$]*$/;
 	goog.module=function(a){if(!goog.isString(a)||!a||-1==a.search(goog.VALID_MODULE_RE_))throw Error("Invalid module identifier");if(!goog.isInModuleLoader_())throw Error("Module "+a+" has been loaded incorrectly.");if(goog.moduleLoaderState_.moduleName)throw Error("goog.module may only be called once per module.");goog.moduleLoaderState_.moduleName=a;};goog.module.get=function(a){return goog.module.getInternal_(a)};
@@ -2937,7 +2925,7 @@
 	goog.module.declareLegacyNamespace=function(){goog.moduleLoaderState_.declareLegacyNamespace=!0;};
 	goog.setTestOnly=function(a){if(goog.DISALLOW_TEST_ONLY_CODE)throw a=a||"",Error("Importing test-only code into non-debug environment"+(a?": "+a:"."));};goog.forwardDeclare=function(a){};goog.getObjectByName=function(a,b){for(var c=a.split("."),d=b||goog.global,e;e=c.shift();)if(goog.isDefAndNotNull(d[e]))d=d[e];else return null;return d};goog.globalize=function(a,b){var c=b||goog.global,d;for(d in a)c[d]=a[d];};goog.addDependency=function(a,b,c,d){if(goog.DEPENDENCIES_ENABLED){var e;a=a.replace(/\\/g,"/");for(var f=goog.dependencies_,g=0;e=b[g];g++)f.nameToPath[e]=a,f.pathIsModule[a]=!!d;for(d=0;b=c[d];d++)a in f.requires||(f.requires[a]={}),f.requires[a][b]=!0;}};
 	goog.ENABLE_DEBUG_LOADER=!0;goog.logToConsole_=function(a){goog.global.console&&goog.global.console.error(a);};goog.require=function(a){};
-	goog.basePath="";goog.nullFunction=function(){};goog.abstractMethod=function(){throw Error("unimplemented abstract method");};goog.addSingletonGetter=function(a){a.getInstance=function(){if(a.instance_)return a.instance_;goog.DEBUG&&(goog.instantiatedSingletons_[goog.instantiatedSingletons_.length]=a);return a.instance_=new a};};goog.instantiatedSingletons_=[];goog.LOAD_MODULE_USING_EVAL=!0;goog.SEAL_MODULE_EXPORTS=goog.DEBUG;goog.loadedModules_={};goog.DEPENDENCIES_ENABLED=!COMPILED$1;
+	goog.basePath="";goog.nullFunction=function(){};goog.abstractMethod=function(){throw Error("unimplemented abstract method");};goog.addSingletonGetter=function(a){a.getInstance=function(){if(a.instance_)return a.instance_;goog.DEBUG&&(goog.instantiatedSingletons_[goog.instantiatedSingletons_.length]=a);return a.instance_=new a};};goog.instantiatedSingletons_=[];goog.LOAD_MODULE_USING_EVAL=!0;goog.SEAL_MODULE_EXPORTS=goog.DEBUG;goog.loadedModules_={};goog.DEPENDENCIES_ENABLED=!COMPILED;
 	goog.DEPENDENCIES_ENABLED&&(goog.dependencies_={pathIsModule:{},nameToPath:{},requires:{},visited:{},written:{},deferred:{}},goog.inHtmlDocument_=function(){var a=goog.global.document;return null!=a&&"write"in a},goog.findBasePath_=function(){if(goog.isDef(goog.global.CLOSURE_BASE_PATH))goog.basePath=goog.global.CLOSURE_BASE_PATH;else if(goog.inHtmlDocument_())for(var a=goog.global.document.getElementsByTagName("SCRIPT"),b=a.length-1;0<=b;--b){var c=a[b].src,d=c.lastIndexOf("?"),d=-1==d?c.length:
 	d;if("base.js"==c.substr(d-7,7)){goog.basePath=c.substr(0,d-7);break}}},goog.importScript_=function(a,b){(goog.global.CLOSURE_IMPORT_SCRIPT||goog.writeScriptTag_)(a,b)&&(goog.dependencies_.written[a]=!0);},goog.IS_OLD_IE_=!(goog.global.atob||!goog.global.document||!goog.global.document.all),goog.importModule_=function(a){goog.importScript_("",'goog.retrieveAndExecModule_("'+a+'");')&&(goog.dependencies_.written[a]=!0);},goog.queuedModules_=[],goog.wrapModule_=function(a,b){return goog.LOAD_MODULE_USING_EVAL&&
 	goog.isDef(goog.global.JSON)?"goog.loadModule("+goog.global.JSON.stringify(b+"\n//# sourceURL="+a+"\n")+");":'goog.loadModule(function(exports) {"use strict";'+b+"\n;return exports});\n//# sourceURL="+a+"\n"},goog.loadQueuedModules_=function(){var a=goog.queuedModules_.length;if(0<a){var b=goog.queuedModules_;goog.queuedModules_=[];for(var c=0;c<a;c++)goog.maybeProcessDeferredPath_(b[c]);}},goog.maybeProcessDeferredDep_=function(a){goog.isDeferredModule_(a)&&goog.allDepsAreAvailable_(a)&&(a=goog.getPathFromDeps_(a),
@@ -24312,7 +24300,7 @@
 	var safeBuffer = createCommonjsModule(function (module, exports) {
 	/* eslint-disable node/no-deprecated-api */
 
-	var Buffer = require$$0.Buffer;
+	var Buffer = bufferEs6.Buffer;
 
 	// alternative to using Object.keys for old browsers
 	function copyProps (src, dst) {
@@ -24321,10 +24309,10 @@
 	  }
 	}
 	if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-	  module.exports = require$$0;
+	  module.exports = bufferEs6;
 	} else {
 	  // Copy properties from require('buffer')
-	  copyProps(require$$0, exports);
+	  copyProps(bufferEs6, exports);
 	  exports.Buffer = SafeBuffer;
 	}
 
@@ -24370,7 +24358,7 @@
 	  if (typeof size !== 'number') {
 	    throw new TypeError('Argument must be a number')
 	  }
-	  return require$$0.SlowBuffer(size)
+	  return bufferEs6.SlowBuffer(size)
 	};
 	});
 	var safeBuffer_1 = safeBuffer.Buffer;
@@ -27870,7 +27858,7 @@
 
 	var md5_js = MD5;
 
-	var Buffer$4 = require$$0.Buffer;
+	var Buffer$4 = bufferEs6.Buffer;
 
 
 
@@ -29189,6 +29177,12 @@
 	      this.encoded = Address.encode(this.value);
 	      return this.encoded;
 	    }
+	  }, {
+	    key: "equal",
+	    value: function equal(_otherAddress) {
+	      var otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+	      return Address.valueEqual(this.value, otherAddress.value);
+	    }
 	  }], [{
 	    key: "decode",
 	    value: function decode(bs58string) {
@@ -29204,6 +29198,13 @@
 
 	      var buf = Buffer$1.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
 	      return bs58check.encode(buf);
+	    }
+	  }, {
+	    key: "valueEqual",
+	    value: function valueEqual(a, b) {
+	      return a.length == b.length && a.every(function (a_i, i) {
+	        return a_i === b[i];
+	      });
 	    }
 	  }]);
 
@@ -29265,104 +29266,6 @@
 
 	  return errorMessage;
 	};
-
-	var waitFor = function waitFor(ms) {
-	  return new Promise(function (resolve) {
-	    setTimeout(resolve, ms);
-	  });
-	};
-
-	var basicCheck = function basicCheck(result) {
-	  return result instanceof Error === false;
-	};
-
-	var longPolling =
-	/*#__PURE__*/
-	function () {
-	  var _ref = _asyncToGenerator(
-	  /*#__PURE__*/
-	  regeneratorRuntime.mark(function _callee(func) {
-	    var check,
-	        timeout,
-	        wait,
-	        started,
-	        lastError,
-	        result,
-	        resultStr,
-	        timePassed,
-	        _args = arguments;
-	    return regeneratorRuntime.wrap(function _callee$(_context) {
-	      while (1) {
-	        switch (_context.prev = _context.next) {
-	          case 0:
-	            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
-	            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
-	            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
-	            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
-	            started = +new Date();
-	            lastError = '';
-	            _context.prev = 5;
-	            _context.next = 8;
-	            return func();
-
-	          case 8:
-	            result = _context.sent;
-
-	            if (check(result)) {
-	              _context.next = 12;
-	              break;
-	            }
-
-	            try {
-	              resultStr = JSON.stringify(result);
-	            } catch (e) {
-	              resultStr = '' + resultStr;
-	            }
-
-	            throw new Error('Condition not satisfied. Last result was ' + resultStr);
-
-	          case 12:
-	            return _context.abrupt("return", result);
-
-	          case 15:
-	            _context.prev = 15;
-	            _context.t0 = _context["catch"](5);
-	            lastError = _context.t0;
-
-	          case 18:
-	            timePassed = new Date() - started;
-	            timeout -= timePassed;
-
-	            if (!(timeout < 0)) {
-	              _context.next = 22;
-	              break;
-	            }
-
-	            throw new Error('Long polling timed out. ' + lastError);
-
-	          case 22:
-	            _context.next = 24;
-	            return waitFor(wait);
-
-	          case 24:
-	            _context.next = 26;
-	            return longPolling(func, check, timeout - wait, wait);
-
-	          case 26:
-	            return _context.abrupt("return", _context.sent);
-
-	          case 27:
-	          case "end":
-	            return _context.stop();
-	        }
-	      }
-	    }, _callee, this, [[5, 15]]);
-	  }));
-
-	  return function longPolling(_x) {
-	    return _ref.apply(this, arguments);
-	  };
-	}();
 
 	var DEFAULT_USER_UNIT = 'aergo';
 	var DEFAULT_NETWORK_UNIT = 'aer';
@@ -29506,10 +29409,25 @@
 	  }, {
 	    key: "compare",
 	    value: function compare(otherAmount) {
+	      if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
 	      var _ref = [this.toUnit('aer').value, otherAmount.toUnit('aer').value],
 	          a = _ref[0],
 	          b = _ref[1];
 	      return jsbiUmd.lessThan(a, b) ? -1 : jsbiUmd.equal(a, b) ? 0 : 1;
+	    }
+	  }, {
+	    key: "add",
+	    value: function add(otherAmount) {
+	      var otherValue = otherAmount instanceof Amount ? jsbiUmd.BigInt(otherAmount.value) : jsbiUmd.BigInt(otherAmount);
+	      var sum = jsbiUmd.add(this.value, otherValue);
+	      return new Amount(sum, this.unit);
+	    }
+	  }, {
+	    key: "sub",
+	    value: function sub(otherAmount) {
+	      var otherValue = otherAmount instanceof Amount ? jsbiUmd.BigInt(otherAmount.value) : jsbiUmd.BigInt(otherAmount);
+	      var sum = jsbiUmd.subtract(this.value, otherValue);
+	      return new Amount(sum, this.unit);
 	    }
 	  }], [{
 	    key: "moveDecimalPoint",
@@ -29547,11 +29465,11 @@
 	  return Amount;
 	}();
 
-	var Tx$$1 =
+	var Tx =
 	/*#__PURE__*/
 	function () {
-	  function Tx$$1(data) {
-	    _classCallCheck(this, Tx$$1);
+	  function Tx(data) {
+	    _classCallCheck(this, Tx);
 
 	    _defineProperty(this, "hash", void 0);
 
@@ -29578,7 +29496,7 @@
 	    this.price = new Amount(this.price || 0);
 	  }
 
-	  _createClass(Tx$$1, [{
+	  _createClass(Tx, [{
 	    key: "toGrpc",
 	    value: function toGrpc() {
 	      var msgtxbody = new blockchain_pb_2();
@@ -29637,7 +29555,7 @@
 	  }], [{
 	    key: "fromGrpc",
 	    value: function fromGrpc(grpcObject) {
-	      return new Tx$$1({
+	      return new Tx({
 	        hash: encodeTxHash(grpcObject.getHash_asU8()),
 	        nonce: grpcObject.getBody().getNonce(),
 	        from: new Address(grpcObject.getBody().getAccount_asU8()),
@@ -29652,7 +29570,7 @@
 	    }
 	  }]);
 
-	  return Tx$$1;
+	  return Tx;
 	}();
 
 	var getOwnPropertyDescriptors = function getOwnPropertyDescriptors(originalObject) {
@@ -29848,8 +29766,8 @@
 	  }, {
 	    key: "sendTransaction",
 	    value: function sendTransaction(tx) {
-	      if (!(tx instanceof Tx$$1)) {
-	        tx = new Tx$$1(tx);
+	      if (!(tx instanceof Tx)) {
+	        tx = new Tx(tx);
 	      }
 
 	      return promisify(this.client.client.sendTX, this.client.client)(tx.toGrpc()).then(function (result) {
@@ -29873,14 +29791,14 @@
 	    value: function signTransaction(_tx) {
 	      var tx;
 
-	      if (!(_tx instanceof Tx$$1)) {
-	        tx = new Tx$$1(_tx);
+	      if (!(_tx instanceof Tx)) {
+	        tx = new Tx(_tx);
 	      } else {
 	        tx = _tx;
 	      }
 
 	      return promisify(this.client.client.signTX, this.client.client)(tx.toGrpc()).then(function (signedtx) {
-	        return Tx$$1.fromGrpc(signedtx);
+	        return Tx.fromGrpc(signedtx);
 	      });
 	    }
 	  }]);
@@ -29915,7 +29833,7 @@
 
 	      if (obj.body) {
 	        obj.body.txsList = grpcObject.getBody().getTxsList().map(function (tx) {
-	          return Tx$$1.fromGrpc(tx);
+	          return Tx.fromGrpc(tx);
 	        });
 	      }
 
@@ -30162,11 +30080,11 @@
 	  return obj instanceof Map;
 	}
 
-	var FilterInfo$$1 =
+	var FilterInfo =
 	/*#__PURE__*/
 	function () {
-	  function FilterInfo$$1(data) {
-	    _classCallCheck(this, FilterInfo$$1);
+	  function FilterInfo(data) {
+	    _classCallCheck(this, FilterInfo);
 
 	    _defineProperty(this, "address", void 0);
 
@@ -30184,7 +30102,7 @@
 	    this.address = new Address(this.address);
 	  }
 
-	  _createClass(FilterInfo$$1, [{
+	  _createClass(FilterInfo, [{
 	    key: "toGrpc",
 	    value: function toGrpc() {
 	      var fi = new blockchain_pb_7();
@@ -30228,7 +30146,7 @@
 	  }], [{
 	    key: "fromGrpc",
 	    value: function fromGrpc(grpcObject) {
-	      return new FilterInfo$$1({
+	      return new FilterInfo({
 	        args: JSON.parse(Buffer$1.from(grpcObject.getArgfilter_asU8()).toString()),
 	        address: new Address(grpcObject.getContractaddress_asU8()),
 	        eventName: grpcObject.getEventname(),
@@ -30239,7 +30157,7 @@
 	    }
 	  }]);
 
-	  return FilterInfo$$1;
+	  return FilterInfo;
 	}();
 
 	var CommitStatus$1 = typesNode.CommitStatus;
@@ -30248,84 +30166,34 @@
 	  return (
 	    /*#__PURE__*/
 	    function () {
-	      var _ref = _asyncToGenerator(
-	      /*#__PURE__*/
-	      regeneratorRuntime.mark(function _callee(input) {
-	        var result, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, fn;
+	      var _ref = _asyncToGenerator(function* (input) {
+	        var result = input;
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
 
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
-	          while (1) {
-	            switch (_context.prev = _context.next) {
-	              case 0:
-	                result = input;
-	                _iteratorNormalCompletion = true;
-	                _didIteratorError = false;
-	                _iteratorError = undefined;
-	                _context.prev = 4;
-	                _iterator = fns[Symbol.iterator]();
-
-	              case 6:
-	                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-	                  _context.next = 14;
-	                  break;
-	                }
-
-	                fn = _step.value;
-	                _context.next = 10;
-	                return fn(result);
-
-	              case 10:
-	                result = _context.sent;
-
-	              case 11:
-	                _iteratorNormalCompletion = true;
-	                _context.next = 6;
-	                break;
-
-	              case 14:
-	                _context.next = 20;
-	                break;
-
-	              case 16:
-	                _context.prev = 16;
-	                _context.t0 = _context["catch"](4);
-	                _didIteratorError = true;
-	                _iteratorError = _context.t0;
-
-	              case 20:
-	                _context.prev = 20;
-	                _context.prev = 21;
-
-	                if (!_iteratorNormalCompletion && _iterator.return != null) {
-	                  _iterator.return();
-	                }
-
-	              case 23:
-	                _context.prev = 23;
-
-	                if (!_didIteratorError) {
-	                  _context.next = 26;
-	                  break;
-	                }
-
-	                throw _iteratorError;
-
-	              case 26:
-	                return _context.finish(23);
-
-	              case 27:
-	                return _context.finish(20);
-
-	              case 28:
-	                return _context.abrupt("return", result);
-
-	              case 29:
-	              case "end":
-	                return _context.stop();
+	        try {
+	          for (var _iterator = fns[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var fn = _step.value;
+	            result = yield fn(result);
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return != null) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
 	            }
 	          }
-	        }, _callee, this, [[4, 16, 20, 28], [21,, 23, 27]]);
-	      }));
+	        }
+
+	        return result;
+	      });
 
 	      return function (_x) {
 	        return _ref.apply(this, arguments);
@@ -30337,30 +30205,16 @@
 	function marshalEmpty() {
 	  return _marshalEmpty.apply(this, arguments);
 	}
+
+	function _marshalEmpty() {
+	  _marshalEmpty = _asyncToGenerator(function* () {
+	    return new rpc_pb_1();
+	  });
+	  return _marshalEmpty.apply(this, arguments);
+	}
 	/**
 	 * Main aergo client controller.
 	 */
-
-
-	function _marshalEmpty() {
-	  _marshalEmpty = _asyncToGenerator(
-	  /*#__PURE__*/
-	  regeneratorRuntime.mark(function _callee6() {
-	    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-	      while (1) {
-	        switch (_context6.prev = _context6.next) {
-	          case 0:
-	            return _context6.abrupt("return", new rpc_pb_1());
-
-	          case 1:
-	          case "end":
-	            return _context6.stop();
-	        }
-	      }
-	    }, _callee6, this);
-	  }));
-	  return _marshalEmpty.apply(this, arguments);
-	}
 
 	var AergoClient =
 	/*#__PURE__*/
@@ -30442,24 +30296,11 @@
 	      return waterfall([marshalEmpty, this.grpcMethod(this.client.client.blockchain),
 	      /*#__PURE__*/
 	      function () {
-	        var _unmarshal = _asyncToGenerator(
-	        /*#__PURE__*/
-	        regeneratorRuntime.mark(function _callee2(response) {
-	          return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	            while (1) {
-	              switch (_context2.prev = _context2.next) {
-	                case 0:
-	                  return _context2.abrupt("return", _objectSpread({}, response.toObject(), {
-	                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
-	                  }));
-
-	                case 1:
-	                case "end":
-	                  return _context2.stop();
-	              }
-	            }
-	          }, _callee2, this);
-	        }));
+	        var _unmarshal = _asyncToGenerator(function* (response) {
+	          return _objectSpread({}, response.toObject(), {
+	            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+	          });
+	        });
 
 	        return function unmarshal(_x2) {
 	          return _unmarshal.apply(this, arguments);
@@ -30477,22 +30318,9 @@
 	      return waterfall([marshalEmpty, this.grpcMethod(this.client.client.getChainInfo),
 	      /*#__PURE__*/
 	      function () {
-	        var _unmarshal2 = _asyncToGenerator(
-	        /*#__PURE__*/
-	        regeneratorRuntime.mark(function _callee3(response) {
-	          return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	            while (1) {
-	              switch (_context3.prev = _context3.next) {
-	                case 0:
-	                  return _context3.abrupt("return", ChainInfo.fromGrpc(response));
-
-	                case 1:
-	                case "end":
-	                  return _context3.stop();
-	              }
-	            }
-	          }, _callee3, this);
-	        }));
+	        var _unmarshal2 = _asyncToGenerator(function* (response) {
+	          return ChainInfo.fromGrpc(response);
+	        });
 
 	        return function unmarshal(_x3) {
 	          return _unmarshal2.apply(this, arguments);
@@ -30521,7 +30349,7 @@
 	                reject(err);
 	              } else {
 	                var res = {};
-	                res.tx = Tx$$1.fromGrpc(result);
+	                res.tx = Tx.fromGrpc(result);
 	                resolve(res);
 	              }
 	            });
@@ -30531,7 +30359,7 @@
 	              hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
 	              idx: result.getTxidx().getIdx()
 	            };
-	            res.tx = Tx$$1.fromGrpc(result.getTx());
+	            res.tx = Tx.fromGrpc(result.getTx());
 	            resolve(res);
 	          }
 	        });
@@ -30550,47 +30378,27 @@
 	      return waterfall([
 	      /*#__PURE__*/
 	      function () {
-	        var _marshal = _asyncToGenerator(
-	        /*#__PURE__*/
-	        regeneratorRuntime.mark(function _callee4(hashOrNumber) {
-	          var input, singleBytes;
-	          return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	            while (1) {
-	              switch (_context4.prev = _context4.next) {
-	                case 0:
-	                  if (!(typeof hashOrNumber === 'undefined')) {
-	                    _context4.next = 2;
-	                    break;
-	                  }
+	        var _marshal = _asyncToGenerator(function* (hashOrNumber) {
+	          if (typeof hashOrNumber === 'undefined') {
+	            throw new Error('Missing argument block hash or number');
+	          }
 
-	                  throw new Error('Missing argument block hash or number');
+	          var input;
 
-	                case 2:
-	                  if (typeof hashOrNumber === 'string') {
-	                    input = Block.decodeHash(hashOrNumber);
-	                  } else if (typeof hashOrNumber === 'number') {
-	                    input = fromNumber(hashOrNumber);
-	                  }
+	          if (typeof hashOrNumber === 'string') {
+	            input = Block.decodeHash(hashOrNumber);
+	          } else if (typeof hashOrNumber === 'number') {
+	            input = fromNumber(hashOrNumber);
+	          }
 
-	                  if (!(input.length != 32 && input.length != 8)) {
-	                    _context4.next = 5;
-	                    break;
-	                  }
+	          if (input.length != 32 && input.length != 8) {
+	            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+	          }
 
-	                  throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-
-	                case 5:
-	                  singleBytes = new rpc_pb_3();
-	                  singleBytes.setValue(Uint8Array.from(input));
-	                  return _context4.abrupt("return", singleBytes);
-
-	                case 8:
-	                case "end":
-	                  return _context4.stop();
-	              }
-	            }
-	          }, _callee4, this);
-	        }));
+	          var singleBytes = new rpc_pb_3();
+	          singleBytes.setValue(Uint8Array.from(input));
+	          return singleBytes;
+	        });
 
 	        return function marshal(_x4) {
 	          return _marshal.apply(this, arguments);
@@ -30598,22 +30406,9 @@
 	      }(), this.grpcMethod(this.client.client.getBlock),
 	      /*#__PURE__*/
 	      function () {
-	        var _unmarshal3 = _asyncToGenerator(
-	        /*#__PURE__*/
-	        regeneratorRuntime.mark(function _callee5(response) {
-	          return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	            while (1) {
-	              switch (_context5.prev = _context5.next) {
-	                case 0:
-	                  return _context5.abrupt("return", Block.fromGrpc(response));
-
-	                case 1:
-	                case "end":
-	                  return _context5.stop();
-	              }
-	            }
-	          }, _callee5, this);
-	        }));
+	        var _unmarshal3 = _asyncToGenerator(function* (response) {
+	          return Block.fromGrpc(response);
+	        });
 
 	        return function unmarshal(_x5) {
 	          return _unmarshal3.apply(this, arguments);
@@ -30734,7 +30529,7 @@
 	  }, {
 	    key: "getEventStream",
 	    value: function getEventStream(filter) {
-	      var fi = new FilterInfo$$1(filter);
+	      var fi = new FilterInfo(filter);
 	      var query = fi.toGrpc();
 	      var stream = this.client.client.listEventStream(query);
 
@@ -30791,7 +30586,7 @@
 	    {
 	      // Untested
 	      return promisify(this.client.client.verifyTX, this.client.client)()(function (grpcObject) {
-	        return Tx$$1.fromGrpc(grpcObject);
+	        return Tx.fromGrpc(grpcObject);
 	      });
 	    }
 	    /**
@@ -30808,8 +30603,8 @@
 	      return new Promise(function (resolve, reject) {
 	        var txs = new typesNode.TxList();
 
-	        if (!(tx instanceof Tx$$1)) {
-	          tx = new Tx$$1(tx);
+	        if (!(tx instanceof Tx)) {
+	          tx = new Tx(tx);
 	        }
 
 	        txs.addTxs(tx.toGrpc(), 0);
@@ -30880,7 +30675,6 @@
 	        return {
 	          contractaddress: new Address(grpcObject.getContractaddress_asU8()),
 	          result: obj.ret,
-	          //JSON.parse(obj.ret),
 	          status: obj.status
 	        };
 	      });
@@ -30937,7 +30731,7 @@
 	  }, {
 	    key: "getEvents",
 	    value: function getEvents(filter) {
-	      var fi = new FilterInfo$$1(filter);
+	      var fi = new FilterInfo(filter);
 	      var query = fi.toGrpc();
 	      return promisify(this.client.client.listEvents, this.client.client)(query).then(function (grpcObject) {
 	        var list = grpcObject.getEventsList();
@@ -31013,1527 +30807,16 @@
 	  return AergoClient;
 	}();
 
-	// This function is written in JS (ES5) to avoid an issue with TypeScript targeting ES5, but requiring Symbol.iterator
-	function iterateHeaders(headers, callback) {
-	  var iterator = headers[Symbol.iterator]();
-	  var entry = iterator.next();
-	  while(!entry.done) {
-	    callback(entry.value[0]);
-	    entry = iterator.next();
-	  }
-	}
-
-	function iterateHeadersKeys(headers, callback) {
-	  var iterator = headers.keys();
-	  var entry = iterator.next();
-	  while(!entry.done) {
-	    callback(entry.value);
-	    entry = iterator.next();
-	  }
-	}
-
-	var iterateHeaders_1 = {
-	  iterateHeaders: iterateHeaders,
-	  iterateHeadersKeys: iterateHeadersKeys
-	};
-
-	var util$1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	function normalizeName(name) {
-	    if (typeof name !== "string") {
-	        name = String(name);
-	    }
-	    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-	        throw new TypeError("Invalid character in header field name");
-	    }
-	    return name.toLowerCase();
-	}
-	exports.normalizeName = normalizeName;
-	function normalizeValue(value) {
-	    if (typeof value !== "string") {
-	        value = String(value);
-	    }
-	    return value;
-	}
-	exports.normalizeValue = normalizeValue;
-	function getHeaderValues(headersAsNative, key) {
-	    var headers = toWindowHeaders(headersAsNative);
-	    if (headers instanceof Headers && headers.getAll) {
-	        return headers.getAll(key);
-	    }
-	    var getValue = headers.get(key);
-	    if (getValue && typeof getValue === "string") {
-	        return [getValue];
-	    }
-	    return getValue;
-	}
-	exports.getHeaderValues = getHeaderValues;
-	function toWindowHeaders(headersAsNative) {
-	    return headersAsNative;
-	}
-	function getHeaderKeys(headersAsNative) {
-	    var headers = toWindowHeaders(headersAsNative);
-	    var asMap = {};
-	    var keys = [];
-	    if (headers.keys) {
-	        iterateHeaders_1.iterateHeadersKeys(headers, function (key) {
-	            if (!asMap[key]) {
-	                asMap[key] = true;
-	                keys.push(key);
-	            }
-	        });
-	    }
-	    else if (headers.forEach) {
-	        headers.forEach(function (_, key) {
-	            if (!asMap[key]) {
-	                asMap[key] = true;
-	                keys.push(key);
-	            }
-	        });
-	    }
-	    else {
-	        iterateHeaders_1.iterateHeaders(headers, function (entry) {
-	            var key = entry[0];
-	            if (!asMap[key]) {
-	                asMap[key] = true;
-	                keys.push(key);
-	            }
-	        });
-	    }
-	    return keys;
-	}
-	exports.getHeaderKeys = getHeaderKeys;
-	function splitHeaderValue(str) {
-	    var values = [];
-	    var commaSpaceValues = str.split(", ");
-	    commaSpaceValues.forEach(function (commaSpaceValue) {
-	        commaSpaceValue.split(",").forEach(function (commaValue) {
-	            values.push(commaValue);
-	        });
-	    });
-	    return values;
-	}
-	exports.splitHeaderValue = splitHeaderValue;
-
+	var grpcWebClient_umd = createCommonjsModule(function (module, exports) {
+	!function(e,t){module.exports=t();}(window,function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r});},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0});},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=11)}([function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(4);t.Metadata=r.BrowserHeaders;},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0}),t.debug=function(){for(var e=[],t=0;t<arguments.length;t++)e[t]=arguments[t];console.debug?console.debug.apply(null,e):console.log.apply(null,e);};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=null;t.default=function(e){null===r?(r=[e],setTimeout(function(){!function e(){if(r){var t=r;r=null;for(var n=0;n<t.length;n++)try{t[n]();}catch(s){null===r&&(r=[],setTimeout(function(){e();},0));for(var o=t.length-1;o>n;o--)r.unshift(t[o]);throw s}}}();},0)):r.push(e);};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(0),o=n(9),s=n(10),i=n(1),a=n(2),u=n(5),d=n(18);t.client=function(e,t){return new c(e,t)};var c=function(){function e(e,t){this.started=!1,this.sentFirstMessage=!1,this.completed=!1,this.closed=!1,this.finishedSending=!1,this.onHeadersCallbacks=[],this.onMessageCallbacks=[],this.onEndCallbacks=[],this.parser=new o.ChunkParser,this.methodDefinition=e,this.props=t,this.createTransport();}return e.prototype.createTransport=function(){var e=this.props.host+"/"+this.methodDefinition.service.serviceName+"/"+this.methodDefinition.methodName,t={methodDefinition:this.methodDefinition,debug:this.props.debug||!1,url:e,onHeaders:this.onTransportHeaders.bind(this),onChunk:this.onTransportChunk.bind(this),onEnd:this.onTransportEnd.bind(this)};this.props.transport?this.transport=this.props.transport(t):this.transport=u.makeDefaultTransport(t);},e.prototype.onTransportHeaders=function(e,t){if(this.props.debug&&i.debug("onHeaders",e,t),this.closed)this.props.debug&&i.debug("grpc.onHeaders received after request was closed - ignoring");else if(0===t);else{this.responseHeaders=e,this.props.debug&&i.debug("onHeaders.responseHeaders",JSON.stringify(this.responseHeaders,null,2));var n=p(e);this.props.debug&&i.debug("onHeaders.gRPCStatus",n);var r=n&&n>=0?n:s.httpStatusToCode(t);this.props.debug&&i.debug("onHeaders.code",r);var o=e.get("grpc-message")||[];if(this.props.debug&&i.debug("onHeaders.gRPCMessage",o),this.rawOnHeaders(e),r!==s.Code.OK){var a=this.decodeGRPCStatus(o[0]);this.rawOnError(r,a,e);}}},e.prototype.onTransportChunk=function(e){var t=this;if(this.closed)this.props.debug&&i.debug("grpc.onChunk received after request was closed - ignoring");else{var n=[];try{n=this.parser.parse(e);}catch(e){return this.props.debug&&i.debug("onChunk.parsing error",e,e.message),void this.rawOnError(s.Code.Internal,"parsing error: "+e.message)}n.forEach(function(e){if(e.chunkType===o.ChunkType.MESSAGE){var n=t.methodDefinition.responseType.deserializeBinary(e.data);t.rawOnMessage(n);}else e.chunkType===o.ChunkType.TRAILERS&&(t.responseHeaders?(t.responseTrailers=new r.Metadata(e.trailers),t.props.debug&&i.debug("onChunk.trailers",t.responseTrailers)):(t.responseHeaders=new r.Metadata(e.trailers),t.rawOnHeaders(t.responseHeaders)));});}},e.prototype.onTransportEnd=function(){if(this.props.debug&&i.debug("grpc.onEnd"),this.closed)this.props.debug&&i.debug("grpc.onEnd received after request was closed - ignoring");else if(void 0!==this.responseTrailers){var e=p(this.responseTrailers);if(null!==e){var t=this.responseTrailers.get("grpc-message"),n=this.decodeGRPCStatus(t[0]);this.rawOnEnd(e,n,this.responseTrailers);}else this.rawOnError(s.Code.Internal,"Response closed without grpc-status (Trailers provided)");}else{if(void 0===this.responseHeaders)return void this.rawOnError(s.Code.Unknown,"Response closed without headers");var r=p(this.responseHeaders),o=this.responseHeaders.get("grpc-message");if(this.props.debug&&i.debug("grpc.headers only response ",r,o),null===r)return void this.rawOnEnd(s.Code.Unknown,"Response closed without grpc-status (Headers only)",this.responseHeaders);var a=this.decodeGRPCStatus(o[0]);this.rawOnEnd(r,a,this.responseHeaders);}},e.prototype.decodeGRPCStatus=function(e){if(!e)return "";try{return decodeURIComponent(e)}catch(t){return e}},e.prototype.rawOnEnd=function(e,t,n){var r=this;this.props.debug&&i.debug("rawOnEnd",e,t,n),this.completed||(this.completed=!0,this.onEndCallbacks.forEach(function(o){a.default(function(){r.closed||o(e,t,n);});}));},e.prototype.rawOnHeaders=function(e){this.props.debug&&i.debug("rawOnHeaders",e),this.completed||this.onHeadersCallbacks.forEach(function(t){a.default(function(){t(e);});});},e.prototype.rawOnError=function(e,t,n){var o=this;void 0===n&&(n=new r.Metadata),this.props.debug&&i.debug("rawOnError",e,t),this.completed||(this.completed=!0,this.onEndCallbacks.forEach(function(r){a.default(function(){o.closed||r(e,t,n);});}));},e.prototype.rawOnMessage=function(e){var t=this;this.props.debug&&i.debug("rawOnMessage",e.toObject()),this.completed||this.closed||this.onMessageCallbacks.forEach(function(n){a.default(function(){t.closed||n(e);});});},e.prototype.onHeaders=function(e){this.onHeadersCallbacks.push(e);},e.prototype.onMessage=function(e){this.onMessageCallbacks.push(e);},e.prototype.onEnd=function(e){this.onEndCallbacks.push(e);},e.prototype.start=function(e){if(this.started)throw new Error("Client already started - cannot .start()");this.started=!0;var t=new r.Metadata(e||{});t.set("content-type","application/grpc-web+proto"),t.set("x-grpc-web","1"),this.transport.start(t);},e.prototype.send=function(e){if(!this.started)throw new Error("Client not started - .start() must be called before .send()");if(this.closed)throw new Error("Client already closed - cannot .send()");if(this.finishedSending)throw new Error("Client already finished sending - cannot .send()");if(!this.methodDefinition.requestStream&&this.sentFirstMessage)throw new Error("Message already sent for non-client-streaming method - cannot .send()");this.sentFirstMessage=!0;var t=d.frameRequest(e);this.transport.sendMessage(t);},e.prototype.finishSend=function(){if(!this.started)throw new Error("Client not started - .finishSend() must be called before .close()");if(this.closed)throw new Error("Client already closed - cannot .send()");if(this.finishedSending)throw new Error("Client already finished sending - cannot .finishSend()");this.finishedSending=!0,this.transport.finishSend();},e.prototype.close=function(){if(!this.started)throw new Error("Client not started - .start() must be called before .close()");if(this.closed)throw new Error("Client already closed - cannot .close()");this.closed=!0,this.props.debug&&i.debug("request.abort aborting request"),this.transport.cancel();},e}();function p(e){var t=e.get("grpc-status")||[];if(t.length>0)try{var n=t[0];return parseInt(n,10)}catch(e){return null}return null}},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(12);t.BrowserHeaders=r.BrowserHeaders;},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(6),o=function(e){return r.CrossBrowserHttpTransport({withCredentials:!1})(e)};t.setDefaultTransportFactory=function(e){o=e;},t.makeDefaultTransport=function(e){return o(e)};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(7),o=n(8);t.CrossBrowserHttpTransport=function(e){if(r.detectFetchSupport()){var t={credentials:e.withCredentials?"include":"same-origin"};return r.FetchReadableStreamTransport(t)}return o.XhrTransport({withCredentials:e.withCredentials})};},function(e,t,n){var r=this&&this.__assign||function(){return (r=Object.assign||function(e){for(var t,n=1,r=arguments.length;n<r;n++)for(var o in t=arguments[n])Object.prototype.hasOwnProperty.call(t,o)&&(e[o]=t[o]);return e}).apply(this,arguments)};Object.defineProperty(t,"__esModule",{value:!0});var o=n(0),s=n(1),i=n(2);t.FetchReadableStreamTransport=function(e){return function(t){return function(e,t){return e.debug&&s.debug("fetchRequest",e),new a(e,t)}(t,e)}};var a=function(){function e(e,t){this.cancelled=!1,this.controller=window.AbortController&&new AbortController,this.options=e,this.init=t;}return e.prototype.pump=function(e,t){var n=this;if(this.reader=e,this.cancelled)return this.options.debug&&s.debug("Fetch.pump.cancel at first pump"),void this.reader.cancel();this.reader.read().then(function(e){if(e.done)return i.default(function(){n.options.onEnd();}),t;i.default(function(){n.options.onChunk(e.value);}),n.pump(n.reader,t);}).catch(function(e){n.cancelled?n.options.debug&&s.debug("Fetch.catch - request cancelled"):(n.cancelled=!0,n.options.debug&&s.debug("Fetch.catch",e.message),i.default(function(){n.options.onEnd(e);}));});},e.prototype.send=function(e){var t=this;fetch(this.options.url,r({},this.init,{headers:this.metadata.toHeaders(),method:"POST",body:e,signal:this.controller&&this.controller.signal})).then(function(e){if(t.options.debug&&s.debug("Fetch.response",e),i.default(function(){t.options.onHeaders(new o.Metadata(e.headers),e.status);}),!e.body)return e;t.pump(e.body.getReader(),e);}).catch(function(e){t.cancelled?t.options.debug&&s.debug("Fetch.catch - request cancelled"):(t.cancelled=!0,t.options.debug&&s.debug("Fetch.catch",e.message),i.default(function(){t.options.onEnd(e);}));});},e.prototype.sendMessage=function(e){this.send(e);},e.prototype.finishSend=function(){},e.prototype.start=function(e){this.metadata=e;},e.prototype.cancel=function(){this.cancelled?this.options.debug&&s.debug("Fetch.abort.cancel already cancelled"):(this.cancelled=!0,this.reader?(this.options.debug&&s.debug("Fetch.abort.cancel"),this.reader.cancel()):this.options.debug&&s.debug("Fetch.abort.cancel before reader"),this.controller&&this.controller.abort());},e}();t.detectFetchSupport=function(){return "undefined"!=typeof Response&&Response.prototype.hasOwnProperty("body")&&"function"==typeof Headers};},function(e,t,n){var r,o=this&&this.__extends||(r=function(e,t){return (r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t;}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);})(e,t)},function(e,t){function n(){this.constructor=e;}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n);});Object.defineProperty(t,"__esModule",{value:!0});var s=n(0),i=n(1),a=n(2),u=n(15);t.XhrTransport=function(e){return function(t){if(u.detectMozXHRSupport())return new c(t,e);if(u.detectXHROverrideMimeTypeSupport())return new d(t,e);throw new Error("This environment's XHR implementation cannot support binary transfer.")}};var d=function(){function e(e,t){this.options=e,this.init=t;}return e.prototype.onProgressEvent=function(){var e=this;this.options.debug&&i.debug("XHR.onProgressEvent.length: ",this.xhr.response.length);var t=this.xhr.response.substr(this.index);this.index=this.xhr.response.length;var n=f(t);a.default(function(){e.options.onChunk(n);});},e.prototype.onLoadEvent=function(){var e=this;this.options.debug&&i.debug("XHR.onLoadEvent"),a.default(function(){e.options.onEnd();});},e.prototype.onStateChange=function(){var e=this;this.options.debug&&i.debug("XHR.onStateChange",this.xhr.readyState),this.xhr.readyState===XMLHttpRequest.HEADERS_RECEIVED&&a.default(function(){e.options.onHeaders(new s.Metadata(e.xhr.getAllResponseHeaders()),e.xhr.status);});},e.prototype.sendMessage=function(e){this.xhr.send(e);},e.prototype.finishSend=function(){},e.prototype.start=function(e){var t=this;this.metadata=e;var n=new XMLHttpRequest;this.xhr=n,n.open("POST",this.options.url),this.configureXhr(),this.metadata.forEach(function(e,t){n.setRequestHeader(e,t.join(", "));}),n.withCredentials=Boolean(this.init.withCredentials),n.addEventListener("readystatechange",this.onStateChange.bind(this)),n.addEventListener("progress",this.onProgressEvent.bind(this)),n.addEventListener("loadend",this.onLoadEvent.bind(this)),n.addEventListener("error",function(e){t.options.debug&&i.debug("XHR.error",e),a.default(function(){t.options.onEnd(e.error);});});},e.prototype.configureXhr=function(){this.xhr.responseType="text",this.xhr.overrideMimeType("text/plain; charset=x-user-defined");},e.prototype.cancel=function(){this.options.debug&&i.debug("XHR.abort"),this.xhr.abort();},e}();t.XHR=d;var c=function(e){function t(){return null!==e&&e.apply(this,arguments)||this}return o(t,e),t.prototype.configureXhr=function(){this.options.debug&&i.debug("MozXHR.configureXhr: setting responseType to 'moz-chunked-arraybuffer'"),this.xhr.responseType="moz-chunked-arraybuffer";},t.prototype.onProgressEvent=function(){var e=this,t=this.xhr.response;this.options.debug&&i.debug("MozXHR.onProgressEvent: ",new Uint8Array(t)),a.default(function(){e.options.onChunk(new Uint8Array(t));});},t}(d);function p(e,t){var n=e.charCodeAt(t);if(n>=55296&&n<=56319){var r=e.charCodeAt(t+1);r>=56320&&r<=57343&&(n=65536+(n-55296<<10)+(r-56320));}return n}function f(e){for(var t=new Uint8Array(e.length),n=0,r=0;r<e.length;r++){var o=String.prototype.codePointAt?e.codePointAt(r):p(e,r);t[n++]=255&o;}return t}t.MozChunkedArrayBufferXHR=c,t.stringToArrayBuffer=f;},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r,o=n(0),s=function(e){return 9===e||10===e||13===e};function i(e){return s(e)||e>=32&&e<=126}function a(e){for(var t=0;t!==e.length;++t)if(!i(e[t]))throw new Error("Metadata is not valid (printable) ASCII");return String.fromCharCode.apply(String,Array.prototype.slice.call(e))}function u(e){return 128==(128&e.getUint8(0))}function d(e){return e.getUint32(1,!1)}function c(e,t,n){return e.byteLength-t>=n}function p(e,t,n){if(e.slice)return e.slice(t,n);var r=e.length;void 0!==n&&(r=n);for(var o=new Uint8Array(r-t),s=0,i=t;i<r;i++)o[s++]=e[i];return o}t.decodeASCII=a,t.encodeASCII=function(e){for(var t=new Uint8Array(e.length),n=0;n!==e.length;++n){var r=e.charCodeAt(n);if(!i(r))throw new Error("Metadata contains invalid ASCII");t[n]=r;}return t},function(e){e[e.MESSAGE=1]="MESSAGE",e[e.TRAILERS=2]="TRAILERS";}(r=t.ChunkType||(t.ChunkType={}));var f=function(){function e(){this.buffer=null,this.position=0;}return e.prototype.parse=function(e,t){if(0===e.length&&t)return [];var n,s=[];if(null==this.buffer)this.buffer=e,this.position=0;else if(this.position===this.buffer.byteLength)this.buffer=e,this.position=0;else{var i=this.buffer.byteLength-this.position,f=new Uint8Array(i+e.byteLength),h=p(this.buffer,this.position);f.set(h,0);var l=new Uint8Array(e);f.set(l,i),this.buffer=f,this.position=0;}for(;;){if(!c(this.buffer,this.position,5))return s;var g=p(this.buffer,this.position,this.position+5),b=new DataView(g.buffer,g.byteOffset,g.byteLength),y=d(b);if(!c(this.buffer,this.position,5+y))return s;var v=p(this.buffer,this.position+5,this.position+5+y);if(this.position+=5+y,u(b))return s.push({chunkType:r.TRAILERS,trailers:(n=v,new o.Metadata(a(n)))}),s;s.push({chunkType:r.MESSAGE,data:v});}},e}();t.ChunkParser=f;},function(e,t,n){var r;Object.defineProperty(t,"__esModule",{value:!0}),function(e){e[e.OK=0]="OK",e[e.Canceled=1]="Canceled",e[e.Unknown=2]="Unknown",e[e.InvalidArgument=3]="InvalidArgument",e[e.DeadlineExceeded=4]="DeadlineExceeded",e[e.NotFound=5]="NotFound",e[e.AlreadyExists=6]="AlreadyExists",e[e.PermissionDenied=7]="PermissionDenied",e[e.ResourceExhausted=8]="ResourceExhausted",e[e.FailedPrecondition=9]="FailedPrecondition",e[e.Aborted=10]="Aborted",e[e.OutOfRange=11]="OutOfRange",e[e.Unimplemented=12]="Unimplemented",e[e.Internal=13]="Internal",e[e.Unavailable=14]="Unavailable",e[e.DataLoss=15]="DataLoss",e[e.Unauthenticated=16]="Unauthenticated";}(r=t.Code||(t.Code={})),t.httpStatusToCode=function(e){switch(e){case 0:return r.Internal;case 200:return r.OK;case 400:return r.InvalidArgument;case 401:return r.Unauthenticated;case 403:return r.PermissionDenied;case 404:return r.NotFound;case 409:return r.Aborted;case 412:return r.FailedPrecondition;case 429:return r.ResourceExhausted;case 499:return r.Canceled;case 500:return r.Unknown;case 501:return r.Unimplemented;case 503:return r.Unavailable;case 504:return r.DeadlineExceeded;default:return r.Unknown}};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(4),o=n(5),s=n(7),i=n(16),a=n(8),u=n(6),d=n(10),c=n(17),p=n(19),f=n(3);!function(e){e.setDefaultTransport=o.setDefaultTransportFactory,e.CrossBrowserHttpTransport=u.CrossBrowserHttpTransport,e.FetchReadableStreamTransport=s.FetchReadableStreamTransport,e.XhrTransport=a.XhrTransport,e.WebsocketTransport=i.WebsocketTransport,e.Code=d.Code,e.Metadata=r.BrowserHeaders,e.client=function(e,t){return f.client(e,t)},e.invoke=c.invoke,e.unary=p.unary;}(t.grpc||(t.grpc={}));},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(13);var o=function(){function e(e,t){void 0===e&&(e={}),void 0===t&&(t={splitValues:!1});var n,o=this;if(this.headersMap={},e)if("undefined"!=typeof Headers&&e instanceof Headers)r.getHeaderKeys(e).forEach(function(n){r.getHeaderValues(e,n).forEach(function(e){t.splitValues?o.append(n,r.splitHeaderValue(e)):o.append(n,e);});});else if("object"==typeof(n=e)&&"object"==typeof n.headersMap&&"function"==typeof n.forEach)e.forEach(function(e,t){o.append(e,t);});else if("undefined"!=typeof Map&&e instanceof Map){e.forEach(function(e,t){o.append(t,e);});}else"string"==typeof e?this.appendFromString(e):"object"==typeof e&&Object.getOwnPropertyNames(e).forEach(function(t){var n=e[t];Array.isArray(n)?n.forEach(function(e){o.append(t,e);}):o.append(t,n);});}return e.prototype.appendFromString=function(e){for(var t=e.split("\r\n"),n=0;n<t.length;n++){var r=t[n],o=r.indexOf(":");if(o>0){var s=r.substring(0,o).trim(),i=r.substring(o+1).trim();this.append(s,i);}}},e.prototype.delete=function(e,t){var n=r.normalizeName(e);if(void 0===t)delete this.headersMap[n];else{var o=this.headersMap[n];if(o){var s=o.indexOf(t);s>=0&&o.splice(s,1),0===o.length&&delete this.headersMap[n];}}},e.prototype.append=function(e,t){var n=this,o=r.normalizeName(e);Array.isArray(this.headersMap[o])||(this.headersMap[o]=[]),Array.isArray(t)?t.forEach(function(e){n.headersMap[o].push(r.normalizeValue(e));}):this.headersMap[o].push(r.normalizeValue(t));},e.prototype.set=function(e,t){var n=r.normalizeName(e);if(Array.isArray(t)){var o=[];t.forEach(function(e){o.push(r.normalizeValue(e));}),this.headersMap[n]=o;}else this.headersMap[n]=[r.normalizeValue(t)];},e.prototype.has=function(e,t){var n=this.headersMap[r.normalizeName(e)];if(!Array.isArray(n))return !1;if(void 0!==t){var o=r.normalizeValue(t);return n.indexOf(o)>=0}return !0},e.prototype.get=function(e){var t=this.headersMap[r.normalizeName(e)];return void 0!==t?t.concat():[]},e.prototype.forEach=function(e){var t=this;Object.getOwnPropertyNames(this.headersMap).forEach(function(n){e(n,t.headersMap[n]);},this);},e.prototype.toHeaders=function(){if("undefined"!=typeof Headers){var e=new Headers;return this.forEach(function(t,n){n.forEach(function(n){e.append(t,n);});}),e}throw new Error("Headers class is not defined")},e}();t.BrowserHeaders=o;},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(14);function o(e){return e}t.normalizeName=function(e){if("string"!=typeof e&&(e=String(e)),/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(e))throw new TypeError("Invalid character in header field name");return e.toLowerCase()},t.normalizeValue=function(e){return "string"!=typeof e&&(e=String(e)),e},t.getHeaderValues=function(e,t){var n=o(e);if(n instanceof Headers&&n.getAll)return n.getAll(t);var r=n.get(t);return r&&"string"==typeof r?[r]:r},t.getHeaderKeys=function(e){var t=o(e),n={},s=[];return t.keys?r.iterateHeadersKeys(t,function(e){n[e]||(n[e]=!0,s.push(e));}):t.forEach?t.forEach(function(e,t){n[t]||(n[t]=!0,s.push(t));}):r.iterateHeaders(t,function(e){var t=e[0];n[t]||(n[t]=!0,s.push(t));}),s},t.splitHeaderValue=function(e){var t=[];return e.split(", ").forEach(function(e){e.split(",").forEach(function(e){t.push(e);});}),t};},function(e,t){e.exports={iterateHeaders:function(e,t){for(var n=e[Symbol.iterator](),r=n.next();!r.done;)t(r.value[0]),r=n.next();},iterateHeadersKeys:function(e,t){for(var n=e.keys(),r=n.next();!r.done;)t(r.value),r=n.next();}};},function(e,t,n){var r;function o(){if(void 0!==r)return r;if(XMLHttpRequest){r=new XMLHttpRequest;try{r.open("GET","https://localhost");}catch(e){}}return r}function s(e){var t=o();if(!t)return !1;try{return t.responseType=e,t.responseType===e}catch(e){}return !1}Object.defineProperty(t,"__esModule",{value:!0}),t.xhrSupportsResponseType=s,t.detectMozXHRSupport=function(){return "undefined"!=typeof XMLHttpRequest&&s("moz-chunked-arraybuffer")},t.detectXHROverrideMimeTypeSupport=function(){return "undefined"!=typeof XMLHttpRequest&&XMLHttpRequest.prototype.hasOwnProperty("overrideMimeType")};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r,o=n(1),s=n(2),i=n(9);!function(e){e[e.FINISH_SEND=1]="FINISH_SEND";}(r||(r={}));var a=new Uint8Array([1]);t.WebsocketTransport=function(){return function(e){return function(e){e.debug&&o.debug("websocketRequest",e);var t,n=function(e){if("https://"===e.substr(0,8))return "wss://"+e.substr(8);if("http://"===e.substr(0,7))return "ws://"+e.substr(7);throw new Error("Websocket transport constructed with non-https:// or http:// host.")}(e.url),u=[];function d(e){if(e===r.FINISH_SEND)t.send(a);else{var n=e,o=new Int8Array(n.byteLength+1);o.set(new Uint8Array([0])),o.set(n,1),t.send(o);}}return {sendMessage:function(e){t&&t.readyState!==t.CONNECTING?d(e):u.push(e);},finishSend:function(){t&&t.readyState!==t.CONNECTING?d(r.FINISH_SEND):u.push(r.FINISH_SEND);},start:function(r){(t=new WebSocket(n,["grpc-websockets"])).binaryType="arraybuffer",t.onopen=function(){var n;e.debug&&o.debug("websocketRequest.onopen"),t.send((n="",r.forEach(function(e,t){n+=e+": "+t.join(", ")+"\r\n";}),i.encodeASCII(n))),u.forEach(function(e){d(e);});},t.onclose=function(t){e.debug&&o.debug("websocketRequest.onclose",t),s.default(function(){e.onEnd();});},t.onerror=function(t){e.debug&&o.debug("websocketRequest.onerror",t);},t.onmessage=function(t){s.default(function(){e.onChunk(new Uint8Array(t.data));});};},cancel:function(){e.debug&&o.debug("websocket.abort"),s.default(function(){t.close();});}}}(e)}};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(3);t.invoke=function(e,t){if(e.requestStream)throw new Error(".invoke cannot be used with client-streaming methods. Use .client instead.");var n=r.client(e,{host:t.host,transport:t.transport,debug:t.debug});return t.onHeaders&&n.onHeaders(t.onHeaders),t.onMessage&&n.onMessage(t.onMessage),t.onEnd&&n.onEnd(t.onEnd),n.start(t.metadata),n.send(t.request),n.finishSend(),{close:function(){n.close();}}};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0}),t.frameRequest=function(e){var t=e.serializeBinary(),n=new ArrayBuffer(t.byteLength+5);return new DataView(n,1,4).setUint32(0,t.length,!1),new Uint8Array(n,5).set(t),new Uint8Array(n)};},function(e,t,n){Object.defineProperty(t,"__esModule",{value:!0});var r=n(0),o=n(3);t.unary=function(e,t){if(e.responseStream)throw new Error(".unary cannot be used with server-streaming methods. Use .invoke or .client instead.");if(e.requestStream)throw new Error(".unary cannot be used with client-streaming methods. Use .client instead.");var n=null,s=null,i=o.client(e,{host:t.host,transport:t.transport,debug:t.debug});return i.onHeaders(function(e){n=e;}),i.onMessage(function(e){s=e;}),i.onEnd(function(e,o,i){t.onEnd({status:e,statusMessage:o,headers:n||new r.Metadata,message:s,trailers:i});}),i.start(t.metadata),i.send(t.request),i.finishSend(),{close:function(){i.close();}}};}])});
 	});
 
-	unwrapExports(util$1);
-	var util_1 = util$1.normalizeName;
-	var util_2 = util$1.normalizeValue;
-	var util_3 = util$1.getHeaderValues;
-	var util_4 = util$1.getHeaderKeys;
-	var util_5 = util$1.splitHeaderValue;
-
-	var BrowserHeaders_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	function isBrowserHeaders(arg) {
-	    return typeof arg === "object" && typeof arg.headersMap === "object" && typeof arg.forEach === "function";
-	}
-	var BrowserHeaders = (function () {
-	    function BrowserHeaders(init, options) {
-	        if (init === void 0) { init = {}; }
-	        if (options === void 0) { options = { splitValues: false }; }
-	        var _this = this;
-	        this.headersMap = {};
-	        if (init) {
-	            if (typeof Headers !== "undefined" && init instanceof Headers) {
-	                var keys = util$1.getHeaderKeys(init);
-	                keys.forEach(function (key) {
-	                    var values = util$1.getHeaderValues(init, key);
-	                    values.forEach(function (value) {
-	                        if (options.splitValues) {
-	                            _this.append(key, util$1.splitHeaderValue(value));
-	                        }
-	                        else {
-	                            _this.append(key, value);
-	                        }
-	                    });
-	                });
-	            }
-	            else if (isBrowserHeaders(init)) {
-	                init.forEach(function (key, values) {
-	                    _this.append(key, values);
-	                });
-	            }
-	            else if (typeof Map !== "undefined" && init instanceof Map) {
-	                var asMap = init;
-	                asMap.forEach(function (value, key) {
-	                    _this.append(key, value);
-	                });
-	            }
-	            else if (typeof init === "string") {
-	                this.appendFromString(init);
-	            }
-	            else if (typeof init === "object") {
-	                Object.getOwnPropertyNames(init).forEach(function (key) {
-	                    var asObject = init;
-	                    var values = asObject[key];
-	                    if (Array.isArray(values)) {
-	                        values.forEach(function (value) {
-	                            _this.append(key, value);
-	                        });
-	                    }
-	                    else {
-	                        _this.append(key, values);
-	                    }
-	                });
-	            }
-	        }
-	    }
-	    BrowserHeaders.prototype.appendFromString = function (str) {
-	        var pairs = str.split("\r\n");
-	        for (var i = 0; i < pairs.length; i++) {
-	            var p = pairs[i];
-	            var index = p.indexOf(":");
-	            if (index > 0) {
-	                var key = p.substring(0, index).trim();
-	                var value = p.substring(index + 1).trim();
-	                this.append(key, value);
-	            }
-	        }
-	    };
-	    BrowserHeaders.prototype.delete = function (key, value) {
-	        var normalizedKey = util$1.normalizeName(key);
-	        if (value === undefined) {
-	            delete this.headersMap[normalizedKey];
-	        }
-	        else {
-	            var existing = this.headersMap[normalizedKey];
-	            if (existing) {
-	                var index = existing.indexOf(value);
-	                if (index >= 0) {
-	                    existing.splice(index, 1);
-	                }
-	                if (existing.length === 0) {
-	                    delete this.headersMap[normalizedKey];
-	                }
-	            }
-	        }
-	    };
-	    BrowserHeaders.prototype.append = function (key, value) {
-	        var _this = this;
-	        var normalizedKey = util$1.normalizeName(key);
-	        if (!Array.isArray(this.headersMap[normalizedKey])) {
-	            this.headersMap[normalizedKey] = [];
-	        }
-	        if (Array.isArray(value)) {
-	            value.forEach(function (arrayValue) {
-	                _this.headersMap[normalizedKey].push(util$1.normalizeValue(arrayValue));
-	            });
-	        }
-	        else {
-	            this.headersMap[normalizedKey].push(util$1.normalizeValue(value));
-	        }
-	    };
-	    BrowserHeaders.prototype.set = function (key, value) {
-	        var normalizedKey = util$1.normalizeName(key);
-	        if (Array.isArray(value)) {
-	            var normalized_1 = [];
-	            value.forEach(function (arrayValue) {
-	                normalized_1.push(util$1.normalizeValue(arrayValue));
-	            });
-	            this.headersMap[normalizedKey] = normalized_1;
-	        }
-	        else {
-	            this.headersMap[normalizedKey] = [util$1.normalizeValue(value)];
-	        }
-	    };
-	    BrowserHeaders.prototype.has = function (key, value) {
-	        var keyArray = this.headersMap[util$1.normalizeName(key)];
-	        var keyExists = Array.isArray(keyArray);
-	        if (!keyExists) {
-	            return false;
-	        }
-	        if (value !== undefined) {
-	            var normalizedValue = util$1.normalizeValue(value);
-	            return keyArray.indexOf(normalizedValue) >= 0;
-	        }
-	        else {
-	            return true;
-	        }
-	    };
-	    BrowserHeaders.prototype.get = function (key) {
-	        var values = this.headersMap[util$1.normalizeName(key)];
-	        if (values !== undefined) {
-	            return values.concat();
-	        }
-	        return [];
-	    };
-	    BrowserHeaders.prototype.forEach = function (callback) {
-	        var _this = this;
-	        Object.getOwnPropertyNames(this.headersMap)
-	            .forEach(function (key) {
-	            callback(key, _this.headersMap[key]);
-	        }, this);
-	    };
-	    BrowserHeaders.prototype.toHeaders = function () {
-	        if (typeof Headers !== "undefined") {
-	            var headers_1 = new Headers();
-	            this.forEach(function (key, values) {
-	                values.forEach(function (value) {
-	                    headers_1.append(key, value);
-	                });
-	            });
-	            return headers_1;
-	        }
-	        else {
-	            throw new Error("Headers class is not defined");
-	        }
-	    };
-	    return BrowserHeaders;
-	}());
-	exports.BrowserHeaders = BrowserHeaders;
-
-	});
-
-	unwrapExports(BrowserHeaders_1);
-	var BrowserHeaders_2 = BrowserHeaders_1.BrowserHeaders;
-
-	var lib = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	exports.BrowserHeaders = BrowserHeaders_1.BrowserHeaders;
-
-	});
-
-	unwrapExports(lib);
-	var lib_1 = lib.BrowserHeaders;
-
-	var metadata = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	exports.Metadata = lib.BrowserHeaders;
-
-	});
-
-	unwrapExports(metadata);
-	var metadata_1 = metadata.Metadata;
-
-	var debug_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-	function debug() {
-	    var args = [];
-	    for (var _i = 0; _i < arguments.length; _i++) {
-	        args[_i] = arguments[_i];
-	    }
-	    if (console.debug) {
-	        console.debug.apply(null, args);
-	    }
-	    else {
-	        console.log.apply(null, args);
-	    }
-	}
-	exports.debug = debug;
-
-	});
-
-	unwrapExports(debug_1);
-	var debug_2 = debug_1.debug;
-
-	var detach_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var awaitingExecution = null;
-	function runCallbacks() {
-	    if (awaitingExecution) {
-	        var thisCallbackSet = awaitingExecution;
-	        awaitingExecution = null;
-	        for (var i = 0; i < thisCallbackSet.length; i++) {
-	            try {
-	                thisCallbackSet[i]();
-	            }
-	            catch (e) {
-	                if (awaitingExecution === null) {
-	                    awaitingExecution = [];
-	                    setTimeout(function () {
-	                        runCallbacks();
-	                    }, 0);
-	                }
-	                for (var k = thisCallbackSet.length - 1; k > i; k--) {
-	                    awaitingExecution.unshift(thisCallbackSet[k]);
-	                }
-	                throw e;
-	            }
-	        }
-	    }
-	}
-	function detach(cb) {
-	    if (awaitingExecution !== null) {
-	        awaitingExecution.push(cb);
-	        return;
-	    }
-	    awaitingExecution = [cb];
-	    setTimeout(function () {
-	        runCallbacks();
-	    }, 0);
-	}
-	exports.default = detach;
-
-	});
-
-	unwrapExports(detach_1);
-
-	var fetch_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-	function fetchRequest(options) {
-	    options.debug && debug_1.debug("fetchRequest", options);
-	    return new Fetch(options);
-	}
-	exports.default = fetchRequest;
-	var Fetch = (function () {
-	    function Fetch(transportOptions) {
-	        this.cancelled = false;
-	        this.controller = window.AbortController && new AbortController();
-	        this.options = transportOptions;
-	    }
-	    Fetch.prototype.pump = function (readerArg, res) {
-	        var _this = this;
-	        this.reader = readerArg;
-	        if (this.cancelled) {
-	            this.options.debug && debug_1.debug("Fetch.pump.cancel at first pump");
-	            this.reader.cancel();
-	            return;
-	        }
-	        this.reader.read()
-	            .then(function (result) {
-	            if (result.done) {
-	                detach_1.default(function () {
-	                    _this.options.onEnd();
-	                });
-	                return res;
-	            }
-	            detach_1.default(function () {
-	                _this.options.onChunk(result.value);
-	            });
-	            _this.pump(_this.reader, res);
-	            return;
-	        });
-	    };
-	    Fetch.prototype.send = function (msgBytes) {
-	        var _this = this;
-	        fetch(this.options.url, {
-	            headers: this.metadata.toHeaders(),
-	            method: "POST",
-	            body: msgBytes,
-	            credentials: "same-origin",
-	            signal: this.controller && this.controller.signal
-	        }).then(function (res) {
-	            _this.options.debug && debug_1.debug("Fetch.response", res);
-	            detach_1.default(function () {
-	                _this.options.onHeaders(new metadata.Metadata(res.headers), res.status);
-	            });
-	            if (res.body) {
-	                _this.pump(res.body.getReader(), res);
-	                return;
-	            }
-	            return res;
-	        }).catch(function (err) {
-	            if (_this.cancelled) {
-	                _this.options.debug && debug_1.debug("Fetch.catch - request cancelled");
-	                return;
-	            }
-	            _this.options.debug && debug_1.debug("Fetch.catch", err.message);
-	            detach_1.default(function () {
-	                _this.options.onEnd(err);
-	            });
-	        });
-	    };
-	    Fetch.prototype.sendMessage = function (msgBytes) {
-	        this.send(msgBytes);
-	    };
-	    Fetch.prototype.finishSend = function () {
-	    };
-	    Fetch.prototype.start = function (metadata$$1) {
-	        this.metadata = metadata$$1;
-	    };
-	    Fetch.prototype.cancel = function () {
-	        this.cancelled = true;
-	        if (this.reader) {
-	            this.options.debug && debug_1.debug("Fetch.abort.cancel");
-	            this.reader.cancel();
-	        }
-	        else {
-	            this.options.debug && debug_1.debug("Fetch.abort.cancel before reader");
-	        }
-	        if (this.controller) {
-	            this.controller.abort();
-	        }
-	    };
-	    return Fetch;
-	}());
-	function detectFetchSupport() {
-	    return typeof Response !== "undefined" && Response.prototype.hasOwnProperty("body") && typeof Headers === "function";
-	}
-	exports.detectFetchSupport = detectFetchSupport;
-
-	});
-
-	unwrapExports(fetch_1);
-	var fetch_2 = fetch_1.detectFetchSupport;
-
-	var xhr = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-	function xhrRequest(options) {
-	    options.debug && debug_1.debug("xhrRequest", options);
-	    return new XHR(options);
-	}
-	exports.default = xhrRequest;
-	var XHR = (function () {
-	    function XHR(transportOptions) {
-	        this.options = transportOptions;
-	    }
-	    XHR.prototype.onProgressEvent = function () {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("XHR.onProgressEvent.length: ", this.xhr.response.length);
-	        var rawText = this.xhr.response.substr(this.index);
-	        this.index = this.xhr.response.length;
-	        var asArrayBuffer = stringToArrayBuffer(rawText);
-	        detach_1.default(function () {
-	            _this.options.onChunk(asArrayBuffer);
-	        });
-	    };
-	    XHR.prototype.onLoadEvent = function () {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("XHR.onLoadEvent");
-	        detach_1.default(function () {
-	            _this.options.onEnd();
-	        });
-	    };
-	    XHR.prototype.onStateChange = function () {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("XHR.onStateChange", this.xhr.readyState);
-	        if (this.xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-	            detach_1.default(function () {
-	                _this.options.onHeaders(new metadata.Metadata(_this.xhr.getAllResponseHeaders()), _this.xhr.status);
-	            });
-	        }
-	    };
-	    XHR.prototype.sendMessage = function (msgBytes) {
-	        this.xhr.send(msgBytes);
-	    };
-	    XHR.prototype.finishSend = function () {
-	    };
-	    XHR.prototype.start = function (metadata$$1) {
-	        var _this = this;
-	        this.metadata = metadata$$1;
-	        var xhr = new XMLHttpRequest();
-	        this.xhr = xhr;
-	        xhr.open("POST", this.options.url);
-	        xhr.responseType = "text";
-	        xhr.overrideMimeType("text/plain; charset=x-user-defined");
-	        this.metadata.forEach(function (key, values) {
-	            xhr.setRequestHeader(key, values.join(", "));
-	        });
-	        xhr.addEventListener("readystatechange", this.onStateChange.bind(this));
-	        xhr.addEventListener("progress", this.onProgressEvent.bind(this));
-	        xhr.addEventListener("loadend", this.onLoadEvent.bind(this));
-	        xhr.addEventListener("error", function (err) {
-	            _this.options.debug && debug_1.debug("XHR.error", err);
-	            detach_1.default(function () {
-	                _this.options.onEnd(err.error);
-	            });
-	        });
-	    };
-	    XHR.prototype.cancel = function () {
-	        this.options.debug && debug_1.debug("XHR.abort");
-	        this.xhr.abort();
-	    };
-	    return XHR;
-	}());
-	function codePointAtPolyfill(str, index) {
-	    var code = str.charCodeAt(index);
-	    if (code >= 0xd800 && code <= 0xdbff) {
-	        var surr = str.charCodeAt(index + 1);
-	        if (surr >= 0xdc00 && surr <= 0xdfff) {
-	            code = 0x10000 + ((code - 0xd800) << 10) + (surr - 0xdc00);
-	        }
-	    }
-	    return code;
-	}
-	function stringToArrayBuffer(str) {
-	    var asArray = new Uint8Array(str.length);
-	    var arrayIndex = 0;
-	    for (var i = 0; i < str.length; i++) {
-	        var codePoint = String.prototype.codePointAt ? str.codePointAt(i) : codePointAtPolyfill(str, i);
-	        asArray[arrayIndex++] = codePoint & 0xFF;
-	    }
-	    return asArray;
-	}
-	exports.stringToArrayBuffer = stringToArrayBuffer;
-	function detectXHRSupport() {
-	    return typeof XMLHttpRequest !== "undefined" && XMLHttpRequest.prototype.hasOwnProperty("overrideMimeType");
-	}
-	exports.detectXHRSupport = detectXHRSupport;
-
-	});
-
-	unwrapExports(xhr);
-	var xhr_1 = xhr.stringToArrayBuffer;
-	var xhr_2 = xhr.detectXHRSupport;
-
-	var xhrUtil = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var xhr;
-	function getXHR() {
-	    if (xhr !== undefined)
-	        return xhr;
-	    if (XMLHttpRequest) {
-	        xhr = new XMLHttpRequest();
-	        try {
-	            xhr.open("GET", "https://localhost");
-	        }
-	        catch (e) { }
-	    }
-	    return xhr;
-	}
-	function xhrSupportsResponseType(type) {
-	    var xhr = getXHR();
-	    if (!xhr) {
-	        return false;
-	    }
-	    try {
-	        xhr.responseType = type;
-	        return xhr.responseType === type;
-	    }
-	    catch (e) { }
-	    return false;
-	}
-	exports.xhrSupportsResponseType = xhrSupportsResponseType;
-
-	});
-
-	unwrapExports(xhrUtil);
-	var xhrUtil_1 = xhrUtil.xhrSupportsResponseType;
-
-	var mozXhr = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-	function mozXhrRequest(options) {
-	    options.debug && debug_1.debug("mozXhrRequest", options);
-	    return new MozXHR(options);
-	}
-	exports.default = mozXhrRequest;
-	var MozXHR = (function () {
-	    function MozXHR(transportOptions) {
-	        this.options = transportOptions;
-	    }
-	    MozXHR.prototype.onProgressEvent = function () {
-	        var _this = this;
-	        var resp = this.xhr.response;
-	        this.options.debug && debug_1.debug("MozXHR.onProgressEvent: ", new Uint8Array(resp));
-	        detach_1.default(function () {
-	            _this.options.onChunk(new Uint8Array(resp));
-	        });
-	    };
-	    MozXHR.prototype.onLoadEvent = function () {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("MozXHR.onLoadEvent");
-	        detach_1.default(function () {
-	            _this.options.onEnd();
-	        });
-	    };
-	    MozXHR.prototype.onStateChange = function () {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("MozXHR.onStateChange", this.xhr.readyState);
-	        this.options.debug && debug_1.debug("MozXHR.XMLHttpRequest.HEADERS_RECEIVED", XMLHttpRequest.HEADERS_RECEIVED);
-	        if (this.xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-	            detach_1.default(function () {
-	                _this.options.onHeaders(new metadata.Metadata(_this.xhr.getAllResponseHeaders()), _this.xhr.status);
-	            });
-	        }
-	    };
-	    MozXHR.prototype.sendMessage = function (msgBytes) {
-	        this.options.debug && debug_1.debug("MozXHR.sendMessage");
-	        this.xhr.send(msgBytes);
-	    };
-	    MozXHR.prototype.finishSend = function () {
-	    };
-	    MozXHR.prototype.start = function (metadata$$1) {
-	        var _this = this;
-	        this.options.debug && debug_1.debug("MozXHR.start");
-	        this.metadata = metadata$$1;
-	        var xhr = new XMLHttpRequest();
-	        this.xhr = xhr;
-	        xhr.open("POST", this.options.url);
-	        xhr.responseType = "moz-chunked-arraybuffer";
-	        this.metadata.forEach(function (key, values) {
-	            xhr.setRequestHeader(key, values.join(", "));
-	        });
-	        xhr.addEventListener("readystatechange", this.onStateChange.bind(this));
-	        xhr.addEventListener("progress", this.onProgressEvent.bind(this));
-	        xhr.addEventListener("loadend", this.onLoadEvent.bind(this));
-	        xhr.addEventListener("error", function (err) {
-	            _this.options.debug && debug_1.debug("MozXHR.error", err);
-	            detach_1.default(function () {
-	                _this.options.onEnd(err.error);
-	            });
-	        });
-	    };
-	    MozXHR.prototype.cancel = function () {
-	        this.options.debug && debug_1.debug("MozXHR.cancel");
-	        this.xhr.abort();
-	    };
-	    return MozXHR;
-	}());
-	function detectMozXHRSupport() {
-	    return typeof XMLHttpRequest !== "undefined" && xhrUtil.xhrSupportsResponseType("moz-chunked-arraybuffer");
-	}
-	exports.detectMozXHRSupport = detectMozXHRSupport;
-
-	});
-
-	unwrapExports(mozXhr);
-	var mozXhr_1 = mozXhr.detectMozXHRSupport;
-
-	var nodeHttp = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-	function nodeHttpRequest(options) {
-	    options.debug && console.log("nodeHttpRequest", options);
-	    return new NodeHttp(options);
-	}
-	exports.default = nodeHttpRequest;
-	var NodeHttp = (function () {
-	    function NodeHttp(transportOptions) {
-	        this.options = transportOptions;
-	    }
-	    NodeHttp.prototype.sendMessage = function (msgBytes) {
-	        this.request.write(toBuffer(msgBytes));
-	        this.request.end();
-	    };
-	    NodeHttp.prototype.finishSend = function () {
-	    };
-	    NodeHttp.prototype.responseCallback = function (response) {
-	        var _this = this;
-	        this.options.debug && console.log("NodeHttp.response", response.statusCode);
-	        var headers = filterHeadersForUndefined(response.headers);
-	        this.options.onHeaders(new metadata.Metadata(headers), response.statusCode);
-	        response.on("data", function (chunk) {
-	            _this.options.debug && console.log("NodeHttp.data", chunk);
-	            _this.options.onChunk(toArrayBuffer(chunk));
-	        });
-	        response.on("end", function () {
-	            _this.options.debug && console.log("NodeHttp.end");
-	            _this.options.onEnd();
-	        });
-	    };
-	    NodeHttp.prototype.start = function (metadata$$1) {
-	        var _this = this;
-	        var headers = {};
-	        metadata$$1.forEach(function (key, values) {
-	            headers[key] = values.join(", ");
-	        });
-	        var parsedUrl = url.parse(this.options.url);
-	        var httpOptions = {
-	            host: parsedUrl.hostname,
-	            port: parsedUrl.port ? parseInt(parsedUrl.port) : undefined,
-	            path: parsedUrl.path,
-	            headers: headers,
-	            method: "POST"
-	        };
-	        if (parsedUrl.protocol === "https:") {
-	            this.request = https.request(httpOptions, this.responseCallback.bind(this));
-	        }
-	        else {
-	            this.request = http.request(httpOptions, this.responseCallback.bind(this));
-	        }
-	        this.request.on("error", function (err) {
-	            _this.options.debug && console.log("NodeHttp.error", err);
-	            _this.options.onEnd(err);
-	        });
-	    };
-	    NodeHttp.prototype.cancel = function () {
-	        this.options.debug && console.log("NodeHttp.abort");
-	        this.request.abort();
-	    };
-	    return NodeHttp;
-	}());
-	function filterHeadersForUndefined(headers) {
-	    var filteredHeaders = {};
-	    for (var key in headers) {
-	        var value = headers[key];
-	        if (headers.hasOwnProperty(key)) {
-	            if (value !== undefined) {
-	                filteredHeaders[key] = value;
-	            }
-	        }
-	    }
-	    return filteredHeaders;
-	}
-	function toArrayBuffer(buf) {
-	    var view = new Uint8Array(buf.length);
-	    for (var i = 0; i < buf.length; i++) {
-	        view[i] = buf[i];
-	    }
-	    return view;
-	}
-	function toBuffer(ab) {
-	    var buf = new Buffer$1(ab.byteLength);
-	    for (var i = 0; i < buf.length; i++) {
-	        buf[i] = ab[i];
-	    }
-	    return buf;
-	}
-	function detectNodeHTTPSupport() {
-	    return module.exports;
-	}
-	exports.detectNodeHTTPSupport = detectNodeHTTPSupport;
-
-	});
-
-	unwrapExports(nodeHttp);
-	var nodeHttp_1 = nodeHttp.detectNodeHTTPSupport;
-
-	var ChunkParser_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	var HEADER_SIZE = 5;
-	var isAllowedControlChars = function (char) { return char === 0x9 || char === 0xa || char === 0xd; };
-	function isValidHeaderAscii(val) {
-	    return isAllowedControlChars(val) || (val >= 0x20 && val <= 0x7e);
-	}
-	function decodeASCII(input) {
-	    for (var i = 0; i !== input.length; ++i) {
-	        if (!isValidHeaderAscii(input[i])) {
-	            throw new Error("Metadata is not valid (printable) ASCII");
-	        }
-	    }
-	    return String.fromCharCode.apply(String, Array.prototype.slice.call(input));
-	}
-	exports.decodeASCII = decodeASCII;
-	function encodeASCII(input) {
-	    var encoded = new Uint8Array(input.length);
-	    for (var i = 0; i !== input.length; ++i) {
-	        var charCode = input.charCodeAt(i);
-	        if (!isValidHeaderAscii(charCode)) {
-	            throw new Error("Metadata contains invalid ASCII");
-	        }
-	        encoded[i] = charCode;
-	    }
-	    return encoded;
-	}
-	exports.encodeASCII = encodeASCII;
-	function isTrailerHeader(headerView) {
-	    return (headerView.getUint8(0) & 0x80) === 0x80;
-	}
-	function parseTrailerData(msgData) {
-	    return new metadata.Metadata(decodeASCII(msgData));
-	}
-	function readLengthFromHeader(headerView) {
-	    return headerView.getUint32(1, false);
-	}
-	function hasEnoughBytes(buffer, position, byteCount) {
-	    return buffer.byteLength - position >= byteCount;
-	}
-	function sliceUint8Array(buffer, from, to) {
-	    if (buffer.slice) {
-	        return buffer.slice(from, to);
-	    }
-	    var end = buffer.length;
-	    if (to !== undefined) {
-	        end = to;
-	    }
-	    var num = end - from;
-	    var array = new Uint8Array(num);
-	    var arrayIndex = 0;
-	    for (var i = from; i < end; i++) {
-	        array[arrayIndex++] = buffer[i];
-	    }
-	    return array;
-	}
-	var ChunkType;
-	(function (ChunkType) {
-	    ChunkType[ChunkType["MESSAGE"] = 1] = "MESSAGE";
-	    ChunkType[ChunkType["TRAILERS"] = 2] = "TRAILERS";
-	})(ChunkType = exports.ChunkType || (exports.ChunkType = {}));
-	var ChunkParser = (function () {
-	    function ChunkParser() {
-	        this.buffer = null;
-	        this.position = 0;
-	    }
-	    ChunkParser.prototype.parse = function (bytes, flush) {
-	        if (bytes.length === 0 && flush) {
-	            return [];
-	        }
-	        var chunkData = [];
-	        if (this.buffer == null) {
-	            this.buffer = bytes;
-	            this.position = 0;
-	        }
-	        else if (this.position === this.buffer.byteLength) {
-	            this.buffer = bytes;
-	            this.position = 0;
-	        }
-	        else {
-	            var remaining = this.buffer.byteLength - this.position;
-	            var newBuf = new Uint8Array(remaining + bytes.byteLength);
-	            var fromExisting = sliceUint8Array(this.buffer, this.position);
-	            newBuf.set(fromExisting, 0);
-	            var latestDataBuf = new Uint8Array(bytes);
-	            newBuf.set(latestDataBuf, remaining);
-	            this.buffer = newBuf;
-	            this.position = 0;
-	        }
-	        while (true) {
-	            if (!hasEnoughBytes(this.buffer, this.position, HEADER_SIZE)) {
-	                return chunkData;
-	            }
-	            var headerBuffer = sliceUint8Array(this.buffer, this.position, this.position + HEADER_SIZE);
-	            var headerView = new DataView(headerBuffer.buffer, headerBuffer.byteOffset, headerBuffer.byteLength);
-	            var msgLength = readLengthFromHeader(headerView);
-	            if (!hasEnoughBytes(this.buffer, this.position, HEADER_SIZE + msgLength)) {
-	                return chunkData;
-	            }
-	            var messageData = sliceUint8Array(this.buffer, this.position + HEADER_SIZE, this.position + HEADER_SIZE + msgLength);
-	            this.position += HEADER_SIZE + msgLength;
-	            if (isTrailerHeader(headerView)) {
-	                chunkData.push({ chunkType: ChunkType.TRAILERS, trailers: parseTrailerData(messageData) });
-	                return chunkData;
-	            }
-	            else {
-	                chunkData.push({ chunkType: ChunkType.MESSAGE, data: messageData });
-	            }
-	        }
-	    };
-	    return ChunkParser;
-	}());
-	exports.ChunkParser = ChunkParser;
-
-	});
-
-	unwrapExports(ChunkParser_1);
-	var ChunkParser_2 = ChunkParser_1.decodeASCII;
-	var ChunkParser_3 = ChunkParser_1.encodeASCII;
-	var ChunkParser_4 = ChunkParser_1.ChunkType;
-	var ChunkParser_5 = ChunkParser_1.ChunkParser;
-
-	var websocket = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-	var WebsocketSignal;
-	(function (WebsocketSignal) {
-	    WebsocketSignal[WebsocketSignal["FINISH_SEND"] = 1] = "FINISH_SEND";
-	})(WebsocketSignal || (WebsocketSignal = {}));
-	var finishSendFrame = new Uint8Array([1]);
-	function websocketRequest(options) {
-	    options.debug && debug_1.debug("websocketRequest", options);
-	    var webSocketAddress = constructWebSocketAddress(options.url);
-	    var sendQueue = [];
-	    var ws;
-	    function sendToWebsocket(toSend) {
-	        if (toSend === WebsocketSignal.FINISH_SEND) {
-	            ws.send(finishSendFrame);
-	        }
-	        else {
-	            var byteArray = toSend;
-	            var c = new Int8Array(byteArray.byteLength + 1);
-	            c.set(new Uint8Array([0]));
-	            c.set(byteArray, 1);
-	            ws.send(c);
-	        }
-	    }
-	    return {
-	        sendMessage: function (msgBytes) {
-	            if (!ws || ws.readyState === ws.CONNECTING) {
-	                sendQueue.push(msgBytes);
-	            }
-	            else {
-	                sendToWebsocket(msgBytes);
-	            }
-	        },
-	        finishSend: function () {
-	            if (!ws || ws.readyState === ws.CONNECTING) {
-	                sendQueue.push(WebsocketSignal.FINISH_SEND);
-	            }
-	            else {
-	                sendToWebsocket(WebsocketSignal.FINISH_SEND);
-	            }
-	        },
-	        start: function (metadata) {
-	            ws = new WebSocket(webSocketAddress, ["grpc-websockets"]);
-	            ws.binaryType = "arraybuffer";
-	            ws.onopen = function () {
-	                options.debug && debug_1.debug("websocketRequest.onopen");
-	                ws.send(headersToBytes(metadata));
-	                sendQueue.forEach(function (toSend) {
-	                    sendToWebsocket(toSend);
-	                });
-	            };
-	            ws.onclose = function (closeEvent) {
-	                options.debug && debug_1.debug("websocketRequest.onclose", closeEvent);
-	                detach_1.default(function () {
-	                    options.onEnd();
-	                });
-	            };
-	            ws.onerror = function (error) {
-	                options.debug && debug_1.debug("websocketRequest.onerror", error);
-	            };
-	            ws.onmessage = function (e) {
-	                detach_1.default(function () {
-	                    options.onChunk(new Uint8Array(e.data));
-	                });
-	            };
-	        },
-	        cancel: function () {
-	            options.debug && debug_1.debug("websocket.abort");
-	            detach_1.default(function () {
-	                ws.close();
-	            });
-	        }
-	    };
-	}
-	exports.default = websocketRequest;
-	function constructWebSocketAddress(url$$1) {
-	    if (url$$1.substr(0, 8) === "https://") {
-	        return "wss://" + url$$1.substr(8);
-	    }
-	    else if (url$$1.substr(0, 7) === "http://") {
-	        return "ws://" + url$$1.substr(7);
-	    }
-	    throw new Error("Websocket transport constructed with non-https:// or http:// host.");
-	}
-	function headersToBytes(headers) {
-	    var asString = "";
-	    headers.forEach(function (key, values) {
-	        asString += key + ": " + values.join(", ") + "\r\n";
-	    });
-	    return ChunkParser_1.encodeASCII(asString);
-	}
-
-	});
-
-	unwrapExports(websocket);
-
-	var Transport = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-
-	var selectedTransport;
-	function DefaultTransportFactory(transportOptions) {
-	    if (transportOptions.methodDefinition.requestStream) {
-	        return new Error("No transport available for client-streaming (requestStream) method");
-	    }
-	    if (!selectedTransport) {
-	        selectedTransport = detectTransport();
-	    }
-	    return selectedTransport(transportOptions);
-	}
-	exports.DefaultTransportFactory = DefaultTransportFactory;
-	function detectTransport() {
-	    if (fetch_1.detectFetchSupport()) {
-	        return fetch_1.default;
-	    }
-	    if (mozXhr.detectMozXHRSupport()) {
-	        return mozXhr.default;
-	    }
-	    if (xhr.detectXHRSupport()) {
-	        return xhr.default;
-	    }
-	    if (nodeHttp.detectNodeHTTPSupport()) {
-	        return nodeHttp.default;
-	    }
-	    throw new Error("No suitable transport found for gRPC-Web");
-	}
-	function WebsocketTransportFactory(transportOptions) {
-	    return websocket.default(transportOptions);
-	}
-	exports.WebsocketTransportFactory = WebsocketTransportFactory;
-
-	});
-
-	unwrapExports(Transport);
-	var Transport_1 = Transport.DefaultTransportFactory;
-	var Transport_2 = Transport.WebsocketTransportFactory;
-
-	var Code_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var Code;
-	(function (Code) {
-	    Code[Code["OK"] = 0] = "OK";
-	    Code[Code["Canceled"] = 1] = "Canceled";
-	    Code[Code["Unknown"] = 2] = "Unknown";
-	    Code[Code["InvalidArgument"] = 3] = "InvalidArgument";
-	    Code[Code["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-	    Code[Code["NotFound"] = 5] = "NotFound";
-	    Code[Code["AlreadyExists"] = 6] = "AlreadyExists";
-	    Code[Code["PermissionDenied"] = 7] = "PermissionDenied";
-	    Code[Code["ResourceExhausted"] = 8] = "ResourceExhausted";
-	    Code[Code["FailedPrecondition"] = 9] = "FailedPrecondition";
-	    Code[Code["Aborted"] = 10] = "Aborted";
-	    Code[Code["OutOfRange"] = 11] = "OutOfRange";
-	    Code[Code["Unimplemented"] = 12] = "Unimplemented";
-	    Code[Code["Internal"] = 13] = "Internal";
-	    Code[Code["Unavailable"] = 14] = "Unavailable";
-	    Code[Code["DataLoss"] = 15] = "DataLoss";
-	    Code[Code["Unauthenticated"] = 16] = "Unauthenticated";
-	})(Code = exports.Code || (exports.Code = {}));
-	function httpStatusToCode(httpStatus) {
-	    switch (httpStatus) {
-	        case 0:
-	            return Code.Internal;
-	        case 200:
-	            return Code.OK;
-	        case 400:
-	            return Code.InvalidArgument;
-	        case 401:
-	            return Code.Unauthenticated;
-	        case 403:
-	            return Code.PermissionDenied;
-	        case 404:
-	            return Code.NotFound;
-	        case 409:
-	            return Code.Aborted;
-	        case 412:
-	            return Code.FailedPrecondition;
-	        case 429:
-	            return Code.ResourceExhausted;
-	        case 499:
-	            return Code.Canceled;
-	        case 500:
-	            return Code.Unknown;
-	        case 501:
-	            return Code.Unimplemented;
-	        case 503:
-	            return Code.Unavailable;
-	        case 504:
-	            return Code.DeadlineExceeded;
-	        default:
-	            return Code.Unknown;
-	    }
-	}
-	exports.httpStatusToCode = httpStatusToCode;
-
-	});
-
-	unwrapExports(Code_1);
-	var Code_2 = Code_1.Code;
-	var Code_3 = Code_1.httpStatusToCode;
-
-	var util$3 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-	function frameRequest(request) {
-	    var bytes = request.serializeBinary();
-	    var frame = new ArrayBuffer(bytes.byteLength + 5);
-	    new DataView(frame, 1, 4).setUint32(0, bytes.length, false);
-	    new Uint8Array(frame, 5).set(bytes);
-	    return new Uint8Array(frame);
-	}
-	exports.frameRequest = frameRequest;
-
-	});
-
-	unwrapExports(util$3);
-	var util_1$1 = util$3.frameRequest;
-
-	var client_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-
-
-
-	function client(methodDescriptor, props) {
-	    return new GrpcClient(methodDescriptor, props);
-	}
-	exports.client = client;
-	var GrpcClient = (function () {
-	    function GrpcClient(methodDescriptor, props) {
-	        this.started = false;
-	        this.sentFirstMessage = false;
-	        this.completed = false;
-	        this.closed = false;
-	        this.finishedSending = false;
-	        this.onHeadersCallbacks = [];
-	        this.onMessageCallbacks = [];
-	        this.onEndCallbacks = [];
-	        this.parser = new ChunkParser_1.ChunkParser();
-	        this.methodDefinition = methodDescriptor;
-	        this.props = props;
-	        this.createTransport();
-	    }
-	    GrpcClient.prototype.createTransport = function () {
-	        var url$$1 = this.props.host + "/" + this.methodDefinition.service.serviceName + "/" + this.methodDefinition.methodName;
-	        var transportOptions = {
-	            methodDefinition: this.methodDefinition,
-	            debug: this.props.debug || false,
-	            url: url$$1,
-	            onHeaders: this.onTransportHeaders.bind(this),
-	            onChunk: this.onTransportChunk.bind(this),
-	            onEnd: this.onTransportEnd.bind(this),
-	        };
-	        var transportConstructor = this.props.transport;
-	        if (transportConstructor) {
-	            var constructedTransport = transportConstructor(transportOptions);
-	            if (constructedTransport instanceof Error) {
-	                throw constructedTransport;
-	            }
-	            this.transport = constructedTransport;
-	        }
-	        else {
-	            var factoryTransport = Transport.DefaultTransportFactory(transportOptions);
-	            if (factoryTransport instanceof Error) {
-	                throw factoryTransport;
-	            }
-	            this.transport = factoryTransport;
-	        }
-	    };
-	    GrpcClient.prototype.onTransportHeaders = function (headers, status) {
-	        this.props.debug && debug_1.debug("onHeaders", headers, status);
-	        if (this.closed) {
-	            this.props.debug && debug_1.debug("grpc.onHeaders received after request was closed - ignoring");
-	            return;
-	        }
-	        if (status === 0) ;
-	        else {
-	            this.responseHeaders = headers;
-	            this.props.debug && debug_1.debug("onHeaders.responseHeaders", JSON.stringify(this.responseHeaders, null, 2));
-	            var code = Code_1.httpStatusToCode(status);
-	            this.props.debug && debug_1.debug("onHeaders.code", code);
-	            var gRPCMessage = headers.get("grpc-message") || [];
-	            this.props.debug && debug_1.debug("onHeaders.gRPCMessage", gRPCMessage);
-	            if (code !== Code_1.Code.OK) {
-	                var statusMessage = this.decodeGRPCStatus(gRPCMessage[0]);
-	                this.rawOnError(code, statusMessage);
-	                return;
-	            }
-	            this.rawOnHeaders(headers);
-	        }
-	    };
-	    GrpcClient.prototype.onTransportChunk = function (chunkBytes) {
-	        var _this = this;
-	        if (this.closed) {
-	            this.props.debug && debug_1.debug("grpc.onChunk received after request was closed - ignoring");
-	            return;
-	        }
-	        var data = [];
-	        try {
-	            data = this.parser.parse(chunkBytes);
-	        }
-	        catch (e) {
-	            this.props.debug && debug_1.debug("onChunk.parsing error", e, e.message);
-	            this.rawOnError(Code_1.Code.Internal, "parsing error: " + e.message);
-	            return;
-	        }
-	        data.forEach(function (d) {
-	            if (d.chunkType === ChunkParser_1.ChunkType.MESSAGE) {
-	                var deserialized = _this.methodDefinition.responseType.deserializeBinary(d.data);
-	                _this.rawOnMessage(deserialized);
-	            }
-	            else if (d.chunkType === ChunkParser_1.ChunkType.TRAILERS) {
-	                if (!_this.responseHeaders) {
-	                    _this.responseHeaders = new metadata.Metadata(d.trailers);
-	                    _this.rawOnHeaders(_this.responseHeaders);
-	                }
-	                else {
-	                    _this.responseTrailers = new metadata.Metadata(d.trailers);
-	                    _this.props.debug && debug_1.debug("onChunk.trailers", _this.responseTrailers);
-	                }
-	            }
-	        });
-	    };
-	    GrpcClient.prototype.onTransportEnd = function () {
-	        this.props.debug && debug_1.debug("grpc.onEnd");
-	        if (this.closed) {
-	            this.props.debug && debug_1.debug("grpc.onEnd received after request was closed - ignoring");
-	            return;
-	        }
-	        if (this.responseTrailers === undefined) {
-	            if (this.responseHeaders === undefined) {
-	                this.rawOnError(Code_1.Code.Unknown, "Response closed without headers");
-	                return;
-	            }
-	            var grpcStatus_1 = getStatusFromHeaders(this.responseHeaders);
-	            var grpcMessage_1 = this.responseHeaders.get("grpc-message");
-	            this.props.debug && debug_1.debug("grpc.headers only response ", grpcStatus_1, grpcMessage_1);
-	            if (grpcStatus_1 === null) {
-	                this.rawOnEnd(Code_1.Code.Unknown, "Response closed without grpc-status (Headers only)", this.responseHeaders);
-	                return;
-	            }
-	            var statusMessage_1 = this.decodeGRPCStatus(grpcMessage_1[0]);
-	            this.rawOnEnd(grpcStatus_1, statusMessage_1, this.responseHeaders);
-	            return;
-	        }
-	        var grpcStatus = getStatusFromHeaders(this.responseTrailers);
-	        if (grpcStatus === null) {
-	            this.rawOnError(Code_1.Code.Internal, "Response closed without grpc-status (Trailers provided)");
-	            return;
-	        }
-	        var grpcMessage = this.responseTrailers.get("grpc-message");
-	        var statusMessage = this.decodeGRPCStatus(grpcMessage[0]);
-	        this.rawOnEnd(grpcStatus, statusMessage, this.responseTrailers);
-	    };
-	    GrpcClient.prototype.decodeGRPCStatus = function (src) {
-	        if (src) {
-	            try {
-	                return decodeURIComponent(src);
-	            }
-	            catch (err) {
-	                return src;
-	            }
-	        }
-	        else {
-	            return "";
-	        }
-	    };
-	    GrpcClient.prototype.rawOnEnd = function (code, message, trailers) {
-	        this.props.debug && debug_1.debug("rawOnEnd", code, message, trailers);
-	        if (this.completed)
-	            return;
-	        this.completed = true;
-	        this.onEndCallbacks.forEach(function (callback) {
-	            detach_1.default(function () {
-	                callback(code, message, trailers);
-	            });
-	        });
-	    };
-	    GrpcClient.prototype.rawOnHeaders = function (headers) {
-	        this.props.debug && debug_1.debug("rawOnHeaders", headers);
-	        if (this.completed)
-	            return;
-	        this.onHeadersCallbacks.forEach(function (callback) {
-	            detach_1.default(function () {
-	                callback(headers);
-	            });
-	        });
-	    };
-	    GrpcClient.prototype.rawOnError = function (code, msg) {
-	        this.props.debug && debug_1.debug("rawOnError", code, msg);
-	        if (this.completed)
-	            return;
-	        this.completed = true;
-	        this.onEndCallbacks.forEach(function (callback) {
-	            detach_1.default(function () {
-	                callback(code, msg, new metadata.Metadata());
-	            });
-	        });
-	    };
-	    GrpcClient.prototype.rawOnMessage = function (res) {
-	        this.props.debug && debug_1.debug("rawOnMessage", res.toObject());
-	        if (this.completed)
-	            return;
-	        this.onMessageCallbacks.forEach(function (callback) {
-	            detach_1.default(function () {
-	                callback(res);
-	            });
-	        });
-	    };
-	    GrpcClient.prototype.onHeaders = function (callback) {
-	        this.onHeadersCallbacks.push(callback);
-	    };
-	    GrpcClient.prototype.onMessage = function (callback) {
-	        this.onMessageCallbacks.push(callback);
-	    };
-	    GrpcClient.prototype.onEnd = function (callback) {
-	        this.onEndCallbacks.push(callback);
-	    };
-	    GrpcClient.prototype.start = function (metadata$$1) {
-	        if (this.started) {
-	            throw new Error("Client already started - cannot .start()");
-	        }
-	        this.started = true;
-	        var requestHeaders = new metadata.Metadata(metadata$$1 ? metadata$$1 : {});
-	        requestHeaders.set("content-type", "application/grpc-web+proto");
-	        requestHeaders.set("x-grpc-web", "1");
-	        this.transport.start(requestHeaders);
-	    };
-	    GrpcClient.prototype.send = function (msg) {
-	        if (!this.started) {
-	            throw new Error("Client not started - .start() must be called before .send()");
-	        }
-	        if (this.closed) {
-	            throw new Error("Client already closed - cannot .send()");
-	        }
-	        if (this.finishedSending) {
-	            throw new Error("Client already finished sending - cannot .send()");
-	        }
-	        if (!this.methodDefinition.requestStream && this.sentFirstMessage) {
-	            throw new Error("Message already sent for non-client-streaming method - cannot .send()");
-	        }
-	        this.sentFirstMessage = true;
-	        var msgBytes = util$3.frameRequest(msg);
-	        this.transport.sendMessage(msgBytes);
-	    };
-	    GrpcClient.prototype.finishSend = function () {
-	        if (!this.started) {
-	            throw new Error("Client not started - .finishSend() must be called before .close()");
-	        }
-	        if (this.closed) {
-	            throw new Error("Client already closed - cannot .send()");
-	        }
-	        if (this.finishedSending) {
-	            throw new Error("Client already finished sending - cannot .finishSend()");
-	        }
-	        this.finishedSending = true;
-	        this.transport.finishSend();
-	    };
-	    GrpcClient.prototype.close = function () {
-	        if (!this.started) {
-	            throw new Error("Client not started - .start() must be called before .close()");
-	        }
-	        if (!this.closed) {
-	            this.closed = true;
-	            this.props.debug && debug_1.debug("request.abort aborting request");
-	            this.transport.cancel();
-	        }
-	        else {
-	            throw new Error("Client already closed - cannot .close()");
-	        }
-	    };
-	    return GrpcClient;
-	}());
-	function getStatusFromHeaders(headers) {
-	    var fromHeaders = headers.get("grpc-status") || [];
-	    if (fromHeaders.length > 0) {
-	        try {
-	            var asString = fromHeaders[0];
-	            return parseInt(asString, 10);
-	        }
-	        catch (e) {
-	            return null;
-	        }
-	    }
-	    return null;
-	}
-
-	});
-
-	unwrapExports(client_1);
-	var client_2 = client_1.client;
-
-	var invoke_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-	function invoke(methodDescriptor, props) {
-	    if (methodDescriptor.requestStream) {
-	        throw new Error(".invoke cannot be used with client-streaming methods. Use .client instead.");
-	    }
-	    var grpcClient = client_1.client(methodDescriptor, {
-	        host: props.host,
-	        transport: props.transport,
-	        debug: props.debug,
-	    });
-	    if (props.onHeaders) {
-	        grpcClient.onHeaders(props.onHeaders);
-	    }
-	    if (props.onMessage) {
-	        grpcClient.onMessage(props.onMessage);
-	    }
-	    if (props.onEnd) {
-	        grpcClient.onEnd(props.onEnd);
-	    }
-	    grpcClient.start(props.metadata);
-	    grpcClient.send(props.request);
-	    return {
-	        close: function () {
-	            grpcClient.close();
-	        }
-	    };
-	}
-	exports.invoke = invoke;
-
-	});
-
-	unwrapExports(invoke_1);
-	var invoke_2 = invoke_1.invoke;
-
-	var unary_1 = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-	function unary(methodDescriptor, props) {
-	    if (methodDescriptor.responseStream) {
-	        throw new Error(".unary cannot be used with server-streaming methods. Use .invoke or .client instead.");
-	    }
-	    if (methodDescriptor.requestStream) {
-	        throw new Error(".unary cannot be used with client-streaming methods. Use .client instead.");
-	    }
-	    var responseHeaders = null;
-	    var responseMessage = null;
-	    var grpcClient = client_1.client(methodDescriptor, {
-	        host: props.host,
-	        transport: props.transport,
-	        debug: props.debug,
-	    });
-	    grpcClient.onHeaders(function (headers) {
-	        responseHeaders = headers;
-	    });
-	    grpcClient.onMessage(function (res) {
-	        responseMessage = res;
-	    });
-	    grpcClient.onEnd(function (status, statusMessage, trailers) {
-	        props.onEnd({
-	            status: status,
-	            statusMessage: statusMessage,
-	            headers: responseHeaders ? responseHeaders : new metadata.Metadata(),
-	            message: responseMessage,
-	            trailers: trailers
-	        });
-	    });
-	    grpcClient.start(props.metadata);
-	    grpcClient.send(props.request);
-	    return {
-	        close: function () {
-	            grpcClient.close();
-	        }
-	    };
-	}
-	exports.unary = unary;
-
-	});
-
-	unwrapExports(unary_1);
-	var unary_2 = unary_1.unary;
-
-	var dist = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-
-
-	var grpc;
-	(function (grpc) {
-	    grpc.DefaultTransportFactory = Transport.DefaultTransportFactory;
-	    grpc.WebsocketTransportFactory = Transport.WebsocketTransportFactory;
-	    grpc.Code = Code_1.Code;
-	    grpc.Metadata = lib.BrowserHeaders;
-	    function client(methodDescriptor, props) {
-	        return client_1.client(methodDescriptor, props);
-	    }
-	    grpc.client = client;
-	    grpc.invoke = invoke_1.invoke;
-	    grpc.unary = unary_1.unary;
-	})(grpc = exports.grpc || (exports.grpc = {}));
-
-	});
-
-	unwrapExports(dist);
-	var dist_1 = dist.grpc;
+	unwrapExports(grpcWebClient_umd);
+	var grpcWebClient_umd_1 = grpcWebClient_umd.grpc;
 
 	// file: rpc.proto
 
-	var grpc = dist.grpc;
+	var grpc = grpcWebClient_umd.grpc;
 
 	var AergoRPCService = function () {
 	  function AergoRPCService() {}
@@ -32833,7 +31116,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.NodeState, {
+	  var client = grpc.unary(AergoRPCService.NodeState, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32842,16 +31125,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
@@ -32859,7 +31148,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.Metric, {
+	  var client = grpc.unary(AergoRPCService.Metric, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32868,16 +31157,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage, metadata, callback) {
@@ -32885,7 +31180,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.Blockchain, {
+	  var client = grpc.unary(AergoRPCService.Blockchain, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32894,16 +31189,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMessage, metadata, callback) {
@@ -32911,7 +31212,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetChainInfo, {
+	  var client = grpc.unary(AergoRPCService.GetChainInfo, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32920,16 +31221,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
@@ -32937,7 +31244,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.ListBlockHeaders, {
+	  var client = grpc.unary(AergoRPCService.ListBlockHeaders, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32946,16 +31253,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(requestMessage, metadata, callback) {
@@ -32963,7 +31276,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.ListBlockMetadata, {
+	  var client = grpc.unary(AergoRPCService.ListBlockMetadata, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -32972,16 +31285,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
@@ -33075,7 +31394,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetBlock, {
+	  var client = grpc.unary(AergoRPCService.GetBlock, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33084,16 +31403,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(requestMessage, metadata, callback) {
@@ -33101,7 +31426,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetBlockMetadata, {
+	  var client = grpc.unary(AergoRPCService.GetBlockMetadata, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33110,16 +31435,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMessage, metadata, callback) {
@@ -33127,7 +31458,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetBlockBody, {
+	  var client = grpc.unary(AergoRPCService.GetBlockBody, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33136,16 +31467,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getTX = function getTX(requestMessage, metadata, callback) {
@@ -33153,7 +31490,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetTX, {
+	  var client = grpc.unary(AergoRPCService.GetTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33162,16 +31499,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage, metadata, callback) {
@@ -33179,7 +31522,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetBlockTX, {
+	  var client = grpc.unary(AergoRPCService.GetBlockTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33188,16 +31531,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage, metadata, callback) {
@@ -33205,7 +31554,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetReceipt, {
+	  var client = grpc.unary(AergoRPCService.GetReceipt, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33214,16 +31563,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadata, callback) {
@@ -33231,7 +31586,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetABI, {
+	  var client = grpc.unary(AergoRPCService.GetABI, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33240,16 +31595,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
@@ -33257,7 +31618,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.SendTX, {
+	  var client = grpc.unary(AergoRPCService.SendTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33266,16 +31627,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
@@ -33283,7 +31650,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.SignTX, {
+	  var client = grpc.unary(AergoRPCService.SignTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33292,16 +31659,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
@@ -33309,7 +31682,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.VerifyTX, {
+	  var client = grpc.unary(AergoRPCService.VerifyTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33318,16 +31691,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, metadata, callback) {
@@ -33335,7 +31714,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.CommitTX, {
+	  var client = grpc.unary(AergoRPCService.CommitTX, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33344,16 +31723,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getState = function getState(requestMessage, metadata, callback) {
@@ -33361,7 +31746,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetState, {
+	  var client = grpc.unary(AergoRPCService.GetState, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33370,16 +31755,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(requestMessage, metadata, callback) {
@@ -33387,7 +31778,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetStateAndProof, {
+	  var client = grpc.unary(AergoRPCService.GetStateAndProof, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33396,16 +31787,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.createAccount = function createAccount(requestMessage, metadata, callback) {
@@ -33413,7 +31810,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.CreateAccount, {
+	  var client = grpc.unary(AergoRPCService.CreateAccount, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33422,16 +31819,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getAccounts = function getAccounts(requestMessage, metadata, callback) {
@@ -33439,7 +31842,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetAccounts, {
+	  var client = grpc.unary(AergoRPCService.GetAccounts, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33448,16 +31851,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.lockAccount = function lockAccount(requestMessage, metadata, callback) {
@@ -33465,7 +31874,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.LockAccount, {
+	  var client = grpc.unary(AergoRPCService.LockAccount, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33474,16 +31883,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMessage, metadata, callback) {
@@ -33491,7 +31906,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.UnlockAccount, {
+	  var client = grpc.unary(AergoRPCService.UnlockAccount, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33500,16 +31915,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMessage, metadata, callback) {
@@ -33517,7 +31938,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.ImportAccount, {
+	  var client = grpc.unary(AergoRPCService.ImportAccount, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33526,16 +31947,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMessage, metadata, callback) {
@@ -33543,7 +31970,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.ExportAccount, {
+	  var client = grpc.unary(AergoRPCService.ExportAccount, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33552,16 +31979,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
@@ -33569,7 +32002,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.QueryContract, {
+	  var client = grpc.unary(AergoRPCService.QueryContract, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33578,16 +32011,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.queryContractState = function queryContractState(requestMessage, metadata, callback) {
@@ -33595,7 +32034,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.QueryContractState, {
+	  var client = grpc.unary(AergoRPCService.QueryContractState, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33604,16 +32043,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, metadata, callback) {
@@ -33621,7 +32066,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetPeers, {
+	  var client = grpc.unary(AergoRPCService.GetPeers, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33630,16 +32075,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, metadata, callback) {
@@ -33647,7 +32098,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetVotes, {
+	  var client = grpc.unary(AergoRPCService.GetVotes, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33656,16 +32107,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
@@ -33673,7 +32130,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetStaking, {
+	  var client = grpc.unary(AergoRPCService.GetStaking, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33682,16 +32139,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessage, metadata, callback) {
@@ -33699,7 +32162,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.GetNameInfo, {
+	  var client = grpc.unary(AergoRPCService.GetNameInfo, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33708,16 +32171,22 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	AergoRPCServiceClient.prototype.listEventStream = function listEventStream(requestMessage, metadata) {
@@ -33768,7 +32237,7 @@
 	    callback = arguments[1];
 	  }
 
-	  grpc.unary(AergoRPCService.ListEvents, {
+	  var client = grpc.unary(AergoRPCService.ListEvents, {
 	    request: requestMessage,
 	    host: this.serviceHost,
 	    metadata: metadata,
@@ -33777,23 +32246,29 @@
 	    onEnd: function onEnd(response) {
 	      if (callback) {
 	        if (response.status !== grpc.Code.OK) {
-	          callback(Object.assign(new Error(response.statusMessage), {
-	            code: response.status,
-	            metadata: response.trailers
-	          }), null);
+	          var err = new Error(response.statusMessage);
+	          err.code = response.status;
+	          err.metadata = response.trailers;
+	          callback(err, null);
 	        } else {
 	          callback(null, response.message);
 	        }
 	      }
 	    }
 	  });
+	  return {
+	    cancel: function cancel() {
+	      callback = null;
+	      client.close();
+	    }
+	  };
 	};
 
 	var AergoRPCServiceClient_1 = AergoRPCServiceClient;
 
 	/**
 	 * Provider for GRPC-WEB connections over HTTP.
-	 * This is compatible with both Web browser and Node.js environments.
+	 * This is compatible with Web browsers.
 	 * Note that the transport is considerably slower than over standard GRPC.
 	 */
 	var GrpcWebProvider =
@@ -33818,7 +32293,7 @@
 
 	    this.config = _objectSpread({}, this.defaultConfig, config);
 	    var options = {
-	      transport: dist_1.WebsocketTransportFactory
+	      transport: grpcWebClient_umd_1.WebsocketTransport()
 	    };
 	    this.client = new AergoRPCServiceClient_1(this.config.url, options);
 	  }
@@ -33943,11 +32418,11 @@
 	 *     })
 	 */
 
-	var StateQuery$$1 =
+	var StateQuery =
 	/*#__PURE__*/
 	function () {
-	  function StateQuery$$1(contractInstance, storageKey) {
-	    _classCallCheck(this, StateQuery$$1);
+	  function StateQuery(contractInstance, storageKey) {
+	    _classCallCheck(this, StateQuery);
 
 	    _defineProperty(this, "contractInstance", void 0);
 
@@ -33957,7 +32432,7 @@
 	    this.storageKey = storageKey;
 	  }
 
-	  _createClass(StateQuery$$1, [{
+	  _createClass(StateQuery, [{
 	    key: "toGrpc",
 	    value: function toGrpc() {
 	      var q = new blockchain_pb_6();
@@ -33967,7 +32442,7 @@
 	    }
 	  }]);
 
-	  return StateQuery$$1;
+	  return StateQuery;
 	}();
 	/**
 	 * Smart contract interface.
@@ -34108,7 +32583,7 @@
 	  }, {
 	    key: "queryState",
 	    value: function queryState(key) {
-	      return new StateQuery$$1(this, key);
+	      return new StateQuery(this, key);
 	    }
 	  }], [{
 	    key: "fromCode",
@@ -34167,13 +32642,14 @@
 	};
 
 	exports.AergoClient = AergoClient;
+	exports.default = AergoClient;
 	exports.GrpcWebProvider = GrpcWebProvider;
 	exports.constants = constants;
+	exports.Contract = Contract;
 	exports.Address = Address;
 	exports.Amount = Amount;
-	exports.Contract = Contract;
-	exports.default = AergoClient;
+	exports.Tx = Tx;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));

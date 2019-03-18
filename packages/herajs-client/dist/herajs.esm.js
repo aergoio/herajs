@@ -1,14 +1,16 @@
 /*!
- * herajs v0.6.0
+ * herajs v0.7.0
  * (c) 2019 AERGO
  * Released under MIT license.
  */
-import jspb from 'google-protobuf';
+import googleProtobuf from 'google-protobuf';
 import bs58 from 'bs58';
-import { Buffer as Buffer$1 } from 'buffer';
+import { Buffer as Buffer$2 } from 'buffer';
 import bs58check from 'bs58check';
 import JSBI from 'jsbi';
-import grpc from 'grpc';
+import grpc$1 from 'grpc';
+import grpcWeb from '@improbable-eng/grpc-web';
+import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport';
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -22,30 +24,15 @@ var runtime = createCommonjsModule(function (module) {
  * LICENSE file in the root directory of this source tree.
  */
 
-!(function(global) {
+var regeneratorRuntime = (function (exports) {
 
   var Op = Object.prototype;
   var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
+  var undefined$1; // More compressible than void 0.
   var $Symbol = typeof Symbol === "function" ? Symbol : {};
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = module.exports;
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -59,7 +46,7 @@ var runtime = createCommonjsModule(function (module) {
 
     return generator;
   }
-  runtime.wrap = wrap;
+  exports.wrap = wrap;
 
   // Try/catch helper to minimize deoptimizations. Returns a completion
   // record like context.tryEntries[i].completion. This interface could
@@ -130,7 +117,7 @@ var runtime = createCommonjsModule(function (module) {
     });
   }
 
-  runtime.isGeneratorFunction = function(genFun) {
+  exports.isGeneratorFunction = function(genFun) {
     var ctor = typeof genFun === "function" && genFun.constructor;
     return ctor
       ? ctor === GeneratorFunction ||
@@ -140,7 +127,7 @@ var runtime = createCommonjsModule(function (module) {
       : false;
   };
 
-  runtime.mark = function(genFun) {
+  exports.mark = function(genFun) {
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
@@ -157,7 +144,7 @@ var runtime = createCommonjsModule(function (module) {
   // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
   // `hasOwn.call(value, "__await")` to determine if the yielded value is
   // meant to be awaited.
-  runtime.awrap = function(arg) {
+  exports.awrap = function(arg) {
     return { __await: arg };
   };
 
@@ -232,17 +219,17 @@ var runtime = createCommonjsModule(function (module) {
   AsyncIterator.prototype[asyncIteratorSymbol] = function () {
     return this;
   };
-  runtime.AsyncIterator = AsyncIterator;
+  exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
   // AsyncIterator objects; they just return a Promise for the value of
   // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+  exports.async = function(innerFn, outerFn, self, tryLocsList) {
     var iter = new AsyncIterator(
       wrap(innerFn, outerFn, self, tryLocsList)
     );
 
-    return runtime.isGeneratorFunction(outerFn)
+    return exports.isGeneratorFunction(outerFn)
       ? iter // If outerFn is a generator, return the full iterator.
       : iter.next().then(function(result) {
           return result.done ? result.value : iter.next();
@@ -333,17 +320,18 @@ var runtime = createCommonjsModule(function (module) {
   // setting context.delegate to null, and returning the ContinueSentinel.
   function maybeInvokeDelegate(delegate, context) {
     var method = delegate.iterator[context.method];
-    if (method === undefined) {
+    if (method === undefined$1) {
       // A .throw or .return when the delegate iterator has no .throw
       // method always terminates the yield* loop.
       context.delegate = null;
 
       if (context.method === "throw") {
-        if (delegate.iterator.return) {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
           // If the delegate iterator has a return method, give it a
           // chance to clean up.
           context.method = "return";
-          context.arg = undefined;
+          context.arg = undefined$1;
           maybeInvokeDelegate(delegate, context);
 
           if (context.method === "throw") {
@@ -395,7 +383,7 @@ var runtime = createCommonjsModule(function (module) {
       // outer generator.
       if (context.method !== "return") {
         context.method = "next";
-        context.arg = undefined;
+        context.arg = undefined$1;
       }
 
     } else {
@@ -459,7 +447,7 @@ var runtime = createCommonjsModule(function (module) {
     this.reset(true);
   }
 
-  runtime.keys = function(object) {
+  exports.keys = function(object) {
     var keys = [];
     for (var key in object) {
       keys.push(key);
@@ -507,7 +495,7 @@ var runtime = createCommonjsModule(function (module) {
             }
           }
 
-          next.value = undefined;
+          next.value = undefined$1;
           next.done = true;
 
           return next;
@@ -520,10 +508,10 @@ var runtime = createCommonjsModule(function (module) {
     // Return an iterator with no values.
     return { next: doneResult };
   }
-  runtime.values = values;
+  exports.values = values;
 
   function doneResult() {
-    return { value: undefined, done: true };
+    return { value: undefined$1, done: true };
   }
 
   Context.prototype = {
@@ -534,12 +522,12 @@ var runtime = createCommonjsModule(function (module) {
       this.next = 0;
       // Resetting context._sent for legacy support of Babel's
       // function.sent implementation.
-      this.sent = this._sent = undefined;
+      this.sent = this._sent = undefined$1;
       this.done = false;
       this.delegate = null;
 
       this.method = "next";
-      this.arg = undefined;
+      this.arg = undefined$1;
 
       this.tryEntries.forEach(resetTryEntry);
 
@@ -549,7 +537,7 @@ var runtime = createCommonjsModule(function (module) {
           if (name.charAt(0) === "t" &&
               hasOwn.call(this, name) &&
               !isNaN(+name.slice(1))) {
-            this[name] = undefined;
+            this[name] = undefined$1;
           }
         }
       }
@@ -582,7 +570,7 @@ var runtime = createCommonjsModule(function (module) {
           // If the dispatched exception was caught by a catch block,
           // then let that catch block handle the exception normally.
           context.method = "next";
-          context.arg = undefined;
+          context.arg = undefined$1;
         }
 
         return !! caught;
@@ -719,20 +707,26 @@ var runtime = createCommonjsModule(function (module) {
       if (this.method === "next") {
         // Deliberately forget the last sent value so that we don't
         // accidentally pass it on to the delegate.
-        this.arg = undefined;
+        this.arg = undefined$1;
       }
 
       return ContinueSentinel;
     }
   };
-})(
-  // In sloppy mode, unbound `this` refers to the global object, fallback to
-  // Function constructor if we're in global strict mode. That is sadly a form
-  // of indirect eval which violates Content Security Policy.
-  (function() {
-    return this || (typeof self === "object" && self);
-  })() || Function("return this")()
-);
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+  module.exports
+));
 });
 
 function _typeof(obj) {
@@ -908,7 +902,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.ABI', null, global);
   goog.exportSymbol('proto.types.AccountProof', null, global);
@@ -944,16 +938,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.Block = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Block, jspb.Message);
+  goog.inherits(proto.types.Block, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Block.displayName = 'proto.types.Block';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -1001,7 +995,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Block.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Block();
     return proto.types.Block.deserializeBinaryFromReader(msg, reader);
   };
@@ -1057,7 +1051,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Block.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Block.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -1099,7 +1093,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Block.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -1112,7 +1106,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Block.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -1127,14 +1121,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Block.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Block.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional BlockHeader header = 2;
@@ -1145,14 +1139,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Block.prototype.getHeader = function () {
     return (
       /** @type{?proto.types.BlockHeader} */
-      jspb.Message.getWrapperField(this, proto.types.BlockHeader, 2)
+      googleProtobuf.Message.getWrapperField(this, proto.types.BlockHeader, 2)
     );
   };
   /** @param {?proto.types.BlockHeader|undefined} value */
 
 
   proto.types.Block.prototype.setHeader = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.Block.prototype.clearHeader = function () {
@@ -1165,7 +1159,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Block.prototype.hasHeader = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * optional BlockBody body = 3;
@@ -1176,14 +1170,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Block.prototype.getBody = function () {
     return (
       /** @type{?proto.types.BlockBody} */
-      jspb.Message.getWrapperField(this, proto.types.BlockBody, 3)
+      googleProtobuf.Message.getWrapperField(this, proto.types.BlockBody, 3)
     );
   };
   /** @param {?proto.types.BlockBody|undefined} value */
 
 
   proto.types.Block.prototype.setBody = function (value) {
-    jspb.Message.setWrapperField(this, 3, value);
+    googleProtobuf.Message.setWrapperField(this, 3, value);
   };
 
   proto.types.Block.prototype.clearBody = function () {
@@ -1196,7 +1190,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Block.prototype.hasBody = function () {
-    return jspb.Message.getField(this, 3) != null;
+    return googleProtobuf.Message.getField(this, 3) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -1211,16 +1205,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeader = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockHeader, jspb.Message);
+  goog.inherits(proto.types.BlockHeader, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockHeader.displayName = 'proto.types.BlockHeader';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -1249,12 +1243,12 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       var obj = {
         chainid: msg.getChainid_asB64(),
         prevblockhash: msg.getPrevblockhash_asB64(),
-        blockno: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        timestamp: jspb.Message.getFieldWithDefault(msg, 4, 0),
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        timestamp: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
         blocksroothash: msg.getBlocksroothash_asB64(),
         txsroothash: msg.getTxsroothash_asB64(),
         receiptsroothash: msg.getReceiptsroothash_asB64(),
-        confirms: jspb.Message.getFieldWithDefault(msg, 8, 0),
+        confirms: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
         pubkey: msg.getPubkey_asB64(),
         coinbaseaccount: msg.getCoinbaseaccount_asB64(),
         sign: msg.getSign_asB64()
@@ -1275,7 +1269,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeader.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockHeader();
     return proto.types.BlockHeader.deserializeBinaryFromReader(msg, reader);
   };
@@ -1389,7 +1383,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeader.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockHeader.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -1479,7 +1473,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getChainid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -1492,7 +1486,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getChainid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getChainid())
+      googleProtobuf.Message.bytesAsB64(this.getChainid())
     );
   };
   /**
@@ -1507,14 +1501,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getChainid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getChainid())
+      googleProtobuf.Message.bytesAsU8(this.getChainid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setChainid = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes prevBlockHash = 2;
@@ -1525,7 +1519,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPrevblockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -1538,7 +1532,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPrevblockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPrevblockhash())
+      googleProtobuf.Message.bytesAsB64(this.getPrevblockhash())
     );
   };
   /**
@@ -1553,14 +1547,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPrevblockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPrevblockhash())
+      googleProtobuf.Message.bytesAsU8(this.getPrevblockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setPrevblockhash = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 blockNo = 3;
@@ -1571,14 +1565,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockHeader.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional int64 timestamp = 4;
@@ -1589,14 +1583,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getTimestamp = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockHeader.prototype.setTimestamp = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes blocksRootHash = 5;
@@ -1607,7 +1601,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getBlocksroothash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -1620,7 +1614,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getBlocksroothash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlocksroothash())
+      googleProtobuf.Message.bytesAsB64(this.getBlocksroothash())
     );
   };
   /**
@@ -1635,14 +1629,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getBlocksroothash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlocksroothash())
+      googleProtobuf.Message.bytesAsU8(this.getBlocksroothash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setBlocksroothash = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes txsRootHash = 6;
@@ -1653,7 +1647,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getTxsroothash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -1666,7 +1660,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getTxsroothash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getTxsroothash())
+      googleProtobuf.Message.bytesAsB64(this.getTxsroothash())
     );
   };
   /**
@@ -1681,14 +1675,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getTxsroothash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getTxsroothash())
+      googleProtobuf.Message.bytesAsU8(this.getTxsroothash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setTxsroothash = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional bytes receiptsRootHash = 7;
@@ -1699,7 +1693,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getReceiptsroothash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 7, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
     );
   };
   /**
@@ -1712,7 +1706,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getReceiptsroothash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getReceiptsroothash())
+      googleProtobuf.Message.bytesAsB64(this.getReceiptsroothash())
     );
   };
   /**
@@ -1727,14 +1721,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getReceiptsroothash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getReceiptsroothash())
+      googleProtobuf.Message.bytesAsU8(this.getReceiptsroothash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setReceiptsroothash = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * optional uint64 confirms = 8;
@@ -1745,14 +1739,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getConfirms = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 8, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 8, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockHeader.prototype.setConfirms = function (value) {
-    jspb.Message.setField(this, 8, value);
+    googleProtobuf.Message.setField(this, 8, value);
   };
   /**
    * optional bytes pubKey = 9;
@@ -1763,7 +1757,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPubkey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 9, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 9, "")
     );
   };
   /**
@@ -1776,7 +1770,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPubkey_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPubkey())
+      googleProtobuf.Message.bytesAsB64(this.getPubkey())
     );
   };
   /**
@@ -1791,14 +1785,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getPubkey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPubkey())
+      googleProtobuf.Message.bytesAsU8(this.getPubkey())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setPubkey = function (value) {
-    jspb.Message.setField(this, 9, value);
+    googleProtobuf.Message.setField(this, 9, value);
   };
   /**
    * optional bytes coinbaseAccount = 10;
@@ -1809,7 +1803,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getCoinbaseaccount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 10, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
     );
   };
   /**
@@ -1822,7 +1816,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getCoinbaseaccount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getCoinbaseaccount())
+      googleProtobuf.Message.bytesAsB64(this.getCoinbaseaccount())
     );
   };
   /**
@@ -1837,14 +1831,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getCoinbaseaccount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getCoinbaseaccount())
+      googleProtobuf.Message.bytesAsU8(this.getCoinbaseaccount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setCoinbaseaccount = function (value) {
-    jspb.Message.setField(this, 10, value);
+    googleProtobuf.Message.setField(this, 10, value);
   };
   /**
    * optional bytes sign = 11;
@@ -1855,7 +1849,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getSign = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 11, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 11, "")
     );
   };
   /**
@@ -1868,7 +1862,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getSign_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getSign())
+      googleProtobuf.Message.bytesAsB64(this.getSign())
     );
   };
   /**
@@ -1883,14 +1877,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeader.prototype.getSign_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getSign())
+      googleProtobuf.Message.bytesAsU8(this.getSign())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockHeader.prototype.setSign = function (value) {
-    jspb.Message.setField(this, 11, value);
+    googleProtobuf.Message.setField(this, 11, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -1905,10 +1899,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBody = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.BlockBody.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.BlockBody.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.BlockBody, jspb.Message);
+  goog.inherits(proto.types.BlockBody, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockBody.displayName = 'proto.types.BlockBody';
@@ -1922,7 +1916,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.BlockBody.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -1949,7 +1943,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.BlockBody.toObject = function (includeInstance, msg) {
       var obj = {
-        txsList: jspb.Message.toObjectList(msg.getTxsList(), proto.types.Tx.toObject, includeInstance)
+        txsList: googleProtobuf.Message.toObjectList(msg.getTxsList(), proto.types.Tx.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -1967,7 +1961,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBody.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockBody();
     return proto.types.BlockBody.deserializeBinaryFromReader(msg, reader);
   };
@@ -2010,7 +2004,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBody.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockBody.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -2040,14 +2034,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBody.prototype.getTxsList = function () {
     return (
       /** @type{!Array.<!proto.types.Tx>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Tx, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Tx, 1)
     );
   };
   /** @param {!Array.<!proto.types.Tx>} value */
 
 
   proto.types.BlockBody.prototype.setTxsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Tx=} opt_value
@@ -2057,7 +2051,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBody.prototype.addTxs = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Tx, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Tx, opt_index);
   };
 
   proto.types.BlockBody.prototype.clearTxsList = function () {
@@ -2076,10 +2070,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.TxList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.TxList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.TxList, jspb.Message);
+  goog.inherits(proto.types.TxList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.TxList.displayName = 'proto.types.TxList';
@@ -2093,7 +2087,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.TxList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -2120,7 +2114,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.TxList.toObject = function (includeInstance, msg) {
       var obj = {
-        txsList: jspb.Message.toObjectList(msg.getTxsList(), proto.types.Tx.toObject, includeInstance)
+        txsList: googleProtobuf.Message.toObjectList(msg.getTxsList(), proto.types.Tx.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -2138,7 +2132,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.TxList();
     return proto.types.TxList.deserializeBinaryFromReader(msg, reader);
   };
@@ -2181,7 +2175,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.TxList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -2211,14 +2205,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxList.prototype.getTxsList = function () {
     return (
       /** @type{!Array.<!proto.types.Tx>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Tx, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Tx, 1)
     );
   };
   /** @param {!Array.<!proto.types.Tx>} value */
 
 
   proto.types.TxList.prototype.setTxsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Tx=} opt_value
@@ -2228,7 +2222,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxList.prototype.addTxs = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Tx, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Tx, opt_index);
   };
 
   proto.types.TxList.prototype.clearTxsList = function () {
@@ -2247,16 +2241,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Tx = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Tx, jspb.Message);
+  goog.inherits(proto.types.Tx, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Tx.displayName = 'proto.types.Tx';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -2303,7 +2297,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Tx.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Tx();
     return proto.types.Tx.deserializeBinaryFromReader(msg, reader);
   };
@@ -2353,7 +2347,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Tx.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Tx.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -2389,7 +2383,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Tx.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -2402,7 +2396,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Tx.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -2417,14 +2411,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Tx.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Tx.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional TxBody body = 2;
@@ -2435,14 +2429,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Tx.prototype.getBody = function () {
     return (
       /** @type{?proto.types.TxBody} */
-      jspb.Message.getWrapperField(this, proto.types.TxBody, 2)
+      googleProtobuf.Message.getWrapperField(this, proto.types.TxBody, 2)
     );
   };
   /** @param {?proto.types.TxBody|undefined} value */
 
 
   proto.types.Tx.prototype.setBody = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.Tx.prototype.clearBody = function () {
@@ -2455,7 +2449,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Tx.prototype.hasBody = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -2470,16 +2464,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxBody = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.TxBody, jspb.Message);
+  goog.inherits(proto.types.TxBody, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.TxBody.displayName = 'proto.types.TxBody';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -2506,14 +2500,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.TxBody.toObject = function (includeInstance, msg) {
       var obj = {
-        nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        nonce: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         account: msg.getAccount_asB64(),
         recipient: msg.getRecipient_asB64(),
         amount: msg.getAmount_asB64(),
         payload: msg.getPayload_asB64(),
-        limit: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        limit: googleProtobuf.Message.getFieldWithDefault(msg, 6, 0),
         price: msg.getPrice_asB64(),
-        type: jspb.Message.getFieldWithDefault(msg, 8, 0),
+        type: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
         sign: msg.getSign_asB64()
       };
 
@@ -2532,7 +2526,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxBody.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.TxBody();
     return proto.types.TxBody.deserializeBinaryFromReader(msg, reader);
   };
@@ -2632,7 +2626,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxBody.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.TxBody.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -2710,14 +2704,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getNonce = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.TxBody.prototype.setNonce = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes account = 2;
@@ -2728,7 +2722,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAccount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -2741,7 +2735,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAccount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAccount())
+      googleProtobuf.Message.bytesAsB64(this.getAccount())
     );
   };
   /**
@@ -2756,14 +2750,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAccount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAccount())
+      googleProtobuf.Message.bytesAsU8(this.getAccount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setAccount = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes recipient = 3;
@@ -2774,7 +2768,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getRecipient = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -2787,7 +2781,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getRecipient_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getRecipient())
+      googleProtobuf.Message.bytesAsB64(this.getRecipient())
     );
   };
   /**
@@ -2802,14 +2796,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getRecipient_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getRecipient())
+      googleProtobuf.Message.bytesAsU8(this.getRecipient())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setRecipient = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes amount = 4;
@@ -2820,7 +2814,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAmount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -2833,7 +2827,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAmount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAmount())
+      googleProtobuf.Message.bytesAsB64(this.getAmount())
     );
   };
   /**
@@ -2848,14 +2842,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getAmount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAmount())
+      googleProtobuf.Message.bytesAsU8(this.getAmount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setAmount = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes payload = 5;
@@ -2866,7 +2860,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPayload = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -2879,7 +2873,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPayload_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPayload())
+      googleProtobuf.Message.bytesAsB64(this.getPayload())
     );
   };
   /**
@@ -2894,14 +2888,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPayload_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPayload())
+      googleProtobuf.Message.bytesAsU8(this.getPayload())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setPayload = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional uint64 limit = 6;
@@ -2912,14 +2906,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getLimit = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 6, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 6, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.TxBody.prototype.setLimit = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional bytes price = 7;
@@ -2930,7 +2924,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPrice = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 7, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
     );
   };
   /**
@@ -2943,7 +2937,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPrice_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPrice())
+      googleProtobuf.Message.bytesAsB64(this.getPrice())
     );
   };
   /**
@@ -2958,14 +2952,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getPrice_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPrice())
+      googleProtobuf.Message.bytesAsU8(this.getPrice())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setPrice = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * optional TxType type = 8;
@@ -2976,14 +2970,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getType = function () {
     return (
       /** @type {!proto.types.TxType} */
-      jspb.Message.getFieldWithDefault(this, 8, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 8, 0)
     );
   };
   /** @param {!proto.types.TxType} value */
 
 
   proto.types.TxBody.prototype.setType = function (value) {
-    jspb.Message.setField(this, 8, value);
+    googleProtobuf.Message.setField(this, 8, value);
   };
   /**
    * optional bytes sign = 9;
@@ -2994,7 +2988,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getSign = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 9, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 9, "")
     );
   };
   /**
@@ -3007,7 +3001,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getSign_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getSign())
+      googleProtobuf.Message.bytesAsB64(this.getSign())
     );
   };
   /**
@@ -3022,14 +3016,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxBody.prototype.getSign_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getSign())
+      googleProtobuf.Message.bytesAsU8(this.getSign())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxBody.prototype.setSign = function (value) {
-    jspb.Message.setField(this, 9, value);
+    googleProtobuf.Message.setField(this, 9, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -3044,16 +3038,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxIdx = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.TxIdx, jspb.Message);
+  goog.inherits(proto.types.TxIdx, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.TxIdx.displayName = 'proto.types.TxIdx';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -3081,7 +3075,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.TxIdx.toObject = function (includeInstance, msg) {
       var obj = {
         blockhash: msg.getBlockhash_asB64(),
-        idx: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        idx: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -3099,7 +3093,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxIdx.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.TxIdx();
     return proto.types.TxIdx.deserializeBinaryFromReader(msg, reader);
   };
@@ -3150,7 +3144,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxIdx.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.TxIdx.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -3186,7 +3180,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxIdx.prototype.getBlockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -3199,7 +3193,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxIdx.prototype.getBlockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBlockhash())
     );
   };
   /**
@@ -3214,14 +3208,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxIdx.prototype.getBlockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBlockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.TxIdx.prototype.setBlockhash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional int32 idx = 2;
@@ -3232,14 +3226,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxIdx.prototype.getIdx = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.TxIdx.prototype.setIdx = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -3254,16 +3248,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxInBlock = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.TxInBlock, jspb.Message);
+  goog.inherits(proto.types.TxInBlock, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.TxInBlock.displayName = 'proto.types.TxInBlock';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -3310,7 +3304,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxInBlock.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.TxInBlock();
     return proto.types.TxInBlock.deserializeBinaryFromReader(msg, reader);
   };
@@ -3359,7 +3353,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxInBlock.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.TxInBlock.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -3395,14 +3389,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxInBlock.prototype.getTxidx = function () {
     return (
       /** @type{?proto.types.TxIdx} */
-      jspb.Message.getWrapperField(this, proto.types.TxIdx, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.TxIdx, 1)
     );
   };
   /** @param {?proto.types.TxIdx|undefined} value */
 
 
   proto.types.TxInBlock.prototype.setTxidx = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.TxInBlock.prototype.clearTxidx = function () {
@@ -3415,7 +3409,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxInBlock.prototype.hasTxidx = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional Tx tx = 2;
@@ -3426,14 +3420,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.TxInBlock.prototype.getTx = function () {
     return (
       /** @type{?proto.types.Tx} */
-      jspb.Message.getWrapperField(this, proto.types.Tx, 2)
+      googleProtobuf.Message.getWrapperField(this, proto.types.Tx, 2)
     );
   };
   /** @param {?proto.types.Tx|undefined} value */
 
 
   proto.types.TxInBlock.prototype.setTx = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.TxInBlock.prototype.clearTx = function () {
@@ -3446,7 +3440,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.TxInBlock.prototype.hasTx = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -3461,16 +3455,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.State = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.State, jspb.Message);
+  goog.inherits(proto.types.State, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.State.displayName = 'proto.types.State';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -3497,11 +3491,11 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.State.toObject = function (includeInstance, msg) {
       var obj = {
-        nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        nonce: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         balance: msg.getBalance_asB64(),
         codehash: msg.getCodehash_asB64(),
         storageroot: msg.getStorageroot_asB64(),
-        sqlrecoverypoint: jspb.Message.getFieldWithDefault(msg, 5, 0)
+        sqlrecoverypoint: googleProtobuf.Message.getFieldWithDefault(msg, 5, 0)
       };
 
       if (includeInstance) {
@@ -3519,7 +3513,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.State.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.State();
     return proto.types.State.deserializeBinaryFromReader(msg, reader);
   };
@@ -3591,7 +3585,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.State.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.State.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -3645,14 +3639,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getNonce = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.State.prototype.setNonce = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes balance = 2;
@@ -3663,7 +3657,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getBalance = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -3676,7 +3670,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getBalance_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBalance())
+      googleProtobuf.Message.bytesAsB64(this.getBalance())
     );
   };
   /**
@@ -3691,14 +3685,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getBalance_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBalance())
+      googleProtobuf.Message.bytesAsU8(this.getBalance())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.State.prototype.setBalance = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes codeHash = 3;
@@ -3709,7 +3703,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getCodehash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -3722,7 +3716,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getCodehash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getCodehash())
+      googleProtobuf.Message.bytesAsB64(this.getCodehash())
     );
   };
   /**
@@ -3737,14 +3731,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getCodehash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getCodehash())
+      googleProtobuf.Message.bytesAsU8(this.getCodehash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.State.prototype.setCodehash = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes storageRoot = 4;
@@ -3755,7 +3749,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getStorageroot = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -3768,7 +3762,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getStorageroot_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getStorageroot())
+      googleProtobuf.Message.bytesAsB64(this.getStorageroot())
     );
   };
   /**
@@ -3783,14 +3777,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getStorageroot_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getStorageroot())
+      googleProtobuf.Message.bytesAsU8(this.getStorageroot())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.State.prototype.setStorageroot = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional uint64 sqlRecoveryPoint = 5;
@@ -3801,14 +3795,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.State.prototype.getSqlrecoverypoint = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 5, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.State.prototype.setSqlrecoverypoint = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -3823,10 +3817,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountProof = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.AccountProof.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.AccountProof.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.AccountProof, jspb.Message);
+  goog.inherits(proto.types.AccountProof, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.AccountProof.displayName = 'proto.types.AccountProof';
@@ -3840,7 +3834,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.AccountProof.repeatedFields_ = [8];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -3869,12 +3863,12 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         state: (f = msg.getState()) && proto.types.State.toObject(includeInstance, f),
-        inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
+        inclusion: googleProtobuf.Message.getFieldWithDefault(msg, 2, false),
         key: msg.getKey_asB64(),
         proofkey: msg.getProofkey_asB64(),
         proofval: msg.getProofval_asB64(),
         bitmap: msg.getBitmap_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 7, 0),
+        height: googleProtobuf.Message.getFieldWithDefault(msg, 7, 0),
         auditpathList: msg.getAuditpathList_asB64()
       };
 
@@ -3893,7 +3887,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountProof.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.AccountProof();
     return proto.types.AccountProof.deserializeBinaryFromReader(msg, reader);
   };
@@ -3985,7 +3979,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountProof.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.AccountProof.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -4057,14 +4051,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getState = function () {
     return (
       /** @type{?proto.types.State} */
-      jspb.Message.getWrapperField(this, proto.types.State, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.State, 1)
     );
   };
   /** @param {?proto.types.State|undefined} value */
 
 
   proto.types.AccountProof.prototype.setState = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.AccountProof.prototype.clearState = function () {
@@ -4077,7 +4071,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountProof.prototype.hasState = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional bool inclusion = 2;
@@ -4090,14 +4084,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getInclusion = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 2, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.AccountProof.prototype.setInclusion = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes key = 3;
@@ -4108,7 +4102,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getKey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -4121,7 +4115,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getKey_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getKey())
+      googleProtobuf.Message.bytesAsB64(this.getKey())
     );
   };
   /**
@@ -4136,14 +4130,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getKey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getKey())
+      googleProtobuf.Message.bytesAsU8(this.getKey())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountProof.prototype.setKey = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes proofKey = 4;
@@ -4154,7 +4148,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofkey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -4167,7 +4161,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofkey_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getProofkey())
+      googleProtobuf.Message.bytesAsB64(this.getProofkey())
     );
   };
   /**
@@ -4182,14 +4176,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofkey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getProofkey())
+      googleProtobuf.Message.bytesAsU8(this.getProofkey())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountProof.prototype.setProofkey = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes proofVal = 5;
@@ -4200,7 +4194,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofval = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -4213,7 +4207,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofval_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getProofval())
+      googleProtobuf.Message.bytesAsB64(this.getProofval())
     );
   };
   /**
@@ -4228,14 +4222,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getProofval_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getProofval())
+      googleProtobuf.Message.bytesAsU8(this.getProofval())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountProof.prototype.setProofval = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes bitmap = 6;
@@ -4246,7 +4240,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getBitmap = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -4259,7 +4253,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getBitmap_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBitmap())
+      googleProtobuf.Message.bytesAsB64(this.getBitmap())
     );
   };
   /**
@@ -4274,14 +4268,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getBitmap_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBitmap())
+      googleProtobuf.Message.bytesAsU8(this.getBitmap())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountProof.prototype.setBitmap = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional uint32 height = 7;
@@ -4292,14 +4286,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 7, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 7, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.AccountProof.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * repeated bytes auditPath = 8;
@@ -4310,7 +4304,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getAuditpathList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 8)
+      googleProtobuf.Message.getRepeatedField(this, 8)
     );
   };
   /**
@@ -4323,7 +4317,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getAuditpathList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getAuditpathList())
+      googleProtobuf.Message.bytesListAsB64(this.getAuditpathList())
     );
   };
   /**
@@ -4338,14 +4332,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountProof.prototype.getAuditpathList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getAuditpathList())
+      googleProtobuf.Message.bytesListAsU8(this.getAuditpathList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.AccountProof.prototype.setAuditpathList = function (value) {
-    jspb.Message.setField(this, 8, value || []);
+    googleProtobuf.Message.setField(this, 8, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -4354,7 +4348,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountProof.prototype.addAuditpath = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 8, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 8, value, opt_index);
   };
 
   proto.types.AccountProof.prototype.clearAuditpathList = function () {
@@ -4373,10 +4367,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.ContractVarProof.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.ContractVarProof.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.ContractVarProof, jspb.Message);
+  goog.inherits(proto.types.ContractVarProof, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ContractVarProof.displayName = 'proto.types.ContractVarProof';
@@ -4390,7 +4384,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.ContractVarProof.repeatedFields_ = [8];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -4418,12 +4412,12 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.ContractVarProof.toObject = function (includeInstance, msg) {
       var obj = {
         value: msg.getValue_asB64(),
-        inclusion: jspb.Message.getFieldWithDefault(msg, 2, false),
-        key: jspb.Message.getFieldWithDefault(msg, 3, ""),
+        inclusion: googleProtobuf.Message.getFieldWithDefault(msg, 2, false),
+        key: googleProtobuf.Message.getFieldWithDefault(msg, 3, ""),
         proofkey: msg.getProofkey_asB64(),
         proofval: msg.getProofval_asB64(),
         bitmap: msg.getBitmap_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 7, 0),
+        height: googleProtobuf.Message.getFieldWithDefault(msg, 7, 0),
         auditpathList: msg.getAuditpathList_asB64()
       };
 
@@ -4442,7 +4436,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ContractVarProof();
     return proto.types.ContractVarProof.deserializeBinaryFromReader(msg, reader);
   };
@@ -4535,7 +4529,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ContractVarProof.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -4607,7 +4601,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getValue = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -4620,7 +4614,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getValue_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getValue())
+      googleProtobuf.Message.bytesAsB64(this.getValue())
     );
   };
   /**
@@ -4635,14 +4629,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getValue_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getValue())
+      googleProtobuf.Message.bytesAsU8(this.getValue())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ContractVarProof.prototype.setValue = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bool inclusion = 2;
@@ -4655,14 +4649,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getInclusion = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 2, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.ContractVarProof.prototype.setInclusion = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string key = 3;
@@ -4673,14 +4667,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getKey = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ContractVarProof.prototype.setKey = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes proofKey = 4;
@@ -4691,7 +4685,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofkey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -4704,7 +4698,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofkey_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getProofkey())
+      googleProtobuf.Message.bytesAsB64(this.getProofkey())
     );
   };
   /**
@@ -4719,14 +4713,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofkey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getProofkey())
+      googleProtobuf.Message.bytesAsU8(this.getProofkey())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ContractVarProof.prototype.setProofkey = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes proofVal = 5;
@@ -4737,7 +4731,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofval = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -4750,7 +4744,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofval_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getProofval())
+      googleProtobuf.Message.bytesAsB64(this.getProofval())
     );
   };
   /**
@@ -4765,14 +4759,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getProofval_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getProofval())
+      googleProtobuf.Message.bytesAsU8(this.getProofval())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ContractVarProof.prototype.setProofval = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes bitmap = 6;
@@ -4783,7 +4777,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getBitmap = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -4796,7 +4790,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getBitmap_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBitmap())
+      googleProtobuf.Message.bytesAsB64(this.getBitmap())
     );
   };
   /**
@@ -4811,14 +4805,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getBitmap_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBitmap())
+      googleProtobuf.Message.bytesAsU8(this.getBitmap())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ContractVarProof.prototype.setBitmap = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional uint32 height = 7;
@@ -4829,14 +4823,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 7, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 7, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ContractVarProof.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * repeated bytes auditPath = 8;
@@ -4847,7 +4841,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getAuditpathList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 8)
+      googleProtobuf.Message.getRepeatedField(this, 8)
     );
   };
   /**
@@ -4860,7 +4854,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getAuditpathList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getAuditpathList())
+      googleProtobuf.Message.bytesListAsB64(this.getAuditpathList())
     );
   };
   /**
@@ -4875,14 +4869,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ContractVarProof.prototype.getAuditpathList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getAuditpathList())
+      googleProtobuf.Message.bytesListAsU8(this.getAuditpathList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.ContractVarProof.prototype.setAuditpathList = function (value) {
-    jspb.Message.setField(this, 8, value || []);
+    googleProtobuf.Message.setField(this, 8, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -4891,7 +4885,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ContractVarProof.prototype.addAuditpath = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 8, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 8, value, opt_index);
   };
 
   proto.types.ContractVarProof.prototype.clearAuditpathList = function () {
@@ -4910,10 +4904,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQueryProof.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.StateQueryProof.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.StateQueryProof, jspb.Message);
+  goog.inherits(proto.types.StateQueryProof, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.StateQueryProof.displayName = 'proto.types.StateQueryProof';
@@ -4927,7 +4921,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.StateQueryProof.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -4956,7 +4950,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         contractproof: (f = msg.getContractproof()) && proto.types.AccountProof.toObject(includeInstance, f),
-        varproofsList: jspb.Message.toObjectList(msg.getVarproofsList(), proto.types.ContractVarProof.toObject, includeInstance)
+        varproofsList: googleProtobuf.Message.toObjectList(msg.getVarproofsList(), proto.types.ContractVarProof.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -4974,7 +4968,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.StateQueryProof();
     return proto.types.StateQueryProof.deserializeBinaryFromReader(msg, reader);
   };
@@ -5023,7 +5017,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.StateQueryProof.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -5059,14 +5053,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQueryProof.prototype.getContractproof = function () {
     return (
       /** @type{?proto.types.AccountProof} */
-      jspb.Message.getWrapperField(this, proto.types.AccountProof, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.AccountProof, 1)
     );
   };
   /** @param {?proto.types.AccountProof|undefined} value */
 
 
   proto.types.StateQueryProof.prototype.setContractproof = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.StateQueryProof.prototype.clearContractproof = function () {
@@ -5079,7 +5073,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof.prototype.hasContractproof = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * repeated ContractVarProof varProofs = 2;
@@ -5090,14 +5084,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQueryProof.prototype.getVarproofsList = function () {
     return (
       /** @type{!Array.<!proto.types.ContractVarProof>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.ContractVarProof, 2)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.ContractVarProof, 2)
     );
   };
   /** @param {!Array.<!proto.types.ContractVarProof>} value */
 
 
   proto.types.StateQueryProof.prototype.setVarproofsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 2, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 2, value);
   };
   /**
    * @param {!proto.types.ContractVarProof=} opt_value
@@ -5107,7 +5101,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQueryProof.prototype.addVarproofs = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.ContractVarProof, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.ContractVarProof, opt_index);
   };
 
   proto.types.StateQueryProof.prototype.clearVarproofsList = function () {
@@ -5126,10 +5120,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Receipt = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Receipt.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.Receipt.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.Receipt, jspb.Message);
+  goog.inherits(proto.types.Receipt, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Receipt.displayName = 'proto.types.Receipt';
@@ -5143,7 +5137,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Receipt.repeatedFields_ = [8];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -5171,16 +5165,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.Receipt.toObject = function (includeInstance, msg) {
       var obj = {
         contractaddress: msg.getContractaddress_asB64(),
-        status: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        ret: jspb.Message.getFieldWithDefault(msg, 3, ""),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
+        ret: googleProtobuf.Message.getFieldWithDefault(msg, 3, ""),
         txhash: msg.getTxhash_asB64(),
         feeused: msg.getFeeused_asB64(),
         cumulativefeeused: msg.getCumulativefeeused_asB64(),
         bloom: msg.getBloom_asB64(),
-        eventsList: jspb.Message.toObjectList(msg.getEventsList(), proto.types.Event.toObject, includeInstance),
-        blockno: jspb.Message.getFieldWithDefault(msg, 9, 0),
+        eventsList: googleProtobuf.Message.toObjectList(msg.getEventsList(), proto.types.Event.toObject, includeInstance),
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 9, 0),
         blockhash: msg.getBlockhash_asB64(),
-        txindex: jspb.Message.getFieldWithDefault(msg, 11, 0),
+        txindex: googleProtobuf.Message.getFieldWithDefault(msg, 11, 0),
         from: msg.getFrom_asB64(),
         to: msg.getTo_asB64()
       };
@@ -5200,7 +5194,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Receipt.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Receipt();
     return proto.types.Receipt.deserializeBinaryFromReader(msg, reader);
   };
@@ -5327,7 +5321,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Receipt.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Receipt.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -5429,7 +5423,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getContractaddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -5442,7 +5436,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getContractaddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getContractaddress())
+      googleProtobuf.Message.bytesAsB64(this.getContractaddress())
     );
   };
   /**
@@ -5457,14 +5451,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getContractaddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getContractaddress())
+      googleProtobuf.Message.bytesAsU8(this.getContractaddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setContractaddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional string status = 2;
@@ -5475,14 +5469,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getStatus = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Receipt.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string ret = 3;
@@ -5493,14 +5487,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getRet = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Receipt.prototype.setRet = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes txHash = 4;
@@ -5511,7 +5505,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTxhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -5524,7 +5518,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTxhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getTxhash())
+      googleProtobuf.Message.bytesAsB64(this.getTxhash())
     );
   };
   /**
@@ -5539,14 +5533,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTxhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getTxhash())
+      googleProtobuf.Message.bytesAsU8(this.getTxhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setTxhash = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes feeUsed = 5;
@@ -5557,7 +5551,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFeeused = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -5570,7 +5564,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFeeused_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getFeeused())
+      googleProtobuf.Message.bytesAsB64(this.getFeeused())
     );
   };
   /**
@@ -5585,14 +5579,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFeeused_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getFeeused())
+      googleProtobuf.Message.bytesAsU8(this.getFeeused())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setFeeused = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes cumulativeFeeUsed = 6;
@@ -5603,7 +5597,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getCumulativefeeused = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -5616,7 +5610,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getCumulativefeeused_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getCumulativefeeused())
+      googleProtobuf.Message.bytesAsB64(this.getCumulativefeeused())
     );
   };
   /**
@@ -5631,14 +5625,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getCumulativefeeused_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getCumulativefeeused())
+      googleProtobuf.Message.bytesAsU8(this.getCumulativefeeused())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setCumulativefeeused = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional bytes bloom = 7;
@@ -5649,7 +5643,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBloom = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 7, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
     );
   };
   /**
@@ -5662,7 +5656,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBloom_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBloom())
+      googleProtobuf.Message.bytesAsB64(this.getBloom())
     );
   };
   /**
@@ -5677,14 +5671,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBloom_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBloom())
+      googleProtobuf.Message.bytesAsU8(this.getBloom())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setBloom = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * repeated Event events = 8;
@@ -5695,14 +5689,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getEventsList = function () {
     return (
       /** @type{!Array.<!proto.types.Event>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Event, 8)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Event, 8)
     );
   };
   /** @param {!Array.<!proto.types.Event>} value */
 
 
   proto.types.Receipt.prototype.setEventsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 8, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 8, value);
   };
   /**
    * @param {!proto.types.Event=} opt_value
@@ -5712,7 +5706,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Receipt.prototype.addEvents = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.types.Event, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.types.Event, opt_index);
   };
 
   proto.types.Receipt.prototype.clearEventsList = function () {
@@ -5727,14 +5721,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 9, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 9, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Receipt.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 9, value);
+    googleProtobuf.Message.setField(this, 9, value);
   };
   /**
    * optional bytes blockHash = 10;
@@ -5745,7 +5739,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBlockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 10, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 10, "")
     );
   };
   /**
@@ -5758,7 +5752,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBlockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBlockhash())
     );
   };
   /**
@@ -5773,14 +5767,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getBlockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBlockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setBlockhash = function (value) {
-    jspb.Message.setField(this, 10, value);
+    googleProtobuf.Message.setField(this, 10, value);
   };
   /**
    * optional int32 txIndex = 11;
@@ -5791,14 +5785,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTxindex = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 11, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 11, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Receipt.prototype.setTxindex = function (value) {
-    jspb.Message.setField(this, 11, value);
+    googleProtobuf.Message.setField(this, 11, value);
   };
   /**
    * optional bytes from = 12;
@@ -5809,7 +5803,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFrom = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 12, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 12, "")
     );
   };
   /**
@@ -5822,7 +5816,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFrom_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getFrom())
+      googleProtobuf.Message.bytesAsB64(this.getFrom())
     );
   };
   /**
@@ -5837,14 +5831,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getFrom_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getFrom())
+      googleProtobuf.Message.bytesAsU8(this.getFrom())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setFrom = function (value) {
-    jspb.Message.setField(this, 12, value);
+    googleProtobuf.Message.setField(this, 12, value);
   };
   /**
    * optional bytes to = 13;
@@ -5855,7 +5849,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTo = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 13, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 13, "")
     );
   };
   /**
@@ -5868,7 +5862,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTo_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getTo())
+      googleProtobuf.Message.bytesAsB64(this.getTo())
     );
   };
   /**
@@ -5883,14 +5877,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Receipt.prototype.getTo_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getTo())
+      googleProtobuf.Message.bytesAsU8(this.getTo())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Receipt.prototype.setTo = function (value) {
-    jspb.Message.setField(this, 13, value);
+    googleProtobuf.Message.setField(this, 13, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -5905,16 +5899,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Event = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Event, jspb.Message);
+  goog.inherits(proto.types.Event, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Event.displayName = 'proto.types.Event';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -5942,13 +5936,13 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.Event.toObject = function (includeInstance, msg) {
       var obj = {
         contractaddress: msg.getContractaddress_asB64(),
-        eventname: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        jsonargs: jspb.Message.getFieldWithDefault(msg, 3, ""),
-        eventidx: jspb.Message.getFieldWithDefault(msg, 4, 0),
+        eventname: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
+        jsonargs: googleProtobuf.Message.getFieldWithDefault(msg, 3, ""),
+        eventidx: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
         txhash: msg.getTxhash_asB64(),
         blockhash: msg.getBlockhash_asB64(),
-        blockno: jspb.Message.getFieldWithDefault(msg, 7, 0),
-        txindex: jspb.Message.getFieldWithDefault(msg, 8, 0)
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 7, 0),
+        txindex: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0)
       };
 
       if (includeInstance) {
@@ -5966,7 +5960,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Event.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Event();
     return proto.types.Event.deserializeBinaryFromReader(msg, reader);
   };
@@ -6059,7 +6053,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Event.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Event.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -6131,7 +6125,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getContractaddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -6144,7 +6138,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getContractaddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getContractaddress())
+      googleProtobuf.Message.bytesAsB64(this.getContractaddress())
     );
   };
   /**
@@ -6159,14 +6153,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getContractaddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getContractaddress())
+      googleProtobuf.Message.bytesAsU8(this.getContractaddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Event.prototype.setContractaddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional string eventName = 2;
@@ -6177,14 +6171,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getEventname = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Event.prototype.setEventname = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string jsonArgs = 3;
@@ -6195,14 +6189,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getJsonargs = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Event.prototype.setJsonargs = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional int32 eventIdx = 4;
@@ -6213,14 +6207,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getEventidx = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Event.prototype.setEventidx = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes txHash = 5;
@@ -6231,7 +6225,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getTxhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -6244,7 +6238,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getTxhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getTxhash())
+      googleProtobuf.Message.bytesAsB64(this.getTxhash())
     );
   };
   /**
@@ -6259,14 +6253,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getTxhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getTxhash())
+      googleProtobuf.Message.bytesAsU8(this.getTxhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Event.prototype.setTxhash = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes blockHash = 6;
@@ -6277,7 +6271,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getBlockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -6290,7 +6284,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getBlockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBlockhash())
     );
   };
   /**
@@ -6305,14 +6299,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getBlockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBlockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Event.prototype.setBlockhash = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional uint64 blockNo = 7;
@@ -6323,14 +6317,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 7, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 7, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Event.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * optional int32 txIndex = 8;
@@ -6341,14 +6335,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Event.prototype.getTxindex = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 8, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 8, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Event.prototype.setTxindex = function (value) {
-    jspb.Message.setField(this, 8, value);
+    googleProtobuf.Message.setField(this, 8, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -6363,16 +6357,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FnArgument = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.FnArgument, jspb.Message);
+  goog.inherits(proto.types.FnArgument, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.FnArgument.displayName = 'proto.types.FnArgument';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -6399,7 +6393,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.FnArgument.toObject = function (includeInstance, msg) {
       var obj = {
-        name: jspb.Message.getFieldWithDefault(msg, 1, "")
+        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, "")
       };
 
       if (includeInstance) {
@@ -6417,7 +6411,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FnArgument.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.FnArgument();
     return proto.types.FnArgument.deserializeBinaryFromReader(msg, reader);
   };
@@ -6461,7 +6455,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FnArgument.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.FnArgument.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -6491,14 +6485,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FnArgument.prototype.getName = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.FnArgument.prototype.setName = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -6513,10 +6507,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Function = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Function.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.Function.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.Function, jspb.Message);
+  goog.inherits(proto.types.Function, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Function.displayName = 'proto.types.Function';
@@ -6530,7 +6524,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Function.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -6557,8 +6551,8 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.Function.toObject = function (includeInstance, msg) {
       var obj = {
-        name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        argumentsList: jspb.Message.toObjectList(msg.getArgumentsList(), proto.types.FnArgument.toObject, includeInstance)
+        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        argumentsList: googleProtobuf.Message.toObjectList(msg.getArgumentsList(), proto.types.FnArgument.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -6576,7 +6570,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Function.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Function();
     return proto.types.Function.deserializeBinaryFromReader(msg, reader);
   };
@@ -6626,7 +6620,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Function.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Function.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -6662,14 +6656,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Function.prototype.getName = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Function.prototype.setName = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated FnArgument arguments = 2;
@@ -6680,14 +6674,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Function.prototype.getArgumentsList = function () {
     return (
       /** @type{!Array.<!proto.types.FnArgument>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.FnArgument, 2)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.FnArgument, 2)
     );
   };
   /** @param {!Array.<!proto.types.FnArgument>} value */
 
 
   proto.types.Function.prototype.setArgumentsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 2, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 2, value);
   };
   /**
    * @param {!proto.types.FnArgument=} opt_value
@@ -6697,7 +6691,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Function.prototype.addArguments = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.FnArgument, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.FnArgument, opt_index);
   };
 
   proto.types.Function.prototype.clearArgumentsList = function () {
@@ -6716,16 +6710,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateVar = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.StateVar, jspb.Message);
+  goog.inherits(proto.types.StateVar, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.StateVar.displayName = 'proto.types.StateVar';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -6752,8 +6746,8 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.StateVar.toObject = function (includeInstance, msg) {
       var obj = {
-        name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        type: jspb.Message.getFieldWithDefault(msg, 2, "")
+        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        type: googleProtobuf.Message.getFieldWithDefault(msg, 2, "")
       };
 
       if (includeInstance) {
@@ -6771,7 +6765,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateVar.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.StateVar();
     return proto.types.StateVar.deserializeBinaryFromReader(msg, reader);
   };
@@ -6822,7 +6816,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateVar.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.StateVar.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -6858,14 +6852,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateVar.prototype.getName = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.StateVar.prototype.setName = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional string type = 2;
@@ -6876,14 +6870,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateVar.prototype.getType = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.StateVar.prototype.setType = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -6898,10 +6892,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ABI = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.ABI.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.ABI.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.ABI, jspb.Message);
+  goog.inherits(proto.types.ABI, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ABI.displayName = 'proto.types.ABI';
@@ -6915,7 +6909,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.ABI.repeatedFields_ = [3, 4];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -6942,10 +6936,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.ABI.toObject = function (includeInstance, msg) {
       var obj = {
-        version: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        language: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        functionsList: jspb.Message.toObjectList(msg.getFunctionsList(), proto.types.Function.toObject, includeInstance),
-        stateVariablesList: jspb.Message.toObjectList(msg.getStateVariablesList(), proto.types.StateVar.toObject, includeInstance)
+        version: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        language: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
+        functionsList: googleProtobuf.Message.toObjectList(msg.getFunctionsList(), proto.types.Function.toObject, includeInstance),
+        stateVariablesList: googleProtobuf.Message.toObjectList(msg.getStateVariablesList(), proto.types.StateVar.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -6963,7 +6957,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ABI.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ABI();
     return proto.types.ABI.deserializeBinaryFromReader(msg, reader);
   };
@@ -7026,7 +7020,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ABI.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ABI.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -7074,14 +7068,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ABI.prototype.getVersion = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ABI.prototype.setVersion = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional string language = 2;
@@ -7092,14 +7086,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ABI.prototype.getLanguage = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ABI.prototype.setLanguage = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * repeated Function functions = 3;
@@ -7110,14 +7104,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ABI.prototype.getFunctionsList = function () {
     return (
       /** @type{!Array.<!proto.types.Function>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Function, 3)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Function, 3)
     );
   };
   /** @param {!Array.<!proto.types.Function>} value */
 
 
   proto.types.ABI.prototype.setFunctionsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 3, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 3, value);
   };
   /**
    * @param {!proto.types.Function=} opt_value
@@ -7127,7 +7121,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ABI.prototype.addFunctions = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.Function, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.Function, opt_index);
   };
 
   proto.types.ABI.prototype.clearFunctionsList = function () {
@@ -7142,14 +7136,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.ABI.prototype.getStateVariablesList = function () {
     return (
       /** @type{!Array.<!proto.types.StateVar>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.StateVar, 4)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.StateVar, 4)
     );
   };
   /** @param {!Array.<!proto.types.StateVar>} value */
 
 
   proto.types.ABI.prototype.setStateVariablesList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 4, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 4, value);
   };
   /**
    * @param {!proto.types.StateVar=} opt_value
@@ -7159,7 +7153,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ABI.prototype.addStateVariables = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.types.StateVar, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.types.StateVar, opt_index);
   };
 
   proto.types.ABI.prototype.clearStateVariablesList = function () {
@@ -7178,16 +7172,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Query = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Query, jspb.Message);
+  goog.inherits(proto.types.Query, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Query.displayName = 'proto.types.Query';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -7233,7 +7227,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Query.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Query();
     return proto.types.Query.deserializeBinaryFromReader(msg, reader);
   };
@@ -7284,7 +7278,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Query.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Query.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -7320,7 +7314,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getContractaddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -7333,7 +7327,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getContractaddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getContractaddress())
+      googleProtobuf.Message.bytesAsB64(this.getContractaddress())
     );
   };
   /**
@@ -7348,14 +7342,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getContractaddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getContractaddress())
+      googleProtobuf.Message.bytesAsU8(this.getContractaddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Query.prototype.setContractaddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes queryinfo = 2;
@@ -7366,7 +7360,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getQueryinfo = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -7379,7 +7373,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getQueryinfo_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getQueryinfo())
+      googleProtobuf.Message.bytesAsB64(this.getQueryinfo())
     );
   };
   /**
@@ -7394,14 +7388,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.Query.prototype.getQueryinfo_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getQueryinfo())
+      googleProtobuf.Message.bytesAsU8(this.getQueryinfo())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Query.prototype.setQueryinfo = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -7416,10 +7410,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.StateQuery.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.StateQuery.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.StateQuery, jspb.Message);
+  goog.inherits(proto.types.StateQuery, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.StateQuery.displayName = 'proto.types.StateQuery';
@@ -7433,7 +7427,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.StateQuery.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -7461,9 +7455,9 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.StateQuery.toObject = function (includeInstance, msg) {
       var obj = {
         contractaddress: msg.getContractaddress_asB64(),
-        storagekeysList: jspb.Message.getRepeatedField(msg, 2),
+        storagekeysList: googleProtobuf.Message.getRepeatedField(msg, 2),
         root: msg.getRoot_asB64(),
-        compressed: jspb.Message.getFieldWithDefault(msg, 4, false)
+        compressed: googleProtobuf.Message.getFieldWithDefault(msg, 4, false)
       };
 
       if (includeInstance) {
@@ -7481,7 +7475,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.StateQuery();
     return proto.types.StateQuery.deserializeBinaryFromReader(msg, reader);
   };
@@ -7546,7 +7540,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.StateQuery.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -7594,7 +7588,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getContractaddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -7607,7 +7601,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getContractaddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getContractaddress())
+      googleProtobuf.Message.bytesAsB64(this.getContractaddress())
     );
   };
   /**
@@ -7622,14 +7616,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getContractaddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getContractaddress())
+      googleProtobuf.Message.bytesAsU8(this.getContractaddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.StateQuery.prototype.setContractaddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated string storageKeys = 2;
@@ -7640,14 +7634,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getStoragekeysList = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.getRepeatedField(this, 2)
+      googleProtobuf.Message.getRepeatedField(this, 2)
     );
   };
   /** @param {!Array.<string>} value */
 
 
   proto.types.StateQuery.prototype.setStoragekeysList = function (value) {
-    jspb.Message.setField(this, 2, value || []);
+    googleProtobuf.Message.setField(this, 2, value || []);
   };
   /**
    * @param {!string} value
@@ -7656,7 +7650,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.StateQuery.prototype.addStoragekeys = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 2, value, opt_index);
   };
 
   proto.types.StateQuery.prototype.clearStoragekeysList = function () {
@@ -7671,7 +7665,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getRoot = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -7684,7 +7678,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getRoot_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getRoot())
+      googleProtobuf.Message.bytesAsB64(this.getRoot())
     );
   };
   /**
@@ -7699,14 +7693,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getRoot_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getRoot())
+      googleProtobuf.Message.bytesAsU8(this.getRoot())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.StateQuery.prototype.setRoot = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bool compressed = 4;
@@ -7719,14 +7713,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.StateQuery.prototype.getCompressed = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 4, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.StateQuery.prototype.setCompressed = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -7741,16 +7735,16 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FilterInfo = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.FilterInfo, jspb.Message);
+  goog.inherits(proto.types.FilterInfo, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.FilterInfo.displayName = 'proto.types.FilterInfo';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -7778,10 +7772,10 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
     proto.types.FilterInfo.toObject = function (includeInstance, msg) {
       var obj = {
         contractaddress: msg.getContractaddress_asB64(),
-        eventname: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        blockfrom: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        blockto: jspb.Message.getFieldWithDefault(msg, 4, 0),
-        desc: jspb.Message.getFieldWithDefault(msg, 5, false),
+        eventname: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
+        blockfrom: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        blockto: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+        desc: googleProtobuf.Message.getFieldWithDefault(msg, 5, false),
         argfilter: msg.getArgfilter_asB64()
       };
 
@@ -7800,7 +7794,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FilterInfo.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.FilterInfo();
     return proto.types.FilterInfo.deserializeBinaryFromReader(msg, reader);
   };
@@ -7879,7 +7873,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.FilterInfo.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.FilterInfo.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -7939,7 +7933,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getContractaddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -7952,7 +7946,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getContractaddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getContractaddress())
+      googleProtobuf.Message.bytesAsB64(this.getContractaddress())
     );
   };
   /**
@@ -7967,14 +7961,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getContractaddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getContractaddress())
+      googleProtobuf.Message.bytesAsU8(this.getContractaddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.FilterInfo.prototype.setContractaddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional string eventName = 2;
@@ -7985,14 +7979,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getEventname = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.FilterInfo.prototype.setEventname = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 blockfrom = 3;
@@ -8003,14 +7997,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getBlockfrom = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.FilterInfo.prototype.setBlockfrom = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional uint64 blockto = 4;
@@ -8021,14 +8015,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getBlockto = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.FilterInfo.prototype.setBlockto = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bool desc = 5;
@@ -8041,14 +8035,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getDesc = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 5, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.FilterInfo.prototype.setDesc = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes argFilter = 6;
@@ -8059,7 +8053,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getArgfilter = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -8072,7 +8066,7 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getArgfilter_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getArgfilter())
+      googleProtobuf.Message.bytesAsB64(this.getArgfilter())
     );
   };
   /**
@@ -8087,14 +8081,14 @@ var blockchain_pb = createCommonjsModule(function (module, exports) {
   proto.types.FilterInfo.prototype.getArgfilter_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getArgfilter())
+      googleProtobuf.Message.bytesAsU8(this.getArgfilter())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.FilterInfo.prototype.setArgfilter = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * @enum {number}
@@ -8124,7 +8118,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.Account', null, global);
   goog.exportSymbol('proto.types.AccountList', null, global);
@@ -8140,16 +8134,16 @@ var account_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.Account = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Account, jspb.Message);
+  goog.inherits(proto.types.Account, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Account.displayName = 'proto.types.Account';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -8194,7 +8188,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Account.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Account();
     return proto.types.Account.deserializeBinaryFromReader(msg, reader);
   };
@@ -8238,7 +8232,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Account.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Account.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -8268,7 +8262,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
   proto.types.Account.prototype.getAddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -8281,7 +8275,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
   proto.types.Account.prototype.getAddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAddress())
+      googleProtobuf.Message.bytesAsB64(this.getAddress())
     );
   };
   /**
@@ -8296,14 +8290,14 @@ var account_pb = createCommonjsModule(function (module, exports) {
   proto.types.Account.prototype.getAddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAddress())
+      googleProtobuf.Message.bytesAsU8(this.getAddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Account.prototype.setAddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -8318,10 +8312,10 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.AccountList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.AccountList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.AccountList, jspb.Message);
+  goog.inherits(proto.types.AccountList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.AccountList.displayName = 'proto.types.AccountList';
@@ -8335,7 +8329,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.AccountList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -8362,7 +8356,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.AccountList.toObject = function (includeInstance, msg) {
       var obj = {
-        accountsList: jspb.Message.toObjectList(msg.getAccountsList(), proto.types.Account.toObject, includeInstance)
+        accountsList: googleProtobuf.Message.toObjectList(msg.getAccountsList(), proto.types.Account.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -8380,7 +8374,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.AccountList();
     return proto.types.AccountList.deserializeBinaryFromReader(msg, reader);
   };
@@ -8423,7 +8417,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.AccountList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -8453,14 +8447,14 @@ var account_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountList.prototype.getAccountsList = function () {
     return (
       /** @type{!Array.<!proto.types.Account>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Account, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Account, 1)
     );
   };
   /** @param {!Array.<!proto.types.Account>} value */
 
 
   proto.types.AccountList.prototype.setAccountsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Account=} opt_value
@@ -8470,7 +8464,7 @@ var account_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountList.prototype.addAccounts = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Account, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Account, opt_index);
   };
 
   proto.types.AccountList.prototype.clearAccountsList = function () {
@@ -8490,7 +8484,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.PeerAddress', null, global);
   /**
@@ -8505,16 +8499,16 @@ var node_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.PeerAddress = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.PeerAddress, jspb.Message);
+  goog.inherits(proto.types.PeerAddress, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.PeerAddress.displayName = 'proto.types.PeerAddress';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -8541,8 +8535,8 @@ var node_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.PeerAddress.toObject = function (includeInstance, msg) {
       var obj = {
-        address: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        port: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        address: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        port: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
         peerid: msg.getPeerid_asB64()
       };
 
@@ -8561,7 +8555,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerAddress.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.PeerAddress();
     return proto.types.PeerAddress.deserializeBinaryFromReader(msg, reader);
   };
@@ -8619,7 +8613,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerAddress.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.PeerAddress.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -8661,14 +8655,14 @@ var node_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerAddress.prototype.getAddress = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.PeerAddress.prototype.setAddress = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint32 port = 2;
@@ -8679,14 +8673,14 @@ var node_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerAddress.prototype.getPort = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PeerAddress.prototype.setPort = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes peerID = 3;
@@ -8697,7 +8691,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerAddress.prototype.getPeerid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -8710,7 +8704,7 @@ var node_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerAddress.prototype.getPeerid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPeerid())
+      googleProtobuf.Message.bytesAsB64(this.getPeerid())
     );
   };
   /**
@@ -8725,14 +8719,14 @@ var node_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerAddress.prototype.getPeerid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPeerid())
+      googleProtobuf.Message.bytesAsU8(this.getPeerid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.PeerAddress.prototype.setPeerid = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
 
   goog.object.extend(exports, proto.types);
@@ -8747,7 +8741,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.AddressesRequest', null, global);
   goog.exportSymbol('proto.types.AddressesResponse', null, global);
@@ -8786,16 +8780,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.MsgHeader = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.MsgHeader, jspb.Message);
+  goog.inherits(proto.types.MsgHeader, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.MsgHeader.displayName = 'proto.types.MsgHeader';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -8822,15 +8816,15 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.MsgHeader.toObject = function (includeInstance, msg) {
       var obj = {
-        clientversion: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        timestamp: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        id: jspb.Message.getFieldWithDefault(msg, 3, ""),
-        gossip: jspb.Message.getFieldWithDefault(msg, 4, false),
+        clientversion: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        timestamp: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        id: googleProtobuf.Message.getFieldWithDefault(msg, 3, ""),
+        gossip: googleProtobuf.Message.getFieldWithDefault(msg, 4, false),
         peerid: msg.getPeerid_asB64(),
         nodepubkey: msg.getNodepubkey_asB64(),
         sign: msg.getSign_asB64(),
-        subprotocol: jspb.Message.getFieldWithDefault(msg, 8, 0),
-        length: jspb.Message.getFieldWithDefault(msg, 9, 0)
+        subprotocol: googleProtobuf.Message.getFieldWithDefault(msg, 8, 0),
+        length: googleProtobuf.Message.getFieldWithDefault(msg, 9, 0)
       };
 
       if (includeInstance) {
@@ -8848,7 +8842,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.MsgHeader.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.MsgHeader();
     return proto.types.MsgHeader.deserializeBinaryFromReader(msg, reader);
   };
@@ -8948,7 +8942,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.MsgHeader.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.MsgHeader.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -9026,14 +9020,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getClientversion = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.MsgHeader.prototype.setClientversion = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional int64 timestamp = 2;
@@ -9044,14 +9038,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getTimestamp = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.MsgHeader.prototype.setTimestamp = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string id = 3;
@@ -9062,14 +9056,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getId = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.MsgHeader.prototype.setId = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bool gossip = 4;
@@ -9082,14 +9076,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getGossip = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 4, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.MsgHeader.prototype.setGossip = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes peerID = 5;
@@ -9100,7 +9094,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getPeerid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -9113,7 +9107,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getPeerid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPeerid())
+      googleProtobuf.Message.bytesAsB64(this.getPeerid())
     );
   };
   /**
@@ -9128,14 +9122,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getPeerid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPeerid())
+      googleProtobuf.Message.bytesAsU8(this.getPeerid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.MsgHeader.prototype.setPeerid = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bytes nodePubKey = 6;
@@ -9146,7 +9140,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getNodepubkey = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 6, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 6, "")
     );
   };
   /**
@@ -9159,7 +9153,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getNodepubkey_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getNodepubkey())
+      googleProtobuf.Message.bytesAsB64(this.getNodepubkey())
     );
   };
   /**
@@ -9174,14 +9168,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getNodepubkey_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getNodepubkey())
+      googleProtobuf.Message.bytesAsU8(this.getNodepubkey())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.MsgHeader.prototype.setNodepubkey = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * optional bytes sign = 7;
@@ -9192,7 +9186,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getSign = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 7, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 7, "")
     );
   };
   /**
@@ -9205,7 +9199,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getSign_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getSign())
+      googleProtobuf.Message.bytesAsB64(this.getSign())
     );
   };
   /**
@@ -9220,14 +9214,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getSign_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getSign())
+      googleProtobuf.Message.bytesAsU8(this.getSign())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.MsgHeader.prototype.setSign = function (value) {
-    jspb.Message.setField(this, 7, value);
+    googleProtobuf.Message.setField(this, 7, value);
   };
   /**
    * optional uint32 subprotocol = 8;
@@ -9238,14 +9232,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getSubprotocol = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 8, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 8, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.MsgHeader.prototype.setSubprotocol = function (value) {
-    jspb.Message.setField(this, 8, value);
+    googleProtobuf.Message.setField(this, 8, value);
   };
   /**
    * optional uint32 length = 9;
@@ -9256,14 +9250,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.MsgHeader.prototype.getLength = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 9, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 9, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.MsgHeader.prototype.setLength = function (value) {
-    jspb.Message.setField(this, 9, value);
+    googleProtobuf.Message.setField(this, 9, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -9278,16 +9272,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.P2PMessage = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.P2PMessage, jspb.Message);
+  goog.inherits(proto.types.P2PMessage, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.P2PMessage.displayName = 'proto.types.P2PMessage';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -9334,7 +9328,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.P2PMessage.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.P2PMessage();
     return proto.types.P2PMessage.deserializeBinaryFromReader(msg, reader);
   };
@@ -9384,7 +9378,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.P2PMessage.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.P2PMessage.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -9420,14 +9414,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.P2PMessage.prototype.getHeader = function () {
     return (
       /** @type{?proto.types.MsgHeader} */
-      jspb.Message.getWrapperField(this, proto.types.MsgHeader, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.MsgHeader, 1)
     );
   };
   /** @param {?proto.types.MsgHeader|undefined} value */
 
 
   proto.types.P2PMessage.prototype.setHeader = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.P2PMessage.prototype.clearHeader = function () {
@@ -9440,7 +9434,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.P2PMessage.prototype.hasHeader = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional bytes data = 2;
@@ -9451,7 +9445,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.P2PMessage.prototype.getData = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -9464,7 +9458,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.P2PMessage.prototype.getData_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getData())
+      googleProtobuf.Message.bytesAsB64(this.getData())
     );
   };
   /**
@@ -9479,14 +9473,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.P2PMessage.prototype.getData_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getData())
+      googleProtobuf.Message.bytesAsU8(this.getData())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.P2PMessage.prototype.setData = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -9501,16 +9495,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Ping = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Ping, jspb.Message);
+  goog.inherits(proto.types.Ping, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Ping.displayName = 'proto.types.Ping';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -9538,7 +9532,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
     proto.types.Ping.toObject = function (includeInstance, msg) {
       var obj = {
         bestBlockHash: msg.getBestBlockHash_asB64(),
-        bestHeight: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        bestHeight: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -9556,7 +9550,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Ping.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Ping();
     return proto.types.Ping.deserializeBinaryFromReader(msg, reader);
   };
@@ -9607,7 +9601,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Ping.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Ping.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -9643,7 +9637,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Ping.prototype.getBestBlockHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -9656,7 +9650,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Ping.prototype.getBestBlockHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBestBlockHash())
+      googleProtobuf.Message.bytesAsB64(this.getBestBlockHash())
     );
   };
   /**
@@ -9671,14 +9665,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Ping.prototype.getBestBlockHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBestBlockHash())
+      googleProtobuf.Message.bytesAsU8(this.getBestBlockHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Ping.prototype.setBestBlockHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 best_height = 2;
@@ -9689,14 +9683,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Ping.prototype.getBestHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Ping.prototype.setBestHeight = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -9711,16 +9705,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Pong = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Pong, jspb.Message);
+  goog.inherits(proto.types.Pong, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Pong.displayName = 'proto.types.Pong';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -9748,7 +9742,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
     proto.types.Pong.toObject = function (includeInstance, msg) {
       var obj = {
         bestblockhash: msg.getBestblockhash_asB64(),
-        bestheight: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        bestheight: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -9766,7 +9760,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Pong.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Pong();
     return proto.types.Pong.deserializeBinaryFromReader(msg, reader);
   };
@@ -9817,7 +9811,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Pong.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Pong.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -9853,7 +9847,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Pong.prototype.getBestblockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -9866,7 +9860,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Pong.prototype.getBestblockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBestblockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBestblockhash())
     );
   };
   /**
@@ -9881,14 +9875,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Pong.prototype.getBestblockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBestblockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBestblockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Pong.prototype.setBestblockhash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 bestHeight = 2;
@@ -9899,14 +9893,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Pong.prototype.getBestheight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Pong.prototype.setBestheight = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -9921,16 +9915,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Status = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Status, jspb.Message);
+  goog.inherits(proto.types.Status, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Status.displayName = 'proto.types.Status';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -9960,7 +9954,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
           obj = {
         sender: (f = msg.getSender()) && node_pb.PeerAddress.toObject(includeInstance, f),
         bestblockhash: msg.getBestblockhash_asB64(),
-        bestheight: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        bestheight: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
         chainid: msg.getChainid_asB64()
       };
 
@@ -9979,7 +9973,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Status.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Status();
     return proto.types.Status.deserializeBinaryFromReader(msg, reader);
   };
@@ -10043,7 +10037,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Status.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Status.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -10091,14 +10085,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getSender = function () {
     return (
       /** @type{?proto.types.PeerAddress} */
-      jspb.Message.getWrapperField(this, node_pb.PeerAddress, 1)
+      googleProtobuf.Message.getWrapperField(this, node_pb.PeerAddress, 1)
     );
   };
   /** @param {?proto.types.PeerAddress|undefined} value */
 
 
   proto.types.Status.prototype.setSender = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.Status.prototype.clearSender = function () {
@@ -10111,7 +10105,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Status.prototype.hasSender = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional bytes bestBlockHash = 2;
@@ -10122,7 +10116,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getBestblockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -10135,7 +10129,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getBestblockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBestblockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBestblockhash())
     );
   };
   /**
@@ -10150,14 +10144,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getBestblockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBestblockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBestblockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Status.prototype.setBestblockhash = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 bestHeight = 3;
@@ -10168,14 +10162,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getBestheight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Status.prototype.setBestheight = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes chainID = 4;
@@ -10186,7 +10180,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getChainid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -10199,7 +10193,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getChainid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getChainid())
+      googleProtobuf.Message.bytesAsB64(this.getChainid())
     );
   };
   /**
@@ -10214,14 +10208,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.Status.prototype.getChainid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getChainid())
+      googleProtobuf.Message.bytesAsU8(this.getChainid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Status.prototype.setChainid = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -10236,16 +10230,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GoAwayNotice = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GoAwayNotice, jspb.Message);
+  goog.inherits(proto.types.GoAwayNotice, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GoAwayNotice.displayName = 'proto.types.GoAwayNotice';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -10272,7 +10266,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GoAwayNotice.toObject = function (includeInstance, msg) {
       var obj = {
-        message: jspb.Message.getFieldWithDefault(msg, 1, "")
+        message: googleProtobuf.Message.getFieldWithDefault(msg, 1, "")
       };
 
       if (includeInstance) {
@@ -10290,7 +10284,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GoAwayNotice.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GoAwayNotice();
     return proto.types.GoAwayNotice.deserializeBinaryFromReader(msg, reader);
   };
@@ -10334,7 +10328,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GoAwayNotice.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GoAwayNotice.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -10364,14 +10358,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GoAwayNotice.prototype.getMessage = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.GoAwayNotice.prototype.setMessage = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -10386,16 +10380,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.AddressesRequest, jspb.Message);
+  goog.inherits(proto.types.AddressesRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.AddressesRequest.displayName = 'proto.types.AddressesRequest';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -10424,7 +10418,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         sender: (f = msg.getSender()) && node_pb.PeerAddress.toObject(includeInstance, f),
-        maxsize: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        maxsize: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -10442,7 +10436,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.AddressesRequest();
     return proto.types.AddressesRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -10492,7 +10486,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.AddressesRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -10528,14 +10522,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.AddressesRequest.prototype.getSender = function () {
     return (
       /** @type{?proto.types.PeerAddress} */
-      jspb.Message.getWrapperField(this, node_pb.PeerAddress, 1)
+      googleProtobuf.Message.getWrapperField(this, node_pb.PeerAddress, 1)
     );
   };
   /** @param {?proto.types.PeerAddress|undefined} value */
 
 
   proto.types.AddressesRequest.prototype.setSender = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.AddressesRequest.prototype.clearSender = function () {
@@ -10548,7 +10542,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesRequest.prototype.hasSender = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional uint32 maxSize = 2;
@@ -10559,14 +10553,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.AddressesRequest.prototype.getMaxsize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.AddressesRequest.prototype.setMaxsize = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -10581,10 +10575,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.AddressesResponse.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.AddressesResponse.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.AddressesResponse, jspb.Message);
+  goog.inherits(proto.types.AddressesResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.AddressesResponse.displayName = 'proto.types.AddressesResponse';
@@ -10598,7 +10592,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.AddressesResponse.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -10625,8 +10619,8 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.AddressesResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
-        peersList: jspb.Message.toObjectList(msg.getPeersList(), node_pb.PeerAddress.toObject, includeInstance)
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
+        peersList: googleProtobuf.Message.toObjectList(msg.getPeersList(), node_pb.PeerAddress.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -10644,7 +10638,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.AddressesResponse();
     return proto.types.AddressesResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -10694,7 +10688,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.AddressesResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -10730,14 +10724,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.AddressesResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.AddressesResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated PeerAddress peers = 2;
@@ -10748,14 +10742,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.AddressesResponse.prototype.getPeersList = function () {
     return (
       /** @type{!Array.<!proto.types.PeerAddress>} */
-      jspb.Message.getRepeatedWrapperField(this, node_pb.PeerAddress, 2)
+      googleProtobuf.Message.getRepeatedWrapperField(this, node_pb.PeerAddress, 2)
     );
   };
   /** @param {!Array.<!proto.types.PeerAddress>} value */
 
 
   proto.types.AddressesResponse.prototype.setPeersList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 2, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 2, value);
   };
   /**
    * @param {!proto.types.PeerAddress=} opt_value
@@ -10765,7 +10759,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AddressesResponse.prototype.addPeers = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.PeerAddress, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.PeerAddress, opt_index);
   };
 
   proto.types.AddressesResponse.prototype.clearPeersList = function () {
@@ -10784,16 +10778,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewBlockNotice = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.NewBlockNotice, jspb.Message);
+  goog.inherits(proto.types.NewBlockNotice, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.NewBlockNotice.displayName = 'proto.types.NewBlockNotice';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -10821,7 +10815,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
     proto.types.NewBlockNotice.toObject = function (includeInstance, msg) {
       var obj = {
         blockhash: msg.getBlockhash_asB64(),
-        blockno: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -10839,7 +10833,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewBlockNotice.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.NewBlockNotice();
     return proto.types.NewBlockNotice.deserializeBinaryFromReader(msg, reader);
   };
@@ -10890,7 +10884,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewBlockNotice.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.NewBlockNotice.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -10926,7 +10920,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewBlockNotice.prototype.getBlockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -10939,7 +10933,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewBlockNotice.prototype.getBlockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBlockhash())
     );
   };
   /**
@@ -10954,14 +10948,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewBlockNotice.prototype.getBlockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBlockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.NewBlockNotice.prototype.setBlockhash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 blockNo = 2;
@@ -10972,14 +10966,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewBlockNotice.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.NewBlockNotice.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -10994,16 +10988,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockProducedNotice = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockProducedNotice, jspb.Message);
+  goog.inherits(proto.types.BlockProducedNotice, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockProducedNotice.displayName = 'proto.types.BlockProducedNotice';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -11032,7 +11026,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         producerid: msg.getProducerid_asB64(),
-        blockno: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
         block: (f = msg.getBlock()) && blockchain_pb.Block.toObject(includeInstance, f)
       };
 
@@ -11051,7 +11045,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockProducedNotice.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockProducedNotice();
     return proto.types.BlockProducedNotice.deserializeBinaryFromReader(msg, reader);
   };
@@ -11108,7 +11102,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockProducedNotice.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockProducedNotice.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -11150,7 +11144,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockProducedNotice.prototype.getProducerid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -11163,7 +11157,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockProducedNotice.prototype.getProducerid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getProducerid())
+      googleProtobuf.Message.bytesAsB64(this.getProducerid())
     );
   };
   /**
@@ -11178,14 +11172,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockProducedNotice.prototype.getProducerid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getProducerid())
+      googleProtobuf.Message.bytesAsU8(this.getProducerid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockProducedNotice.prototype.setProducerid = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 blockNo = 2;
@@ -11196,14 +11190,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockProducedNotice.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockProducedNotice.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional Block block = 3;
@@ -11214,14 +11208,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockProducedNotice.prototype.getBlock = function () {
     return (
       /** @type{?proto.types.Block} */
-      jspb.Message.getWrapperField(this, blockchain_pb.Block, 3)
+      googleProtobuf.Message.getWrapperField(this, blockchain_pb.Block, 3)
     );
   };
   /** @param {?proto.types.Block|undefined} value */
 
 
   proto.types.BlockProducedNotice.prototype.setBlock = function (value) {
-    jspb.Message.setWrapperField(this, 3, value);
+    googleProtobuf.Message.setWrapperField(this, 3, value);
   };
 
   proto.types.BlockProducedNotice.prototype.clearBlock = function () {
@@ -11234,7 +11228,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockProducedNotice.prototype.hasBlock = function () {
-    return jspb.Message.getField(this, 3) != null;
+    return googleProtobuf.Message.getField(this, 3) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -11249,16 +11243,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GetBlockHeadersRequest, jspb.Message);
+  goog.inherits(proto.types.GetBlockHeadersRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetBlockHeadersRequest.displayName = 'proto.types.GetBlockHeadersRequest';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -11286,10 +11280,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
     proto.types.GetBlockHeadersRequest.toObject = function (includeInstance, msg) {
       var obj = {
         hash: msg.getHash_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        offset: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        size: jspb.Message.getFieldWithDefault(msg, 4, 0),
-        asc: jspb.Message.getFieldWithDefault(msg, 5, false)
+        height: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        offset: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        size: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+        asc: googleProtobuf.Message.getFieldWithDefault(msg, 5, false)
       };
 
       if (includeInstance) {
@@ -11307,7 +11301,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetBlockHeadersRequest();
     return proto.types.GetBlockHeadersRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -11379,7 +11373,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetBlockHeadersRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -11433,7 +11427,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -11446,7 +11440,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -11461,14 +11455,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.GetBlockHeadersRequest.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 height = 2;
@@ -11479,14 +11473,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetBlockHeadersRequest.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 offset = 3;
@@ -11497,14 +11491,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getOffset = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetBlockHeadersRequest.prototype.setOffset = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional uint32 size = 4;
@@ -11515,14 +11509,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getSize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetBlockHeadersRequest.prototype.setSize = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bool asc = 5;
@@ -11535,14 +11529,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersRequest.prototype.getAsc = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 5, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.GetBlockHeadersRequest.prototype.setAsc = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -11557,10 +11551,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockHeadersResponse.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockHeadersResponse.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetBlockHeadersResponse, jspb.Message);
+  goog.inherits(proto.types.GetBlockHeadersResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetBlockHeadersResponse.displayName = 'proto.types.GetBlockHeadersResponse';
@@ -11574,7 +11568,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetBlockHeadersResponse.repeatedFields_ = [2, 3];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -11601,10 +11595,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetBlockHeadersResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         hashesList: msg.getHashesList_asB64(),
-        headersList: jspb.Message.toObjectList(msg.getHeadersList(), blockchain_pb.BlockHeader.toObject, includeInstance),
-        hasnext: jspb.Message.getFieldWithDefault(msg, 4, false)
+        headersList: googleProtobuf.Message.toObjectList(msg.getHeadersList(), blockchain_pb.BlockHeader.toObject, includeInstance),
+        hasnext: googleProtobuf.Message.getFieldWithDefault(msg, 4, false)
       };
 
       if (includeInstance) {
@@ -11622,7 +11616,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetBlockHeadersResponse();
     return proto.types.GetBlockHeadersResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -11686,7 +11680,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetBlockHeadersResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -11734,14 +11728,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetBlockHeadersResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated bytes hashes = 2;
@@ -11752,7 +11746,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 2)
+      googleProtobuf.Message.getRepeatedField(this, 2)
     );
   };
   /**
@@ -11765,7 +11759,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -11780,14 +11774,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetBlockHeadersResponse.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 2, value || []);
+    googleProtobuf.Message.setField(this, 2, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -11796,7 +11790,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersResponse.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 2, value, opt_index);
   };
 
   proto.types.GetBlockHeadersResponse.prototype.clearHashesList = function () {
@@ -11811,14 +11805,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getHeadersList = function () {
     return (
       /** @type{!Array.<!proto.types.BlockHeader>} */
-      jspb.Message.getRepeatedWrapperField(this, blockchain_pb.BlockHeader, 3)
+      googleProtobuf.Message.getRepeatedWrapperField(this, blockchain_pb.BlockHeader, 3)
     );
   };
   /** @param {!Array.<!proto.types.BlockHeader>} value */
 
 
   proto.types.GetBlockHeadersResponse.prototype.setHeadersList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 3, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 3, value);
   };
   /**
    * @param {!proto.types.BlockHeader=} opt_value
@@ -11828,7 +11822,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockHeadersResponse.prototype.addHeaders = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.BlockHeader, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.BlockHeader, opt_index);
   };
 
   proto.types.GetBlockHeadersResponse.prototype.clearHeadersList = function () {
@@ -11845,14 +11839,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockHeadersResponse.prototype.getHasnext = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 4, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.GetBlockHeadersResponse.prototype.setHasnext = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -11867,10 +11861,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockRequest.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockRequest.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetBlockRequest, jspb.Message);
+  goog.inherits(proto.types.GetBlockRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetBlockRequest.displayName = 'proto.types.GetBlockRequest';
@@ -11884,7 +11878,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetBlockRequest.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -11929,7 +11923,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetBlockRequest();
     return proto.types.GetBlockRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -11973,7 +11967,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetBlockRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -12003,7 +11997,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockRequest.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /**
@@ -12016,7 +12010,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockRequest.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -12031,14 +12025,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockRequest.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetBlockRequest.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -12047,7 +12041,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockRequest.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.GetBlockRequest.prototype.clearHashesList = function () {
@@ -12066,10 +12060,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockResponse.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetBlockResponse.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetBlockResponse, jspb.Message);
+  goog.inherits(proto.types.GetBlockResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetBlockResponse.displayName = 'proto.types.GetBlockResponse';
@@ -12083,7 +12077,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetBlockResponse.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -12110,9 +12104,9 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetBlockResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
-        blocksList: jspb.Message.toObjectList(msg.getBlocksList(), blockchain_pb.Block.toObject, includeInstance),
-        hasnext: jspb.Message.getFieldWithDefault(msg, 3, false)
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
+        blocksList: googleProtobuf.Message.toObjectList(msg.getBlocksList(), blockchain_pb.Block.toObject, includeInstance),
+        hasnext: googleProtobuf.Message.getFieldWithDefault(msg, 3, false)
       };
 
       if (includeInstance) {
@@ -12130,7 +12124,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetBlockResponse();
     return proto.types.GetBlockResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -12187,7 +12181,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetBlockResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -12229,14 +12223,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetBlockResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated Block blocks = 2;
@@ -12247,14 +12241,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockResponse.prototype.getBlocksList = function () {
     return (
       /** @type{!Array.<!proto.types.Block>} */
-      jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Block, 2)
+      googleProtobuf.Message.getRepeatedWrapperField(this, blockchain_pb.Block, 2)
     );
   };
   /** @param {!Array.<!proto.types.Block>} value */
 
 
   proto.types.GetBlockResponse.prototype.setBlocksList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 2, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 2, value);
   };
   /**
    * @param {!proto.types.Block=} opt_value
@@ -12264,7 +12258,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetBlockResponse.prototype.addBlocks = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.Block, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.types.Block, opt_index);
   };
 
   proto.types.GetBlockResponse.prototype.clearBlocksList = function () {
@@ -12281,14 +12275,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetBlockResponse.prototype.getHasnext = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 3, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.GetBlockResponse.prototype.setHasnext = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -12303,10 +12297,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewTransactionsNotice = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.NewTransactionsNotice.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.NewTransactionsNotice.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.NewTransactionsNotice, jspb.Message);
+  goog.inherits(proto.types.NewTransactionsNotice, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.NewTransactionsNotice.displayName = 'proto.types.NewTransactionsNotice';
@@ -12320,7 +12314,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.NewTransactionsNotice.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -12365,7 +12359,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewTransactionsNotice.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.NewTransactionsNotice();
     return proto.types.NewTransactionsNotice.deserializeBinaryFromReader(msg, reader);
   };
@@ -12409,7 +12403,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewTransactionsNotice.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.NewTransactionsNotice.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -12439,7 +12433,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewTransactionsNotice.prototype.getTxhashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /**
@@ -12452,7 +12446,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewTransactionsNotice.prototype.getTxhashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getTxhashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getTxhashesList())
     );
   };
   /**
@@ -12467,14 +12461,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.NewTransactionsNotice.prototype.getTxhashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getTxhashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getTxhashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.NewTransactionsNotice.prototype.setTxhashesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -12483,7 +12477,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NewTransactionsNotice.prototype.addTxhashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.NewTransactionsNotice.prototype.clearTxhashesList = function () {
@@ -12502,10 +12496,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetTransactionsRequest.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetTransactionsRequest.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetTransactionsRequest, jspb.Message);
+  goog.inherits(proto.types.GetTransactionsRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetTransactionsRequest.displayName = 'proto.types.GetTransactionsRequest';
@@ -12519,7 +12513,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetTransactionsRequest.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -12564,7 +12558,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetTransactionsRequest();
     return proto.types.GetTransactionsRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -12608,7 +12602,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetTransactionsRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -12638,7 +12632,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsRequest.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /**
@@ -12651,7 +12645,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsRequest.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -12666,14 +12660,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsRequest.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetTransactionsRequest.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -12682,7 +12676,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsRequest.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.GetTransactionsRequest.prototype.clearHashesList = function () {
@@ -12701,10 +12695,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetTransactionsResponse.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetTransactionsResponse.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetTransactionsResponse, jspb.Message);
+  goog.inherits(proto.types.GetTransactionsResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetTransactionsResponse.displayName = 'proto.types.GetTransactionsResponse';
@@ -12718,7 +12712,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetTransactionsResponse.repeatedFields_ = [2, 3];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -12745,10 +12739,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetTransactionsResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         hashesList: msg.getHashesList_asB64(),
-        txsList: jspb.Message.toObjectList(msg.getTxsList(), blockchain_pb.Tx.toObject, includeInstance),
-        hasnext: jspb.Message.getFieldWithDefault(msg, 4, false)
+        txsList: googleProtobuf.Message.toObjectList(msg.getTxsList(), blockchain_pb.Tx.toObject, includeInstance),
+        hasnext: googleProtobuf.Message.getFieldWithDefault(msg, 4, false)
       };
 
       if (includeInstance) {
@@ -12766,7 +12760,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetTransactionsResponse();
     return proto.types.GetTransactionsResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -12830,7 +12824,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetTransactionsResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -12878,14 +12872,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetTransactionsResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated bytes hashes = 2;
@@ -12896,7 +12890,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 2)
+      googleProtobuf.Message.getRepeatedField(this, 2)
     );
   };
   /**
@@ -12909,7 +12903,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -12924,14 +12918,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetTransactionsResponse.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 2, value || []);
+    googleProtobuf.Message.setField(this, 2, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -12940,7 +12934,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsResponse.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 2, value, opt_index);
   };
 
   proto.types.GetTransactionsResponse.prototype.clearHashesList = function () {
@@ -12955,14 +12949,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getTxsList = function () {
     return (
       /** @type{!Array.<!proto.types.Tx>} */
-      jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Tx, 3)
+      googleProtobuf.Message.getRepeatedWrapperField(this, blockchain_pb.Tx, 3)
     );
   };
   /** @param {!Array.<!proto.types.Tx>} value */
 
 
   proto.types.GetTransactionsResponse.prototype.setTxsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 3, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 3, value);
   };
   /**
    * @param {!proto.types.Tx=} opt_value
@@ -12972,7 +12966,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetTransactionsResponse.prototype.addTxs = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.Tx, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.types.Tx, opt_index);
   };
 
   proto.types.GetTransactionsResponse.prototype.clearTxsList = function () {
@@ -12989,14 +12983,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetTransactionsResponse.prototype.getHasnext = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 4, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.GetTransactionsResponse.prototype.setHasnext = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -13011,10 +13005,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetMissingRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetMissingRequest.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetMissingRequest.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetMissingRequest, jspb.Message);
+  goog.inherits(proto.types.GetMissingRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetMissingRequest.displayName = 'proto.types.GetMissingRequest';
@@ -13028,7 +13022,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetMissingRequest.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -13074,7 +13068,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetMissingRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetMissingRequest();
     return proto.types.GetMissingRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -13125,7 +13119,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetMissingRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetMissingRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -13161,7 +13155,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /**
@@ -13174,7 +13168,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -13189,14 +13183,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetMissingRequest.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -13205,7 +13199,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetMissingRequest.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.GetMissingRequest.prototype.clearHashesList = function () {
@@ -13220,7 +13214,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getStophash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -13233,7 +13227,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getStophash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getStophash())
+      googleProtobuf.Message.bytesAsB64(this.getStophash())
     );
   };
   /**
@@ -13248,14 +13242,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetMissingRequest.prototype.getStophash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getStophash())
+      googleProtobuf.Message.bytesAsU8(this.getStophash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.GetMissingRequest.prototype.setStophash = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -13270,10 +13264,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetAncestorRequest.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetAncestorRequest.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetAncestorRequest, jspb.Message);
+  goog.inherits(proto.types.GetAncestorRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetAncestorRequest.displayName = 'proto.types.GetAncestorRequest';
@@ -13287,7 +13281,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetAncestorRequest.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -13332,7 +13326,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetAncestorRequest();
     return proto.types.GetAncestorRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -13376,7 +13370,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetAncestorRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -13406,7 +13400,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorRequest.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /**
@@ -13419,7 +13413,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorRequest.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -13434,14 +13428,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorRequest.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetAncestorRequest.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -13450,7 +13444,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorRequest.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.GetAncestorRequest.prototype.clearHashesList = function () {
@@ -13469,16 +13463,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GetAncestorResponse, jspb.Message);
+  goog.inherits(proto.types.GetAncestorResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetAncestorResponse.displayName = 'proto.types.GetAncestorResponse';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -13505,9 +13499,9 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetAncestorResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         ancestorhash: msg.getAncestorhash_asB64(),
-        ancestorno: jspb.Message.getFieldWithDefault(msg, 3, 0)
+        ancestorno: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0)
       };
 
       if (includeInstance) {
@@ -13525,7 +13519,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetAncestorResponse();
     return proto.types.GetAncestorResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -13583,7 +13577,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetAncestorResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetAncestorResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -13625,14 +13619,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetAncestorResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes ancestorHash = 2;
@@ -13643,7 +13637,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorResponse.prototype.getAncestorhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -13656,7 +13650,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorResponse.prototype.getAncestorhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAncestorhash())
+      googleProtobuf.Message.bytesAsB64(this.getAncestorhash())
     );
   };
   /**
@@ -13671,14 +13665,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorResponse.prototype.getAncestorhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAncestorhash())
+      googleProtobuf.Message.bytesAsU8(this.getAncestorhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.GetAncestorResponse.prototype.setAncestorhash = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 ancestorNo = 3;
@@ -13689,14 +13683,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetAncestorResponse.prototype.getAncestorno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetAncestorResponse.prototype.setAncestorno = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -13711,16 +13705,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNo = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GetHashByNo, jspb.Message);
+  goog.inherits(proto.types.GetHashByNo, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetHashByNo.displayName = 'proto.types.GetHashByNo';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -13747,7 +13741,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetHashByNo.toObject = function (includeInstance, msg) {
       var obj = {
-        blockno: jspb.Message.getFieldWithDefault(msg, 1, 0)
+        blockno: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0)
       };
 
       if (includeInstance) {
@@ -13765,7 +13759,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNo.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetHashByNo();
     return proto.types.GetHashByNo.deserializeBinaryFromReader(msg, reader);
   };
@@ -13809,7 +13803,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNo.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetHashByNo.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -13839,14 +13833,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashByNo.prototype.getBlockno = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetHashByNo.prototype.setBlockno = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -13861,16 +13855,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNoResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GetHashByNoResponse, jspb.Message);
+  goog.inherits(proto.types.GetHashByNoResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetHashByNoResponse.displayName = 'proto.types.GetHashByNoResponse';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -13897,7 +13891,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetHashByNoResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         blockhash: msg.getBlockhash_asB64()
       };
 
@@ -13916,7 +13910,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNoResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetHashByNoResponse();
     return proto.types.GetHashByNoResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -13967,7 +13961,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashByNoResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetHashByNoResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -14003,14 +13997,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashByNoResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetHashByNoResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes blockHash = 2;
@@ -14021,7 +14015,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashByNoResponse.prototype.getBlockhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -14034,7 +14028,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashByNoResponse.prototype.getBlockhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBlockhash())
+      googleProtobuf.Message.bytesAsB64(this.getBlockhash())
     );
   };
   /**
@@ -14049,14 +14043,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashByNoResponse.prototype.getBlockhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBlockhash())
+      googleProtobuf.Message.bytesAsU8(this.getBlockhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.GetHashByNoResponse.prototype.setBlockhash = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -14071,16 +14065,16 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.GetHashesRequest, jspb.Message);
+  goog.inherits(proto.types.GetHashesRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetHashesRequest.displayName = 'proto.types.GetHashesRequest';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -14108,8 +14102,8 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
     proto.types.GetHashesRequest.toObject = function (includeInstance, msg) {
       var obj = {
         prevhash: msg.getPrevhash_asB64(),
-        prevnumber: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        size: jspb.Message.getFieldWithDefault(msg, 3, 0)
+        prevnumber: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        size: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0)
       };
 
       if (includeInstance) {
@@ -14127,7 +14121,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetHashesRequest();
     return proto.types.GetHashesRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -14185,7 +14179,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetHashesRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -14227,7 +14221,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesRequest.prototype.getPrevhash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -14240,7 +14234,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesRequest.prototype.getPrevhash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPrevhash())
+      googleProtobuf.Message.bytesAsB64(this.getPrevhash())
     );
   };
   /**
@@ -14255,14 +14249,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesRequest.prototype.getPrevhash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPrevhash())
+      googleProtobuf.Message.bytesAsU8(this.getPrevhash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.GetHashesRequest.prototype.setPrevhash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 prevNumber = 2;
@@ -14273,14 +14267,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesRequest.prototype.getPrevnumber = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetHashesRequest.prototype.setPrevnumber = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 size = 3;
@@ -14291,14 +14285,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesRequest.prototype.getSize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.GetHashesRequest.prototype.setSize = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -14313,10 +14307,10 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesResponse = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.GetHashesResponse.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.GetHashesResponse.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.GetHashesResponse, jspb.Message);
+  goog.inherits(proto.types.GetHashesResponse, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.GetHashesResponse.displayName = 'proto.types.GetHashesResponse';
@@ -14330,7 +14324,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.GetHashesResponse.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -14357,9 +14351,9 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.GetHashesResponse.toObject = function (includeInstance, msg) {
       var obj = {
-        status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        status: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         hashesList: msg.getHashesList_asB64(),
-        hasnext: jspb.Message.getFieldWithDefault(msg, 3, false)
+        hasnext: googleProtobuf.Message.getFieldWithDefault(msg, 3, false)
       };
 
       if (includeInstance) {
@@ -14377,7 +14371,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesResponse.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.GetHashesResponse();
     return proto.types.GetHashesResponse.deserializeBinaryFromReader(msg, reader);
   };
@@ -14435,7 +14429,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesResponse.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.GetHashesResponse.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -14477,14 +14471,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesResponse.prototype.getStatus = function () {
     return (
       /** @type {!proto.types.ResultStatus} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {!proto.types.ResultStatus} value */
 
 
   proto.types.GetHashesResponse.prototype.setStatus = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated bytes hashes = 2;
@@ -14495,7 +14489,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesResponse.prototype.getHashesList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 2)
+      googleProtobuf.Message.getRepeatedField(this, 2)
     );
   };
   /**
@@ -14508,7 +14502,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesResponse.prototype.getHashesList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getHashesList())
+      googleProtobuf.Message.bytesListAsB64(this.getHashesList())
     );
   };
   /**
@@ -14523,14 +14517,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesResponse.prototype.getHashesList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getHashesList())
+      googleProtobuf.Message.bytesListAsU8(this.getHashesList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.GetHashesResponse.prototype.setHashesList = function (value) {
-    jspb.Message.setField(this, 2, value || []);
+    googleProtobuf.Message.setField(this, 2, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -14539,7 +14533,7 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.GetHashesResponse.prototype.addHashes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 2, value, opt_index);
   };
 
   proto.types.GetHashesResponse.prototype.clearHashesList = function () {
@@ -14556,14 +14550,14 @@ var p2p_pb = createCommonjsModule(function (module, exports) {
   proto.types.GetHashesResponse.prototype.getHasnext = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 3, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.GetHashesResponse.prototype.setHasnext = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * @enum {number}
@@ -14601,7 +14595,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.MetricType', null, global);
   goog.exportSymbol('proto.types.Metrics', null, global);
@@ -14619,10 +14613,10 @@ var metric_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.MetricsRequest = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.MetricsRequest.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.MetricsRequest.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.MetricsRequest, jspb.Message);
+  goog.inherits(proto.types.MetricsRequest, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.MetricsRequest.displayName = 'proto.types.MetricsRequest';
@@ -14636,7 +14630,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.MetricsRequest.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -14663,7 +14657,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.MetricsRequest.toObject = function (includeInstance, msg) {
       var obj = {
-        typesList: jspb.Message.getRepeatedField(msg, 1)
+        typesList: googleProtobuf.Message.getRepeatedField(msg, 1)
       };
 
       if (includeInstance) {
@@ -14681,7 +14675,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.MetricsRequest.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.MetricsRequest();
     return proto.types.MetricsRequest.deserializeBinaryFromReader(msg, reader);
   };
@@ -14725,7 +14719,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.MetricsRequest.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.MetricsRequest.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -14755,14 +14749,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.MetricsRequest.prototype.getTypesList = function () {
     return (
       /** @type {!Array.<!proto.types.MetricType>} */
-      jspb.Message.getRepeatedField(this, 1)
+      googleProtobuf.Message.getRepeatedField(this, 1)
     );
   };
   /** @param {!Array.<!proto.types.MetricType>} value */
 
 
   proto.types.MetricsRequest.prototype.setTypesList = function (value) {
-    jspb.Message.setField(this, 1, value || []);
+    googleProtobuf.Message.setField(this, 1, value || []);
   };
   /**
    * @param {!proto.types.MetricType} value
@@ -14771,7 +14765,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.MetricsRequest.prototype.addTypes = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 1, value, opt_index);
   };
 
   proto.types.MetricsRequest.prototype.clearTypesList = function () {
@@ -14790,10 +14784,10 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Metrics = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Metrics.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.Metrics.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.Metrics, jspb.Message);
+  goog.inherits(proto.types.Metrics, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Metrics.displayName = 'proto.types.Metrics';
@@ -14807,7 +14801,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Metrics.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -14834,7 +14828,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.Metrics.toObject = function (includeInstance, msg) {
       var obj = {
-        peersList: jspb.Message.toObjectList(msg.getPeersList(), proto.types.PeerMetric.toObject, includeInstance)
+        peersList: googleProtobuf.Message.toObjectList(msg.getPeersList(), proto.types.PeerMetric.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -14852,7 +14846,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Metrics.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Metrics();
     return proto.types.Metrics.deserializeBinaryFromReader(msg, reader);
   };
@@ -14895,7 +14889,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Metrics.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Metrics.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -14925,14 +14919,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.Metrics.prototype.getPeersList = function () {
     return (
       /** @type{!Array.<!proto.types.PeerMetric>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.PeerMetric, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.PeerMetric, 1)
     );
   };
   /** @param {!Array.<!proto.types.PeerMetric>} value */
 
 
   proto.types.Metrics.prototype.setPeersList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.PeerMetric=} opt_value
@@ -14942,7 +14936,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Metrics.prototype.addPeers = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.PeerMetric, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.PeerMetric, opt_index);
   };
 
   proto.types.Metrics.prototype.clearPeersList = function () {
@@ -14961,16 +14955,16 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerMetric = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.PeerMetric, jspb.Message);
+  goog.inherits(proto.types.PeerMetric, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.PeerMetric.displayName = 'proto.types.PeerMetric';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -14998,10 +14992,10 @@ var metric_pb = createCommonjsModule(function (module, exports) {
     proto.types.PeerMetric.toObject = function (includeInstance, msg) {
       var obj = {
         peerid: msg.getPeerid_asB64(),
-        sumin: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        avrin: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        sumout: jspb.Message.getFieldWithDefault(msg, 4, 0),
-        avrout: jspb.Message.getFieldWithDefault(msg, 5, 0)
+        sumin: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        avrin: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        sumout: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+        avrout: googleProtobuf.Message.getFieldWithDefault(msg, 5, 0)
       };
 
       if (includeInstance) {
@@ -15019,7 +15013,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerMetric.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.PeerMetric();
     return proto.types.PeerMetric.deserializeBinaryFromReader(msg, reader);
   };
@@ -15091,7 +15085,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerMetric.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.PeerMetric.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -15145,7 +15139,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getPeerid = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -15158,7 +15152,7 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getPeerid_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getPeerid())
+      googleProtobuf.Message.bytesAsB64(this.getPeerid())
     );
   };
   /**
@@ -15173,14 +15167,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getPeerid_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getPeerid())
+      googleProtobuf.Message.bytesAsU8(this.getPeerid())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.PeerMetric.prototype.setPeerid = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional int64 sumIn = 2;
@@ -15191,14 +15185,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getSumin = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PeerMetric.prototype.setSumin = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional int64 avrIn = 3;
@@ -15209,14 +15203,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getAvrin = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PeerMetric.prototype.setAvrin = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional int64 sumOut = 4;
@@ -15227,14 +15221,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getSumout = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PeerMetric.prototype.setSumout = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional int64 avrOut = 5;
@@ -15245,14 +15239,14 @@ var metric_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerMetric.prototype.getAvrout = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 5, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PeerMetric.prototype.setAvrout = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * @enum {number}
@@ -15275,7 +15269,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
    * @public
    */
   // GENERATED CODE -- DO NOT EDIT!
-  var goog = jspb;
+  var goog = googleProtobuf;
   var global = Function('return this')();
   goog.exportSymbol('proto.types.AccountAndRoot', null, global);
   goog.exportSymbol('proto.types.BlockBodyPaged', null, global);
@@ -15321,16 +15315,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
    */
 
   proto.types.BlockchainStatus = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockchainStatus, jspb.Message);
+  goog.inherits(proto.types.BlockchainStatus, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockchainStatus.displayName = 'proto.types.BlockchainStatus';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -15358,7 +15352,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.BlockchainStatus.toObject = function (includeInstance, msg) {
       var obj = {
         bestBlockHash: msg.getBestBlockHash_asB64(),
-        bestHeight: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        bestHeight: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -15376,7 +15370,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockchainStatus.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockchainStatus();
     return proto.types.BlockchainStatus.deserializeBinaryFromReader(msg, reader);
   };
@@ -15427,7 +15421,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockchainStatus.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockchainStatus.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -15463,7 +15457,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockchainStatus.prototype.getBestBlockHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -15476,7 +15470,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockchainStatus.prototype.getBestBlockHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getBestBlockHash())
+      googleProtobuf.Message.bytesAsB64(this.getBestBlockHash())
     );
   };
   /**
@@ -15491,14 +15485,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockchainStatus.prototype.getBestBlockHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getBestBlockHash())
+      googleProtobuf.Message.bytesAsU8(this.getBestBlockHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockchainStatus.prototype.setBestBlockHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 best_height = 2;
@@ -15509,14 +15503,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockchainStatus.prototype.getBestHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockchainStatus.prototype.setBestHeight = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -15531,16 +15525,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainId = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.ChainId, jspb.Message);
+  goog.inherits(proto.types.ChainId, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ChainId.displayName = 'proto.types.ChainId';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -15567,11 +15561,11 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.ChainId.toObject = function (includeInstance, msg) {
       var obj = {
-        magic: jspb.Message.getFieldWithDefault(msg, 1, ""),
-        pb_public: jspb.Message.getFieldWithDefault(msg, 2, false),
-        mainnet: jspb.Message.getFieldWithDefault(msg, 3, false),
+        magic: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
+        pb_public: googleProtobuf.Message.getFieldWithDefault(msg, 2, false),
+        mainnet: googleProtobuf.Message.getFieldWithDefault(msg, 3, false),
         coinbasefee: msg.getCoinbasefee_asB64(),
-        consensus: jspb.Message.getFieldWithDefault(msg, 5, "")
+        consensus: googleProtobuf.Message.getFieldWithDefault(msg, 5, "")
       };
 
       if (includeInstance) {
@@ -15589,7 +15583,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainId.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ChainId();
     return proto.types.ChainId.deserializeBinaryFromReader(msg, reader);
   };
@@ -15661,7 +15655,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainId.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ChainId.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -15715,14 +15709,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getMagic = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ChainId.prototype.setMagic = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bool public = 2;
@@ -15735,14 +15729,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getPublic = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 2, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.ChainId.prototype.setPublic = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bool mainnet = 3;
@@ -15755,14 +15749,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getMainnet = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 3, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.ChainId.prototype.setMainnet = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes coinbasefee = 4;
@@ -15773,7 +15767,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getCoinbasefee = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -15786,7 +15780,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getCoinbasefee_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getCoinbasefee())
+      googleProtobuf.Message.bytesAsB64(this.getCoinbasefee())
     );
   };
   /**
@@ -15801,14 +15795,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getCoinbasefee_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getCoinbasefee())
+      googleProtobuf.Message.bytesAsU8(this.getCoinbasefee())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ChainId.prototype.setCoinbasefee = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional string consensus = 5;
@@ -15819,14 +15813,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainId.prototype.getConsensus = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ChainId.prototype.setConsensus = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -15841,16 +15835,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainInfo = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.ChainInfo, jspb.Message);
+  goog.inherits(proto.types.ChainInfo, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ChainInfo.displayName = 'proto.types.ChainInfo';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -15879,8 +15873,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         chainid: (f = msg.getChainid()) && proto.types.ChainId.toObject(includeInstance, f),
-        bpnumber: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        maxblocksize: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        bpnumber: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        maxblocksize: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
         maxtokens: msg.getMaxtokens_asB64(),
         stakingminimum: msg.getStakingminimum_asB64()
       };
@@ -15900,7 +15894,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainInfo.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ChainInfo();
     return proto.types.ChainInfo.deserializeBinaryFromReader(msg, reader);
   };
@@ -15971,7 +15965,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainInfo.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ChainInfo.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -16025,14 +16019,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getChainid = function () {
     return (
       /** @type{?proto.types.ChainId} */
-      jspb.Message.getWrapperField(this, proto.types.ChainId, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.ChainId, 1)
     );
   };
   /** @param {?proto.types.ChainId|undefined} value */
 
 
   proto.types.ChainInfo.prototype.setChainid = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.ChainInfo.prototype.clearChainid = function () {
@@ -16045,7 +16039,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ChainInfo.prototype.hasChainid = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional uint32 bpnumber = 2;
@@ -16056,14 +16050,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getBpnumber = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ChainInfo.prototype.setBpnumber = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint64 maxblocksize = 3;
@@ -16074,14 +16068,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getMaxblocksize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ChainInfo.prototype.setMaxblocksize = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes maxtokens = 4;
@@ -16092,7 +16086,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getMaxtokens = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -16105,7 +16099,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getMaxtokens_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getMaxtokens())
+      googleProtobuf.Message.bytesAsB64(this.getMaxtokens())
     );
   };
   /**
@@ -16120,14 +16114,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getMaxtokens_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getMaxtokens())
+      googleProtobuf.Message.bytesAsU8(this.getMaxtokens())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ChainInfo.prototype.setMaxtokens = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bytes stakingminimum = 5;
@@ -16138,7 +16132,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getStakingminimum = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 5, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 5, "")
     );
   };
   /**
@@ -16151,7 +16145,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getStakingminimum_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getStakingminimum())
+      googleProtobuf.Message.bytesAsB64(this.getStakingminimum())
     );
   };
   /**
@@ -16166,14 +16160,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ChainInfo.prototype.getStakingminimum_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getStakingminimum())
+      googleProtobuf.Message.bytesAsU8(this.getStakingminimum())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ChainInfo.prototype.setStakingminimum = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -16188,10 +16182,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Input = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Input.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.Input.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.Input, jspb.Message);
+  goog.inherits(proto.types.Input, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Input.displayName = 'proto.types.Input';
@@ -16205,7 +16199,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.Input.repeatedFields_ = [2];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -16253,7 +16247,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Input.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Input();
     return proto.types.Input.deserializeBinaryFromReader(msg, reader);
   };
@@ -16318,7 +16312,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Input.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Input.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -16366,7 +16360,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -16379,7 +16373,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -16394,14 +16388,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Input.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * repeated bytes address = 2;
@@ -16412,7 +16406,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getAddressList = function () {
     return (
       /** @type {!(Array<!Uint8Array>|Array<string>)} */
-      jspb.Message.getRepeatedField(this, 2)
+      googleProtobuf.Message.getRepeatedField(this, 2)
     );
   };
   /**
@@ -16425,7 +16419,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getAddressList_asB64 = function () {
     return (
       /** @type {!Array.<string>} */
-      jspb.Message.bytesListAsB64(this.getAddressList())
+      googleProtobuf.Message.bytesListAsB64(this.getAddressList())
     );
   };
   /**
@@ -16440,14 +16434,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getAddressList_asU8 = function () {
     return (
       /** @type {!Array.<!Uint8Array>} */
-      jspb.Message.bytesListAsU8(this.getAddressList())
+      googleProtobuf.Message.bytesListAsU8(this.getAddressList())
     );
   };
   /** @param {!(Array<!Uint8Array>|Array<string>)} value */
 
 
   proto.types.Input.prototype.setAddressList = function (value) {
-    jspb.Message.setField(this, 2, value || []);
+    googleProtobuf.Message.setField(this, 2, value || []);
   };
   /**
    * @param {!(string|Uint8Array)} value
@@ -16456,7 +16450,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Input.prototype.addAddress = function (value, opt_index) {
-    jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+    googleProtobuf.Message.addToRepeatedField(this, 2, value, opt_index);
   };
 
   proto.types.Input.prototype.clearAddressList = function () {
@@ -16471,7 +16465,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getValue = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -16484,7 +16478,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getValue_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getValue())
+      googleProtobuf.Message.bytesAsB64(this.getValue())
     );
   };
   /**
@@ -16499,14 +16493,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getValue_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getValue())
+      googleProtobuf.Message.bytesAsU8(this.getValue())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Input.prototype.setValue = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes script = 4;
@@ -16517,7 +16511,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getScript = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -16530,7 +16524,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getScript_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getScript())
+      googleProtobuf.Message.bytesAsB64(this.getScript())
     );
   };
   /**
@@ -16545,14 +16539,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Input.prototype.getScript_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getScript())
+      googleProtobuf.Message.bytesAsU8(this.getScript())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Input.prototype.setScript = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -16567,16 +16561,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Output = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Output, jspb.Message);
+  goog.inherits(proto.types.Output, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Output.displayName = 'proto.types.Output';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -16603,7 +16597,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.Output.toObject = function (includeInstance, msg) {
       var obj = {
-        index: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        index: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
         address: msg.getAddress_asB64(),
         value: msg.getValue_asB64(),
         script: msg.getScript_asB64()
@@ -16624,7 +16618,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Output.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Output();
     return proto.types.Output.deserializeBinaryFromReader(msg, reader);
   };
@@ -16689,7 +16683,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Output.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Output.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -16737,14 +16731,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getIndex = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Output.prototype.setIndex = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes address = 2;
@@ -16755,7 +16749,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getAddress = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -16768,7 +16762,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getAddress_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAddress())
+      googleProtobuf.Message.bytesAsB64(this.getAddress())
     );
   };
   /**
@@ -16783,14 +16777,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getAddress_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAddress())
+      googleProtobuf.Message.bytesAsU8(this.getAddress())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Output.prototype.setAddress = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes value = 3;
@@ -16801,7 +16795,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getValue = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -16814,7 +16808,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getValue_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getValue())
+      googleProtobuf.Message.bytesAsB64(this.getValue())
     );
   };
   /**
@@ -16829,14 +16823,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getValue_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getValue())
+      googleProtobuf.Message.bytesAsU8(this.getValue())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Output.prototype.setValue = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bytes script = 4;
@@ -16847,7 +16841,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getScript = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 4, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 4, "")
     );
   };
   /**
@@ -16860,7 +16854,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getScript_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getScript())
+      googleProtobuf.Message.bytesAsB64(this.getScript())
     );
   };
   /**
@@ -16875,14 +16869,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Output.prototype.getScript_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getScript())
+      googleProtobuf.Message.bytesAsU8(this.getScript())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Output.prototype.setScript = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -16897,16 +16891,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Empty = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Empty, jspb.Message);
+  goog.inherits(proto.types.Empty, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Empty.displayName = 'proto.types.Empty';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -16949,7 +16943,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Empty.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Empty();
     return proto.types.Empty.deserializeBinaryFromReader(msg, reader);
   };
@@ -16986,7 +16980,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Empty.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Empty.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -17014,16 +17008,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.SingleBytes = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.SingleBytes, jspb.Message);
+  goog.inherits(proto.types.SingleBytes, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.SingleBytes.displayName = 'proto.types.SingleBytes';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -17068,7 +17062,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.SingleBytes.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.SingleBytes();
     return proto.types.SingleBytes.deserializeBinaryFromReader(msg, reader);
   };
@@ -17112,7 +17106,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.SingleBytes.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.SingleBytes.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -17142,7 +17136,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.SingleBytes.prototype.getValue = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -17155,7 +17149,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.SingleBytes.prototype.getValue_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getValue())
+      googleProtobuf.Message.bytesAsB64(this.getValue())
     );
   };
   /**
@@ -17170,14 +17164,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.SingleBytes.prototype.getValue_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getValue())
+      googleProtobuf.Message.bytesAsU8(this.getValue())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.SingleBytes.prototype.setValue = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -17192,16 +17186,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountAndRoot = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.AccountAndRoot, jspb.Message);
+  goog.inherits(proto.types.AccountAndRoot, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.AccountAndRoot.displayName = 'proto.types.AccountAndRoot';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -17230,7 +17224,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
       var obj = {
         account: msg.getAccount_asB64(),
         root: msg.getRoot_asB64(),
-        compressed: jspb.Message.getFieldWithDefault(msg, 3, false)
+        compressed: googleProtobuf.Message.getFieldWithDefault(msg, 3, false)
       };
 
       if (includeInstance) {
@@ -17248,7 +17242,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountAndRoot.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.AccountAndRoot();
     return proto.types.AccountAndRoot.deserializeBinaryFromReader(msg, reader);
   };
@@ -17306,7 +17300,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.AccountAndRoot.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.AccountAndRoot.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -17348,7 +17342,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getAccount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -17361,7 +17355,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getAccount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAccount())
+      googleProtobuf.Message.bytesAsB64(this.getAccount())
     );
   };
   /**
@@ -17376,14 +17370,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getAccount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAccount())
+      googleProtobuf.Message.bytesAsU8(this.getAccount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountAndRoot.prototype.setAccount = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes Root = 2;
@@ -17394,7 +17388,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getRoot = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -17407,7 +17401,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getRoot_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getRoot())
+      googleProtobuf.Message.bytesAsB64(this.getRoot())
     );
   };
   /**
@@ -17422,14 +17416,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getRoot_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getRoot())
+      googleProtobuf.Message.bytesAsU8(this.getRoot())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.AccountAndRoot.prototype.setRoot = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bool Compressed = 3;
@@ -17442,14 +17436,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.AccountAndRoot.prototype.getCompressed = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 3, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.AccountAndRoot.prototype.setCompressed = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -17464,16 +17458,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Peer = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Peer, jspb.Message);
+  goog.inherits(proto.types.Peer, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Peer.displayName = 'proto.types.Peer';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -17503,10 +17497,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
           obj = {
         address: (f = msg.getAddress()) && node_pb.PeerAddress.toObject(includeInstance, f),
         bestblock: (f = msg.getBestblock()) && p2p_pb.NewBlockNotice.toObject(includeInstance, f),
-        state: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        hidden: jspb.Message.getFieldWithDefault(msg, 4, false),
-        lashcheck: jspb.Message.getFieldWithDefault(msg, 5, 0),
-        selfpeer: jspb.Message.getFieldWithDefault(msg, 6, false)
+        state: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        hidden: googleProtobuf.Message.getFieldWithDefault(msg, 4, false),
+        lashcheck: googleProtobuf.Message.getFieldWithDefault(msg, 5, 0),
+        selfpeer: googleProtobuf.Message.getFieldWithDefault(msg, 6, false)
       };
 
       if (includeInstance) {
@@ -17524,7 +17518,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Peer.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Peer();
     return proto.types.Peer.deserializeBinaryFromReader(msg, reader);
   };
@@ -17601,7 +17595,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Peer.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Peer.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -17661,14 +17655,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getAddress = function () {
     return (
       /** @type{?proto.types.PeerAddress} */
-      jspb.Message.getWrapperField(this, node_pb.PeerAddress, 1)
+      googleProtobuf.Message.getWrapperField(this, node_pb.PeerAddress, 1)
     );
   };
   /** @param {?proto.types.PeerAddress|undefined} value */
 
 
   proto.types.Peer.prototype.setAddress = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.Peer.prototype.clearAddress = function () {
@@ -17681,7 +17675,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Peer.prototype.hasAddress = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional NewBlockNotice bestblock = 2;
@@ -17692,14 +17686,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getBestblock = function () {
     return (
       /** @type{?proto.types.NewBlockNotice} */
-      jspb.Message.getWrapperField(this, p2p_pb.NewBlockNotice, 2)
+      googleProtobuf.Message.getWrapperField(this, p2p_pb.NewBlockNotice, 2)
     );
   };
   /** @param {?proto.types.NewBlockNotice|undefined} value */
 
 
   proto.types.Peer.prototype.setBestblock = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.Peer.prototype.clearBestblock = function () {
@@ -17712,7 +17706,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Peer.prototype.hasBestblock = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * optional int32 state = 3;
@@ -17723,14 +17717,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getState = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Peer.prototype.setState = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional bool hidden = 4;
@@ -17743,14 +17737,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getHidden = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 4, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.Peer.prototype.setHidden = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional int64 lashCheck = 5;
@@ -17761,14 +17755,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getLashcheck = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 5, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Peer.prototype.setLashcheck = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * optional bool selfpeer = 6;
@@ -17781,14 +17775,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Peer.prototype.getSelfpeer = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 6, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 6, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.Peer.prototype.setSelfpeer = function (value) {
-    jspb.Message.setField(this, 6, value);
+    googleProtobuf.Message.setField(this, 6, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -17803,10 +17797,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.PeerList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.PeerList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.PeerList, jspb.Message);
+  goog.inherits(proto.types.PeerList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.PeerList.displayName = 'proto.types.PeerList';
@@ -17820,7 +17814,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.PeerList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -17847,7 +17841,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.PeerList.toObject = function (includeInstance, msg) {
       var obj = {
-        peersList: jspb.Message.toObjectList(msg.getPeersList(), proto.types.Peer.toObject, includeInstance)
+        peersList: googleProtobuf.Message.toObjectList(msg.getPeersList(), proto.types.Peer.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -17865,7 +17859,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.PeerList();
     return proto.types.PeerList.deserializeBinaryFromReader(msg, reader);
   };
@@ -17908,7 +17902,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.PeerList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -17938,14 +17932,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeerList.prototype.getPeersList = function () {
     return (
       /** @type{!Array.<!proto.types.Peer>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Peer, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Peer, 1)
     );
   };
   /** @param {!Array.<!proto.types.Peer>} value */
 
 
   proto.types.PeerList.prototype.setPeersList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Peer=} opt_value
@@ -17955,7 +17949,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeerList.prototype.addPeers = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Peer, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Peer, opt_index);
   };
 
   proto.types.PeerList.prototype.clearPeersList = function () {
@@ -17974,16 +17968,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ListParams = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.ListParams, jspb.Message);
+  goog.inherits(proto.types.ListParams, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ListParams.displayName = 'proto.types.ListParams';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -18011,10 +18005,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.ListParams.toObject = function (includeInstance, msg) {
       var obj = {
         hash: msg.getHash_asB64(),
-        height: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        size: jspb.Message.getFieldWithDefault(msg, 3, 0),
-        offset: jspb.Message.getFieldWithDefault(msg, 4, 0),
-        asc: jspb.Message.getFieldWithDefault(msg, 5, false)
+        height: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        size: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
+        offset: googleProtobuf.Message.getFieldWithDefault(msg, 4, 0),
+        asc: googleProtobuf.Message.getFieldWithDefault(msg, 5, false)
       };
 
       if (includeInstance) {
@@ -18032,7 +18026,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ListParams.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ListParams();
     return proto.types.ListParams.deserializeBinaryFromReader(msg, reader);
   };
@@ -18104,7 +18098,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ListParams.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ListParams.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -18158,7 +18152,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -18171,7 +18165,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -18186,14 +18180,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.ListParams.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 height = 2;
@@ -18204,14 +18198,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getHeight = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ListParams.prototype.setHeight = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint32 size = 3;
@@ -18222,14 +18216,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getSize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ListParams.prototype.setSize = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional uint32 offset = 4;
@@ -18240,14 +18234,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getOffset = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 4, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 4, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.ListParams.prototype.setOffset = function (value) {
-    jspb.Message.setField(this, 4, value);
+    googleProtobuf.Message.setField(this, 4, value);
   };
   /**
    * optional bool asc = 5;
@@ -18260,14 +18254,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ListParams.prototype.getAsc = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 5, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 5, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.ListParams.prototype.setAsc = function (value) {
-    jspb.Message.setField(this, 5, value);
+    googleProtobuf.Message.setField(this, 5, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -18282,16 +18276,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PageParams = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.PageParams, jspb.Message);
+  goog.inherits(proto.types.PageParams, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.PageParams.displayName = 'proto.types.PageParams';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -18318,8 +18312,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.PageParams.toObject = function (includeInstance, msg) {
       var obj = {
-        offset: jspb.Message.getFieldWithDefault(msg, 1, 0),
-        size: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        offset: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
+        size: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -18337,7 +18331,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PageParams.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.PageParams();
     return proto.types.PageParams.deserializeBinaryFromReader(msg, reader);
   };
@@ -18388,7 +18382,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PageParams.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.PageParams.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -18424,14 +18418,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.PageParams.prototype.getOffset = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PageParams.prototype.setOffset = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint32 size = 2;
@@ -18442,14 +18436,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.PageParams.prototype.getSize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.PageParams.prototype.setSize = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -18464,16 +18458,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyPaged = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockBodyPaged, jspb.Message);
+  goog.inherits(proto.types.BlockBodyPaged, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockBodyPaged.displayName = 'proto.types.BlockBodyPaged';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -18501,9 +18495,9 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.BlockBodyPaged.toObject = function (includeInstance, msg) {
       var f,
           obj = {
-        total: jspb.Message.getFieldWithDefault(msg, 1, 0),
-        offset: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        size: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        total: googleProtobuf.Message.getFieldWithDefault(msg, 1, 0),
+        offset: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        size: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0),
         body: (f = msg.getBody()) && blockchain_pb.BlockBody.toObject(includeInstance, f)
       };
 
@@ -18522,7 +18516,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyPaged.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockBodyPaged();
     return proto.types.BlockBodyPaged.deserializeBinaryFromReader(msg, reader);
   };
@@ -18586,7 +18580,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyPaged.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockBodyPaged.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -18634,14 +18628,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyPaged.prototype.getTotal = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 1, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockBodyPaged.prototype.setTotal = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint32 offset = 2;
@@ -18652,14 +18646,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyPaged.prototype.getOffset = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockBodyPaged.prototype.setOffset = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional uint32 size = 3;
@@ -18670,14 +18664,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyPaged.prototype.getSize = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockBodyPaged.prototype.setSize = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * optional BlockBody body = 4;
@@ -18688,14 +18682,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyPaged.prototype.getBody = function () {
     return (
       /** @type{?proto.types.BlockBody} */
-      jspb.Message.getWrapperField(this, blockchain_pb.BlockBody, 4)
+      googleProtobuf.Message.getWrapperField(this, blockchain_pb.BlockBody, 4)
     );
   };
   /** @param {?proto.types.BlockBody|undefined} value */
 
 
   proto.types.BlockBodyPaged.prototype.setBody = function (value) {
-    jspb.Message.setWrapperField(this, 4, value);
+    googleProtobuf.Message.setWrapperField(this, 4, value);
   };
 
   proto.types.BlockBodyPaged.prototype.clearBody = function () {
@@ -18708,7 +18702,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyPaged.prototype.hasBody = function () {
-    return jspb.Message.getField(this, 4) != null;
+    return googleProtobuf.Message.getField(this, 4) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -18723,16 +18717,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyParams = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockBodyParams, jspb.Message);
+  goog.inherits(proto.types.BlockBodyParams, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockBodyParams.displayName = 'proto.types.BlockBodyParams';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -18779,7 +18773,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyParams.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockBodyParams();
     return proto.types.BlockBodyParams.deserializeBinaryFromReader(msg, reader);
   };
@@ -18829,7 +18823,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyParams.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockBodyParams.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -18865,7 +18859,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyParams.prototype.getHashornumber = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -18878,7 +18872,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyParams.prototype.getHashornumber_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHashornumber())
+      googleProtobuf.Message.bytesAsB64(this.getHashornumber())
     );
   };
   /**
@@ -18893,14 +18887,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyParams.prototype.getHashornumber_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHashornumber())
+      googleProtobuf.Message.bytesAsU8(this.getHashornumber())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockBodyParams.prototype.setHashornumber = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional PageParams paging = 2;
@@ -18911,14 +18905,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockBodyParams.prototype.getPaging = function () {
     return (
       /** @type{?proto.types.PageParams} */
-      jspb.Message.getWrapperField(this, proto.types.PageParams, 2)
+      googleProtobuf.Message.getWrapperField(this, proto.types.PageParams, 2)
     );
   };
   /** @param {?proto.types.PageParams|undefined} value */
 
 
   proto.types.BlockBodyParams.prototype.setPaging = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.BlockBodyParams.prototype.clearPaging = function () {
@@ -18931,7 +18925,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockBodyParams.prototype.hasPaging = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -18946,10 +18940,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeaderList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.BlockHeaderList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.BlockHeaderList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.BlockHeaderList, jspb.Message);
+  goog.inherits(proto.types.BlockHeaderList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockHeaderList.displayName = 'proto.types.BlockHeaderList';
@@ -18963,7 +18957,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.BlockHeaderList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -18990,7 +18984,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.BlockHeaderList.toObject = function (includeInstance, msg) {
       var obj = {
-        blocksList: jspb.Message.toObjectList(msg.getBlocksList(), blockchain_pb.Block.toObject, includeInstance)
+        blocksList: googleProtobuf.Message.toObjectList(msg.getBlocksList(), blockchain_pb.Block.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -19008,7 +19002,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeaderList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockHeaderList();
     return proto.types.BlockHeaderList.deserializeBinaryFromReader(msg, reader);
   };
@@ -19051,7 +19045,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeaderList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockHeaderList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -19081,14 +19075,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockHeaderList.prototype.getBlocksList = function () {
     return (
       /** @type{!Array.<!proto.types.Block>} */
-      jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Block, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, blockchain_pb.Block, 1)
     );
   };
   /** @param {!Array.<!proto.types.Block>} value */
 
 
   proto.types.BlockHeaderList.prototype.setBlocksList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Block=} opt_value
@@ -19098,7 +19092,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockHeaderList.prototype.addBlocks = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Block, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Block, opt_index);
   };
 
   proto.types.BlockHeaderList.prototype.clearBlocksList = function () {
@@ -19117,16 +19111,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadata = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.BlockMetadata, jspb.Message);
+  goog.inherits(proto.types.BlockMetadata, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockMetadata.displayName = 'proto.types.BlockMetadata';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -19156,7 +19150,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
           obj = {
         hash: msg.getHash_asB64(),
         header: (f = msg.getHeader()) && blockchain_pb.BlockHeader.toObject(includeInstance, f),
-        txcount: jspb.Message.getFieldWithDefault(msg, 3, 0)
+        txcount: googleProtobuf.Message.getFieldWithDefault(msg, 3, 0)
       };
 
       if (includeInstance) {
@@ -19174,7 +19168,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadata.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockMetadata();
     return proto.types.BlockMetadata.deserializeBinaryFromReader(msg, reader);
   };
@@ -19231,7 +19225,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadata.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockMetadata.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -19273,7 +19267,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadata.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -19286,7 +19280,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadata.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -19301,14 +19295,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadata.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.BlockMetadata.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional BlockHeader header = 2;
@@ -19319,14 +19313,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadata.prototype.getHeader = function () {
     return (
       /** @type{?proto.types.BlockHeader} */
-      jspb.Message.getWrapperField(this, blockchain_pb.BlockHeader, 2)
+      googleProtobuf.Message.getWrapperField(this, blockchain_pb.BlockHeader, 2)
     );
   };
   /** @param {?proto.types.BlockHeader|undefined} value */
 
 
   proto.types.BlockMetadata.prototype.setHeader = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.BlockMetadata.prototype.clearHeader = function () {
@@ -19339,7 +19333,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadata.prototype.hasHeader = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * optional int32 txcount = 3;
@@ -19350,14 +19344,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadata.prototype.getTxcount = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 3, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 3, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.BlockMetadata.prototype.setTxcount = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -19372,10 +19366,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadataList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.BlockMetadataList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.BlockMetadataList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.BlockMetadataList, jspb.Message);
+  goog.inherits(proto.types.BlockMetadataList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.BlockMetadataList.displayName = 'proto.types.BlockMetadataList';
@@ -19389,7 +19383,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.BlockMetadataList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -19416,7 +19410,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.BlockMetadataList.toObject = function (includeInstance, msg) {
       var obj = {
-        blocksList: jspb.Message.toObjectList(msg.getBlocksList(), proto.types.BlockMetadata.toObject, includeInstance)
+        blocksList: googleProtobuf.Message.toObjectList(msg.getBlocksList(), proto.types.BlockMetadata.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -19434,7 +19428,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadataList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.BlockMetadataList();
     return proto.types.BlockMetadataList.deserializeBinaryFromReader(msg, reader);
   };
@@ -19477,7 +19471,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadataList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.BlockMetadataList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -19507,14 +19501,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.BlockMetadataList.prototype.getBlocksList = function () {
     return (
       /** @type{!Array.<!proto.types.BlockMetadata>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.BlockMetadata, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.BlockMetadata, 1)
     );
   };
   /** @param {!Array.<!proto.types.BlockMetadata>} value */
 
 
   proto.types.BlockMetadataList.prototype.setBlocksList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.BlockMetadata=} opt_value
@@ -19524,7 +19518,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.BlockMetadataList.prototype.addBlocks = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.BlockMetadata, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.BlockMetadata, opt_index);
   };
 
   proto.types.BlockMetadataList.prototype.clearBlocksList = function () {
@@ -19543,16 +19537,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResult = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.CommitResult, jspb.Message);
+  goog.inherits(proto.types.CommitResult, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.CommitResult.displayName = 'proto.types.CommitResult';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -19580,8 +19574,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.CommitResult.toObject = function (includeInstance, msg) {
       var obj = {
         hash: msg.getHash_asB64(),
-        error: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        detail: jspb.Message.getFieldWithDefault(msg, 3, "")
+        error: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0),
+        detail: googleProtobuf.Message.getFieldWithDefault(msg, 3, "")
       };
 
       if (includeInstance) {
@@ -19599,7 +19593,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResult.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.CommitResult();
     return proto.types.CommitResult.deserializeBinaryFromReader(msg, reader);
   };
@@ -19657,7 +19651,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResult.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.CommitResult.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -19699,7 +19693,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResult.prototype.getHash = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -19712,7 +19706,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResult.prototype.getHash_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getHash())
+      googleProtobuf.Message.bytesAsB64(this.getHash())
     );
   };
   /**
@@ -19727,14 +19721,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResult.prototype.getHash_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getHash())
+      googleProtobuf.Message.bytesAsU8(this.getHash())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.CommitResult.prototype.setHash = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional CommitStatus error = 2;
@@ -19745,14 +19739,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResult.prototype.getError = function () {
     return (
       /** @type {!proto.types.CommitStatus} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {!proto.types.CommitStatus} value */
 
 
   proto.types.CommitResult.prototype.setError = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string detail = 3;
@@ -19763,14 +19757,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResult.prototype.getDetail = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.CommitResult.prototype.setDetail = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -19785,10 +19779,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResultList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.CommitResultList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.CommitResultList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.CommitResultList, jspb.Message);
+  goog.inherits(proto.types.CommitResultList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.CommitResultList.displayName = 'proto.types.CommitResultList';
@@ -19802,7 +19796,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.CommitResultList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -19829,7 +19823,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.CommitResultList.toObject = function (includeInstance, msg) {
       var obj = {
-        resultsList: jspb.Message.toObjectList(msg.getResultsList(), proto.types.CommitResult.toObject, includeInstance)
+        resultsList: googleProtobuf.Message.toObjectList(msg.getResultsList(), proto.types.CommitResult.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -19847,7 +19841,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResultList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.CommitResultList();
     return proto.types.CommitResultList.deserializeBinaryFromReader(msg, reader);
   };
@@ -19890,7 +19884,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResultList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.CommitResultList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -19920,14 +19914,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.CommitResultList.prototype.getResultsList = function () {
     return (
       /** @type{!Array.<!proto.types.CommitResult>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.CommitResult, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.CommitResult, 1)
     );
   };
   /** @param {!Array.<!proto.types.CommitResult>} value */
 
 
   proto.types.CommitResultList.prototype.setResultsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.CommitResult=} opt_value
@@ -19937,7 +19931,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.CommitResultList.prototype.addResults = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.CommitResult, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.CommitResult, opt_index);
   };
 
   proto.types.CommitResultList.prototype.clearResultsList = function () {
@@ -19956,16 +19950,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VerifyResult = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.VerifyResult, jspb.Message);
+  goog.inherits(proto.types.VerifyResult, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.VerifyResult.displayName = 'proto.types.VerifyResult';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -19994,7 +19988,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         tx: (f = msg.getTx()) && blockchain_pb.Tx.toObject(includeInstance, f),
-        error: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        error: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -20012,7 +20006,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VerifyResult.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.VerifyResult();
     return proto.types.VerifyResult.deserializeBinaryFromReader(msg, reader);
   };
@@ -20062,7 +20056,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VerifyResult.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.VerifyResult.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -20098,14 +20092,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.VerifyResult.prototype.getTx = function () {
     return (
       /** @type{?proto.types.Tx} */
-      jspb.Message.getWrapperField(this, blockchain_pb.Tx, 1)
+      googleProtobuf.Message.getWrapperField(this, blockchain_pb.Tx, 1)
     );
   };
   /** @param {?proto.types.Tx|undefined} value */
 
 
   proto.types.VerifyResult.prototype.setTx = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.VerifyResult.prototype.clearTx = function () {
@@ -20118,7 +20112,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VerifyResult.prototype.hasTx = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional VerifyStatus error = 2;
@@ -20129,14 +20123,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.VerifyResult.prototype.getError = function () {
     return (
       /** @type {!proto.types.VerifyStatus} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {!proto.types.VerifyStatus} value */
 
 
   proto.types.VerifyResult.prototype.setError = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -20151,16 +20145,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Personal = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Personal, jspb.Message);
+  goog.inherits(proto.types.Personal, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Personal.displayName = 'proto.types.Personal';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -20188,7 +20182,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.Personal.toObject = function (includeInstance, msg) {
       var f,
           obj = {
-        passphrase: jspb.Message.getFieldWithDefault(msg, 1, ""),
+        passphrase: googleProtobuf.Message.getFieldWithDefault(msg, 1, ""),
         account: (f = msg.getAccount()) && account_pb.Account.toObject(includeInstance, f)
       };
 
@@ -20207,7 +20201,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Personal.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Personal();
     return proto.types.Personal.deserializeBinaryFromReader(msg, reader);
   };
@@ -20257,7 +20251,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Personal.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Personal.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -20293,14 +20287,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Personal.prototype.getPassphrase = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Personal.prototype.setPassphrase = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional Account account = 2;
@@ -20311,14 +20305,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Personal.prototype.getAccount = function () {
     return (
       /** @type{?proto.types.Account} */
-      jspb.Message.getWrapperField(this, account_pb.Account, 2)
+      googleProtobuf.Message.getWrapperField(this, account_pb.Account, 2)
     );
   };
   /** @param {?proto.types.Account|undefined} value */
 
 
   proto.types.Personal.prototype.setAccount = function (value) {
-    jspb.Message.setWrapperField(this, 2, value);
+    googleProtobuf.Message.setWrapperField(this, 2, value);
   };
 
   proto.types.Personal.prototype.clearAccount = function () {
@@ -20331,7 +20325,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Personal.prototype.hasAccount = function () {
-    return jspb.Message.getField(this, 2) != null;
+    return googleProtobuf.Message.getField(this, 2) != null;
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -20346,16 +20340,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ImportFormat = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.ImportFormat, jspb.Message);
+  goog.inherits(proto.types.ImportFormat, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.ImportFormat.displayName = 'proto.types.ImportFormat';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -20384,8 +20378,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
       var f,
           obj = {
         wif: (f = msg.getWif()) && proto.types.SingleBytes.toObject(includeInstance, f),
-        oldpass: jspb.Message.getFieldWithDefault(msg, 2, ""),
-        newpass: jspb.Message.getFieldWithDefault(msg, 3, "")
+        oldpass: googleProtobuf.Message.getFieldWithDefault(msg, 2, ""),
+        newpass: googleProtobuf.Message.getFieldWithDefault(msg, 3, "")
       };
 
       if (includeInstance) {
@@ -20403,7 +20397,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ImportFormat.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.ImportFormat();
     return proto.types.ImportFormat.deserializeBinaryFromReader(msg, reader);
   };
@@ -20460,7 +20454,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ImportFormat.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.ImportFormat.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -20502,14 +20496,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ImportFormat.prototype.getWif = function () {
     return (
       /** @type{?proto.types.SingleBytes} */
-      jspb.Message.getWrapperField(this, proto.types.SingleBytes, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.SingleBytes, 1)
     );
   };
   /** @param {?proto.types.SingleBytes|undefined} value */
 
 
   proto.types.ImportFormat.prototype.setWif = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.ImportFormat.prototype.clearWif = function () {
@@ -20522,7 +20516,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.ImportFormat.prototype.hasWif = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional string oldpass = 2;
@@ -20533,14 +20527,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ImportFormat.prototype.getOldpass = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ImportFormat.prototype.setOldpass = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional string newpass = 3;
@@ -20551,14 +20545,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.ImportFormat.prototype.getNewpass = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.ImportFormat.prototype.setNewpass = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -20573,16 +20567,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Staking = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Staking, jspb.Message);
+  goog.inherits(proto.types.Staking, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Staking.displayName = 'proto.types.Staking';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -20610,7 +20604,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
     proto.types.Staking.toObject = function (includeInstance, msg) {
       var obj = {
         amount: msg.getAmount_asB64(),
-        when: jspb.Message.getFieldWithDefault(msg, 2, 0)
+        when: googleProtobuf.Message.getFieldWithDefault(msg, 2, 0)
       };
 
       if (includeInstance) {
@@ -20628,7 +20622,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Staking.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Staking();
     return proto.types.Staking.deserializeBinaryFromReader(msg, reader);
   };
@@ -20679,7 +20673,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Staking.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Staking.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -20715,7 +20709,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Staking.prototype.getAmount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -20728,7 +20722,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Staking.prototype.getAmount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAmount())
+      googleProtobuf.Message.bytesAsB64(this.getAmount())
     );
   };
   /**
@@ -20743,14 +20737,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Staking.prototype.getAmount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAmount())
+      googleProtobuf.Message.bytesAsU8(this.getAmount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Staking.prototype.setAmount = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional uint64 when = 2;
@@ -20761,14 +20755,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Staking.prototype.getWhen = function () {
     return (
       /** @type {number} */
-      jspb.Message.getFieldWithDefault(this, 2, 0)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, 0)
     );
   };
   /** @param {number} value */
 
 
   proto.types.Staking.prototype.setWhen = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -20783,16 +20777,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Vote = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Vote, jspb.Message);
+  goog.inherits(proto.types.Vote, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Vote.displayName = 'proto.types.Vote';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -20838,7 +20832,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Vote.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Vote();
     return proto.types.Vote.deserializeBinaryFromReader(msg, reader);
   };
@@ -20889,7 +20883,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Vote.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Vote.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -20925,7 +20919,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getCandidate = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -20938,7 +20932,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getCandidate_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getCandidate())
+      googleProtobuf.Message.bytesAsB64(this.getCandidate())
     );
   };
   /**
@@ -20953,14 +20947,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getCandidate_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getCandidate())
+      googleProtobuf.Message.bytesAsU8(this.getCandidate())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Vote.prototype.setCandidate = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes amount = 2;
@@ -20971,7 +20965,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getAmount = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -20984,7 +20978,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getAmount_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getAmount())
+      googleProtobuf.Message.bytesAsB64(this.getAmount())
     );
   };
   /**
@@ -20999,14 +20993,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Vote.prototype.getAmount_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getAmount())
+      googleProtobuf.Message.bytesAsU8(this.getAmount())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.Vote.prototype.setAmount = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -21021,10 +21015,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VoteList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.VoteList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.VoteList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.VoteList, jspb.Message);
+  goog.inherits(proto.types.VoteList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.VoteList.displayName = 'proto.types.VoteList';
@@ -21038,7 +21032,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.VoteList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -21065,7 +21059,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.VoteList.toObject = function (includeInstance, msg) {
       var obj = {
-        votesList: jspb.Message.toObjectList(msg.getVotesList(), proto.types.Vote.toObject, includeInstance)
+        votesList: googleProtobuf.Message.toObjectList(msg.getVotesList(), proto.types.Vote.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -21083,7 +21077,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VoteList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.VoteList();
     return proto.types.VoteList.deserializeBinaryFromReader(msg, reader);
   };
@@ -21126,7 +21120,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VoteList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.VoteList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -21156,14 +21150,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.VoteList.prototype.getVotesList = function () {
     return (
       /** @type{!Array.<!proto.types.Vote>} */
-      jspb.Message.getRepeatedWrapperField(this, proto.types.Vote, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, proto.types.Vote, 1)
     );
   };
   /** @param {!Array.<!proto.types.Vote>} value */
 
 
   proto.types.VoteList.prototype.setVotesList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Vote=} opt_value
@@ -21173,7 +21167,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.VoteList.prototype.addVotes = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Vote, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Vote, opt_index);
   };
 
   proto.types.VoteList.prototype.clearVotesList = function () {
@@ -21192,16 +21186,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NodeReq = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.NodeReq, jspb.Message);
+  goog.inherits(proto.types.NodeReq, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.NodeReq.displayName = 'proto.types.NodeReq';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -21247,7 +21241,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NodeReq.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.NodeReq();
     return proto.types.NodeReq.deserializeBinaryFromReader(msg, reader);
   };
@@ -21298,7 +21292,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NodeReq.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.NodeReq.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -21334,7 +21328,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getTimeout = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /**
@@ -21347,7 +21341,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getTimeout_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getTimeout())
+      googleProtobuf.Message.bytesAsB64(this.getTimeout())
     );
   };
   /**
@@ -21362,14 +21356,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getTimeout_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getTimeout())
+      googleProtobuf.Message.bytesAsU8(this.getTimeout())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.NodeReq.prototype.setTimeout = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bytes component = 2;
@@ -21380,7 +21374,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getComponent = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -21393,7 +21387,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getComponent_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getComponent())
+      googleProtobuf.Message.bytesAsB64(this.getComponent())
     );
   };
   /**
@@ -21408,14 +21402,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NodeReq.prototype.getComponent_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getComponent())
+      googleProtobuf.Message.bytesAsU8(this.getComponent())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.NodeReq.prototype.setComponent = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -21430,16 +21424,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Name = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.Name, jspb.Message);
+  goog.inherits(proto.types.Name, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.Name.displayName = 'proto.types.Name';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -21466,7 +21460,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.Name.toObject = function (includeInstance, msg) {
       var obj = {
-        name: jspb.Message.getFieldWithDefault(msg, 1, "")
+        name: googleProtobuf.Message.getFieldWithDefault(msg, 1, "")
       };
 
       if (includeInstance) {
@@ -21484,7 +21478,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Name.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.Name();
     return proto.types.Name.deserializeBinaryFromReader(msg, reader);
   };
@@ -21528,7 +21522,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.Name.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.Name.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -21558,14 +21552,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.Name.prototype.getName = function () {
     return (
       /** @type {string} */
-      jspb.Message.getFieldWithDefault(this, 1, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 1, "")
     );
   };
   /** @param {string} value */
 
 
   proto.types.Name.prototype.setName = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -21580,16 +21574,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NameInfo = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.NameInfo, jspb.Message);
+  goog.inherits(proto.types.NameInfo, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.NameInfo.displayName = 'proto.types.NameInfo';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -21637,7 +21631,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NameInfo.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.NameInfo();
     return proto.types.NameInfo.deserializeBinaryFromReader(msg, reader);
   };
@@ -21694,7 +21688,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NameInfo.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.NameInfo.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -21736,14 +21730,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getName = function () {
     return (
       /** @type{?proto.types.Name} */
-      jspb.Message.getWrapperField(this, proto.types.Name, 1)
+      googleProtobuf.Message.getWrapperField(this, proto.types.Name, 1)
     );
   };
   /** @param {?proto.types.Name|undefined} value */
 
 
   proto.types.NameInfo.prototype.setName = function (value) {
-    jspb.Message.setWrapperField(this, 1, value);
+    googleProtobuf.Message.setWrapperField(this, 1, value);
   };
 
   proto.types.NameInfo.prototype.clearName = function () {
@@ -21756,7 +21750,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.NameInfo.prototype.hasName = function () {
-    return jspb.Message.getField(this, 1) != null;
+    return googleProtobuf.Message.getField(this, 1) != null;
   };
   /**
    * optional bytes owner = 2;
@@ -21767,7 +21761,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getOwner = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 2, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 2, "")
     );
   };
   /**
@@ -21780,7 +21774,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getOwner_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getOwner())
+      googleProtobuf.Message.bytesAsB64(this.getOwner())
     );
   };
   /**
@@ -21795,14 +21789,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getOwner_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getOwner())
+      googleProtobuf.Message.bytesAsU8(this.getOwner())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.NameInfo.prototype.setOwner = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * optional bytes destination = 3;
@@ -21813,7 +21807,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getDestination = function () {
     return (
       /** @type {!(string|Uint8Array)} */
-      jspb.Message.getFieldWithDefault(this, 3, "")
+      googleProtobuf.Message.getFieldWithDefault(this, 3, "")
     );
   };
   /**
@@ -21826,7 +21820,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getDestination_asB64 = function () {
     return (
       /** @type {string} */
-      jspb.Message.bytesAsB64(this.getDestination())
+      googleProtobuf.Message.bytesAsB64(this.getDestination())
     );
   };
   /**
@@ -21841,14 +21835,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.NameInfo.prototype.getDestination_asU8 = function () {
     return (
       /** @type {!Uint8Array} */
-      jspb.Message.bytesAsU8(this.getDestination())
+      googleProtobuf.Message.bytesAsU8(this.getDestination())
     );
   };
   /** @param {!(string|Uint8Array)} value */
 
 
   proto.types.NameInfo.prototype.setDestination = function (value) {
-    jspb.Message.setField(this, 3, value);
+    googleProtobuf.Message.setField(this, 3, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -21863,16 +21857,16 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeersParams = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, null, null);
   };
 
-  goog.inherits(proto.types.PeersParams, jspb.Message);
+  goog.inherits(proto.types.PeersParams, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.PeersParams.displayName = 'proto.types.PeersParams';
   }
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -21899,8 +21893,8 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.PeersParams.toObject = function (includeInstance, msg) {
       var obj = {
-        nohidden: jspb.Message.getFieldWithDefault(msg, 1, false),
-        showself: jspb.Message.getFieldWithDefault(msg, 2, false)
+        nohidden: googleProtobuf.Message.getFieldWithDefault(msg, 1, false),
+        showself: googleProtobuf.Message.getFieldWithDefault(msg, 2, false)
       };
 
       if (includeInstance) {
@@ -21918,7 +21912,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeersParams.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.PeersParams();
     return proto.types.PeersParams.deserializeBinaryFromReader(msg, reader);
   };
@@ -21969,7 +21963,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.PeersParams.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.PeersParams.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -22007,14 +22001,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeersParams.prototype.getNohidden = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 1, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 1, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.PeersParams.prototype.setNohidden = function (value) {
-    jspb.Message.setField(this, 1, value);
+    googleProtobuf.Message.setField(this, 1, value);
   };
   /**
    * optional bool showSelf = 2;
@@ -22027,14 +22021,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.PeersParams.prototype.getShowself = function () {
     return (
       /** @type {boolean} */
-      jspb.Message.getFieldWithDefault(this, 2, false)
+      googleProtobuf.Message.getFieldWithDefault(this, 2, false)
     );
   };
   /** @param {boolean} value */
 
 
   proto.types.PeersParams.prototype.setShowself = function (value) {
-    jspb.Message.setField(this, 2, value);
+    googleProtobuf.Message.setField(this, 2, value);
   };
   /**
    * Generated by JsPbCodeGenerator.
@@ -22049,10 +22043,10 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.EventList = function (opt_data) {
-    jspb.Message.initialize(this, opt_data, 0, -1, proto.types.EventList.repeatedFields_, null);
+    googleProtobuf.Message.initialize(this, opt_data, 0, -1, proto.types.EventList.repeatedFields_, null);
   };
 
-  goog.inherits(proto.types.EventList, jspb.Message);
+  goog.inherits(proto.types.EventList, googleProtobuf.Message);
 
   if (goog.DEBUG && !COMPILED) {
     proto.types.EventList.displayName = 'proto.types.EventList';
@@ -22066,7 +22060,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
   proto.types.EventList.repeatedFields_ = [1];
 
-  if (jspb.Message.GENERATE_TO_OBJECT) {
+  if (googleProtobuf.Message.GENERATE_TO_OBJECT) {
     /**
      * Creates an object representation of this proto suitable for use in Soy templates.
      * Field names that are reserved in JavaScript and will be renamed to pb_name.
@@ -22093,7 +22087,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
     proto.types.EventList.toObject = function (includeInstance, msg) {
       var obj = {
-        eventsList: jspb.Message.toObjectList(msg.getEventsList(), blockchain_pb.Event.toObject, includeInstance)
+        eventsList: googleProtobuf.Message.toObjectList(msg.getEventsList(), blockchain_pb.Event.toObject, includeInstance)
       };
 
       if (includeInstance) {
@@ -22111,7 +22105,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.EventList.deserializeBinary = function (bytes) {
-    var reader = new jspb.BinaryReader(bytes);
+    var reader = new googleProtobuf.BinaryReader(bytes);
     var msg = new proto.types.EventList();
     return proto.types.EventList.deserializeBinaryFromReader(msg, reader);
   };
@@ -22154,7 +22148,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.EventList.prototype.serializeBinary = function () {
-    var writer = new jspb.BinaryWriter();
+    var writer = new googleProtobuf.BinaryWriter();
     proto.types.EventList.serializeBinaryToWriter(this, writer);
     return writer.getResultBuffer();
   };
@@ -22184,14 +22178,14 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
   proto.types.EventList.prototype.getEventsList = function () {
     return (
       /** @type{!Array.<!proto.types.Event>} */
-      jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Event, 1)
+      googleProtobuf.Message.getRepeatedWrapperField(this, blockchain_pb.Event, 1)
     );
   };
   /** @param {!Array.<!proto.types.Event>} value */
 
 
   proto.types.EventList.prototype.setEventsList = function (value) {
-    jspb.Message.setRepeatedWrapperField(this, 1, value);
+    googleProtobuf.Message.setRepeatedWrapperField(this, 1, value);
   };
   /**
    * @param {!proto.types.Event=} opt_value
@@ -22201,7 +22195,7 @@ var rpc_pb = createCommonjsModule(function (module, exports) {
 
 
   proto.types.EventList.prototype.addEvents = function (opt_value, opt_index) {
-    return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Event, opt_index);
+    return googleProtobuf.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.types.Event, opt_index);
   };
 
   proto.types.EventList.prototype.clearEventsList = function () {
@@ -22263,7 +22257,7 @@ var typesNode = /*#__PURE__*/Object.freeze({
 });
 
 function encodeTxHash(bytes) {
-  return bs58.encode(Buffer$1.from(bytes));
+  return bs58.encode(Buffer$2.from(bytes));
 }
 function decodeTxHash(bs58string) {
   return bs58.decode(bs58string);
@@ -22319,21 +22313,21 @@ function () {
 
     if (address instanceof Address) {
       // Copy buffer
-      this.value = Buffer$1.from(address.value);
+      this.value = Buffer$2.from(address.value);
     } else if (typeof address === 'string') {
       if (address.length <= ACCOUNT_NAME_LENGTH) {
-        this.value = Buffer$1.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
+        this.value = Buffer$2.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
       } else {
         this.value = Address.decode(address);
       }
 
       this.encoded = address;
-    } else if (address instanceof Buffer$1) {
+    } else if (address instanceof Buffer$2) {
       // Treat array-like as buffer
       this.value = address;
     } else if (address instanceof Uint8Array) {
       // Treat array-like as buffer
-      this.value = Buffer$1.from(address);
+      this.value = Buffer$2.from(address);
     } else {
       throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
     } // Test if this is a name
@@ -22348,7 +22342,7 @@ function () {
 
     if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
       this.isName = true;
-      this.value = Buffer$1.from(arrValue);
+      this.value = Buffer$2.from(arrValue);
     }
   }
 
@@ -22371,7 +22365,7 @@ function () {
 
 
       if (this.isName) {
-        this.encoded = Buffer$1.from(this.value).toString();
+        this.encoded = Buffer$2.from(this.value).toString();
         return this.encoded;
       } // Account address
 
@@ -22379,21 +22373,34 @@ function () {
       this.encoded = Address.encode(this.value);
       return this.encoded;
     }
+  }, {
+    key: "equal",
+    value: function equal(_otherAddress) {
+      var otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+      return Address.valueEqual(this.value, otherAddress.value);
+    }
   }], [{
     key: "decode",
     value: function decode(bs58string) {
       var decoded = bs58check.decode(bs58string);
       if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error("invalid address prefix (".concat(decoded[0], ")"));
       if (decoded.length !== 33 + 1) throw new Error("invalid address length (".concat(decoded.length - 1, ")"));
-      return Buffer$1.from(decoded.slice(1));
+      return Buffer$2.from(decoded.slice(1));
     }
   }, {
     key: "encode",
     value: function encode(byteArray) {
       if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
 
-      var buf = Buffer$1.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
+      var buf = Buffer$2.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
       return bs58check.encode(buf);
+    }
+  }, {
+    key: "valueEqual",
+    value: function valueEqual(a, b) {
+      return a.length == b.length && a.every(function (a_i, i) {
+        return a_i === b[i];
+      });
     }
   }]);
 
@@ -22451,104 +22458,6 @@ var errorMessageForCode = function errorMessageForCode(code) {
 
   return errorMessage;
 };
-
-var waitFor = function waitFor(ms) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, ms);
-  });
-};
-
-var basicCheck = function basicCheck(result) {
-  return result instanceof Error === false;
-};
-
-var longPolling =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(func) {
-    var check,
-        timeout,
-        wait,
-        started,
-        lastError,
-        result,
-        resultStr,
-        timePassed,
-        _args = arguments;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
-            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
-            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
-            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
-            started = +new Date();
-            lastError = '';
-            _context.prev = 5;
-            _context.next = 8;
-            return func();
-
-          case 8:
-            result = _context.sent;
-
-            if (check(result)) {
-              _context.next = 12;
-              break;
-            }
-
-            try {
-              resultStr = JSON.stringify(result);
-            } catch (e) {
-              resultStr = '' + resultStr;
-            }
-
-            throw new Error('Condition not satisfied. Last result was ' + resultStr);
-
-          case 12:
-            return _context.abrupt("return", result);
-
-          case 15:
-            _context.prev = 15;
-            _context.t0 = _context["catch"](5);
-            lastError = _context.t0;
-
-          case 18:
-            timePassed = new Date() - started;
-            timeout -= timePassed;
-
-            if (!(timeout < 0)) {
-              _context.next = 22;
-              break;
-            }
-
-            throw new Error('Long polling timed out. ' + lastError);
-
-          case 22:
-            _context.next = 24;
-            return waitFor(wait);
-
-          case 24:
-            _context.next = 26;
-            return longPolling(func, check, timeout - wait, wait);
-
-          case 26:
-            return _context.abrupt("return", _context.sent);
-
-          case 27:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this, [[5, 15]]);
-  }));
-
-  return function longPolling(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
 
 var DEFAULT_USER_UNIT = 'aergo';
 var DEFAULT_NETWORK_UNIT = 'aer';
@@ -22692,10 +22601,25 @@ function () {
   }, {
     key: "compare",
     value: function compare(otherAmount) {
+      if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
       var _ref = [this.toUnit('aer').value, otherAmount.toUnit('aer').value],
           a = _ref[0],
           b = _ref[1];
       return JSBI.lessThan(a, b) ? -1 : JSBI.equal(a, b) ? 0 : 1;
+    }
+  }, {
+    key: "add",
+    value: function add(otherAmount) {
+      var otherValue = otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount);
+      var sum = JSBI.add(this.value, otherValue);
+      return new Amount(sum, this.unit);
+    }
+  }, {
+    key: "sub",
+    value: function sub(otherAmount) {
+      var otherValue = otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount);
+      var sum = JSBI.subtract(this.value, otherValue);
+      return new Amount(sum, this.unit);
     }
   }], [{
     key: "moveDecimalPoint",
@@ -22733,11 +22657,11 @@ function () {
   return Amount;
 }();
 
-var Tx$$1 =
+var Tx =
 /*#__PURE__*/
 function () {
-  function Tx$$1(data) {
-    _classCallCheck(this, Tx$$1);
+  function Tx(data) {
+    _classCallCheck(this, Tx);
 
     _defineProperty(this, "hash", void 0);
 
@@ -22764,7 +22688,7 @@ function () {
     this.price = new Amount(this.price || 0);
   }
 
-  _createClass(Tx$$1, [{
+  _createClass(Tx, [{
     key: "toGrpc",
     value: function toGrpc() {
       var msgtxbody = new blockchain_pb_2();
@@ -22783,11 +22707,11 @@ function () {
       msgtxbody.setAmount(this.amount.asBytes());
 
       if (this.payload != null) {
-        msgtxbody.setPayload(Buffer$1.from(this.payload));
+        msgtxbody.setPayload(Buffer$2.from(this.payload));
       }
 
       if (typeof this.sign === 'string') {
-        msgtxbody.setSign(Buffer$1.from(this.sign, 'base64'));
+        msgtxbody.setSign(Buffer$2.from(this.sign, 'base64'));
       } else {
         msgtxbody.setSign(this.sign);
       }
@@ -22809,9 +22733,9 @@ function () {
         var hashBuffer;
 
         if (typeof hash === 'string') {
-          hashBuffer = new Uint8Array(Buffer$1.from(decodeTxHash(hash)));
+          hashBuffer = new Uint8Array(Buffer$2.from(decodeTxHash(hash)));
         } else {
-          hashBuffer = new Uint8Array(Buffer$1.from(hash));
+          hashBuffer = new Uint8Array(Buffer$2.from(hash));
         }
 
         msgtx.setHash(hashBuffer);
@@ -22823,7 +22747,7 @@ function () {
   }], [{
     key: "fromGrpc",
     value: function fromGrpc(grpcObject) {
-      return new Tx$$1({
+      return new Tx({
         hash: encodeTxHash(grpcObject.getHash_asU8()),
         nonce: grpcObject.getBody().getNonce(),
         from: new Address(grpcObject.getBody().getAccount_asU8()),
@@ -22838,7 +22762,7 @@ function () {
     }
   }]);
 
-  return Tx$$1;
+  return Tx;
 }();
 
 var getOwnPropertyDescriptors = function getOwnPropertyDescriptors(originalObject) {
@@ -23034,8 +22958,8 @@ function () {
   }, {
     key: "sendTransaction",
     value: function sendTransaction(tx) {
-      if (!(tx instanceof Tx$$1)) {
-        tx = new Tx$$1(tx);
+      if (!(tx instanceof Tx)) {
+        tx = new Tx(tx);
       }
 
       return promisify(this.client.client.sendTX, this.client.client)(tx.toGrpc()).then(function (result) {
@@ -23059,14 +22983,14 @@ function () {
     value: function signTransaction(_tx) {
       var tx;
 
-      if (!(_tx instanceof Tx$$1)) {
-        tx = new Tx$$1(_tx);
+      if (!(_tx instanceof Tx)) {
+        tx = new Tx(_tx);
       } else {
         tx = _tx;
       }
 
       return promisify(this.client.client.signTX, this.client.client)(tx.toGrpc()).then(function (signedtx) {
-        return Tx$$1.fromGrpc(signedtx);
+        return Tx.fromGrpc(signedtx);
       });
     }
   }]);
@@ -23101,14 +23025,14 @@ function () {
 
       if (obj.body) {
         obj.body.txsList = grpcObject.getBody().getTxsList().map(function (tx) {
-          return Tx$$1.fromGrpc(tx);
+          return Tx.fromGrpc(tx);
         });
       }
 
       return new Block({
         hash: Block.encodeHash(grpcObject.getHash_asU8()),
         header: _objectSpread({}, obj.header, {
-          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+          chainid: Buffer$2.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
           coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
           pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
@@ -23119,7 +23043,7 @@ function () {
   }, {
     key: "encodeHash",
     value: function encodeHash(bytes) {
-      return bs58.encode(Buffer$1.from(bytes));
+      return bs58.encode(Buffer$2.from(bytes));
     }
   }, {
     key: "decodeHash",
@@ -23158,7 +23082,7 @@ function () {
       return new BlockMetadata({
         hash: Block.encodeHash(grpcObject.getHash_asU8()),
         header: _objectSpread({}, obj.header, {
-          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+          chainid: Buffer$2.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
           prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
           coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
           pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
@@ -23348,11 +23272,11 @@ function isArgMap(obj) {
   return obj instanceof Map;
 }
 
-var FilterInfo$$1 =
+var FilterInfo =
 /*#__PURE__*/
 function () {
-  function FilterInfo$$1(data) {
-    _classCallCheck(this, FilterInfo$$1);
+  function FilterInfo(data) {
+    _classCallCheck(this, FilterInfo);
 
     _defineProperty(this, "address", void 0);
 
@@ -23370,7 +23294,7 @@ function () {
     this.address = new Address(this.address);
   }
 
-  _createClass(FilterInfo$$1, [{
+  _createClass(FilterInfo, [{
     key: "toGrpc",
     value: function toGrpc() {
       var fi = new blockchain_pb_7();
@@ -23399,7 +23323,7 @@ function () {
         }
 
         var argsAsJson = JSON.stringify(argsAsObj);
-        fi.setArgfilter(Buffer$1.from(argsAsJson));
+        fi.setArgfilter(Buffer$2.from(argsAsJson));
       }
 
       if (this.eventName) {
@@ -23414,8 +23338,8 @@ function () {
   }], [{
     key: "fromGrpc",
     value: function fromGrpc(grpcObject) {
-      return new FilterInfo$$1({
-        args: JSON.parse(Buffer$1.from(grpcObject.getArgfilter_asU8()).toString()),
+      return new FilterInfo({
+        args: JSON.parse(Buffer$2.from(grpcObject.getArgfilter_asU8()).toString()),
         address: new Address(grpcObject.getContractaddress_asU8()),
         eventName: grpcObject.getEventname(),
         blockfrom: grpcObject.getBlockfrom(),
@@ -23425,7 +23349,7 @@ function () {
     }
   }]);
 
-  return FilterInfo$$1;
+  return FilterInfo;
 }();
 
 var CommitStatus$1 = typesNode.CommitStatus;
@@ -23434,84 +23358,34 @@ function waterfall(fns) {
   return (
     /*#__PURE__*/
     function () {
-      var _ref = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(input) {
-        var result, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, fn;
+      var _ref = _asyncToGenerator(function* (input) {
+        var result = input;
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                result = input;
-                _iteratorNormalCompletion = true;
-                _didIteratorError = false;
-                _iteratorError = undefined;
-                _context.prev = 4;
-                _iterator = fns[Symbol.iterator]();
-
-              case 6:
-                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context.next = 14;
-                  break;
-                }
-
-                fn = _step.value;
-                _context.next = 10;
-                return fn(result);
-
-              case 10:
-                result = _context.sent;
-
-              case 11:
-                _iteratorNormalCompletion = true;
-                _context.next = 6;
-                break;
-
-              case 14:
-                _context.next = 20;
-                break;
-
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](4);
-                _didIteratorError = true;
-                _iteratorError = _context.t0;
-
-              case 20:
-                _context.prev = 20;
-                _context.prev = 21;
-
-                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                  _iterator.return();
-                }
-
-              case 23:
-                _context.prev = 23;
-
-                if (!_didIteratorError) {
-                  _context.next = 26;
-                  break;
-                }
-
-                throw _iteratorError;
-
-              case 26:
-                return _context.finish(23);
-
-              case 27:
-                return _context.finish(20);
-
-              case 28:
-                return _context.abrupt("return", result);
-
-              case 29:
-              case "end":
-                return _context.stop();
+        try {
+          for (var _iterator = fns[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var fn = _step.value;
+            result = yield fn(result);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
             }
           }
-        }, _callee, this, [[4, 16, 20, 28], [21,, 23, 27]]);
-      }));
+        }
+
+        return result;
+      });
 
       return function (_x) {
         return _ref.apply(this, arguments);
@@ -23523,30 +23397,16 @@ function waterfall(fns) {
 function marshalEmpty() {
   return _marshalEmpty.apply(this, arguments);
 }
+
+function _marshalEmpty() {
+  _marshalEmpty = _asyncToGenerator(function* () {
+    return new rpc_pb_1();
+  });
+  return _marshalEmpty.apply(this, arguments);
+}
 /**
  * Main aergo client controller.
  */
-
-
-function _marshalEmpty() {
-  _marshalEmpty = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6() {
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            return _context6.abrupt("return", new rpc_pb_1());
-
-          case 1:
-          case "end":
-            return _context6.stop();
-        }
-      }
-    }, _callee6, this);
-  }));
-  return _marshalEmpty.apply(this, arguments);
-}
 
 var AergoClient =
 /*#__PURE__*/
@@ -23628,24 +23488,11 @@ function () {
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.blockchain),
       /*#__PURE__*/
       function () {
-        var _unmarshal = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee2(response) {
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
-            while (1) {
-              switch (_context2.prev = _context2.next) {
-                case 0:
-                  return _context2.abrupt("return", _objectSpread({}, response.toObject(), {
-                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
-                  }));
-
-                case 1:
-                case "end":
-                  return _context2.stop();
-              }
-            }
-          }, _callee2, this);
-        }));
+        var _unmarshal = _asyncToGenerator(function* (response) {
+          return _objectSpread({}, response.toObject(), {
+            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+          });
+        });
 
         return function unmarshal(_x2) {
           return _unmarshal.apply(this, arguments);
@@ -23663,22 +23510,9 @@ function () {
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.getChainInfo),
       /*#__PURE__*/
       function () {
-        var _unmarshal2 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee3(response) {
-          return regeneratorRuntime.wrap(function _callee3$(_context3) {
-            while (1) {
-              switch (_context3.prev = _context3.next) {
-                case 0:
-                  return _context3.abrupt("return", ChainInfo.fromGrpc(response));
-
-                case 1:
-                case "end":
-                  return _context3.stop();
-              }
-            }
-          }, _callee3, this);
-        }));
+        var _unmarshal2 = _asyncToGenerator(function* (response) {
+          return ChainInfo.fromGrpc(response);
+        });
 
         return function unmarshal(_x3) {
           return _unmarshal2.apply(this, arguments);
@@ -23707,7 +23541,7 @@ function () {
                 reject(err);
               } else {
                 var res = {};
-                res.tx = Tx$$1.fromGrpc(result);
+                res.tx = Tx.fromGrpc(result);
                 resolve(res);
               }
             });
@@ -23717,7 +23551,7 @@ function () {
               hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
               idx: result.getTxidx().getIdx()
             };
-            res.tx = Tx$$1.fromGrpc(result.getTx());
+            res.tx = Tx.fromGrpc(result.getTx());
             resolve(res);
           }
         });
@@ -23736,47 +23570,27 @@ function () {
       return waterfall([
       /*#__PURE__*/
       function () {
-        var _marshal = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee4(hashOrNumber) {
-          var input, singleBytes;
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
-            while (1) {
-              switch (_context4.prev = _context4.next) {
-                case 0:
-                  if (!(typeof hashOrNumber === 'undefined')) {
-                    _context4.next = 2;
-                    break;
-                  }
+        var _marshal = _asyncToGenerator(function* (hashOrNumber) {
+          if (typeof hashOrNumber === 'undefined') {
+            throw new Error('Missing argument block hash or number');
+          }
 
-                  throw new Error('Missing argument block hash or number');
+          var input;
 
-                case 2:
-                  if (typeof hashOrNumber === 'string') {
-                    input = Block.decodeHash(hashOrNumber);
-                  } else if (typeof hashOrNumber === 'number') {
-                    input = fromNumber(hashOrNumber);
-                  }
+          if (typeof hashOrNumber === 'string') {
+            input = Block.decodeHash(hashOrNumber);
+          } else if (typeof hashOrNumber === 'number') {
+            input = fromNumber(hashOrNumber);
+          }
 
-                  if (!(input.length != 32 && input.length != 8)) {
-                    _context4.next = 5;
-                    break;
-                  }
+          if (input.length != 32 && input.length != 8) {
+            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+          }
 
-                  throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-
-                case 5:
-                  singleBytes = new rpc_pb_3();
-                  singleBytes.setValue(Uint8Array.from(input));
-                  return _context4.abrupt("return", singleBytes);
-
-                case 8:
-                case "end":
-                  return _context4.stop();
-              }
-            }
-          }, _callee4, this);
-        }));
+          var singleBytes = new rpc_pb_3();
+          singleBytes.setValue(Uint8Array.from(input));
+          return singleBytes;
+        });
 
         return function marshal(_x4) {
           return _marshal.apply(this, arguments);
@@ -23784,22 +23598,9 @@ function () {
       }(), this.grpcMethod(this.client.client.getBlock),
       /*#__PURE__*/
       function () {
-        var _unmarshal3 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee5(response) {
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
-            while (1) {
-              switch (_context5.prev = _context5.next) {
-                case 0:
-                  return _context5.abrupt("return", Block.fromGrpc(response));
-
-                case 1:
-                case "end":
-                  return _context5.stop();
-              }
-            }
-          }, _callee5, this);
-        }));
+        var _unmarshal3 = _asyncToGenerator(function* (response) {
+          return Block.fromGrpc(response);
+        });
 
         return function unmarshal(_x5) {
           return _unmarshal3.apply(this, arguments);
@@ -23920,7 +23721,7 @@ function () {
   }, {
     key: "getEventStream",
     value: function getEventStream(filter) {
-      var fi = new FilterInfo$$1(filter);
+      var fi = new FilterInfo(filter);
       var query = fi.toGrpc();
       var stream = this.client.client.listEventStream(query);
 
@@ -23977,7 +23778,7 @@ function () {
     {
       // Untested
       return promisify(this.client.client.verifyTX, this.client.client)()(function (grpcObject) {
-        return Tx$$1.fromGrpc(grpcObject);
+        return Tx.fromGrpc(grpcObject);
       });
     }
     /**
@@ -23994,8 +23795,8 @@ function () {
       return new Promise(function (resolve, reject) {
         var txs = new typesNode.TxList();
 
-        if (!(tx instanceof Tx$$1)) {
-          tx = new Tx$$1(tx);
+        if (!(tx instanceof Tx)) {
+          tx = new Tx(tx);
         }
 
         txs.addTxs(tx.toGrpc(), 0);
@@ -24066,7 +23867,6 @@ function () {
         return {
           contractaddress: new Address(grpcObject.getContractaddress_asU8()),
           result: obj.ret,
-          //JSON.parse(obj.ret),
           status: obj.status
         };
       });
@@ -24123,7 +23923,7 @@ function () {
   }, {
     key: "getEvents",
     value: function getEvents(filter) {
-      var fi = new FilterInfo$$1(filter);
+      var fi = new FilterInfo(filter);
       var query = fi.toGrpc();
       return promisify(this.client.client.listEvents, this.client.client)(query).then(function (grpcObject) {
         var list = grpcObject.getEventsList();
@@ -24430,12 +24230,12 @@ var INSPECT_MAX_BYTES = 50;
  * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
  * get the Object implementation, which is slower but behaves correctly.
  */
-Buffer$2.TYPED_ARRAY_SUPPORT = global$1.TYPED_ARRAY_SUPPORT !== undefined
+Buffer$1.TYPED_ARRAY_SUPPORT = global$1.TYPED_ARRAY_SUPPORT !== undefined
   ? global$1.TYPED_ARRAY_SUPPORT
   : true;
 
 function kMaxLength () {
-  return Buffer$2.TYPED_ARRAY_SUPPORT
+  return Buffer$1.TYPED_ARRAY_SUPPORT
     ? 0x7fffffff
     : 0x3fffffff
 }
@@ -24444,14 +24244,14 @@ function createBuffer (that, length) {
   if (kMaxLength() < length) {
     throw new RangeError('Invalid typed array length')
   }
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     // Return an augmented `Uint8Array` instance, for best performance
     that = new Uint8Array(length);
-    that.__proto__ = Buffer$2.prototype;
+    that.__proto__ = Buffer$1.prototype;
   } else {
     // Fallback: Return an object instance of the Buffer class
     if (that === null) {
-      that = new Buffer$2(length);
+      that = new Buffer$1(length);
     }
     that.length = length;
   }
@@ -24469,9 +24269,9 @@ function createBuffer (that, length) {
  * The `Uint8Array` prototype remains unmodified.
  */
 
-function Buffer$2 (arg, encodingOrOffset, length) {
-  if (!Buffer$2.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer$2)) {
-    return new Buffer$2(arg, encodingOrOffset, length)
+function Buffer$1 (arg, encodingOrOffset, length) {
+  if (!Buffer$1.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer$1)) {
+    return new Buffer$1(arg, encodingOrOffset, length)
   }
 
   // Common case.
@@ -24486,11 +24286,11 @@ function Buffer$2 (arg, encodingOrOffset, length) {
   return from(this, arg, encodingOrOffset, length)
 }
 
-Buffer$2.poolSize = 8192; // not used by this implementation
+Buffer$1.poolSize = 8192; // not used by this implementation
 
 // TODO: Legacy, not needed anymore. Remove in next major version.
-Buffer$2._augment = function (arr) {
-  arr.__proto__ = Buffer$2.prototype;
+Buffer$1._augment = function (arr) {
+  arr.__proto__ = Buffer$1.prototype;
   return arr
 };
 
@@ -24518,13 +24318,13 @@ function from (that, value, encodingOrOffset, length) {
  * Buffer.from(buffer)
  * Buffer.from(arrayBuffer[, byteOffset[, length]])
  **/
-Buffer$2.from = function (value, encodingOrOffset, length) {
+Buffer$1.from = function (value, encodingOrOffset, length) {
   return from(null, value, encodingOrOffset, length)
 };
 
-if (Buffer$2.TYPED_ARRAY_SUPPORT) {
-  Buffer$2.prototype.__proto__ = Uint8Array.prototype;
-  Buffer$2.__proto__ = Uint8Array;
+if (Buffer$1.TYPED_ARRAY_SUPPORT) {
+  Buffer$1.prototype.__proto__ = Uint8Array.prototype;
+  Buffer$1.__proto__ = Uint8Array;
 }
 
 function assertSize (size) {
@@ -24555,14 +24355,14 @@ function alloc (that, size, fill, encoding) {
  * Creates a new filled Buffer instance.
  * alloc(size[, fill[, encoding]])
  **/
-Buffer$2.alloc = function (size, fill, encoding) {
+Buffer$1.alloc = function (size, fill, encoding) {
   return alloc(null, size, fill, encoding)
 };
 
 function allocUnsafe (that, size) {
   assertSize(size);
   that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
-  if (!Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (!Buffer$1.TYPED_ARRAY_SUPPORT) {
     for (var i = 0; i < size; ++i) {
       that[i] = 0;
     }
@@ -24573,13 +24373,13 @@ function allocUnsafe (that, size) {
 /**
  * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
  * */
-Buffer$2.allocUnsafe = function (size) {
+Buffer$1.allocUnsafe = function (size) {
   return allocUnsafe(null, size)
 };
 /**
  * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
  */
-Buffer$2.allocUnsafeSlow = function (size) {
+Buffer$1.allocUnsafeSlow = function (size) {
   return allocUnsafe(null, size)
 };
 
@@ -24588,7 +24388,7 @@ function fromString (that, string, encoding) {
     encoding = 'utf8';
   }
 
-  if (!Buffer$2.isEncoding(encoding)) {
+  if (!Buffer$1.isEncoding(encoding)) {
     throw new TypeError('"encoding" must be a valid string encoding')
   }
 
@@ -24635,10 +24435,10 @@ function fromArrayBuffer (that, array, byteOffset, length) {
     array = new Uint8Array(array, byteOffset, length);
   }
 
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     // Return an augmented `Uint8Array` instance, for best performance
     that = array;
-    that.__proto__ = Buffer$2.prototype;
+    that.__proto__ = Buffer$1.prototype;
   } else {
     // Fallback: Return an object instance of the Buffer class
     that = fromArrayLike(that, array);
@@ -24685,12 +24485,12 @@ function checked (length) {
   }
   return length | 0
 }
-Buffer$2.isBuffer = isBuffer;
+Buffer$1.isBuffer = isBuffer;
 function internalIsBuffer (b) {
   return !!(b != null && b._isBuffer)
 }
 
-Buffer$2.compare = function compare (a, b) {
+Buffer$1.compare = function compare (a, b) {
   if (!internalIsBuffer(a) || !internalIsBuffer(b)) {
     throw new TypeError('Arguments must be Buffers')
   }
@@ -24713,7 +24513,7 @@ Buffer$2.compare = function compare (a, b) {
   return 0
 };
 
-Buffer$2.isEncoding = function isEncoding (encoding) {
+Buffer$1.isEncoding = function isEncoding (encoding) {
   switch (String(encoding).toLowerCase()) {
     case 'hex':
     case 'utf8':
@@ -24732,13 +24532,13 @@ Buffer$2.isEncoding = function isEncoding (encoding) {
   }
 };
 
-Buffer$2.concat = function concat (list, length) {
+Buffer$1.concat = function concat (list, length) {
   if (!isArray(list)) {
     throw new TypeError('"list" argument must be an Array of Buffers')
   }
 
   if (list.length === 0) {
-    return Buffer$2.alloc(0)
+    return Buffer$1.alloc(0)
   }
 
   var i;
@@ -24749,7 +24549,7 @@ Buffer$2.concat = function concat (list, length) {
     }
   }
 
-  var buffer = Buffer$2.allocUnsafe(length);
+  var buffer = Buffer$1.allocUnsafe(length);
   var pos = 0;
   for (i = 0; i < list.length; ++i) {
     var buf = list[i];
@@ -24805,7 +24605,7 @@ function byteLength (string, encoding) {
     }
   }
 }
-Buffer$2.byteLength = byteLength;
+Buffer$1.byteLength = byteLength;
 
 function slowToString (encoding, start, end) {
   var loweredCase = false;
@@ -24879,7 +24679,7 @@ function slowToString (encoding, start, end) {
 
 // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
 // Buffer instances.
-Buffer$2.prototype._isBuffer = true;
+Buffer$1.prototype._isBuffer = true;
 
 function swap (b, n, m) {
   var i = b[n];
@@ -24887,7 +24687,7 @@ function swap (b, n, m) {
   b[m] = i;
 }
 
-Buffer$2.prototype.swap16 = function swap16 () {
+Buffer$1.prototype.swap16 = function swap16 () {
   var len = this.length;
   if (len % 2 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 16-bits')
@@ -24898,7 +24698,7 @@ Buffer$2.prototype.swap16 = function swap16 () {
   return this
 };
 
-Buffer$2.prototype.swap32 = function swap32 () {
+Buffer$1.prototype.swap32 = function swap32 () {
   var len = this.length;
   if (len % 4 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 32-bits')
@@ -24910,7 +24710,7 @@ Buffer$2.prototype.swap32 = function swap32 () {
   return this
 };
 
-Buffer$2.prototype.swap64 = function swap64 () {
+Buffer$1.prototype.swap64 = function swap64 () {
   var len = this.length;
   if (len % 8 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 64-bits')
@@ -24924,20 +24724,20 @@ Buffer$2.prototype.swap64 = function swap64 () {
   return this
 };
 
-Buffer$2.prototype.toString = function toString () {
+Buffer$1.prototype.toString = function toString () {
   var length = this.length | 0;
   if (length === 0) return ''
   if (arguments.length === 0) return utf8Slice(this, 0, length)
   return slowToString.apply(this, arguments)
 };
 
-Buffer$2.prototype.equals = function equals (b) {
+Buffer$1.prototype.equals = function equals (b) {
   if (!internalIsBuffer(b)) throw new TypeError('Argument must be a Buffer')
   if (this === b) return true
-  return Buffer$2.compare(this, b) === 0
+  return Buffer$1.compare(this, b) === 0
 };
 
-Buffer$2.prototype.inspect = function inspect () {
+Buffer$1.prototype.inspect = function inspect () {
   var str = '';
   var max = INSPECT_MAX_BYTES;
   if (this.length > 0) {
@@ -24947,7 +24747,7 @@ Buffer$2.prototype.inspect = function inspect () {
   return '<Buffer ' + str + '>'
 };
 
-Buffer$2.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+Buffer$1.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
   if (!internalIsBuffer(target)) {
     throw new TypeError('Argument must be a Buffer')
   }
@@ -25046,7 +24846,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
 
   // Normalize val
   if (typeof val === 'string') {
-    val = Buffer$2.from(val, encoding);
+    val = Buffer$1.from(val, encoding);
   }
 
   // Finally, search either indexOf (if dir is true) or lastIndexOf
@@ -25058,7 +24858,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
     return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
   } else if (typeof val === 'number') {
     val = val & 0xFF; // Search for a byte value [0-255]
-    if (Buffer$2.TYPED_ARRAY_SUPPORT &&
+    if (Buffer$1.TYPED_ARRAY_SUPPORT &&
         typeof Uint8Array.prototype.indexOf === 'function') {
       if (dir) {
         return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
@@ -25091,7 +24891,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
     }
   }
 
-  function read$$1 (buf, i) {
+  function read (buf, i) {
     if (indexSize === 1) {
       return buf[i]
     } else {
@@ -25103,7 +24903,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
   if (dir) {
     var foundIndex = -1;
     for (i = byteOffset; i < arrLength; i++) {
-      if (read$$1(arr, i) === read$$1(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
         if (foundIndex === -1) foundIndex = i;
         if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
       } else {
@@ -25116,7 +24916,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
     for (i = byteOffset; i >= 0; i--) {
       var found = true;
       for (var j = 0; j < valLength; j++) {
-        if (read$$1(arr, i + j) !== read$$1(val, j)) {
+        if (read(arr, i + j) !== read(val, j)) {
           found = false;
           break
         }
@@ -25128,15 +24928,15 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
   return -1
 }
 
-Buffer$2.prototype.includes = function includes (val, byteOffset, encoding) {
+Buffer$1.prototype.includes = function includes (val, byteOffset, encoding) {
   return this.indexOf(val, byteOffset, encoding) !== -1
 };
 
-Buffer$2.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+Buffer$1.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
   return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
 };
 
-Buffer$2.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+Buffer$1.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
   return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
 };
 
@@ -25187,7 +24987,7 @@ function ucs2Write (buf, string, offset, length) {
   return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 }
 
-Buffer$2.prototype.write = function write$$1 (string, offset, length, encoding) {
+Buffer$1.prototype.write = function write (string, offset, length, encoding) {
   // Buffer#write(string)
   if (offset === undefined) {
     encoding = 'utf8';
@@ -25259,7 +25059,7 @@ Buffer$2.prototype.write = function write$$1 (string, offset, length, encoding) 
   }
 };
 
-Buffer$2.prototype.toJSON = function toJSON () {
+Buffer$1.prototype.toJSON = function toJSON () {
   return {
     type: 'Buffer',
     data: Array.prototype.slice.call(this._arr || this, 0)
@@ -25412,7 +25212,7 @@ function utf16leSlice (buf, start, end) {
   return res
 }
 
-Buffer$2.prototype.slice = function slice (start, end) {
+Buffer$1.prototype.slice = function slice (start, end) {
   var len = this.length;
   start = ~~start;
   end = end === undefined ? len : ~~end;
@@ -25434,12 +25234,12 @@ Buffer$2.prototype.slice = function slice (start, end) {
   if (end < start) end = start;
 
   var newBuf;
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     newBuf = this.subarray(start, end);
-    newBuf.__proto__ = Buffer$2.prototype;
+    newBuf.__proto__ = Buffer$1.prototype;
   } else {
     var sliceLen = end - start;
-    newBuf = new Buffer$2(sliceLen, undefined);
+    newBuf = new Buffer$1(sliceLen, undefined);
     for (var i = 0; i < sliceLen; ++i) {
       newBuf[i] = this[i + start];
     }
@@ -25456,7 +25256,7 @@ function checkOffset (offset, ext, length) {
   if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
 }
 
-Buffer$2.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+Buffer$1.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
   offset = offset | 0;
   byteLength = byteLength | 0;
   if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -25471,7 +25271,7 @@ Buffer$2.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAsser
   return val
 };
 
-Buffer$2.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+Buffer$1.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
   offset = offset | 0;
   byteLength = byteLength | 0;
   if (!noAssert) {
@@ -25487,22 +25287,22 @@ Buffer$2.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAsser
   return val
 };
 
-Buffer$2.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+Buffer$1.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 1, this.length);
   return this[offset]
 };
 
-Buffer$2.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+Buffer$1.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 2, this.length);
   return this[offset] | (this[offset + 1] << 8)
 };
 
-Buffer$2.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+Buffer$1.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 2, this.length);
   return (this[offset] << 8) | this[offset + 1]
 };
 
-Buffer$2.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+Buffer$1.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
 
   return ((this[offset]) |
@@ -25511,7 +25311,7 @@ Buffer$2.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
       (this[offset + 3] * 0x1000000)
 };
 
-Buffer$2.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+Buffer$1.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
 
   return (this[offset] * 0x1000000) +
@@ -25520,7 +25320,7 @@ Buffer$2.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
     this[offset + 3])
 };
 
-Buffer$2.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+Buffer$1.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
   offset = offset | 0;
   byteLength = byteLength | 0;
   if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -25538,7 +25338,7 @@ Buffer$2.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert)
   return val
 };
 
-Buffer$2.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+Buffer$1.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
   offset = offset | 0;
   byteLength = byteLength | 0;
   if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -25556,25 +25356,25 @@ Buffer$2.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert)
   return val
 };
 
-Buffer$2.prototype.readInt8 = function readInt8 (offset, noAssert) {
+Buffer$1.prototype.readInt8 = function readInt8 (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 1, this.length);
   if (!(this[offset] & 0x80)) return (this[offset])
   return ((0xff - this[offset] + 1) * -1)
 };
 
-Buffer$2.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+Buffer$1.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 2, this.length);
   var val = this[offset] | (this[offset + 1] << 8);
   return (val & 0x8000) ? val | 0xFFFF0000 : val
 };
 
-Buffer$2.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+Buffer$1.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 2, this.length);
   var val = this[offset + 1] | (this[offset] << 8);
   return (val & 0x8000) ? val | 0xFFFF0000 : val
 };
 
-Buffer$2.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+Buffer$1.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
 
   return (this[offset]) |
@@ -25583,7 +25383,7 @@ Buffer$2.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
     (this[offset + 3] << 24)
 };
 
-Buffer$2.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+Buffer$1.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
 
   return (this[offset] << 24) |
@@ -25592,22 +25392,22 @@ Buffer$2.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
     (this[offset + 3])
 };
 
-Buffer$2.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+Buffer$1.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
   return read(this, offset, true, 23, 4)
 };
 
-Buffer$2.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+Buffer$1.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
   return read(this, offset, false, 23, 4)
 };
 
-Buffer$2.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+Buffer$1.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 8, this.length);
   return read(this, offset, true, 52, 8)
 };
 
-Buffer$2.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+Buffer$1.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
   if (!noAssert) checkOffset(offset, 8, this.length);
   return read(this, offset, false, 52, 8)
 };
@@ -25618,7 +25418,7 @@ function checkInt (buf, value, offset, ext, max, min) {
   if (offset + ext > buf.length) throw new RangeError('Index out of range')
 }
 
-Buffer$2.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+Buffer$1.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
   value = +value;
   offset = offset | 0;
   byteLength = byteLength | 0;
@@ -25637,7 +25437,7 @@ Buffer$2.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength
   return offset + byteLength
 };
 
-Buffer$2.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+Buffer$1.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
   value = +value;
   offset = offset | 0;
   byteLength = byteLength | 0;
@@ -25656,11 +25456,11 @@ Buffer$2.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength
   return offset + byteLength
 };
 
-Buffer$2.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+Buffer$1.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
-  if (!Buffer$2.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  if (!Buffer$1.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
   this[offset] = (value & 0xff);
   return offset + 1
 };
@@ -25673,11 +25473,11 @@ function objectWriteUInt16 (buf, value, offset, littleEndian) {
   }
 }
 
-Buffer$2.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+Buffer$1.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value & 0xff);
     this[offset + 1] = (value >>> 8);
   } else {
@@ -25686,11 +25486,11 @@ Buffer$2.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAsse
   return offset + 2
 };
 
-Buffer$2.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+Buffer$1.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 8);
     this[offset + 1] = (value & 0xff);
   } else {
@@ -25706,11 +25506,11 @@ function objectWriteUInt32 (buf, value, offset, littleEndian) {
   }
 }
 
-Buffer$2.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+Buffer$1.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset + 3] = (value >>> 24);
     this[offset + 2] = (value >>> 16);
     this[offset + 1] = (value >>> 8);
@@ -25721,11 +25521,11 @@ Buffer$2.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAsse
   return offset + 4
 };
 
-Buffer$2.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+Buffer$1.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 24);
     this[offset + 1] = (value >>> 16);
     this[offset + 2] = (value >>> 8);
@@ -25736,7 +25536,7 @@ Buffer$2.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAsse
   return offset + 4
 };
 
-Buffer$2.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+Buffer$1.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) {
@@ -25759,7 +25559,7 @@ Buffer$2.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, 
   return offset + byteLength
 };
 
-Buffer$2.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+Buffer$1.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) {
@@ -25782,21 +25582,21 @@ Buffer$2.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, 
   return offset + byteLength
 };
 
-Buffer$2.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+Buffer$1.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
-  if (!Buffer$2.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  if (!Buffer$1.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
   if (value < 0) value = 0xff + value + 1;
   this[offset] = (value & 0xff);
   return offset + 1
 };
 
-Buffer$2.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+Buffer$1.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value & 0xff);
     this[offset + 1] = (value >>> 8);
   } else {
@@ -25805,11 +25605,11 @@ Buffer$2.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert
   return offset + 2
 };
 
-Buffer$2.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+Buffer$1.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 8);
     this[offset + 1] = (value & 0xff);
   } else {
@@ -25818,11 +25618,11 @@ Buffer$2.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert
   return offset + 2
 };
 
-Buffer$2.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+Buffer$1.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value & 0xff);
     this[offset + 1] = (value >>> 8);
     this[offset + 2] = (value >>> 16);
@@ -25833,12 +25633,12 @@ Buffer$2.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert
   return offset + 4
 };
 
-Buffer$2.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+Buffer$1.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
   value = +value;
   offset = offset | 0;
   if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
   if (value < 0) value = 0xffffffff + value + 1;
-  if (Buffer$2.TYPED_ARRAY_SUPPORT) {
+  if (Buffer$1.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 24);
     this[offset + 1] = (value >>> 16);
     this[offset + 2] = (value >>> 8);
@@ -25862,11 +25662,11 @@ function writeFloat (buf, value, offset, littleEndian, noAssert) {
   return offset + 4
 }
 
-Buffer$2.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+Buffer$1.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
   return writeFloat(this, value, offset, true, noAssert)
 };
 
-Buffer$2.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+Buffer$1.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
   return writeFloat(this, value, offset, false, noAssert)
 };
 
@@ -25878,16 +25678,16 @@ function writeDouble (buf, value, offset, littleEndian, noAssert) {
   return offset + 8
 }
 
-Buffer$2.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+Buffer$1.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
   return writeDouble(this, value, offset, true, noAssert)
 };
 
-Buffer$2.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+Buffer$1.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
   return writeDouble(this, value, offset, false, noAssert)
 };
 
 // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer$2.prototype.copy = function copy (target, targetStart, start, end) {
+Buffer$1.prototype.copy = function copy (target, targetStart, start, end) {
   if (!start) start = 0;
   if (!end && end !== 0) end = this.length;
   if (targetStart >= target.length) targetStart = target.length;
@@ -25919,7 +25719,7 @@ Buffer$2.prototype.copy = function copy (target, targetStart, start, end) {
     for (i = len - 1; i >= 0; --i) {
       target[i + targetStart] = this[i + start];
     }
-  } else if (len < 1000 || !Buffer$2.TYPED_ARRAY_SUPPORT) {
+  } else if (len < 1000 || !Buffer$1.TYPED_ARRAY_SUPPORT) {
     // ascending copy from start
     for (i = 0; i < len; ++i) {
       target[i + targetStart] = this[i + start];
@@ -25939,7 +25739,7 @@ Buffer$2.prototype.copy = function copy (target, targetStart, start, end) {
 //    buffer.fill(number[, offset[, end]])
 //    buffer.fill(buffer[, offset[, end]])
 //    buffer.fill(string[, offset[, end]][, encoding])
-Buffer$2.prototype.fill = function fill (val, start, end, encoding) {
+Buffer$1.prototype.fill = function fill (val, start, end, encoding) {
   // Handle string cases:
   if (typeof val === 'string') {
     if (typeof start === 'string') {
@@ -25959,7 +25759,7 @@ Buffer$2.prototype.fill = function fill (val, start, end, encoding) {
     if (encoding !== undefined && typeof encoding !== 'string') {
       throw new TypeError('encoding must be a string')
     }
-    if (typeof encoding === 'string' && !Buffer$2.isEncoding(encoding)) {
+    if (typeof encoding === 'string' && !Buffer$1.isEncoding(encoding)) {
       throw new TypeError('Unknown encoding: ' + encoding)
     }
   } else if (typeof val === 'number') {
@@ -25988,7 +25788,7 @@ Buffer$2.prototype.fill = function fill (val, start, end, encoding) {
   } else {
     var bytes = internalIsBuffer(val)
       ? val
-      : utf8ToBytes(new Buffer$2(val, encoding).toString());
+      : utf8ToBytes(new Buffer$1(val, encoding).toString());
     var len = bytes.length;
     for (i = 0; i < end - start; ++i) {
       this[i + start] = bytes[i % len];
@@ -26171,7 +25971,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.ABI');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_ABI(buffer_arg) {
@@ -26183,7 +25983,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Account');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Account(buffer_arg) {
@@ -26195,7 +25995,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.AccountAndRoot');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_AccountAndRoot(buffer_arg) {
@@ -26207,7 +26007,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.AccountList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_AccountList(buffer_arg) {
@@ -26219,7 +26019,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.AccountProof');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_AccountProof(buffer_arg) {
@@ -26231,7 +26031,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Block');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Block(buffer_arg) {
@@ -26243,7 +26043,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockBodyPaged');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockBodyPaged(buffer_arg) {
@@ -26255,7 +26055,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockBodyParams');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockBodyParams(buffer_arg) {
@@ -26267,7 +26067,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockHeaderList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockHeaderList(buffer_arg) {
@@ -26279,7 +26079,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockMetadata');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockMetadata(buffer_arg) {
@@ -26291,7 +26091,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockMetadataList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockMetadataList(buffer_arg) {
@@ -26303,7 +26103,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.BlockchainStatus');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_BlockchainStatus(buffer_arg) {
@@ -26315,7 +26115,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.ChainInfo');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_ChainInfo(buffer_arg) {
@@ -26327,7 +26127,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.CommitResult');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_CommitResult(buffer_arg) {
@@ -26339,7 +26139,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.CommitResultList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_CommitResultList(buffer_arg) {
@@ -26351,7 +26151,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Empty');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Empty(buffer_arg) {
@@ -26363,7 +26163,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Event');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Event(buffer_arg) {
@@ -26375,7 +26175,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.EventList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_EventList(buffer_arg) {
@@ -26387,7 +26187,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.FilterInfo');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_FilterInfo(buffer_arg) {
@@ -26399,7 +26199,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.ImportFormat');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_ImportFormat(buffer_arg) {
@@ -26411,7 +26211,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.ListParams');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_ListParams(buffer_arg) {
@@ -26423,7 +26223,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Metrics');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Metrics(buffer_arg) {
@@ -26435,7 +26235,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.MetricsRequest');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_MetricsRequest(buffer_arg) {
@@ -26447,7 +26247,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Name');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Name(buffer_arg) {
@@ -26459,7 +26259,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.NameInfo');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_NameInfo(buffer_arg) {
@@ -26471,7 +26271,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.NodeReq');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_NodeReq(buffer_arg) {
@@ -26483,7 +26283,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.PeerList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_PeerList(buffer_arg) {
@@ -26495,7 +26295,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.PeersParams');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_PeersParams(buffer_arg) {
@@ -26507,7 +26307,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Personal');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Personal(buffer_arg) {
@@ -26519,7 +26319,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Query');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Query(buffer_arg) {
@@ -26531,7 +26331,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Receipt');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Receipt(buffer_arg) {
@@ -26543,7 +26343,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.SingleBytes');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_SingleBytes(buffer_arg) {
@@ -26555,7 +26355,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Staking');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Staking(buffer_arg) {
@@ -26567,7 +26367,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.State');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_State(buffer_arg) {
@@ -26579,7 +26379,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.StateQuery');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_StateQuery(buffer_arg) {
@@ -26591,7 +26391,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.StateQueryProof');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_StateQueryProof(buffer_arg) {
@@ -26603,7 +26403,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.Tx');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_Tx(buffer_arg) {
@@ -26615,7 +26415,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.TxInBlock');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_TxInBlock(buffer_arg) {
@@ -26627,7 +26427,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.TxList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_TxList(buffer_arg) {
@@ -26639,7 +26439,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.VerifyResult');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_VerifyResult(buffer_arg) {
@@ -26651,7 +26451,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       throw new Error('Expected argument of type types.VoteList');
     }
 
-    return new Buffer$2(arg.serializeBinary());
+    return new Buffer$1(arg.serializeBinary());
   }
 
   function deserialize_types_VoteList(buffer_arg) {
@@ -27083,7 +26883,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       responseDeserialize: deserialize_types_EventList
     }
   };
-  exports.AergoRPCServiceClient = grpc.makeGenericClientConstructor(AergoRPCServiceService);
+  exports.AergoRPCServiceClient = grpc$1.makeGenericClientConstructor(AergoRPCServiceService);
 });
 var rpc_grpc_pb_1 = rpc_grpc_pb.AergoRPCServiceService;
 var rpc_grpc_pb_2 = rpc_grpc_pb.AergoRPCServiceClient;
@@ -27119,7 +26919,7 @@ function () {
       throw new Error("URL for GrpcProvider should be provided without scheme (not ".concat(urlScheme[1], ")"));
     }
 
-    this.client = new rpc_grpc_pb_2(this.config.url, grpc.credentials.createInsecure());
+    this.client = new rpc_grpc_pb_2(this.config.url, grpc$1.credentials.createInsecure());
   }
 
   _createClass(GrpcProvider, [{
@@ -27132,6 +26932,1503 @@ function () {
   }]);
 
   return GrpcProvider;
+}();
+
+// file: rpc.proto
+
+var grpc = grpcWeb.grpc;
+
+var AergoRPCService = function () {
+  function AergoRPCService() {}
+
+  AergoRPCService.serviceName = "types.AergoRPCService";
+  return AergoRPCService;
+}();
+
+AergoRPCService.NodeState = {
+  methodName: "NodeState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.NodeReq,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.Metric = {
+  methodName: "Metric",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: metric_pb.MetricsRequest,
+  responseType: metric_pb.Metrics
+};
+AergoRPCService.Blockchain = {
+  methodName: "Blockchain",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.BlockchainStatus
+};
+AergoRPCService.GetChainInfo = {
+  methodName: "GetChainInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.ChainInfo
+};
+AergoRPCService.ListBlockHeaders = {
+  methodName: "ListBlockHeaders",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ListParams,
+  responseType: rpc_pb.BlockHeaderList
+};
+AergoRPCService.ListBlockMetadata = {
+  methodName: "ListBlockMetadata",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ListParams,
+  responseType: rpc_pb.BlockMetadataList
+};
+AergoRPCService.ListBlockStream = {
+  methodName: "ListBlockStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: rpc_pb.Empty,
+  responseType: blockchain_pb.Block
+};
+AergoRPCService.ListBlockMetadataStream = {
+  methodName: "ListBlockMetadataStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.BlockMetadata
+};
+AergoRPCService.GetBlock = {
+  methodName: "GetBlock",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Block
+};
+AergoRPCService.GetBlockMetadata = {
+  methodName: "GetBlockMetadata",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.BlockMetadata
+};
+AergoRPCService.GetBlockBody = {
+  methodName: "GetBlockBody",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.BlockBodyParams,
+  responseType: rpc_pb.BlockBodyPaged
+};
+AergoRPCService.GetTX = {
+  methodName: "GetTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Tx
+};
+AergoRPCService.GetBlockTX = {
+  methodName: "GetBlockTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.TxInBlock
+};
+AergoRPCService.GetReceipt = {
+  methodName: "GetReceipt",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Receipt
+};
+AergoRPCService.GetABI = {
+  methodName: "GetABI",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.ABI
+};
+AergoRPCService.SendTX = {
+  methodName: "SendTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.CommitResult
+};
+AergoRPCService.SignTX = {
+  methodName: "SignTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: blockchain_pb.Tx
+};
+AergoRPCService.VerifyTX = {
+  methodName: "VerifyTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.VerifyResult
+};
+AergoRPCService.CommitTX = {
+  methodName: "CommitTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.TxList,
+  responseType: rpc_pb.CommitResultList
+};
+AergoRPCService.GetState = {
+  methodName: "GetState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.State
+};
+AergoRPCService.GetStateAndProof = {
+  methodName: "GetStateAndProof",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.AccountAndRoot,
+  responseType: blockchain_pb.AccountProof
+};
+AergoRPCService.CreateAccount = {
+  methodName: "CreateAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.GetAccounts = {
+  methodName: "GetAccounts",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: account_pb.AccountList
+};
+AergoRPCService.LockAccount = {
+  methodName: "LockAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.UnlockAccount = {
+  methodName: "UnlockAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.ImportAccount = {
+  methodName: "ImportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ImportFormat,
+  responseType: account_pb.Account
+};
+AergoRPCService.ExportAccount = {
+  methodName: "ExportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.QueryContract = {
+  methodName: "QueryContract",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Query,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.QueryContractState = {
+  methodName: "QueryContractState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.StateQuery,
+  responseType: blockchain_pb.StateQueryProof
+};
+AergoRPCService.GetPeers = {
+  methodName: "GetPeers",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.PeersParams,
+  responseType: rpc_pb.PeerList
+};
+AergoRPCService.GetVotes = {
+  methodName: "GetVotes",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.VoteList
+};
+AergoRPCService.GetStaking = {
+  methodName: "GetStaking",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.Staking
+};
+AergoRPCService.GetNameInfo = {
+  methodName: "GetNameInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Name,
+  responseType: rpc_pb.NameInfo
+};
+AergoRPCService.ListEventStream = {
+  methodName: "ListEventStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: blockchain_pb.Event
+};
+AergoRPCService.ListEvents = {
+  methodName: "ListEvents",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: rpc_pb.EventList
+};
+
+function AergoRPCServiceClient(serviceHost, options) {
+  this.serviceHost = serviceHost;
+  this.options = options || {};
+}
+
+AergoRPCServiceClient.prototype.nodeState = function nodeState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.NodeState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.Metric, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.Blockchain, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetChainInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListBlockHeaders, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListBlockMetadata, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListBlockStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockMetadataStream = function listBlockMetadataStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListBlockMetadataStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlock, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockMetadata, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockBody, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getTX = function getTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetReceipt, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetABI, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.SendTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.SignTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.VerifyTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.CommitTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getState = function getState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetStateAndProof, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.createAccount = function createAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.CreateAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getAccounts = function getAccounts(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetAccounts, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.lockAccount = function lockAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.LockAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.UnlockAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ImportAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ExportAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.QueryContract, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.queryContractState = function queryContractState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.QueryContractState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetPeers, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetVotes, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetStaking, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetNameInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listEventStream = function listEventStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListEventStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListEvents, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+var AergoRPCServiceClient_1 = AergoRPCServiceClient;
+
+/**
+ * Provider for GRPC-WEB connections over HTTP.
+ * This is compatible with Node.js environments.
+ * Streaming methods are not supported.
+ * This is mostly for testing, for productiomn use use GrpcWebProvider or GrpcProvider.
+ */
+var GrpcWebNodeProvider =
+/*#__PURE__*/
+function () {
+  /**
+   * .. code-block:: javascript
+   * 
+   *     import { GrpcWebNodeProvider } from '@herajs/client';
+   *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
+   * 
+   * @param {GrpcWebProviderConfig} config
+   */
+  function GrpcWebNodeProvider() {
+    var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, GrpcWebNodeProvider);
+
+    _defineProperty(this, "client", void 0);
+
+    _defineProperty(this, "config", void 0);
+
+    this.config = _objectSpread({}, this.defaultConfig, config);
+    var options = {
+      transport: NodeHttpTransport()
+    };
+    this.client = new AergoRPCServiceClient_1(this.config.url, options);
+  }
+
+  _createClass(GrpcWebNodeProvider, [{
+    key: "defaultConfig",
+    get: function get() {
+      return {
+        url: 'http://localhost:7845'
+      };
+    }
+  }]);
+
+  return GrpcWebNodeProvider;
 }();
 
 /**
@@ -27242,11 +28539,11 @@ function () {
  *     })
  */
 
-var StateQuery$$1 =
+var StateQuery =
 /*#__PURE__*/
 function () {
-  function StateQuery$$1(contractInstance, storageKey) {
-    _classCallCheck(this, StateQuery$$1);
+  function StateQuery(contractInstance, storageKey) {
+    _classCallCheck(this, StateQuery);
 
     _defineProperty(this, "contractInstance", void 0);
 
@@ -27256,7 +28553,7 @@ function () {
     this.storageKey = storageKey;
   }
 
-  _createClass(StateQuery$$1, [{
+  _createClass(StateQuery, [{
     key: "toGrpc",
     value: function toGrpc() {
       var q = new blockchain_pb_6();
@@ -27266,7 +28563,7 @@ function () {
     }
   }]);
 
-  return StateQuery$$1;
+  return StateQuery;
 }();
 /**
  * Smart contract interface.
@@ -27407,7 +28704,7 @@ function () {
   }, {
     key: "queryState",
     value: function queryState(key) {
-      return new StateQuery$$1(this, key);
+      return new StateQuery(this, key);
     }
   }], [{
     key: "fromCode",
@@ -27466,4 +28763,4 @@ AergoClient.prototype.defaultProvider = function () {
 };
 
 export default AergoClient;
-export { AergoClient, GrpcProvider, constants, Contract, Address, Amount };
+export { AergoClient, GrpcProvider, GrpcWebNodeProvider, constants, Contract, Address, Amount, Tx };

@@ -8,7 +8,7 @@ export declare type ChainId = {
     consensus: string;
 };
 export default class ChainInfo {
-    chainid?: ChainId;
+    chainid: ChainId;
     bpnumber: number;
     maxblocksize: number;
     maxtokens: Amount;

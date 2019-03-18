@@ -14,4 +14,6 @@ export default class Address {
     toString(): string;
     static decode(bs58string: any): Buffer;
     static encode(byteArray: any): string;
+    private static valueEqual;
+    equal(_otherAddress: string | Address): boolean;
 }

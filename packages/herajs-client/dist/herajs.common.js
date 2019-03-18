@@ -1,5 +1,5 @@
 /*!
- * herajs v0.6.0
+ * herajs v0.7.0
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -14,7 +14,9 @@ var bs58 = _interopDefault(require('bs58'));
 var buffer = require('buffer');
 var bs58check = _interopDefault(require('bs58check'));
 var JSBI = _interopDefault(require('jsbi'));
-var grpc = _interopDefault(require('grpc'));
+var grpc$1 = _interopDefault(require('grpc'));
+var grpcWeb = _interopDefault(require('@improbable-eng/grpc-web'));
+var grpcWebNodeHttpTransport = require('@improbable-eng/grpc-web-node-http-transport');
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -28,30 +30,15 @@ var runtime = createCommonjsModule(function (module) {
  * LICENSE file in the root directory of this source tree.
  */
 
-!(function(global) {
+var regeneratorRuntime = (function (exports) {
 
   var Op = Object.prototype;
   var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
+  var undefined$1; // More compressible than void 0.
   var $Symbol = typeof Symbol === "function" ? Symbol : {};
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = module.exports;
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -65,7 +52,7 @@ var runtime = createCommonjsModule(function (module) {
 
     return generator;
   }
-  runtime.wrap = wrap;
+  exports.wrap = wrap;
 
   // Try/catch helper to minimize deoptimizations. Returns a completion
   // record like context.tryEntries[i].completion. This interface could
@@ -136,7 +123,7 @@ var runtime = createCommonjsModule(function (module) {
     });
   }
 
-  runtime.isGeneratorFunction = function(genFun) {
+  exports.isGeneratorFunction = function(genFun) {
     var ctor = typeof genFun === "function" && genFun.constructor;
     return ctor
       ? ctor === GeneratorFunction ||
@@ -146,7 +133,7 @@ var runtime = createCommonjsModule(function (module) {
       : false;
   };
 
-  runtime.mark = function(genFun) {
+  exports.mark = function(genFun) {
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
@@ -163,7 +150,7 @@ var runtime = createCommonjsModule(function (module) {
   // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
   // `hasOwn.call(value, "__await")` to determine if the yielded value is
   // meant to be awaited.
-  runtime.awrap = function(arg) {
+  exports.awrap = function(arg) {
     return { __await: arg };
   };
 
@@ -238,17 +225,17 @@ var runtime = createCommonjsModule(function (module) {
   AsyncIterator.prototype[asyncIteratorSymbol] = function () {
     return this;
   };
-  runtime.AsyncIterator = AsyncIterator;
+  exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
   // AsyncIterator objects; they just return a Promise for the value of
   // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+  exports.async = function(innerFn, outerFn, self, tryLocsList) {
     var iter = new AsyncIterator(
       wrap(innerFn, outerFn, self, tryLocsList)
     );
 
-    return runtime.isGeneratorFunction(outerFn)
+    return exports.isGeneratorFunction(outerFn)
       ? iter // If outerFn is a generator, return the full iterator.
       : iter.next().then(function(result) {
           return result.done ? result.value : iter.next();
@@ -339,17 +326,18 @@ var runtime = createCommonjsModule(function (module) {
   // setting context.delegate to null, and returning the ContinueSentinel.
   function maybeInvokeDelegate(delegate, context) {
     var method = delegate.iterator[context.method];
-    if (method === undefined) {
+    if (method === undefined$1) {
       // A .throw or .return when the delegate iterator has no .throw
       // method always terminates the yield* loop.
       context.delegate = null;
 
       if (context.method === "throw") {
-        if (delegate.iterator.return) {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
           // If the delegate iterator has a return method, give it a
           // chance to clean up.
           context.method = "return";
-          context.arg = undefined;
+          context.arg = undefined$1;
           maybeInvokeDelegate(delegate, context);
 
           if (context.method === "throw") {
@@ -401,7 +389,7 @@ var runtime = createCommonjsModule(function (module) {
       // outer generator.
       if (context.method !== "return") {
         context.method = "next";
-        context.arg = undefined;
+        context.arg = undefined$1;
       }
 
     } else {
@@ -465,7 +453,7 @@ var runtime = createCommonjsModule(function (module) {
     this.reset(true);
   }
 
-  runtime.keys = function(object) {
+  exports.keys = function(object) {
     var keys = [];
     for (var key in object) {
       keys.push(key);
@@ -513,7 +501,7 @@ var runtime = createCommonjsModule(function (module) {
             }
           }
 
-          next.value = undefined;
+          next.value = undefined$1;
           next.done = true;
 
           return next;
@@ -526,10 +514,10 @@ var runtime = createCommonjsModule(function (module) {
     // Return an iterator with no values.
     return { next: doneResult };
   }
-  runtime.values = values;
+  exports.values = values;
 
   function doneResult() {
-    return { value: undefined, done: true };
+    return { value: undefined$1, done: true };
   }
 
   Context.prototype = {
@@ -540,12 +528,12 @@ var runtime = createCommonjsModule(function (module) {
       this.next = 0;
       // Resetting context._sent for legacy support of Babel's
       // function.sent implementation.
-      this.sent = this._sent = undefined;
+      this.sent = this._sent = undefined$1;
       this.done = false;
       this.delegate = null;
 
       this.method = "next";
-      this.arg = undefined;
+      this.arg = undefined$1;
 
       this.tryEntries.forEach(resetTryEntry);
 
@@ -555,7 +543,7 @@ var runtime = createCommonjsModule(function (module) {
           if (name.charAt(0) === "t" &&
               hasOwn.call(this, name) &&
               !isNaN(+name.slice(1))) {
-            this[name] = undefined;
+            this[name] = undefined$1;
           }
         }
       }
@@ -588,7 +576,7 @@ var runtime = createCommonjsModule(function (module) {
           // If the dispatched exception was caught by a catch block,
           // then let that catch block handle the exception normally.
           context.method = "next";
-          context.arg = undefined;
+          context.arg = undefined$1;
         }
 
         return !! caught;
@@ -725,20 +713,26 @@ var runtime = createCommonjsModule(function (module) {
       if (this.method === "next") {
         // Deliberately forget the last sent value so that we don't
         // accidentally pass it on to the delegate.
-        this.arg = undefined;
+        this.arg = undefined$1;
       }
 
       return ContinueSentinel;
     }
   };
-})(
-  // In sloppy mode, unbound `this` refers to the global object, fallback to
-  // Function constructor if we're in global strict mode. That is sadly a form
-  // of indirect eval which violates Content Security Policy.
-  (function() {
-    return this || (typeof self === "object" && self);
-  })() || Function("return this")()
-);
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+  module.exports
+));
 });
 
 function _typeof(obj) {
@@ -22252,7 +22246,7 @@ var rpc_pb_9 = rpc_pb.Query;
 var rpc_pb_10 = rpc_pb.Name;
 var rpc_pb_11 = rpc_pb.PeersParams;
 
-var rpcTypes = /*#__PURE__*/Object.freeze({
+var typesNode = /*#__PURE__*/Object.freeze({
 	default: rpc_pb,
 	__moduleExports: rpc_pb,
 	Empty: rpc_pb_1,
@@ -22385,6 +22379,12 @@ function () {
       this.encoded = Address.encode(this.value);
       return this.encoded;
     }
+  }, {
+    key: "equal",
+    value: function equal(_otherAddress) {
+      var otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+      return Address.valueEqual(this.value, otherAddress.value);
+    }
   }], [{
     key: "decode",
     value: function decode(bs58string) {
@@ -22401,12 +22401,19 @@ function () {
       var buf = buffer.Buffer.from([ADDRESS_PREFIXES.ACCOUNT].concat(_toConsumableArray(byteArray)));
       return bs58check.encode(buf);
     }
+  }, {
+    key: "valueEqual",
+    value: function valueEqual(a, b) {
+      return a.length == b.length && a.every(function (a_i, i) {
+        return a_i === b[i];
+      });
+    }
   }]);
 
   return Address;
 }();
 
-var CommitStatus = rpcTypes.CommitStatus;
+var CommitStatus = typesNode.CommitStatus;
 
 var fromHexString = function fromHexString(hexString) {
   if (hexString.length % 2 === 1) hexString = '0' + hexString;
@@ -22457,104 +22464,6 @@ var errorMessageForCode = function errorMessageForCode(code) {
 
   return errorMessage;
 };
-
-var waitFor = function waitFor(ms) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, ms);
-  });
-};
-
-var basicCheck = function basicCheck(result) {
-  return result instanceof Error === false;
-};
-
-var longPolling =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(func) {
-    var check,
-        timeout,
-        wait,
-        started,
-        lastError,
-        result,
-        resultStr,
-        timePassed,
-        _args = arguments;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            check = _args.length > 1 && _args[1] !== undefined ? _args[1] : basicCheck;
-            timeout = _args.length > 2 && _args[2] !== undefined ? _args[2] : 10000;
-            wait = _args.length > 3 && _args[3] !== undefined ? _args[3] : 250;
-            // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
-            started = +new Date();
-            lastError = '';
-            _context.prev = 5;
-            _context.next = 8;
-            return func();
-
-          case 8:
-            result = _context.sent;
-
-            if (check(result)) {
-              _context.next = 12;
-              break;
-            }
-
-            try {
-              resultStr = JSON.stringify(result);
-            } catch (e) {
-              resultStr = '' + resultStr;
-            }
-
-            throw new Error('Condition not satisfied. Last result was ' + resultStr);
-
-          case 12:
-            return _context.abrupt("return", result);
-
-          case 15:
-            _context.prev = 15;
-            _context.t0 = _context["catch"](5);
-            lastError = _context.t0;
-
-          case 18:
-            timePassed = new Date() - started;
-            timeout -= timePassed;
-
-            if (!(timeout < 0)) {
-              _context.next = 22;
-              break;
-            }
-
-            throw new Error('Long polling timed out. ' + lastError);
-
-          case 22:
-            _context.next = 24;
-            return waitFor(wait);
-
-          case 24:
-            _context.next = 26;
-            return longPolling(func, check, timeout - wait, wait);
-
-          case 26:
-            return _context.abrupt("return", _context.sent);
-
-          case 27:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this, [[5, 15]]);
-  }));
-
-  return function longPolling(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
 
 var DEFAULT_USER_UNIT = 'aergo';
 var DEFAULT_NETWORK_UNIT = 'aer';
@@ -22698,10 +22607,25 @@ function () {
   }, {
     key: "compare",
     value: function compare(otherAmount) {
+      if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
       var _ref = [this.toUnit('aer').value, otherAmount.toUnit('aer').value],
           a = _ref[0],
           b = _ref[1];
       return JSBI.lessThan(a, b) ? -1 : JSBI.equal(a, b) ? 0 : 1;
+    }
+  }, {
+    key: "add",
+    value: function add(otherAmount) {
+      var otherValue = otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount);
+      var sum = JSBI.add(this.value, otherValue);
+      return new Amount(sum, this.unit);
+    }
+  }, {
+    key: "sub",
+    value: function sub(otherAmount) {
+      var otherValue = otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount);
+      var sum = JSBI.subtract(this.value, otherValue);
+      return new Amount(sum, this.unit);
     }
   }], [{
     key: "moveDecimalPoint",
@@ -22739,11 +22663,11 @@ function () {
   return Amount;
 }();
 
-var Tx$$1 =
+var Tx =
 /*#__PURE__*/
 function () {
-  function Tx$$1(data) {
-    _classCallCheck(this, Tx$$1);
+  function Tx(data) {
+    _classCallCheck(this, Tx);
 
     _defineProperty(this, "hash", void 0);
 
@@ -22770,7 +22694,7 @@ function () {
     this.price = new Amount(this.price || 0);
   }
 
-  _createClass(Tx$$1, [{
+  _createClass(Tx, [{
     key: "toGrpc",
     value: function toGrpc() {
       var msgtxbody = new blockchain_pb_2();
@@ -22829,7 +22753,7 @@ function () {
   }], [{
     key: "fromGrpc",
     value: function fromGrpc(grpcObject) {
-      return new Tx$$1({
+      return new Tx({
         hash: encodeTxHash(grpcObject.getHash_asU8()),
         nonce: grpcObject.getBody().getNonce(),
         from: new Address(grpcObject.getBody().getAccount_asU8()),
@@ -22844,7 +22768,7 @@ function () {
     }
   }]);
 
-  return Tx$$1;
+  return Tx;
 }();
 
 var getOwnPropertyDescriptors = function getOwnPropertyDescriptors(originalObject) {
@@ -23040,8 +22964,8 @@ function () {
   }, {
     key: "sendTransaction",
     value: function sendTransaction(tx) {
-      if (!(tx instanceof Tx$$1)) {
-        tx = new Tx$$1(tx);
+      if (!(tx instanceof Tx)) {
+        tx = new Tx(tx);
       }
 
       return promisify(this.client.client.sendTX, this.client.client)(tx.toGrpc()).then(function (result) {
@@ -23065,14 +22989,14 @@ function () {
     value: function signTransaction(_tx) {
       var tx;
 
-      if (!(_tx instanceof Tx$$1)) {
-        tx = new Tx$$1(_tx);
+      if (!(_tx instanceof Tx)) {
+        tx = new Tx(_tx);
       } else {
         tx = _tx;
       }
 
       return promisify(this.client.client.signTX, this.client.client)(tx.toGrpc()).then(function (signedtx) {
-        return Tx$$1.fromGrpc(signedtx);
+        return Tx.fromGrpc(signedtx);
       });
     }
   }]);
@@ -23107,7 +23031,7 @@ function () {
 
       if (obj.body) {
         obj.body.txsList = grpcObject.getBody().getTxsList().map(function (tx) {
-          return Tx$$1.fromGrpc(tx);
+          return Tx.fromGrpc(tx);
         });
       }
 
@@ -23354,11 +23278,11 @@ function isArgMap(obj) {
   return obj instanceof Map;
 }
 
-var FilterInfo$$1 =
+var FilterInfo =
 /*#__PURE__*/
 function () {
-  function FilterInfo$$1(data) {
-    _classCallCheck(this, FilterInfo$$1);
+  function FilterInfo(data) {
+    _classCallCheck(this, FilterInfo);
 
     _defineProperty(this, "address", void 0);
 
@@ -23376,7 +23300,7 @@ function () {
     this.address = new Address(this.address);
   }
 
-  _createClass(FilterInfo$$1, [{
+  _createClass(FilterInfo, [{
     key: "toGrpc",
     value: function toGrpc() {
       var fi = new blockchain_pb_7();
@@ -23420,7 +23344,7 @@ function () {
   }], [{
     key: "fromGrpc",
     value: function fromGrpc(grpcObject) {
-      return new FilterInfo$$1({
+      return new FilterInfo({
         args: JSON.parse(buffer.Buffer.from(grpcObject.getArgfilter_asU8()).toString()),
         address: new Address(grpcObject.getContractaddress_asU8()),
         eventName: grpcObject.getEventname(),
@@ -23431,93 +23355,43 @@ function () {
     }
   }]);
 
-  return FilterInfo$$1;
+  return FilterInfo;
 }();
 
-var CommitStatus$1 = rpcTypes.CommitStatus;
+var CommitStatus$1 = typesNode.CommitStatus;
 
 function waterfall(fns) {
   return (
     /*#__PURE__*/
     function () {
-      var _ref = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(input) {
-        var result, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, fn;
+      var _ref = _asyncToGenerator(function* (input) {
+        var result = input;
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                result = input;
-                _iteratorNormalCompletion = true;
-                _didIteratorError = false;
-                _iteratorError = undefined;
-                _context.prev = 4;
-                _iterator = fns[Symbol.iterator]();
-
-              case 6:
-                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context.next = 14;
-                  break;
-                }
-
-                fn = _step.value;
-                _context.next = 10;
-                return fn(result);
-
-              case 10:
-                result = _context.sent;
-
-              case 11:
-                _iteratorNormalCompletion = true;
-                _context.next = 6;
-                break;
-
-              case 14:
-                _context.next = 20;
-                break;
-
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](4);
-                _didIteratorError = true;
-                _iteratorError = _context.t0;
-
-              case 20:
-                _context.prev = 20;
-                _context.prev = 21;
-
-                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                  _iterator.return();
-                }
-
-              case 23:
-                _context.prev = 23;
-
-                if (!_didIteratorError) {
-                  _context.next = 26;
-                  break;
-                }
-
-                throw _iteratorError;
-
-              case 26:
-                return _context.finish(23);
-
-              case 27:
-                return _context.finish(20);
-
-              case 28:
-                return _context.abrupt("return", result);
-
-              case 29:
-              case "end":
-                return _context.stop();
+        try {
+          for (var _iterator = fns[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var fn = _step.value;
+            result = yield fn(result);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
             }
           }
-        }, _callee, this, [[4, 16, 20, 28], [21,, 23, 27]]);
-      }));
+        }
+
+        return result;
+      });
 
       return function (_x) {
         return _ref.apply(this, arguments);
@@ -23529,30 +23403,16 @@ function waterfall(fns) {
 function marshalEmpty() {
   return _marshalEmpty.apply(this, arguments);
 }
+
+function _marshalEmpty() {
+  _marshalEmpty = _asyncToGenerator(function* () {
+    return new rpc_pb_1();
+  });
+  return _marshalEmpty.apply(this, arguments);
+}
 /**
  * Main aergo client controller.
  */
-
-
-function _marshalEmpty() {
-  _marshalEmpty = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6() {
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            return _context6.abrupt("return", new rpc_pb_1());
-
-          case 1:
-          case "end":
-            return _context6.stop();
-        }
-      }
-    }, _callee6, this);
-  }));
-  return _marshalEmpty.apply(this, arguments);
-}
 
 var AergoClient =
 /*#__PURE__*/
@@ -23634,24 +23494,11 @@ function () {
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.blockchain),
       /*#__PURE__*/
       function () {
-        var _unmarshal = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee2(response) {
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
-            while (1) {
-              switch (_context2.prev = _context2.next) {
-                case 0:
-                  return _context2.abrupt("return", _objectSpread({}, response.toObject(), {
-                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
-                  }));
-
-                case 1:
-                case "end":
-                  return _context2.stop();
-              }
-            }
-          }, _callee2, this);
-        }));
+        var _unmarshal = _asyncToGenerator(function* (response) {
+          return _objectSpread({}, response.toObject(), {
+            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+          });
+        });
 
         return function unmarshal(_x2) {
           return _unmarshal.apply(this, arguments);
@@ -23669,22 +23516,9 @@ function () {
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.getChainInfo),
       /*#__PURE__*/
       function () {
-        var _unmarshal2 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee3(response) {
-          return regeneratorRuntime.wrap(function _callee3$(_context3) {
-            while (1) {
-              switch (_context3.prev = _context3.next) {
-                case 0:
-                  return _context3.abrupt("return", ChainInfo.fromGrpc(response));
-
-                case 1:
-                case "end":
-                  return _context3.stop();
-              }
-            }
-          }, _callee3, this);
-        }));
+        var _unmarshal2 = _asyncToGenerator(function* (response) {
+          return ChainInfo.fromGrpc(response);
+        });
 
         return function unmarshal(_x3) {
           return _unmarshal2.apply(this, arguments);
@@ -23703,7 +23537,7 @@ function () {
     value: function getTransaction(txhash) {
       var _this2 = this;
 
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
       return new Promise(function (resolve, reject) {
         _this2.client.client.getBlockTX(singleBytes, function (err, result) {
@@ -23713,7 +23547,7 @@ function () {
                 reject(err);
               } else {
                 var res = {};
-                res.tx = Tx$$1.fromGrpc(result);
+                res.tx = Tx.fromGrpc(result);
                 resolve(res);
               }
             });
@@ -23723,7 +23557,7 @@ function () {
               hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
               idx: result.getTxidx().getIdx()
             };
-            res.tx = Tx$$1.fromGrpc(result.getTx());
+            res.tx = Tx.fromGrpc(result.getTx());
             resolve(res);
           }
         });
@@ -23742,47 +23576,27 @@ function () {
       return waterfall([
       /*#__PURE__*/
       function () {
-        var _marshal = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee4(hashOrNumber) {
-          var input, singleBytes;
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
-            while (1) {
-              switch (_context4.prev = _context4.next) {
-                case 0:
-                  if (!(typeof hashOrNumber === 'undefined')) {
-                    _context4.next = 2;
-                    break;
-                  }
+        var _marshal = _asyncToGenerator(function* (hashOrNumber) {
+          if (typeof hashOrNumber === 'undefined') {
+            throw new Error('Missing argument block hash or number');
+          }
 
-                  throw new Error('Missing argument block hash or number');
+          var input;
 
-                case 2:
-                  if (typeof hashOrNumber === 'string') {
-                    input = Block.decodeHash(hashOrNumber);
-                  } else if (typeof hashOrNumber === 'number') {
-                    input = fromNumber(hashOrNumber);
-                  }
+          if (typeof hashOrNumber === 'string') {
+            input = Block.decodeHash(hashOrNumber);
+          } else if (typeof hashOrNumber === 'number') {
+            input = fromNumber(hashOrNumber);
+          }
 
-                  if (!(input.length != 32 && input.length != 8)) {
-                    _context4.next = 5;
-                    break;
-                  }
+          if (input.length != 32 && input.length != 8) {
+            throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+          }
 
-                  throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-
-                case 5:
-                  singleBytes = new rpc_pb_3();
-                  singleBytes.setValue(Uint8Array.from(input));
-                  return _context4.abrupt("return", singleBytes);
-
-                case 8:
-                case "end":
-                  return _context4.stop();
-              }
-            }
-          }, _callee4, this);
-        }));
+          var singleBytes = new rpc_pb_3();
+          singleBytes.setValue(Uint8Array.from(input));
+          return singleBytes;
+        });
 
         return function marshal(_x4) {
           return _marshal.apply(this, arguments);
@@ -23790,22 +23604,9 @@ function () {
       }(), this.grpcMethod(this.client.client.getBlock),
       /*#__PURE__*/
       function () {
-        var _unmarshal3 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee5(response) {
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
-            while (1) {
-              switch (_context5.prev = _context5.next) {
-                case 0:
-                  return _context5.abrupt("return", Block.fromGrpc(response));
-
-                case 1:
-                case "end":
-                  return _context5.stop();
-              }
-            }
-          }, _callee5, this);
-        }));
+        var _unmarshal3 = _asyncToGenerator(function* (response) {
+          return Block.fromGrpc(response);
+        });
 
         return function unmarshal(_x5) {
           return _unmarshal3.apply(this, arguments);
@@ -23826,7 +23627,7 @@ function () {
       var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
       var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
       var desc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-      var params = new rpcTypes.ListParams();
+      var params = new typesNode.ListParams();
 
       if (typeof hashOrNumber === 'string') {
         hashOrNumber = Block.decodeHash(hashOrNumber);
@@ -23854,7 +23655,7 @@ function () {
   }, {
     key: "getBlockStream",
     value: function getBlockStream() {
-      var empty = new rpcTypes.Empty();
+      var empty = new typesNode.Empty();
       var stream = this.client.client.listBlockStream(empty);
 
       try {
@@ -23882,7 +23683,7 @@ function () {
   }, {
     key: "getBlockMetadataStream",
     value: function getBlockMetadataStream() {
-      var empty = new rpcTypes.Empty();
+      var empty = new typesNode.Empty();
       var stream = this.client.client.listBlockMetadataStream(empty);
 
       try {
@@ -23926,7 +23727,7 @@ function () {
   }, {
     key: "getEventStream",
     value: function getEventStream(filter) {
-      var fi = new FilterInfo$$1(filter);
+      var fi = new FilterInfo(filter);
       var query = fi.toGrpc();
       var stream = this.client.client.listEventStream(query);
 
@@ -23961,7 +23762,7 @@ function () {
   }, {
     key: "getState",
     value: function getState(address) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
       return promisify(this.client.client.getState, this.client.client)(singleBytes).then(function (grpcObject) {
         return State.fromGrpc(grpcObject);
@@ -23970,7 +23771,7 @@ function () {
   }, {
     key: "getNonce",
     value: function getNonce(address) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
       return promisify(this.client.client.getState, this.client.client)(singleBytes).then(function (grpcObject) {
         return grpcObject.getNonce();
@@ -23983,7 +23784,7 @@ function () {
     {
       // Untested
       return promisify(this.client.client.verifyTX, this.client.client)()(function (grpcObject) {
-        return Tx$$1.fromGrpc(grpcObject);
+        return Tx.fromGrpc(grpcObject);
       });
     }
     /**
@@ -23998,10 +23799,10 @@ function () {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        var txs = new rpcTypes.TxList();
+        var txs = new typesNode.TxList();
 
-        if (!(tx instanceof Tx$$1)) {
-          tx = new Tx$$1(tx);
+        if (!(tx instanceof Tx)) {
+          tx = new Tx(tx);
         }
 
         txs.addTxs(tx.toGrpc(), 0);
@@ -24028,7 +23829,7 @@ function () {
   }, {
     key: "getTopVotes",
     value: function getTopVotes(count) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
       return promisify(this.client.client.getVotes, this.client.client)(singleBytes).then(function (state) {
         return state.getVotesList().map(function (item) {
@@ -24047,7 +23848,7 @@ function () {
   }, {
     key: "getStaking",
     value: function getStaking(address) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
       return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(function (grpcObject) {
         return {
@@ -24065,14 +23866,13 @@ function () {
   }, {
     key: "getTransactionReceipt",
     value: function getTransactionReceipt(txhash) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
       return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then(function (grpcObject) {
         var obj = grpcObject.toObject();
         return {
           contractaddress: new Address(grpcObject.getContractaddress_asU8()),
           result: obj.ret,
-          //JSON.parse(obj.ret),
           status: obj.status
         };
       });
@@ -24129,7 +23929,7 @@ function () {
   }, {
     key: "getEvents",
     value: function getEvents(filter) {
-      var fi = new FilterInfo$$1(filter);
+      var fi = new FilterInfo(filter);
       var query = fi.toGrpc();
       return promisify(this.client.client.listEvents, this.client.client)(query).then(function (grpcObject) {
         var list = grpcObject.getEventsList();
@@ -24147,7 +23947,7 @@ function () {
   }, {
     key: "getABI",
     value: function getABI(address) {
-      var singleBytes = new rpcTypes.SingleBytes();
+      var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(new Address(address).asBytes()));
       return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(function (grpcObject) {
         var obj = grpcObject.toObject();
@@ -24319,7 +24119,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-function read (buffer$$1, offset, isLE, mLen, nBytes) {
+function read (buffer, offset, isLE, mLen, nBytes) {
   var e, m;
   var eLen = nBytes * 8 - mLen - 1;
   var eMax = (1 << eLen) - 1;
@@ -24327,19 +24127,19 @@ function read (buffer$$1, offset, isLE, mLen, nBytes) {
   var nBits = -7;
   var i = isLE ? (nBytes - 1) : 0;
   var d = isLE ? -1 : 1;
-  var s = buffer$$1[offset + i];
+  var s = buffer[offset + i];
 
   i += d;
 
   e = s & ((1 << (-nBits)) - 1);
   s >>= (-nBits);
   nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer$$1[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   m = e & ((1 << (-nBits)) - 1);
   e >>= (-nBits);
   nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer$$1[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
     e = 1 - eBias;
@@ -24352,7 +24152,7 @@ function read (buffer$$1, offset, isLE, mLen, nBytes) {
   return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
 }
 
-function write (buffer$$1, value, offset, isLE, mLen, nBytes) {
+function write (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c;
   var eLen = nBytes * 8 - mLen - 1;
   var eMax = (1 << eLen) - 1;
@@ -24395,13 +24195,13 @@ function write (buffer$$1, value, offset, isLE, mLen, nBytes) {
     }
   }
 
-  for (; mLen >= 8; buffer$$1[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
   e = (e << mLen) | m;
   eLen += mLen;
-  for (; eLen > 0; buffer$$1[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
-  buffer$$1[offset + i - d] |= s * 128;
+  buffer[offset + i - d] |= s * 128;
 }
 
 var toString = {}.toString;
@@ -24755,17 +24555,17 @@ Buffer$1.concat = function concat (list, length) {
     }
   }
 
-  var buffer$$1 = Buffer$1.allocUnsafe(length);
+  var buffer = Buffer$1.allocUnsafe(length);
   var pos = 0;
   for (i = 0; i < list.length; ++i) {
     var buf = list[i];
     if (!internalIsBuffer(buf)) {
       throw new TypeError('"list" argument must be an Array of Buffers')
     }
-    buf.copy(buffer$$1, pos);
+    buf.copy(buffer, pos);
     pos += buf.length;
   }
-  return buffer$$1
+  return buffer
 };
 
 function byteLength (string, encoding) {
@@ -25021,9 +24821,9 @@ Buffer$1.prototype.compare = function compare (target, start, end, thisStart, th
 // - byteOffset - an index into `buffer`; will be clamped to an int32
 // - encoding - an optional encoding, relevant is val is a string
 // - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer$$1, val, byteOffset, encoding, dir) {
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
   // Empty buffer means no match
-  if (buffer$$1.length === 0) return -1
+  if (buffer.length === 0) return -1
 
   // Normalize byteOffset
   if (typeof byteOffset === 'string') {
@@ -25037,14 +24837,14 @@ function bidirectionalIndexOf (buffer$$1, val, byteOffset, encoding, dir) {
   byteOffset = +byteOffset;  // Coerce to Number.
   if (isNaN(byteOffset)) {
     // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer$$1.length - 1);
+    byteOffset = dir ? 0 : (buffer.length - 1);
   }
 
   // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer$$1.length + byteOffset;
-  if (byteOffset >= buffer$$1.length) {
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
+  if (byteOffset >= buffer.length) {
     if (dir) return -1
-    else byteOffset = buffer$$1.length - 1;
+    else byteOffset = buffer.length - 1;
   } else if (byteOffset < 0) {
     if (dir) byteOffset = 0;
     else return -1
@@ -25061,18 +24861,18 @@ function bidirectionalIndexOf (buffer$$1, val, byteOffset, encoding, dir) {
     if (val.length === 0) {
       return -1
     }
-    return arrayIndexOf(buffer$$1, val, byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
   } else if (typeof val === 'number') {
     val = val & 0xFF; // Search for a byte value [0-255]
     if (Buffer$1.TYPED_ARRAY_SUPPORT &&
         typeof Uint8Array.prototype.indexOf === 'function') {
       if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer$$1, val, byteOffset)
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
       } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer$$1, val, byteOffset)
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-    return arrayIndexOf(buffer$$1, [ val ], byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
   }
 
   throw new TypeError('val must be string, number or Buffer')
@@ -25097,7 +24897,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
     }
   }
 
-  function read$$1 (buf, i) {
+  function read (buf, i) {
     if (indexSize === 1) {
       return buf[i]
     } else {
@@ -25109,7 +24909,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
   if (dir) {
     var foundIndex = -1;
     for (i = byteOffset; i < arrLength; i++) {
-      if (read$$1(arr, i) === read$$1(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
         if (foundIndex === -1) foundIndex = i;
         if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
       } else {
@@ -25122,7 +24922,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
     for (i = byteOffset; i >= 0; i--) {
       var found = true;
       for (var j = 0; j < valLength; j++) {
-        if (read$$1(arr, i + j) !== read$$1(val, j)) {
+        if (read(arr, i + j) !== read(val, j)) {
           found = false;
           break
         }
@@ -25193,7 +24993,7 @@ function ucs2Write (buf, string, offset, length) {
   return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 }
 
-Buffer$1.prototype.write = function write$$1 (string, offset, length, encoding) {
+Buffer$1.prototype.write = function write (string, offset, length, encoding) {
   // Buffer#write(string)
   if (offset === undefined) {
     encoding = 'utf8';
@@ -27089,7 +26889,7 @@ var rpc_grpc_pb = createCommonjsModule(function (module, exports) {
       responseDeserialize: deserialize_types_EventList
     }
   };
-  exports.AergoRPCServiceClient = grpc.makeGenericClientConstructor(AergoRPCServiceService);
+  exports.AergoRPCServiceClient = grpc$1.makeGenericClientConstructor(AergoRPCServiceService);
 });
 var rpc_grpc_pb_1 = rpc_grpc_pb.AergoRPCServiceService;
 var rpc_grpc_pb_2 = rpc_grpc_pb.AergoRPCServiceClient;
@@ -27125,7 +26925,7 @@ function () {
       throw new Error("URL for GrpcProvider should be provided without scheme (not ".concat(urlScheme[1], ")"));
     }
 
-    this.client = new rpc_grpc_pb_2(this.config.url, grpc.credentials.createInsecure());
+    this.client = new rpc_grpc_pb_2(this.config.url, grpc$1.credentials.createInsecure());
   }
 
   _createClass(GrpcProvider, [{
@@ -27138,6 +26938,1503 @@ function () {
   }]);
 
   return GrpcProvider;
+}();
+
+// file: rpc.proto
+
+var grpc = grpcWeb.grpc;
+
+var AergoRPCService = function () {
+  function AergoRPCService() {}
+
+  AergoRPCService.serviceName = "types.AergoRPCService";
+  return AergoRPCService;
+}();
+
+AergoRPCService.NodeState = {
+  methodName: "NodeState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.NodeReq,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.Metric = {
+  methodName: "Metric",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: metric_pb.MetricsRequest,
+  responseType: metric_pb.Metrics
+};
+AergoRPCService.Blockchain = {
+  methodName: "Blockchain",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.BlockchainStatus
+};
+AergoRPCService.GetChainInfo = {
+  methodName: "GetChainInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.ChainInfo
+};
+AergoRPCService.ListBlockHeaders = {
+  methodName: "ListBlockHeaders",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ListParams,
+  responseType: rpc_pb.BlockHeaderList
+};
+AergoRPCService.ListBlockMetadata = {
+  methodName: "ListBlockMetadata",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ListParams,
+  responseType: rpc_pb.BlockMetadataList
+};
+AergoRPCService.ListBlockStream = {
+  methodName: "ListBlockStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: rpc_pb.Empty,
+  responseType: blockchain_pb.Block
+};
+AergoRPCService.ListBlockMetadataStream = {
+  methodName: "ListBlockMetadataStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.BlockMetadata
+};
+AergoRPCService.GetBlock = {
+  methodName: "GetBlock",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Block
+};
+AergoRPCService.GetBlockMetadata = {
+  methodName: "GetBlockMetadata",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.BlockMetadata
+};
+AergoRPCService.GetBlockBody = {
+  methodName: "GetBlockBody",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.BlockBodyParams,
+  responseType: rpc_pb.BlockBodyPaged
+};
+AergoRPCService.GetTX = {
+  methodName: "GetTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Tx
+};
+AergoRPCService.GetBlockTX = {
+  methodName: "GetBlockTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.TxInBlock
+};
+AergoRPCService.GetReceipt = {
+  methodName: "GetReceipt",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.Receipt
+};
+AergoRPCService.GetABI = {
+  methodName: "GetABI",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.ABI
+};
+AergoRPCService.SendTX = {
+  methodName: "SendTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.CommitResult
+};
+AergoRPCService.SignTX = {
+  methodName: "SignTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: blockchain_pb.Tx
+};
+AergoRPCService.VerifyTX = {
+  methodName: "VerifyTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Tx,
+  responseType: rpc_pb.VerifyResult
+};
+AergoRPCService.CommitTX = {
+  methodName: "CommitTX",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.TxList,
+  responseType: rpc_pb.CommitResultList
+};
+AergoRPCService.GetState = {
+  methodName: "GetState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: blockchain_pb.State
+};
+AergoRPCService.GetStateAndProof = {
+  methodName: "GetStateAndProof",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.AccountAndRoot,
+  responseType: blockchain_pb.AccountProof
+};
+AergoRPCService.CreateAccount = {
+  methodName: "CreateAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.GetAccounts = {
+  methodName: "GetAccounts",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: account_pb.AccountList
+};
+AergoRPCService.LockAccount = {
+  methodName: "LockAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.UnlockAccount = {
+  methodName: "UnlockAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: account_pb.Account
+};
+AergoRPCService.ImportAccount = {
+  methodName: "ImportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.ImportFormat,
+  responseType: account_pb.Account
+};
+AergoRPCService.ExportAccount = {
+  methodName: "ExportAccount",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.QueryContract = {
+  methodName: "QueryContract",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.Query,
+  responseType: rpc_pb.SingleBytes
+};
+AergoRPCService.QueryContractState = {
+  methodName: "QueryContractState",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.StateQuery,
+  responseType: blockchain_pb.StateQueryProof
+};
+AergoRPCService.GetPeers = {
+  methodName: "GetPeers",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.PeersParams,
+  responseType: rpc_pb.PeerList
+};
+AergoRPCService.GetVotes = {
+  methodName: "GetVotes",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.VoteList
+};
+AergoRPCService.GetStaking = {
+  methodName: "GetStaking",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: rpc_pb.Staking
+};
+AergoRPCService.GetNameInfo = {
+  methodName: "GetNameInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Name,
+  responseType: rpc_pb.NameInfo
+};
+AergoRPCService.ListEventStream = {
+  methodName: "ListEventStream",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: true,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: blockchain_pb.Event
+};
+AergoRPCService.ListEvents = {
+  methodName: "ListEvents",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: blockchain_pb.FilterInfo,
+  responseType: rpc_pb.EventList
+};
+
+function AergoRPCServiceClient(serviceHost, options) {
+  this.serviceHost = serviceHost;
+  this.options = options || {};
+}
+
+AergoRPCServiceClient.prototype.nodeState = function nodeState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.NodeState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.metric = function metric(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.Metric, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.blockchain = function blockchain(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.Blockchain, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetChainInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListBlockHeaders, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockMetadata = function listBlockMetadata(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListBlockMetadata, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListBlockStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listBlockMetadataStream = function listBlockMetadataStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListBlockMetadataStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlock = function getBlock(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlock, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockMetadata = function getBlockMetadata(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockMetadata, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockBody = function getBlockBody(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockBody, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getTX = function getTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getBlockTX = function getBlockTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetBlockTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getReceipt = function getReceipt(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetReceipt, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getABI = function getABI(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetABI, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.sendTX = function sendTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.SendTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.signTX = function signTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.SignTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.verifyTX = function verifyTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.VerifyTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.commitTX = function commitTX(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.CommitTX, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getState = function getState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getStateAndProof = function getStateAndProof(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetStateAndProof, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.createAccount = function createAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.CreateAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getAccounts = function getAccounts(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetAccounts, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.lockAccount = function lockAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.LockAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.unlockAccount = function unlockAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.UnlockAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.importAccount = function importAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ImportAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ExportAccount, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.QueryContract, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.queryContractState = function queryContractState(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.QueryContractState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getPeers = function getPeers(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetPeers, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetVotes, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetStaking, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getNameInfo = function getNameInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.GetNameInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listEventStream = function listEventStream(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(AergoRPCService.ListEventStream, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function onMessage(responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function onEnd(status, statusMessage, trailers) {
+      listeners.end.forEach(function (handler) {
+        handler();
+      });
+      listeners.status.forEach(function (handler) {
+        handler({
+          code: status,
+          details: statusMessage,
+          metadata: trailers
+        });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function on(type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function cancel() {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+
+  var client = grpc.unary(AergoRPCService.ListEvents, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function onEnd(response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function cancel() {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+var AergoRPCServiceClient_1 = AergoRPCServiceClient;
+
+/**
+ * Provider for GRPC-WEB connections over HTTP.
+ * This is compatible with Node.js environments.
+ * Streaming methods are not supported.
+ * This is mostly for testing, for productiomn use use GrpcWebProvider or GrpcProvider.
+ */
+var GrpcWebNodeProvider =
+/*#__PURE__*/
+function () {
+  /**
+   * .. code-block:: javascript
+   * 
+   *     import { GrpcWebNodeProvider } from '@herajs/client';
+   *     const provider = new GrpcWebProvider({url: 'http://localhost:7845'});
+   * 
+   * @param {GrpcWebProviderConfig} config
+   */
+  function GrpcWebNodeProvider() {
+    var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, GrpcWebNodeProvider);
+
+    _defineProperty(this, "client", void 0);
+
+    _defineProperty(this, "config", void 0);
+
+    this.config = _objectSpread({}, this.defaultConfig, config);
+    var options = {
+      transport: grpcWebNodeHttpTransport.NodeHttpTransport()
+    };
+    this.client = new AergoRPCServiceClient_1(this.config.url, options);
+  }
+
+  _createClass(GrpcWebNodeProvider, [{
+    key: "defaultConfig",
+    get: function get() {
+      return {
+        url: 'http://localhost:7845'
+      };
+    }
+  }]);
+
+  return GrpcWebNodeProvider;
 }();
 
 /**
@@ -27248,11 +28545,11 @@ function () {
  *     })
  */
 
-var StateQuery$$1 =
+var StateQuery =
 /*#__PURE__*/
 function () {
-  function StateQuery$$1(contractInstance, storageKey) {
-    _classCallCheck(this, StateQuery$$1);
+  function StateQuery(contractInstance, storageKey) {
+    _classCallCheck(this, StateQuery);
 
     _defineProperty(this, "contractInstance", void 0);
 
@@ -27262,7 +28559,7 @@ function () {
     this.storageKey = storageKey;
   }
 
-  _createClass(StateQuery$$1, [{
+  _createClass(StateQuery, [{
     key: "toGrpc",
     value: function toGrpc() {
       var q = new blockchain_pb_6();
@@ -27272,7 +28569,7 @@ function () {
     }
   }]);
 
-  return StateQuery$$1;
+  return StateQuery;
 }();
 /**
  * Smart contract interface.
@@ -27413,7 +28710,7 @@ function () {
   }, {
     key: "queryState",
     value: function queryState(key) {
-      return new StateQuery$$1(this, key);
+      return new StateQuery(this, key);
     }
   }], [{
     key: "fromCode",
@@ -27472,9 +28769,11 @@ AergoClient.prototype.defaultProvider = function () {
 };
 
 exports.AergoClient = AergoClient;
+exports.default = AergoClient;
 exports.GrpcProvider = GrpcProvider;
+exports.GrpcWebNodeProvider = GrpcWebNodeProvider;
 exports.constants = constants;
 exports.Contract = Contract;
 exports.Address = Address;
 exports.Amount = Amount;
-exports.default = AergoClient;
+exports.Tx = Tx;
