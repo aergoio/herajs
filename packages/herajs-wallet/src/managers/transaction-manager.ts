@@ -62,7 +62,7 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         this.retryLoad();
     }
 
-    private retryLoad() {
+    private retryLoad(): void {
         if (this.retryCount >= this.maxRetryCount) {
             this.transaction.data.status = Transaction.Status.Timeout;
             const elapsed = Math.round((+new Date() - (+this.started))/1000);
@@ -130,7 +130,7 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
         const lastSyncBlockno = this.account.data.lastSync ? this.account.data.lastSync.blockno + 1 : 0;
         const { bestHeight } = await client.blockchain();
         if (lastSyncBlockno >= bestHeight) return this.account;
-        console.log(`[track] sync from block ${lastSyncBlockno} .. ${bestHeight}`);
+        // console.log(`[track] sync from block ${lastSyncBlockno} .. ${bestHeight}`);
         const transactions = await this.manager.getAccountTransactionsAfter(this.account, lastSyncBlockno, bestHeight);
         for (const tx of transactions) {
             this.emit('transaction', tx);
@@ -181,7 +181,7 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
      * wallet.use(NodeTransactionScanner);
      * @param account 
      */
-    trackAccount(account: Account) {
+    trackAccount(account: Account): AccountTransactionTracker {
         const tracker = new AccountTransactionTracker(this, account);
         tracker.resume();
         return tracker;

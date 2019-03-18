@@ -15,20 +15,31 @@ interface ChainConfig {
     provider?: any;
 };
 
+interface WalletConfig {
+    appName: string;
+    appVersion: number;
+}
+
 export class Wallet extends MiddlewareConsumer {
     defaultChainId: string = DEFAULT_CHAIN;
     chainConfigs: HashMap<string, ChainConfig> = new HashMap();
     keyManager: KeyManager;
     transactionManager: TransactionManager;
     accountManager: AccountManager;
+    config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1 };
 
     private clients: Map<string, AergoClient> = new Map();
 
-    constructor() {
+    constructor(config?: Partial<WalletConfig>) {
         super();
         this.keyManager = new KeyManager(this);
         this.transactionManager = new TransactionManager(this);
         this.accountManager = new AccountManager(this);
+        this.config = {...this.config, ...config};
+    }
+
+    set(configKey: keyof WalletConfig, value: WalletConfig[keyof WalletConfig]): void {
+        this.config[configKey] = value;
     }
 
     /**

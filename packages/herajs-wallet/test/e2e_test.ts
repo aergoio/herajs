@@ -71,16 +71,14 @@ describe('Wallet scenarios', async () => {
             };
             const txTracker = await wallet.sendTransaction(account, tx);
             console.log(txTracker.transaction.hash);
-            txTracker.on('block', (transaction) => {
-                console.log('confirmed in block', transaction.data.blockhash, transaction);
+            txTracker.on('block', (/*transaction*/) => {
+                // console.log('confirmed in block', transaction.data.blockhash, transaction);
                 resolve();
             });
             txTracker.on('error', (error) => {
-                console.log('sendTx had an execution error', error);
                 reject(error);
             });
             txTracker.on('timeout', (error) => {
-                console.log('sendTx timed out', error);
                 reject(error);
             });
         });

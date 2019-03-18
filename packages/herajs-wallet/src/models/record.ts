@@ -4,7 +4,7 @@ export interface Data {
 }
 
 /**
- * A Record is a basic object that only contains primitive types, arrays, and objects.
+ * A Record is a basic object that only contains a key and data as primitive types, arrays, and objects.
  * The data field is serializable and should be compatabile with any kind of storage.
  * Sub-classes can add non-serializable fields.
  */

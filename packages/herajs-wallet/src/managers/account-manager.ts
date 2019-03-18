@@ -92,7 +92,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         if (this.accounts.has(completeAccountSpec)) {
             throw new Error('Account has already been added.');
         }
-        console.log('addAccount', completeAccountSpec);
+        // console.log('addAccount', completeAccountSpec);
         const account = this.loadAccount(completeAccountSpec);
         this.accounts.set(completeAccountSpec, account);
         return account;
