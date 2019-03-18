@@ -1,6 +1,11 @@
-# Rollup-TypeScript-Babel
+# Herajs Wallet SDK
 
-> This is sample repository demonstrates how to use Rollup, TypeScript and Babel
+This package includes everything you need to build a wallet application on Aergo.
+It is useful for other kinds of dapps, too.
+
+**Work in progress, please check back later for release**
+
+Based on https://github.com/graup/rollup-typescript-babel
 
 ## Building the repo
 
@@ -24,4 +29,4 @@ And to run in --watch mode:
 
 ```shell
 npm run type-check:watch
-```# herajs-wallet
+```
