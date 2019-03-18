@@ -1,3 +1,7 @@
+## 0.7.1 (March 18, 2019)
+
+- Build was broken due to unused export
+
 ## 0.7.0 (March 18, 2019)
 
 - Changed build settings
