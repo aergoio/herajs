@@ -1,3 +1,10 @@
+## 0.7.0 (March 18, 2019)
+
+- Changed build settings
+- Updated dependencies
+- More Typescript annotations
+- Add compare methods for Address and Amount
+
 ## 0.6.0 (March 8, 2019)
 
 - Compatability with aergosvr 0.12
