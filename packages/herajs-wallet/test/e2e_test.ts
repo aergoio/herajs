@@ -153,10 +153,12 @@ describe('Wallet scenarios', async () => {
         };
         const txTracker = await wallet.sendTransaction(account, testtx);
         const receipt = await txTracker.getReceipt();
+        
         console.log('contract deployed at', receipt.contractaddress.toString());
         assert.equal(receipt.status, 'CREATED');
         contract.setAddress(receipt.contractaddress);
-
+        const contractId = receipt.contractaddress.value.toString('hex');
+        
         // Call contract
         // @ts-ignore
         const callTx = contract.alwaysFail().asTransaction({
@@ -164,7 +166,8 @@ describe('Wallet scenarios', async () => {
         });
         const callTxTracker = await wallet.sendTransaction(account, callTx);
         const callTxReceipt = await callTxTracker.getReceipt();
-        assert.equal(callTxReceipt.status, '[string "lua contract"]:0: failed as expected');
+        assert.equal(callTxReceipt.status, 'ERROR');
+        assert.equal(callTxReceipt.result, `[string "${contractId.substr(0, 45)}..."]:0: failed as expected`);
     }).timeout(5000);
 
     it('get account transactions', async () => {
@@ -247,7 +250,7 @@ describe('Wallet scenarios', async () => {
             amount: '123 aer'
         });
         txhash = txTracker.transaction.hash;
-        console.log(`Waiting for hash ${txhash}...`);
+        console.log(`Waiting for tx hash ${txhash} to be confirmed and tracked...`);
         await txTracker.getReceipt();
         return p;
     }).timeout(30000);

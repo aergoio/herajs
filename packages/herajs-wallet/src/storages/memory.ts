@@ -1,5 +1,5 @@
 import { Storage, Index } from './storage';
-import { Record } from '../models/record';
+import { Record, BasicType } from '../models/record';
 
 class MemoryIndex extends Index {
     storage: MemoryStorage;
@@ -16,19 +16,15 @@ class MemoryIndex extends Index {
         if (!record) throw new Error('not found');
         return record;
     }
-    async getAll(/*query?: any, indexName?: string*/): Promise<IterableIterator<Record>> {
-        return this.data.values();
-        /*
-        if (indexName) {
-            return this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(query);
+    async getAll(indexValue?: BasicType, indexName?: string): Promise<IterableIterator<Record>> {
+        if (indexName && indexValue) {
+            return Array.from(this.data.values()).filter(record => record.data[indexName] === indexValue)[Symbol.iterator]();
         }
-        return this.db.transaction(this.name).objectStore(this.name).getAll(query);
-        */
+        return this.data.values();
     }
     async put(data: Record): Promise<string> {
         this.data.set(data.key, data);
         return data.key;
-        
     }
     async delete(key: string): Promise<void> {
         this.data.delete(key);

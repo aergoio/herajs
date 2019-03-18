@@ -65,4 +65,5 @@ describe('Wallet: chain configuration', () => {
         wallet.setDefaultChain('testnet.localhost');
         assert.equal(wallet.defaultChainId, 'testnet.localhost');
     });
+    
 });

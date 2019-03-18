@@ -3,11 +3,11 @@ import KeyManager from './managers/key-manager';
 import AccountManager from './managers/account-manager';
 import { TransactionTracker, TransactionManager } from './managers/transaction-manager';
 import { AergoClient, GrpcProvider } from '@herajs/client';
-import { HashMap } from './utils';
+import { HashMap, isConstructor, Constructor } from './utils';
 import { Account, AccountSpec } from './models/account';
 import { TxBody, SignedTransaction } from './models/transaction';
 import { DEFAULT_CHAIN } from './defaults';
-
+import { Storage } from './storages/storage';
 
 interface ChainConfig {
     chainId: string;
@@ -27,6 +27,8 @@ export class Wallet extends MiddlewareConsumer {
     transactionManager: TransactionManager;
     accountManager: AccountManager;
     config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1 };
+    datastore?: Storage;
+    keystore?: Storage;
 
     private clients: Map<string, AergoClient> = new Map();
 
@@ -133,12 +135,25 @@ export class Wallet extends MiddlewareConsumer {
         return this.transactionManager.sendTransaction(signedTransaction);
     }
 
-    get keystore() {
-        return {};
+    useStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
+        this.useKeyStorage(classOrInstance);
+        this.useDataStorage(classOrInstance);
     }
 
-    get datastore() {
-        return {};
+    useKeyStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
+        if (isConstructor<T>(classOrInstance)) {
+            this.keystore = new classOrInstance();
+        } else {
+            this.keystore = classOrInstance;
+        }
+    }
+
+    useDataStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
+        if (isConstructor<T>(classOrInstance)) {
+            this.datastore = new classOrInstance();
+        } else {
+            this.datastore = classOrInstance;
+        }
     }
 
 }

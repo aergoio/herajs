@@ -84,3 +84,11 @@ export class PausableTypedEventEmitter<T> extends TypedEventEmitter<T> {
         this.paused = true;
     }
 }
+
+export interface Constructor<T> {
+    new (...args : any[]): T;
+}
+
+export function isConstructor<T>(arg: T | Constructor<T>): arg is Constructor<T> {
+    return (typeof arg === 'function');
+}
