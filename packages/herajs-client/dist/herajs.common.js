@@ -1,5 +1,5 @@
 /*!
- * herajs v0.7.1
+ * herajs v0.7.2
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -23408,10 +23408,10 @@ function _marshalEmpty() {
   });
   return _marshalEmpty.apply(this, arguments);
 }
+
 /**
  * Main aergo client controller.
  */
-
 var AergoClient =
 /*#__PURE__*/
 function () {
@@ -23994,7 +23994,8 @@ function () {
         var obj = grpcObject.toObject();
         return {
           name: obj.name.name,
-          owner: new Address(grpcObject.getOwner_asU8())
+          owner: new Address(grpcObject.getOwner_asU8()),
+          destination: new Address(grpcObject.getDestination_asU8())
         };
       });
     }
