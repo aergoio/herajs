@@ -21,6 +21,11 @@ interface GetReceiptResult {
     result: string;
     status: string;
 }
+interface NameInfoResult {
+    name: string;
+    owner: Address;
+    destination: Address;
+}
 /**
  * Main aergo client controller.
  */
@@ -176,6 +181,6 @@ declare class AergoClient {
      * Return information for account name
      * @param name
      */
-    getNameInfo(name: any): any;
+    getNameInfo(name: any): Promise<NameInfoResult>;
 }
 export default AergoClient;
