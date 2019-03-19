@@ -152,6 +152,7 @@ describe('Aergo.Accounts', () => {
 
             const info = await aergo.getNameInfo(name);
             assert.equal(info.owner.toString(), testAddress);
+            assert.equal(info.destination.toString(), testAddress);
         });
     });
 

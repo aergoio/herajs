@@ -62,6 +62,12 @@ interface GetReceiptResult {
     status: string;
 };
 
+interface NameInfoResult {
+    name: string;
+    owner: Address;
+    destination: Address;
+}
+
 /**
  * Main aergo client controller.
  */
@@ -512,21 +518,20 @@ class AergoClient {
      * Return information for account name
      * @param name 
      */
-    getNameInfo (name) {
+    getNameInfo (name): Promise<NameInfoResult> {
         const nameObj = new Name();
         nameObj.setName(name);
         return promisify(this.client.client.getNameInfo, this.client.client)(nameObj).then(
-            (grpcObject: NameInfo) => {
+            (grpcObject: NameInfo): NameInfoResult => {
                 const obj = grpcObject.toObject();
                 return {
                     name: obj.name.name,
-                    owner: new Address(grpcObject.getOwner_asU8())
+                    owner: new Address(grpcObject.getOwner_asU8()),
+                    destination: new Address(grpcObject.getDestination_asU8())
                 };
             }
         );
     }
-
-    
 }
 
 export default AergoClient;

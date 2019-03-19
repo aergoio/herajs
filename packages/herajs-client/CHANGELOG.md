@@ -1,3 +1,7 @@
+## 0.7.2 (March 19, 2019)
+
+- getNameInfo: add destination address
+
 ## 0.7.1 (March 18, 2019)
 
 - Build was broken due to unused export
