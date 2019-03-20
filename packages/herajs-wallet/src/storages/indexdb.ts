@@ -50,7 +50,7 @@ class IDBIndex extends Index {
         if (this.name === 'transactions' && typeof indexName !== 'undefined') {
             indexName = indexName as keyof IdbSchema['transactions']['indexes'];
             if (indexName in ['from', 'to']) {
-                //@ts-ignore
+                // @ts-ignore: not sure why this does not type-check
                 const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
                 return records[Symbol.iterator]();
             }
@@ -100,6 +100,9 @@ export default class IndexedDbStorage extends Storage {
 
         this.db = await openDB<IdbSchema>(this.name, this.version, { upgrade });
         return this;
+    }
+    async close(): Promise<void> {
+        return;
     }
     getIndex(name: StoreNames<IdbSchema>): IDBIndex {
         if (this.indices.has(name)) {

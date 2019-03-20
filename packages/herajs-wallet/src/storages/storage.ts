@@ -9,6 +9,7 @@ export abstract class Index {
 }
 
 export abstract class Storage {
-    abstract async open(name: string, version: number): Promise<this>;
+    abstract async open(): Promise<this>;
+    abstract async close(): Promise<void>;
     abstract getIndex(name: string): Index;
 }

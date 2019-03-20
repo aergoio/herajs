@@ -18,7 +18,7 @@ class MemoryIndex extends Index {
     }
     async getAll(indexValue?: BasicType, indexName?: string): Promise<IterableIterator<Record>> {
         if (indexName && indexValue) {
-            return Array.from(this.data.values()).filter(record => record.data[indexName] === indexValue)[Symbol.iterator]();
+            return Array.from(this.data.values()).reverse().filter(record => record.data[indexName] === indexValue)[Symbol.iterator]();
         }
         return this.data.values();
     }
@@ -46,6 +46,9 @@ export default class MemoryStorage extends Storage {
     }
     async open(): Promise<this> {
         return this;
+    }
+    async close(): Promise<void> {
+        return;
     }
     getIndex(name: string): MemoryIndex {
         if (this.indices.has(name)) {

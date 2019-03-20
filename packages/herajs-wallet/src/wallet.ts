@@ -9,6 +9,8 @@ import { TxBody, SignedTransaction } from './models/transaction';
 import { DEFAULT_CHAIN } from './defaults';
 import { Storage } from './storages/storage';
 
+const DB_VERSION = 1;
+
 interface ChainConfig {
     chainId: string;
     nodeUrl?: string;
@@ -142,20 +144,26 @@ export class Wallet extends MiddlewareConsumer {
 
     useKeyStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
         if (isConstructor<T>(classOrInstance)) {
-            this.keystore = new classOrInstance();
+            this.keystore = new classOrInstance('keystore', DB_VERSION);
         } else {
             this.keystore = classOrInstance;
         }
+        this.keystore.open()
     }
 
     useDataStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
         if (isConstructor<T>(classOrInstance)) {
-            this.datastore = new classOrInstance();
+            this.datastore = new classOrInstance('datastore', DB_VERSION);
         } else {
             this.datastore = classOrInstance;
         }
+        this.datastore.open();
     }
 
+    async close(): Promise<void> {
+        this.datastore && await this.datastore.close();
+        this.keystore && await this.keystore.close();
+    }
 }
 
 /*
