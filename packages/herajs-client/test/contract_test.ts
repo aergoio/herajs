@@ -30,7 +30,6 @@ describe('Contracts', () => {
             const testtx = {
                 from: testAddress,
                 to: null,
-                amount: 0,
                 payload: contract.asPayload([10]),
             };
             deployTxhash = await aergo.accounts.sendTransaction(testtx);

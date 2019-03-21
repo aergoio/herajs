@@ -40,13 +40,14 @@ To deploy a contract, you send a transaction with the contract code as the paylo
 
     await aergo.accounts.unlock(myAddress, 'your password');
 
-    deployTxhash = await aergo.accounts.sendTransaction(testtx);
+    const deployTxhash = await aergo.accounts.sendTransaction(tx);
 
 4. Check the transaction receipt for the created contract address or any error:
 
 .. code-block:: javascript
 
     const receipt = await aergo.getTransactionReceipt(deployTxhash);
+    const contractAddress = receipt.contractaddress;
     console.log(receipt);
     /*
     {
@@ -198,5 +199,5 @@ that receives all future events as they get created.
         }
         */
     });
-    // Call stream.cancel(); when you don't need it any more.
+    // Call stream.cancel(); when you don't need it any more to free resources on the full node.
 
