@@ -9,15 +9,15 @@ const DEFAULT_NETWORK_UNIT = 'aer';
  * A wrapper around amounts with units.
  * Over the network, amounts are sent as raw bytes.
  * In the client, they are exposed as BigInts, but also compatible with plain strings or numbers (if smaller than 2^31-1)
- * Uses 'aergo' as default unit when passing strings, or numbers.
+ * Uses 'aergo' as default unit when passing strings or numbers.
  * Uses 'aer' as default unit when passing BigInts, buffers or byte arrays.
- * For developers, whenever you pass amounts to other functions, they will try to coerce them using this class.
+ * Whenever you pass amounts to other functions, they will try to coerce them using this class.
  */
 export default class Amount {
     value: JSBI; // value in base unit
     unit: string; // unit for displaying
 
-    static _valueFromString(value: string, unit: string = ''): JSBI {
+    private static _valueFromString(value: string, unit: string = ''): JSBI {
         if (unit === '') {
             unit = DEFAULT_USER_UNIT;
         }
@@ -66,12 +66,18 @@ export default class Amount {
             this.unit = newUnit;
         }
     }
+    /**
+     * Returns value as byte buffer
+     */
     asBytes(): Buffer {
         return fromHexString(this.value.toString(16));
     }
     toJSON(): string {
         return this.value.toString();
     }
+    /**
+     * Returns formatted string including unit
+     */
     toString(): string {
         return `${this.formatNumber()} ${this.unit}`;
     }
