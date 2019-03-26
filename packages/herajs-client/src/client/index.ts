@@ -12,7 +12,8 @@ import {
     Name, NameInfo, Staking, ChainInfo as GrpcChainInfo,
     SingleBytes,
     EventList,
-    PeersParams
+    PeersParams,
+    ConsensusInfo
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -28,6 +29,7 @@ import ChainInfo from '../models/chaininfo';
 import Event from '../models/event';
 import { FunctionCall, StateQuery } from '../models/contract';
 import FilterInfo from '../models/filterinfo';
+import { TransactionError } from '../errors';
 
 import bs58 from 'bs58';
 
@@ -68,6 +70,19 @@ interface NameInfoResult {
     destination: Address;
 }
 
+interface ConsensusInfoResult {
+    type: string;
+    info: object;
+    bpsList: object[];
+}
+
+
+interface Stream<T> {
+    on(eventName: string, callback: ((obj: T) => void)): void;
+    cancel(): void;
+    _stream: any;
+}
+
 /**
  * Main aergo client controller.
  */
@@ -76,6 +91,8 @@ class AergoClient {
     client: any;
     accounts: Accounts;
     target: string;
+    static defaultProviderClass?: {new (...args : any[]): any;};
+    static platform: string = '';
 
     /**
      * Create a new auto-configured client with:
@@ -97,9 +114,9 @@ class AergoClient {
     }
 
     defaultProvider() {
-        // Platform-specific override, see ../platforms/**
-        // for auto-configuration of a provider.
-        // Can also manually pass provider to constructor.
+        // returns a new instance of defaultProviderClass
+        // which will be overriden during build according to platform
+        return new AergoClient.defaultProviderClass();
     }
 
     /**
@@ -137,7 +154,7 @@ class AergoClient {
                     bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
                 };
             }
-        ])({});
+        ])(null);
     }
 
     /**
@@ -151,7 +168,7 @@ class AergoClient {
             async function unmarshal(response: GrpcChainInfo): Promise<ChainInfo> {
                 return ChainInfo.fromGrpc(response);
             }
-        ])({});
+        ])(null);
     }
 
     /**
@@ -191,8 +208,8 @@ class AergoClient {
     /**
      * Retrieve information about a block.
      * 
-     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
-     * @returns {Promise<Block>} block details
+     * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
+     * @returns block details
      */
     getBlock (hashOrNumber: string | number): Promise<Block> {
         return waterfall([
@@ -266,7 +283,7 @@ class AergoClient {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(Block.fromGrpc(data))),
             cancel: () => stream.cancel()
-        };
+        } as Stream<Block>;
     }
 
     getBlockMetadataStream () {
@@ -301,9 +318,10 @@ class AergoClient {
      *         stream.cancel();
      *      });
      * 
-     * @param filter FilterInfo
+     * @param {FilterInfo} filter :class:`FilterInfo`
+     * @returns {Stream<Event>} event stream
      */
-    getEventStream (filter: Partial<FilterInfo>) {
+    getEventStream (filter: Partial<FilterInfo>): Stream<Event> {
         const fi = new FilterInfo(filter);
         const query = fi.toGrpc();
         const stream = this.client.client.listEventStream(query);
@@ -320,7 +338,7 @@ class AergoClient {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(Event.fromGrpc(data))),
             cancel: () => stream.cancel()
-        };
+        } as Stream<Event>;
     }
     
     
@@ -358,13 +376,13 @@ class AergoClient {
                 tx = new Tx(tx);
             }
             txs.addTxs(tx.toGrpc(), 0);
-            this.client.client.commitTX(txs, (err, result: CommitResultList) => {
+            this.client.client.commitTX(txs, (err: Error, result: CommitResultList) => {
                 if (err == null && result.getResultsList()[0].getError()) {
                     const obj = result.getResultsList()[0].toObject();
-                    err = new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
+                    err = new TransactionError(errorMessageForCode(obj.error) + ': ' + obj.detail);
                 }
                 if (err) {
-                    reject(err);
+                    reject(new TransactionError(err.message));
                 } else {
                     resolve(encodeTxHash(result.getResultsList()[0].getHash_asU8()));
                 }
@@ -461,10 +479,10 @@ class AergoClient {
     /**
      * Query contract state
      * This only works vor variables explicitly defines as state variables.
-     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
-     * @returns {Promise<object>} result of query
+     * @param {FilterInfo} filter :class:`FilterInfo`
+     * @returns {Event[]} list of events
      */
-    getEvents (filter: Partial<FilterInfo>) {
+    getEvents (filter: Partial<FilterInfo>): Event[] {
         const fi = new FilterInfo(filter);
         const query = fi.toGrpc();
         return promisify(this.client.client.listEvents, this.client.client)(query).then(
@@ -474,7 +492,6 @@ class AergoClient {
             }
         );
     }
-    
 
     /**
      * Query contract ABI
@@ -531,6 +548,25 @@ class AergoClient {
                 };
             }
         );
+    }
+
+    /**
+     * Return consensus info. The included fields can differ by consensus type.
+     */
+    getConsensusInfo (): Promise<ConsensusInfoResult> {
+        return waterfall([
+            marshalEmpty,
+            this.grpcMethod<Empty, ConsensusInfo>(this.client.client.getConsensusInfo),
+            async function unmarshal(response: ConsensusInfo): Promise<ConsensusInfoResult> {
+                const obj = response.toObject();
+                const result: ConsensusInfoResult = {
+                    type: obj.type,
+                    info: obj.info ? JSON.parse(obj.info) : {},
+                    bpsList: obj.bpsList.map(info => JSON.parse(info))
+                };
+                return result;
+            }
+        ])(null);
     }
 }
 
