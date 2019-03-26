@@ -8,11 +8,8 @@ import Address from '../../models/address';
 import Amount from '../../models/amount';
 import Tx from '../../models/tx';
 
-AergoClient.prototype.target = 'web';
-
-AergoClient.prototype.defaultProvider = () => {
-    return new GrpcWebProvider(); 
-};
+AergoClient.platform = 'web';
+AergoClient.defaultProviderClass = GrpcWebProvider;
 
 export {
     AergoClient,

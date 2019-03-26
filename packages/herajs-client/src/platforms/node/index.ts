@@ -8,11 +8,8 @@ import Address from '../../models/address';
 import Amount from '../../models/amount';
 import Tx from '../../models/tx';
 
-AergoClient.prototype.target = 'node';
-
-AergoClient.prototype.defaultProvider = () => {
-    return new GrpcProvider(); 
-};
+AergoClient.platform = 'node';
+AergoClient.defaultProviderClass = GrpcProvider;
 
 export {
     AergoClient,
