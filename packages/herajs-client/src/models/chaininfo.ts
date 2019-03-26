@@ -5,7 +5,6 @@ export type ChainId = {
     magic: string;
     public: Boolean;
     mainnet: Boolean;
-    coinbasefee: Amount;
     consensus: string;
 }
 
@@ -27,7 +26,6 @@ export default class ChainInfo {
                 magic: chainid.getMagic(),
                 public: chainid.getPublic(),
                 mainnet: chainid.getMainnet(),
-                coinbasefee: new Amount(chainid.getCoinbasefee_asU8()),
                 consensus: chainid.getConsensus()
             },
             bpnumber: grpcObject.getBpnumber(),
