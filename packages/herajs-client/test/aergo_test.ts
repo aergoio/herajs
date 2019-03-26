@@ -77,6 +77,13 @@ describe('Aergo', () => {
         });
     });
 
+    describe('getConsensusInfo()', () => {
+        it('should return consensus information', async () => {
+            const info = await aergo.getConsensusInfo();
+            assert.equal(info.type, 'sbp');
+        });
+    });
+
     describe('getPeers()', () => {
         it('should get a list of peers', async () => {
             const peers = await aergo.getPeers();
