@@ -17,6 +17,9 @@ export class BlockchainStatus extends jspb.Message {
   getBestHeight(): number;
   setBestHeight(value: number): void;
 
+  getConsensusInfo(): string;
+  setConsensusInfo(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockchainStatus.AsObject;
   static toObject(includeInstance: boolean, msg: BlockchainStatus): BlockchainStatus.AsObject;
@@ -31,6 +34,7 @@ export namespace BlockchainStatus {
   export type AsObject = {
     bestBlockHash: Uint8Array | string,
     bestHeight: number,
+    consensusInfo: string,
   }
 }
 
@@ -43,11 +47,6 @@ export class ChainId extends jspb.Message {
 
   getMainnet(): boolean;
   setMainnet(value: boolean): void;
-
-  getCoinbasefee(): Uint8Array | string;
-  getCoinbasefee_asU8(): Uint8Array;
-  getCoinbasefee_asB64(): string;
-  setCoinbasefee(value: Uint8Array | string): void;
 
   getConsensus(): string;
   setConsensus(value: string): void;
@@ -67,7 +66,6 @@ export namespace ChainId {
     magic: string,
     pb_public: boolean,
     mainnet: boolean,
-    coinbasefee: Uint8Array | string,
     consensus: string,
   }
 }
@@ -227,6 +225,28 @@ export class SingleBytes extends jspb.Message {
 }
 
 export namespace SingleBytes {
+  export type AsObject = {
+    value: Uint8Array | string,
+  }
+}
+
+export class AccountAddress extends jspb.Message {
+  getValue(): Uint8Array | string;
+  getValue_asU8(): Uint8Array;
+  getValue_asB64(): string;
+  setValue(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountAddress.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountAddress): AccountAddress.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountAddress, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountAddress;
+  static deserializeBinaryFromReader(message: AccountAddress, reader: jspb.BinaryReader): AccountAddress;
+}
+
+export namespace AccountAddress {
   export type AsObject = {
     value: Uint8Array | string,
   }
@@ -718,11 +738,92 @@ export namespace Vote {
   }
 }
 
+export class VoteParams extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  getCount(): number;
+  setCount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VoteParams.AsObject;
+  static toObject(includeInstance: boolean, msg: VoteParams): VoteParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: VoteParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VoteParams;
+  static deserializeBinaryFromReader(message: VoteParams, reader: jspb.BinaryReader): VoteParams;
+}
+
+export namespace VoteParams {
+  export type AsObject = {
+    id: string,
+    count: number,
+  }
+}
+
+export class AccountVoteInfo extends jspb.Message {
+  hasStaking(): boolean;
+  clearStaking(): void;
+  getStaking(): Staking | undefined;
+  setStaking(value?: Staking): void;
+
+  clearVotingList(): void;
+  getVotingList(): Array<VoteInfo>;
+  setVotingList(value: Array<VoteInfo>): void;
+  addVoting(value?: VoteInfo, index?: number): VoteInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountVoteInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountVoteInfo): AccountVoteInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountVoteInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountVoteInfo;
+  static deserializeBinaryFromReader(message: AccountVoteInfo, reader: jspb.BinaryReader): AccountVoteInfo;
+}
+
+export namespace AccountVoteInfo {
+  export type AsObject = {
+    staking?: Staking.AsObject,
+    votingList: Array<VoteInfo.AsObject>,
+  }
+}
+
+export class VoteInfo extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  clearCandidatesList(): void;
+  getCandidatesList(): Array<string>;
+  setCandidatesList(value: Array<string>): void;
+  addCandidates(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VoteInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: VoteInfo): VoteInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: VoteInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VoteInfo;
+  static deserializeBinaryFromReader(message: VoteInfo, reader: jspb.BinaryReader): VoteInfo;
+}
+
+export namespace VoteInfo {
+  export type AsObject = {
+    id: string,
+    candidatesList: Array<string>,
+  }
+}
+
 export class VoteList extends jspb.Message {
   clearVotesList(): void;
   getVotesList(): Array<Vote>;
   setVotesList(value: Array<Vote>): void;
   addVotes(value?: Vote, index?: number): Vote;
+
+  getId(): string;
+  setId(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VoteList.AsObject;
@@ -737,6 +838,7 @@ export class VoteList extends jspb.Message {
 export namespace VoteList {
   export type AsObject = {
     votesList: Array<Vote.AsObject>,
+    id: string,
   }
 }
 
@@ -865,6 +967,36 @@ export class EventList extends jspb.Message {
 export namespace EventList {
   export type AsObject = {
     eventsList: Array<blockchain_pb.Event.AsObject>,
+  }
+}
+
+export class ConsensusInfo extends jspb.Message {
+  getType(): string;
+  setType(value: string): void;
+
+  getInfo(): string;
+  setInfo(value: string): void;
+
+  clearBpsList(): void;
+  getBpsList(): Array<string>;
+  setBpsList(value: Array<string>): void;
+  addBps(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ConsensusInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ConsensusInfo): ConsensusInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ConsensusInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ConsensusInfo;
+  static deserializeBinaryFromReader(message: ConsensusInfo, reader: jspb.BinaryReader): ConsensusInfo;
+}
+
+export namespace ConsensusInfo {
+  export type AsObject = {
+    type: string,
+    info: string,
+    bpsList: Array<string>,
   }
 }
 

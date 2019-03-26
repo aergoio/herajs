@@ -220,6 +220,11 @@ export class TxBody extends jspb.Message {
   getType(): TxType;
   setType(value: TxType): void;
 
+  getChainidhash(): Uint8Array | string;
+  getChainidhash_asU8(): Uint8Array;
+  getChainidhash_asB64(): string;
+  setChainidhash(value: Uint8Array | string): void;
+
   getSign(): Uint8Array | string;
   getSign_asU8(): Uint8Array;
   getSign_asB64(): string;
@@ -245,6 +250,7 @@ export namespace TxBody {
     limit: number,
     price: Uint8Array | string,
     type: TxType,
+    chainidhash: Uint8Array | string,
     sign: Uint8Array | string,
   }
 }
@@ -830,6 +836,9 @@ export class FilterInfo extends jspb.Message {
   getArgfilter_asB64(): string;
   setArgfilter(value: Uint8Array | string): void;
 
+  getRecentblockcnt(): number;
+  setRecentblockcnt(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FilterInfo.AsObject;
   static toObject(includeInstance: boolean, msg: FilterInfo): FilterInfo.AsObject;
@@ -848,6 +857,7 @@ export namespace FilterInfo {
     blockto: number,
     desc: boolean,
     argfilter: Uint8Array | string,
+    recentblockcnt: number,
   }
 }
 

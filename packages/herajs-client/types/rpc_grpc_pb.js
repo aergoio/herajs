@@ -31,6 +31,17 @@ function deserialize_types_Account(buffer_arg) {
   return account_pb.Account.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_AccountAddress(arg) {
+  if (!(arg instanceof rpc_pb.AccountAddress)) {
+    throw new Error('Expected argument of type types.AccountAddress');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_AccountAddress(buffer_arg) {
+  return rpc_pb.AccountAddress.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_AccountAndRoot(arg) {
   if (!(arg instanceof rpc_pb.AccountAndRoot)) {
     throw new Error('Expected argument of type types.AccountAndRoot');
@@ -62,6 +73,17 @@ function serialize_types_AccountProof(arg) {
 
 function deserialize_types_AccountProof(buffer_arg) {
   return blockchain_pb.AccountProof.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_AccountVoteInfo(arg) {
+  if (!(arg instanceof rpc_pb.AccountVoteInfo)) {
+    throw new Error('Expected argument of type types.AccountVoteInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_AccountVoteInfo(buffer_arg) {
+  return rpc_pb.AccountVoteInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Block(arg) {
@@ -172,6 +194,17 @@ function serialize_types_CommitResultList(arg) {
 
 function deserialize_types_CommitResultList(buffer_arg) {
   return rpc_pb.CommitResultList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_ConsensusInfo(arg) {
+  if (!(arg instanceof rpc_pb.ConsensusInfo)) {
+    throw new Error('Expected argument of type types.ConsensusInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ConsensusInfo(buffer_arg) {
+  return rpc_pb.ConsensusInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Empty(arg) {
@@ -458,6 +491,17 @@ function serialize_types_VoteList(arg) {
 
 function deserialize_types_VoteList(buffer_arg) {
   return rpc_pb.VoteList.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_VoteParams(arg) {
+  if (!(arg instanceof rpc_pb.VoteParams)) {
+    throw new Error('Expected argument of type types.VoteParams');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_VoteParams(buffer_arg) {
+  return rpc_pb.VoteParams.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -825,27 +869,39 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     responseSerialize: serialize_types_PeerList,
     responseDeserialize: deserialize_types_PeerList,
   },
-  // Return list of votes
+  // Return result of vote
   getVotes: {
     path: '/types.AergoRPCService/GetVotes',
     requestStream: false,
     responseStream: false,
-    requestType: rpc_pb.SingleBytes,
+    requestType: rpc_pb.VoteParams,
     responseType: rpc_pb.VoteList,
-    requestSerialize: serialize_types_SingleBytes,
-    requestDeserialize: deserialize_types_SingleBytes,
+    requestSerialize: serialize_types_VoteParams,
+    requestDeserialize: deserialize_types_VoteParams,
     responseSerialize: serialize_types_VoteList,
     responseDeserialize: deserialize_types_VoteList,
+  },
+  // Return staking, voting info for account
+  getAccountVotes: {
+    path: '/types.AergoRPCService/GetAccountVotes',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.AccountAddress,
+    responseType: rpc_pb.AccountVoteInfo,
+    requestSerialize: serialize_types_AccountAddress,
+    requestDeserialize: deserialize_types_AccountAddress,
+    responseSerialize: serialize_types_AccountVoteInfo,
+    responseDeserialize: deserialize_types_AccountVoteInfo,
   },
   // Return staking information
   getStaking: {
     path: '/types.AergoRPCService/GetStaking',
     requestStream: false,
     responseStream: false,
-    requestType: rpc_pb.SingleBytes,
+    requestType: rpc_pb.AccountAddress,
     responseType: rpc_pb.Staking,
-    requestSerialize: serialize_types_SingleBytes,
-    requestDeserialize: deserialize_types_SingleBytes,
+    requestSerialize: serialize_types_AccountAddress,
+    requestDeserialize: deserialize_types_AccountAddress,
     responseSerialize: serialize_types_Staking,
     responseDeserialize: deserialize_types_Staking,
   },
@@ -884,6 +940,18 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_FilterInfo,
     responseSerialize: serialize_types_EventList,
     responseDeserialize: deserialize_types_EventList,
+  },
+  // Returns status of consensus and bps
+  getConsensusInfo: {
+    path: '/types.AergoRPCService/GetConsensusInfo',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.ConsensusInfo,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_ConsensusInfo,
+    responseDeserialize: deserialize_types_ConsensusInfo,
   },
 };
 

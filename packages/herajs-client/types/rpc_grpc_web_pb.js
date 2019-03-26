@@ -288,8 +288,17 @@ AergoRPCService.GetVotes = {
   service: AergoRPCService,
   requestStream: false,
   responseStream: false,
-  requestType: rpc_pb.SingleBytes,
+  requestType: rpc_pb.VoteParams,
   responseType: rpc_pb.VoteList
+};
+
+AergoRPCService.GetAccountVotes = {
+  methodName: "GetAccountVotes",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.AccountAddress,
+  responseType: rpc_pb.AccountVoteInfo
 };
 
 AergoRPCService.GetStaking = {
@@ -297,7 +306,7 @@ AergoRPCService.GetStaking = {
   service: AergoRPCService,
   requestStream: false,
   responseStream: false,
-  requestType: rpc_pb.SingleBytes,
+  requestType: rpc_pb.AccountAddress,
   responseType: rpc_pb.Staking
 };
 
@@ -326,6 +335,15 @@ AergoRPCService.ListEvents = {
   responseStream: false,
   requestType: blockchain_pb.FilterInfo,
   responseType: rpc_pb.EventList
+};
+
+AergoRPCService.GetConsensusInfo = {
+  methodName: "GetConsensusInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.ConsensusInfo
 };
 
 exports.AergoRPCService = AergoRPCService;
@@ -1312,6 +1330,37 @@ AergoRPCServiceClient.prototype.getVotes = function getVotes(requestMessage, met
   };
 };
 
+AergoRPCServiceClient.prototype.getAccountVotes = function getAccountVotes(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.GetAccountVotes, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
 AergoRPCServiceClient.prototype.getStaking = function getStaking(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
@@ -1418,6 +1467,37 @@ AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage,
     callback = arguments[1];
   }
   var client = grpc.unary(AergoRPCService.ListEvents, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getConsensusInfo = function getConsensusInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.GetConsensusInfo, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

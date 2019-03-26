@@ -1492,6 +1492,7 @@ proto.types.TxBody.toObject = function(includeInstance, msg) {
     limit: jspb.Message.getFieldWithDefault(msg, 6, 0),
     price: msg.getPrice_asB64(),
     type: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    chainidhash: msg.getChainidhash_asB64(),
     sign: msg.getSign_asB64()
   };
 
@@ -1562,6 +1563,10 @@ proto.types.TxBody.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 9:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setChainidhash(value);
+      break;
+    case 10:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSign(value);
       break;
@@ -1650,10 +1655,17 @@ proto.types.TxBody.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getSign_asU8();
+  f = message.getChainidhash_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       9,
+      f
+    );
+  }
+  f = message.getSign_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      10,
       f
     );
   }
@@ -1901,16 +1913,55 @@ proto.types.TxBody.prototype.setType = function(value) {
 
 
 /**
- * optional bytes sign = 9;
+ * optional bytes chainIDHash = 9;
  * @return {!(string|Uint8Array)}
  */
-proto.types.TxBody.prototype.getSign = function() {
+proto.types.TxBody.prototype.getChainidhash = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
 /**
- * optional bytes sign = 9;
+ * optional bytes chainIDHash = 9;
+ * This is a type-conversion wrapper around `getChainidhash()`
+ * @return {string}
+ */
+proto.types.TxBody.prototype.getChainidhash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getChainidhash()));
+};
+
+
+/**
+ * optional bytes chainIDHash = 9;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getChainidhash()`
+ * @return {!Uint8Array}
+ */
+proto.types.TxBody.prototype.getChainidhash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getChainidhash()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.TxBody.prototype.setChainidhash = function(value) {
+  jspb.Message.setField(this, 9, value);
+};
+
+
+/**
+ * optional bytes sign = 10;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.TxBody.prototype.getSign = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * optional bytes sign = 10;
  * This is a type-conversion wrapper around `getSign()`
  * @return {string}
  */
@@ -1921,7 +1972,7 @@ proto.types.TxBody.prototype.getSign_asB64 = function() {
 
 
 /**
- * optional bytes sign = 9;
+ * optional bytes sign = 10;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSign()`
@@ -1935,7 +1986,7 @@ proto.types.TxBody.prototype.getSign_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setSign = function(value) {
-  jspb.Message.setField(this, 9, value);
+  jspb.Message.setField(this, 10, value);
 };
 
 
@@ -6258,7 +6309,8 @@ proto.types.FilterInfo.toObject = function(includeInstance, msg) {
     blockfrom: jspb.Message.getFieldWithDefault(msg, 3, 0),
     blockto: jspb.Message.getFieldWithDefault(msg, 4, 0),
     desc: jspb.Message.getFieldWithDefault(msg, 5, false),
-    argfilter: msg.getArgfilter_asB64()
+    argfilter: msg.getArgfilter_asB64(),
+    recentblockcnt: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -6318,6 +6370,10 @@ proto.types.FilterInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setArgfilter(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRecentblockcnt(value);
       break;
     default:
       reader.skipField();
@@ -6387,6 +6443,13 @@ proto.types.FilterInfo.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       6,
+      f
+    );
+  }
+  f = message.getRecentblockcnt();
+  if (f !== 0) {
+    writer.writeInt32(
+      7,
       f
     );
   }
@@ -6530,6 +6593,21 @@ proto.types.FilterInfo.prototype.getArgfilter_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.FilterInfo.prototype.setArgfilter = function(value) {
   jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * optional int32 recentBlockCnt = 7;
+ * @return {number}
+ */
+proto.types.FilterInfo.prototype.getRecentblockcnt = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {number} value */
+proto.types.FilterInfo.prototype.setRecentblockcnt = function(value) {
+  jspb.Message.setField(this, 7, value);
 };
 
 
