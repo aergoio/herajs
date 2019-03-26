@@ -4,7 +4,7 @@
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
-  "browser": "dist/herajs.min.js",
+  "browser": "dist/herajs.js",
   "types": "dist/platforms/node/index.d.ts",
   "scripts": {
     "test:ts": "mocha --exit  -r babel-register-ts test/*.ts",
@@ -43,6 +43,7 @@
     "@herajs/crypto": "0.1.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.9.1",
     "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.4",
     "@types/rollup-plugin-json": "^3.0.0",
     "async-sema": "^3.0.0",
     "babel-register-ts": "^7.0.0",
