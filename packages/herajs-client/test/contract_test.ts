@@ -150,7 +150,7 @@ describe('Contracts', () => {
             assert.equal(result3.length, 1);
             assert.equal(result3[0].args[0], 10);
             assert.equal(result3[0].args[1], 11);
-            assert.equal(result3.txHash, result2.txHash);
+            assert.equal(result3[0].txhash, result2[0].txhash);
         });
 
         it('should stream events from a deployed contract', (done) => {
