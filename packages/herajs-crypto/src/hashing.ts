@@ -16,6 +16,9 @@ function hash(data: Buffer): string {
  */
 async function hashTransaction(tx: Record<string, any>): Promise<string>;
 async function hashTransaction(tx: Record<string, any>, encoding: string, includeSign?: boolean): Promise<Buffer | string>;
+async function hashTransaction(tx: Record<string, any>, encoding: 'base64', includeSign?: boolean): Promise<string>;
+async function hashTransaction(tx: Record<string, any>, encoding: 'base58', includeSign?: boolean): Promise<string>;
+async function hashTransaction(tx: Record<string, any>, encoding: 'bytes', includeSign?: boolean): Promise<Buffer>;
 async function hashTransaction(tx: Record<string, any>, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
     // check amount format
     tx.amount = '' + tx.amount;
@@ -25,7 +28,7 @@ async function hashTransaction(tx: Record<string, any>, encoding = 'base64', inc
     }
     tx.amount = tx.amount.replace(/[^0-9]/g, '');
 
-    let data = Buffer.concat([
+    const items = [
         fromNumber(tx.nonce, 64),
         decodeAddress(tx.from.toString()),
         tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]),
@@ -34,7 +37,9 @@ async function hashTransaction(tx: Record<string, any>, encoding = 'base64', inc
         fromNumber(tx.limit, 64),
         fromBigInt(tx.price || 0),
         fromNumber(tx.type, 32)
-    ]);
+    ];
+
+    let data = Buffer.concat(items.map(item => Buffer.from(item)));
 
     if (includeSign && 'sign' in tx) {
         data = Buffer.concat([data, Buffer.from(tx.sign, 'base64')]);

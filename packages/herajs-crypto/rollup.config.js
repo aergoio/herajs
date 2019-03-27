@@ -1,6 +1,8 @@
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 import json from 'rollup-plugin-json';
 import pkg from './package.json';
 
@@ -18,43 +20,39 @@ const namedExports = {
     [resolvePath('node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
 };
 
-const external = [
-    'crypto',
-    'buffer',
-    'util'
+const builtinExternal = [
+    'crypto'
 ];
 
-const nodeExternal = Object.keys(pkg.dependencies);
+const external = Object.keys(pkg.dependencies).concat(...builtinExternal);
 
-export default ['node', 'web'].map(target => ({
+export default {
     input: './src/index.ts',
     
-    external: target === 'node' ? external.concat(...nodeExternal) : external,
+    external,
     
     plugins: [
-        // Allows node_modules resolution
         resolve({ extensions }),
         
-        // Allow bundling cjs modules. Rollup doesn't understand cjs
         commonjs({ namedExports }),
 
         json(),
         
-        // Compile TypeScript/JavaScript files
         babel({ extensions, include: ['src/**/*'] }),
+
+        builtins(),
+        globals(),
     ],
     
-    output: target === 'node' ? [{
+    output: [{
         file: pkg.main,
         format: 'cjs',
-        external: nodeExternal,
     }, {
         file: pkg.module,
         format: 'es',
-        external: nodeExternal,
-    }] : [{
+    }, {
         file: pkg.browser,
-        format: 'iife',
+        format: 'umd',
         name,
         globals: external.reduce((prev, cur) => {
             prev[cur] = cur; return prev;
@@ -73,4 +71,4 @@ export default ['node', 'web'].map(target => ({
         }
         warn(warning.message);
     },
-}));
+};

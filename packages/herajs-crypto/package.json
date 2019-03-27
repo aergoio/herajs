@@ -4,7 +4,7 @@
   "description": "Cryptography tools for aergo",
   "main": "dist/herajs-crypto.cjs.js",
   "module": "dist/herajs-crypto.esm.js",
-  "browser": "dist/herajs-crypto.iife.js",
+  "browser": "dist/herajs-crypto.umd.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -45,6 +45,8 @@
     "rollup": "1.6.0",
     "rollup-plugin-babel": "4.3.2",
     "rollup-plugin-commonjs": "9.2.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-resolve": "4.0.1",
     "typescript": "3.3.3333"

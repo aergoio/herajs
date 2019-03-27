@@ -30,7 +30,7 @@ export function addressFromPublicKey(publicKey: any): string {
  */
 export function encodeIdentity(keyPair: ec.KeyPair): Identity {
     //@ts-ignore
-    const privateKey = keyPair.getPrivate().toBuffer() as Buffer;
+    const privateKey = Buffer.from(keyPair.getPrivate().toArray()) as Buffer;
     const publicKey = keyPair.getPublic();
     const address = addressFromPublicKey(publicKey);
     return {
