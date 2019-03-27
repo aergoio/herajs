@@ -3,9 +3,9 @@ import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
 import json from 'rollup-plugin-json';
-import { resolve as _resolve } from 'path';
 
-const resolvePath = p => _resolve(__dirname, p);
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 
 const extensions = [
     '.js', '.jsx', '.ts', '.tsx',
@@ -14,42 +14,71 @@ const extensions = [
 const name = 'HerajsWallet';
 
 const namedExports = {
-    '../herajs-crypto/node_modules/elliptic/lib/elliptic.js': 'ec'.split(', '),
+    'node_modules/elliptic/lib/elliptic.js': 'ec'.split(', '),
+    '../herajs/dist/herajs.js': 'AergoClient, Amount, Address'.split(', '),
+    '../herajs-crypto/dist/herajs-crypto.iife.js': [
+        'encodeAddress',
+        'decodeAddress',
+        'encodePrivateKey',
+        'decodePrivateKey',
+        'createIdentity',
+        'identifyFromPrivateKey',
+        'addressFromPublicKey',
+        'publicKeyFromAddress',
+        'decryptPrivateKey',
+        'encryptPrivateKey',
+        'signMessage',
+        'signTransaction',
+        'verifySignature',
+        'verifyTxSignature',
+        'hashTransaction'
+    ]
 };
 
-export default {
+const nodeExternal = [
+    'crypto',
+    'buffer',
+    'util'
+];
+
+const external = Object.keys(pkg.dependencies).concat(...nodeExternal);
+
+export default ['node', 'web'].map(target => ({
     input: './src/index.ts',
     
-    // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
-    // https://rollupjs.org/guide/en#external-e-external
-    external: [],
+    external: external,
     
     plugins: [
-        // Allows node_modules resolution
-        resolve({ extensions }),
-        
-        // Allow bundling cjs modules. Rollup doesn't understand cjs
         commonjs({ namedExports }),
 
+        resolve({
+            extensions,
+            browser: target === 'web'
+        }),
+
         json(),
-        
-        // Compile TypeScript/JavaScript files
+
         babel({ extensions, include: ['src/**/*'] }),
+
+        globals(),
+        builtins(),
     ],
-    
-    output: [{
+
+    output: target === 'node' ? [{
         file: pkg.main,
         format: 'cjs',
+        external: nodeExternal,
     }, {
         file: pkg.module,
         format: 'es',
-    }, {
+        external: nodeExternal,
+    }] : [{
         file: pkg.browser,
-        format: 'iife',
+        format: 'umd',
         name,
-        
-        // https://rollupjs.org/guide/en#output-globals-g-globals
-        globals: {},
+        globals: external.reduce((prev, cur) => {
+            prev[cur] = cur; return prev;
+        }, {}),
     }],
 
     onwarn(warning, warn) {
@@ -64,4 +93,4 @@ export default {
         }
         warn(warning.message);
     },
-};
+}));
