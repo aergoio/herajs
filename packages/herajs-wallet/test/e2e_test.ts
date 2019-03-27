@@ -52,21 +52,15 @@ describe('Wallet scenarios', async () => {
             chainId: 'testnet.localhost',
             nodeUrl: '127.0.0.1:7845'
         });
-        //wallet.use(MemoryStorage);
 
         // Set up account and key
-        const account = await wallet.accountManager.addAccount({ address });
-        await wallet.keyManager.importKey({
-            account: account,
-            b58encrypted: encprivkey,
-            password: ''
-        });
+        const account = await wallet.accountManager.createAccount();
 
         return new Promise(async (resolve, reject) => {
             // Build tx
             const tx = {
-                from: address,
-                to: address,
+                from: account.address,
+                to: account.address,
                 amount: '1 aergo'
             };
             const txTracker = await wallet.sendTransaction(account, tx);
@@ -196,11 +190,11 @@ describe('Wallet scenarios', async () => {
         // Set up readonly account
         const account = await wallet.accountManager.addAccount({ address });
         await assert.isRejected(
-            wallet.transactionManager.getAccountTransactions(account),
+            wallet.transactionManager.fetchAccountTransactions(account),
             Error, 'no data source for account transactions. Please configure a data source such as NodeTransactionScanner.'
         );
         wallet.use(NodeTransactionScanner);
-        const txs = await wallet.transactionManager.getAccountTransactions(account);
+        const txs = await wallet.transactionManager.fetchAccountTransactions(account);
         for (const tx of txs) {
             console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
         }

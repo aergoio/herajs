@@ -10,7 +10,7 @@ export interface GetAccountTxParams {
 }
 
 export interface AccountTransactionsDatasource {
-    getAccountTransactions: MiddlewareMethod<Account, Promise<SignedTransaction[]>, Wallet>;
-    getAccountTransactionsBefore: MiddlewareMethod<GetAccountTxParams, Promise<SignedTransaction[]>, Wallet>;
-    getAccountTransactionsAfter: MiddlewareMethod<GetAccountTxParams, Promise<SignedTransaction[]>, Wallet>;
+    fetchAccountTransactions: MiddlewareMethod<Account, Promise<SignedTransaction[]>, Wallet>;
+    fetchAccountTransactionsBefore: MiddlewareMethod<GetAccountTxParams, Promise<SignedTransaction[]>, Wallet>;
+    fetchAccountTransactionsAfter: MiddlewareMethod<GetAccountTxParams, Promise<SignedTransaction[]>, Wallet>;
 }

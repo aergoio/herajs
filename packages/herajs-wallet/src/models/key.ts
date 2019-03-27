@@ -30,4 +30,8 @@ export class Key extends Record<KeyData> {
         }
         return this._keyPair;
     }
+
+    static fromRecord(record: Record<any>): Key {
+        return new Key(record.key, record.data as KeyData);
+    }
 }

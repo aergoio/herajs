@@ -6,9 +6,9 @@ Manager -> Events
 */
 
 import { Transaction, SignedTransaction } from '../models/transaction';
-import { Account } from '../models/account';
+import { Account, AccountSpec, CompleteAccountSpec } from '../models/account';
 import { Wallet } from '../wallet';
-import { PausableTypedEventEmitter, backoffIntervalStep } from '../utils';
+import { PausableTypedEventEmitter, backoffIntervalStep, HashMap } from '../utils';
 import { Address } from '@herajs/client';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { GetAccountTxParams } from '../datasources/types';
@@ -28,6 +28,7 @@ export interface TrackerEvents {
 
 export interface AccountTrackerEvents {
     'transaction': SignedTransaction;
+    'transactions': SignedTransaction[];
 }
 
 // TODO: remove
@@ -80,11 +81,13 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
      * Emits events according to changed status.
      */
     async load(): Promise<void> {
+        console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
         const client = this.manager.wallet.getClient(this.transaction.data.chainId);
         const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
         if (typeof result.block !== 'undefined') {
             this.transaction.data.status = Transaction.Status.Confirmed;
             this.transaction.data.blockhash = result.block.hash;
+            this.manager.addTransaction(this.transaction);
             this.emit('block', this.transaction);
             if (this.listeners('receipt').length) {
                 client.getTransactionReceipt(this.transaction.data.hash).then((receipt: GetReceiptResult) => {
@@ -111,6 +114,10 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         clearTimeout(this.timeoutId);
         this.timeoutId = undefined;
     }
+
+    get hash(): string {
+        return this.transaction.hash;
+    }
 }
 
 
@@ -131,9 +138,13 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
         const { bestHeight } = await client.blockchain();
         if (lastSyncBlockno >= bestHeight) return this.account;
         // console.log(`[track] sync from block ${lastSyncBlockno} .. ${bestHeight}`);
-        const transactions = await this.manager.getAccountTransactionsAfter(this.account, lastSyncBlockno, bestHeight);
+        const transactions = await this.manager.fetchAccountTransactionsAfter(this.account, lastSyncBlockno, bestHeight);
         for (const tx of transactions) {
             this.emit('transaction', tx);
+            this.manager.addTransaction(tx);
+        }
+        if (transactions.length) {
+            this.emit('transactions', transactions);
         }
         this.account.data.lastSync = {
             blockno: bestHeight,
@@ -162,14 +173,37 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
  */
 export class TransactionManager extends PausableTypedEventEmitter<Events> {
     wallet: Wallet;
+    accountTxTrackers: HashMap<CompleteAccountSpec, AccountTransactionTracker> = new HashMap();
 
     constructor(wallet: Wallet) {
         super();
         this.wallet = wallet;
     }
 
-    addTransaction() {
+    async addTransaction(transaction: SignedTransaction): Promise<void> {
+        if (this.wallet.datastore) {
+            await this.wallet.datastore.getIndex('transactions').put(transaction);
+        }
+    }
 
+    async trackTransaction(transaction: SignedTransaction): Promise<TransactionTracker> {
+        return new TransactionTracker(this, transaction);
+    }
+
+    resume(): void {
+        if (!this.paused) return;
+        this.paused = false;
+        for (const tracker of this.accountTxTrackers.values()) {
+            tracker.resume();
+        }
+    }
+
+    pause(): void {
+        if (this.paused) return;
+        this.paused = true;
+        for (const tracker of this.accountTxTrackers.values()) {
+            tracker.pause();
+        }
     }
 
 
@@ -182,37 +216,65 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
      * @param account 
      */
     trackAccount(account: Account): AccountTransactionTracker {
+        this.resume();
+        if (this.accountTxTrackers.has(account.data.spec)) {
+            return this.accountTxTrackers.get(account.data.spec) as AccountTransactionTracker;
+        }
         const tracker = new AccountTransactionTracker(this, account);
         tracker.resume();
+        this.accountTxTrackers.set(account.data.spec, tracker);
         return tracker;
     }
 
-    async getAccountTransactions(account: Account): Promise<SignedTransaction[]> {
-        return await this.wallet.applyMiddlewares<Account, Promise<SignedTransaction[]>>('getAccountTransactions')(
+    async fetchAccountTransactions(account: Account): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<Account, Promise<SignedTransaction[]>>('fetchAccountTransactions')(
             () => {
                 throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
             }
         )(account);
     }
 
-    async getAccountTransactionsAfter(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
-        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('getAccountTransactionsAfter')(
+    async fetchAccountTransactionsAfter(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('fetchAccountTransactionsAfter')(
             () => {
                 throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
             }
         )({ account, blockno, limit });
     }
 
-    async getAccountTransactionsBefore(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
-        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('getAccountTransactionsBefore')(
+    async fetchAccountTransactionsBefore(account: Account, blockno: number, limit?: number): Promise<SignedTransaction[]> {
+        return await this.wallet.applyMiddlewares<GetAccountTxParams, Promise<SignedTransaction[]>>('fetchAccountTransactionsBefore')(
             () => {
                 throw new Error('no data source for account transactions. Please configure a data source such as NodeTransactionScanner.');
             }
         )({ account, blockno, limit });
     }
 
-    async trackTransaction(transaction: SignedTransaction): Promise<TransactionTracker> {
-        return new TransactionTracker(this, transaction);
+    
+
+    /**
+     * Returns transactions stored for an account
+     * @param account 
+     */
+    async getAccountTransactions(accountOrSpec: AccountSpec | Account): Promise<Transaction[]> {
+        if (!this.wallet.datastore) throw new Error('configure storage before accessing transactions');
+        let account: Account;
+        if (!(accountOrSpec as Account).data) {
+            account = await this.wallet.accountManager.getOrAddAccount(accountOrSpec as AccountSpec);
+        } else {
+            account = accountOrSpec as Account;
+        }
+        console.log('txManager.getAccountTransactions', account);
+        const index = this.wallet.datastore.getIndex('transactions');
+        const txsFrom = Array.from(await index.getAll(account.address.toString(), 'from')) as Transaction[];
+        const txsTo = Array.from(await index.getAll(account.address.toString(), 'to')) as Transaction[];
+        // unique txs by hash
+        const hashSet = new Set() as Set<string>;
+        const allTxs = txsFrom.concat(txsTo);
+        const txs = allTxs.filter((o: Transaction): boolean => {
+            return hashSet.has(o.data.hash as string) ? false : !!hashSet.add(o.data.hash as string);
+        });
+        return txs;
     }
 
     async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> { // implicit send, add, and track
@@ -220,7 +282,7 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
         transaction.key = txhash;
         transaction.data.hash = txhash;
-        // TODO add() 
+        this.addTransaction(transaction);
         return this.trackTransaction(transaction);
     }
 }

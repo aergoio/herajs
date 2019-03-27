@@ -1,10 +1,11 @@
 import { Wallet } from '../wallet';
-import { Account, AccountSpec, CompleteAccountSpec } from '../models/account';
+import { Account, AccountSpec, AccountData, CompleteAccountSpec } from '../models/account';
 import { Transaction, TxBody } from '../models/transaction';
 import { serializeAccountSpec, HashMap } from '../utils';
 import { Amount } from '@herajs/client';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { PausableTypedEventEmitter } from '../utils';
+import { createIdentity } from '@herajs/crypto';
 
 export interface Events {
     'add': Account;
@@ -33,11 +34,13 @@ class AccountTracker extends PausableTypedEventEmitter<TrackerEvents> {
         this.account.data.balance = state.balance.toString();
         this.account.data.nonce = state.nonce;
         this.emit('update', this.account);
+        this.manager.wallet.datastore && this.manager.wallet.datastore.getIndex('accounts').put(this.account);
         return this.account;
     }
 
     resume(): void {
         this.load();
+        this.pause();
         this.intervalId = setInterval(() => {
             this.load();
         }, ACCOUNT_UPDATE_INTERVAL);
@@ -57,6 +60,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     wallet: Wallet;
     accounts: HashMap<CompleteAccountSpec, Promise<Account>> = new HashMap();
     trackers: HashMap<CompleteAccountSpec, AccountTracker> = new HashMap();
+    private loadedFromStore: boolean = false;
 
     constructor(wallet: Wallet) {
         super();
@@ -93,13 +97,40 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             throw new Error('Account has already been added.');
         }
         // console.log('addAccount', completeAccountSpec);
-        const account = this.loadAccount(completeAccountSpec);
-        this.accounts.set(completeAccountSpec, account);
+        const accountPromise = this.loadAccount(completeAccountSpec);
+        this.accounts.set(completeAccountSpec, accountPromise);
+        accountPromise.then(account => {
+            this.wallet.datastore && this.wallet.datastore.getIndex('accounts').put(account);
+        });
+        return accountPromise;
+    }
+
+    async createAccount(chainId?: string): Promise<Account> {
+        const identity = createIdentity();
+        const address = identity.address;
+        const account = await this.addAccount({ address, chainId });
+        await this.wallet.keyManager.importKey({
+            account: account,
+            privateKey: identity.privateKey
+        });
         return account;
     }
 
+    async getAccounts(): Promise<Account[]> {
+        if (!this.loadedFromStore && this.wallet.datastore) {
+            const accounts = Array.from(await this.wallet.datastore.getIndex('accounts').getAll()) as Account[];
+            for (const account of accounts) {
+                this.accounts.set(account.data.spec, Promise.resolve(account));
+            }
+            this.loadedFromStore = true;
+            return accounts;
+        }
+        const promises = await this.accounts.values();
+        return Promise.all(promises);
+    }
+
     async getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec): Promise<Account> {
-        const completeAccountSpec = accountSpec.chainId && accountSpec.address ? accountSpec as CompleteAccountSpec : this.getCompleteAccountSpec(accountSpec);
+        const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         let account: Account;
         if (!this.accounts.has(completeAccountSpec)) {
             account = await this.addAccount(completeAccountSpec);
@@ -109,22 +140,33 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return account;
     }
 
-    async trackAccount(accountSpec: AccountSpec): Promise<AccountTracker> {
+    async trackAccount(accountOrSpec: AccountSpec | Account): Promise<AccountTracker> {  
+        let account: Account;
+        if (!(accountOrSpec as Account).data) {
+            account = await this.getOrAddAccount(accountOrSpec as AccountSpec);
+        } else {
+            account = accountOrSpec as Account;
+        }
+        console.log('[accountManager] track account', account.data.spec);
         this.resume();
-        const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
-        const account = await this.getOrAddAccount(completeAccountSpec);
-        
-        if (this.trackers.has(completeAccountSpec)) {
-            return this.trackers.get(completeAccountSpec) as AccountTracker;
+        if (this.trackers.has(account.data.spec)) {
+            return this.trackers.get(account.data.spec) as AccountTracker;
         }
         const tracker = new AccountTracker(this, account);
         tracker.resume();
-        this.trackers.set(completeAccountSpec, tracker);
+        this.trackers.set(account.data.spec, tracker);
         return tracker;
     }
 
     async loadAccount(accountSpec: CompleteAccountSpec): Promise<Account> {
-        //return await this.wallet.datastore.index('account').get(serializeAccountSpec(accountSpec));
+        if (this.wallet.datastore) {
+            try {
+                const record = await this.wallet.datastore.getIndex('accounts').get(serializeAccountSpec(accountSpec));
+                return new Account(record.key, record.data as AccountData);
+            } catch (e) {
+                // not found
+            }
+        }
         return new Account(serializeAccountSpec(accountSpec),
             {
                 spec: {
@@ -154,6 +196,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
      */
     async prepareTransaction(account: Account, tx: Partial<TxBody>): Promise<Transaction> {
         if (!tx.from) throw new Error('missing required transaction parameter `from` (address or name)');
+        if (!account.address.equal(tx.from)) throw new Error('transaction parameter `from` does not match account address');
         if (typeof tx.to === 'undefined') throw new Error('missing required transaction parameter `to` (address, name, or explicit null)');
         if (typeof tx.amount === 'undefined') throw new Error('missing required transaction parameter amount');
         tx.amount = new Amount(tx.amount).toUnit('aer').toString();

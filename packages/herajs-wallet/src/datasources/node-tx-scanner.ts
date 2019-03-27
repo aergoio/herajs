@@ -11,11 +11,11 @@ import { AccountTransactionsDatasource, GetAccountTxParams } from './types';
  * It is a very inefficient way, but the only one generally available.
  * Please only use with local fullnodes as this can consume considerable bandwidth.
  * What it does is go backwards in time to scan the whole blockchain until it finds the
- * first transaction of an account. This uses the account's nonce to be smart about that:
+ * all transactions of an account. This uses the account's nonce to be smart about that:
  * When we reached nonce 1 and balance 0, we assume to have all txs.
  */
 export class NodeTransactionScanner extends Middleware<Wallet> implements AccountTransactionsDatasource {
-    getAccountTransactionsBefore(wallet: Wallet): MiddlewareFunc<GetAccountTxParams, Promise<SignedTransaction[]>> {
+    fetchAccountTransactionsBefore(wallet: Wallet): MiddlewareFunc<GetAccountTxParams, Promise<SignedTransaction[]>> {
         return () => async ({ account, blockno, limit }: GetAccountTxParams) => {
             const accountSpec = wallet.accountManager.getCompleteAccountSpec(account.data.spec);
             const client = wallet.getClient(accountSpec.chainId);
@@ -58,7 +58,7 @@ export class NodeTransactionScanner extends Middleware<Wallet> implements Accoun
         };
     }
 
-    getAccountTransactionsAfter(wallet: Wallet): MiddlewareFunc<GetAccountTxParams, Promise<any[]>> {
+    fetchAccountTransactionsAfter(wallet: Wallet): MiddlewareFunc<GetAccountTxParams, Promise<any[]>> {
         return () => async ({ account, blockno, limit }: GetAccountTxParams) => {
             const accountSpec = wallet.accountManager.getCompleteAccountSpec(account.data.spec);
             const client = wallet.getClient(accountSpec.chainId);
@@ -95,11 +95,11 @@ export class NodeTransactionScanner extends Middleware<Wallet> implements Accoun
         };
     }
 
-    getAccountTransactions(wallet: Wallet): MiddlewareFunc<Account, Promise<any[]>> {
+    fetchAccountTransactions(wallet: Wallet): MiddlewareFunc<Account, Promise<any[]>> {
         return () => async (account: Account) => {
             const accountSpec = wallet.accountManager.getCompleteAccountSpec(account.data.spec);
             const { bestHeight } = await wallet.getClient(accountSpec.chainId).blockchain();
-            return this.getAccountTransactionsBefore(wallet)(async () => [])({ account, blockno: bestHeight });
+            return this.fetchAccountTransactionsBefore(wallet)(async () => [])({ account, blockno: bestHeight });
         };
     }
 }

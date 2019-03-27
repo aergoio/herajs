@@ -2,7 +2,7 @@ import { MiddlewareConsumer } from './middleware';
 import KeyManager from './managers/key-manager';
 import AccountManager from './managers/account-manager';
 import { TransactionTracker, TransactionManager } from './managers/transaction-manager';
-import { AergoClient, GrpcProvider } from '@herajs/client';
+import { AergoClient } from '@herajs/client';
 import { HashMap, isConstructor, Constructor } from './utils';
 import { Account, AccountSpec } from './models/account';
 import { TxBody, SignedTransaction } from './models/transaction';
@@ -20,6 +20,7 @@ interface ChainConfig {
 interface WalletConfig {
     appName: string;
     appVersion: number;
+    instanceId: string;
 }
 
 export class Wallet extends MiddlewareConsumer {
@@ -28,7 +29,7 @@ export class Wallet extends MiddlewareConsumer {
     keyManager: KeyManager;
     transactionManager: TransactionManager;
     accountManager: AccountManager;
-    config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1 };
+    config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1, instanceId: '' };
     datastore?: Storage;
     keystore?: Storage;
 
@@ -54,7 +55,7 @@ export class Wallet extends MiddlewareConsumer {
     useChain(chainConfig: ChainConfig): void {
         
         if (typeof chainConfig.provider === 'undefined') {
-            chainConfig.provider = GrpcProvider;
+            chainConfig.provider = AergoClient.defaultProviderClass;
         }
 
         if (typeof chainConfig.provider === 'function' && typeof chainConfig.nodeUrl === 'undefined') {
@@ -85,7 +86,7 @@ export class Wallet extends MiddlewareConsumer {
     /**
      * Get AergoClient for chainId.
      * If called the first time, create AergoClient instance.
-     * @param chainId 
+     * @param chainId optional chainId, use default chainId when undefined
      */
     getClient(chainId?: string): AergoClient {
         if (typeof chainId === 'undefined') {
@@ -115,7 +116,7 @@ export class Wallet extends MiddlewareConsumer {
      * @param transaction 
      */
     async prepareTransaction(account: Account | AccountSpec, transaction: Partial<TxBody>): Promise<SignedTransaction> {
-        if (!(<Account>account).data) account = await this.accountManager.addAccount(<AccountSpec>account);
+        if (!(<Account>account).data) account = await this.accountManager.getOrAddAccount(<AccountSpec>account);
         const preparedTx = await this.accountManager.prepareTransaction(<Account>account, transaction);
         const signedTx = await this.keyManager.signTransaction(<Account>account, preparedTx);
         return signedTx;
@@ -137,32 +138,50 @@ export class Wallet extends MiddlewareConsumer {
         return this.transactionManager.sendTransaction(signedTransaction);
     }
 
-    useStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
-        this.useKeyStorage(classOrInstance);
-        this.useDataStorage(classOrInstance);
+    useStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<[Storage, Storage]> {
+        return Promise.all([
+            this.useKeyStorage(classOrInstance),
+            this.useDataStorage(classOrInstance)
+        ]);
     }
 
-    useKeyStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
+    useKeyStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<Storage> {
         if (isConstructor<T>(classOrInstance)) {
             this.keystore = new classOrInstance('keystore', DB_VERSION);
         } else {
             this.keystore = classOrInstance;
         }
-        this.keystore.open()
+        return this.keystore.open();
     }
 
-    useDataStorage<T extends Storage>(classOrInstance: T | Constructor<T>): void {
+    useDataStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<Storage> {
         if (isConstructor<T>(classOrInstance)) {
             this.datastore = new classOrInstance('datastore', DB_VERSION);
         } else {
             this.datastore = classOrInstance;
         }
-        this.datastore.open();
+        return this.datastore.open();
     }
 
     async close(): Promise<void> {
         this.datastore && await this.datastore.close();
         this.keystore && await this.keystore.close();
+    }
+
+    async unlock (passphrase: string): Promise<void> {
+        return this.keyManager.unlock(passphrase);
+    }
+
+    async setupAndUnlock (passphrase: string): Promise<void> {
+        return this.keyManager.setupAndUnlock(`id-${this.config.instanceId}`, passphrase);
+    }
+
+    lock () {
+        this.keyManager.lock();
+    }
+
+    unlocked () {
+        return this.keyManager.unlocked;
     }
 }
 

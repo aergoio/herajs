@@ -23,6 +23,10 @@ interface IdbSchema extends DBSchema {
         key: string;
         value: Record;
     };
+    'keys': {
+        key: string;
+        value: Record;
+    };
 }
 
 class IDBIndex extends Index {
@@ -49,7 +53,7 @@ class IDBIndex extends Index {
         const q = typeof indexValue !== 'undefined' ? IDBKeyRange.only(indexValue) : undefined;
         if (this.name === 'transactions' && typeof indexName !== 'undefined') {
             indexName = indexName as keyof IdbSchema['transactions']['indexes'];
-            if (indexName in ['from', 'to']) {
+            if (['from', 'to'].indexOf(indexName) !== -1) {
                 // @ts-ignore: not sure why this does not type-check
                 const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
                 return records[Symbol.iterator]();
@@ -62,7 +66,6 @@ class IDBIndex extends Index {
         const tx = this.db.transaction(this.name, 'readwrite');
         const validKey = await tx.objectStore(this.name).put(record);
         return validKey.toString();
-        
     }
     delete(key: string): Promise<void> {
         return this.db.transaction(this.name, 'readwrite').objectStore(this.name).delete(key);
@@ -94,6 +97,7 @@ export default class IndexedDbStorage extends Storage {
                     txOS.createIndex('to', 'data.to', { unique: false });
                     db.createObjectStore('accounts', { keyPath: 'key' });
                     db.createObjectStore('settings', { keyPath: 'key' });
+                    db.createObjectStore('keys', { keyPath: 'key' });
                 }
             }
         }
