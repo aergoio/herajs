@@ -226,7 +226,7 @@ function addressFromPublicKey(publicKey) {
 
 function encodeIdentity(keyPair) {
   //@ts-ignore
-  var privateKey = keyPair.getPrivate().toBuffer();
+  var privateKey = Buffer.from(keyPair.getPrivate().toArray());
   var publicKey = keyPair.getPublic();
   var address = addressFromPublicKey(publicKey);
   return {
@@ -349,7 +349,10 @@ function _hashTransaction() {
     }
 
     tx.amount = tx.amount.replace(/[^0-9]/g, '');
-    var data = Buffer.concat([fromNumber(tx.nonce, 64), decodeAddress(tx.from.toString()), tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]), fromBigInt(tx.amount || 0), Buffer.from(tx.payload), fromNumber(tx.limit, 64), fromBigInt(tx.price || 0), fromNumber(tx.type, 32)]);
+    var items = [fromNumber(tx.nonce, 64), decodeAddress(tx.from.toString()), tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]), fromBigInt(tx.amount || 0), Buffer.from(tx.payload), fromNumber(tx.limit, 64), fromBigInt(tx.price || 0), fromNumber(tx.type, 32)];
+    var data = Buffer.concat(items.map(function (item) {
+      return Buffer.from(item);
+    }));
 
     if (includeSign && 'sign' in tx) {
       data = Buffer.concat([data, Buffer.from(tx.sign, 'base64')]);
