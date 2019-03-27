@@ -10,7 +10,8 @@ import {
     identifyFromPrivateKey,
     decryptPrivateKey, encryptPrivateKey,
     decodePrivateKey, encodePrivateKey,
-    publicKeyFromAddress
+    publicKeyFromAddress,
+    signMessage, verifySignature
 } from '../src';
 
 describe('createIdentity()', () => {
@@ -100,5 +101,15 @@ describe('verifySignatureWithAddress', () => {
 
         const pubkey = publicKeyFromAddress(identity.address);
         assert.isTrue(await verifyTxSignature(tx, pubkey, signature));
+    });
+});
+
+describe('message signing', () => {
+    it('should verify tx signature using address', async () => {
+        const identity = createIdentity();
+        const msg = Buffer.from('hello');
+        const signature = await signMessage(msg, identity.keyPair);
+        const pubkey = publicKeyFromAddress(identity.address);
+        assert.isTrue(await verifySignature(msg, pubkey, signature));
     });
 });
