@@ -209,7 +209,7 @@ describe('Aergo', () => {
         it('should return state info by account address', async () => {
             const state = await aergo.getState(testaddress);
             assert.equal(state.nonce, 0);
-            assert.equal(state.balance.toUnit('aergo').toString(), '10 aergo');
+            assert.equal(state.balance.toUnit('aergo').toString(), '20000 aergo');
         });
 
         it('should return error for invalid address', () => {

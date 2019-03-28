@@ -190,12 +190,14 @@ describe('Aergo.Accounts', () => {
         let testaddress;
 
         it('should stake', async () => {
+            const info = await aergo.getChainInfo();
+
             testaddress = await aergo.accounts.create('testpass');
             await aergo.accounts.unlock(testaddress, 'testpass');
             const testtx = {
                 from: testaddress,
                 to: 'aergo.system',
-                amount: '1 aergo',
+                amount: info.stakingminimum,
                 payload: '{"Name":"v1stake"}',
                 type: 1
             };
