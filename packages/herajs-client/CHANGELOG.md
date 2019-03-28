@@ -1,3 +1,11 @@
+## 0.8.0 (Unreleased)
+
+- New API method: getConsensusInfo()
+- Additional fields in transaction receipt
+- More Typescript annotations
+- Improved smart contract documentation
+- Add equal methods for Address and Amount
+
 ## 0.7.2 (March 19, 2019)
 
 - getNameInfo: add destination address
