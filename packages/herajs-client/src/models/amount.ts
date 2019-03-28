@@ -138,6 +138,10 @@ export default class Amount {
         return JSBI.lessThan(a, b) ? -1 : (JSBI.equal(a, b) ? 0 : 1);
     }
 
+    equal(otherAmount: Amount | number | JSBI ): boolean {
+        return this.compare(otherAmount) === 0;
+    }
+
     add(otherAmount: Amount | number | JSBI): Amount {
         const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
         const sum = JSBI.add(this.value, otherValue);
