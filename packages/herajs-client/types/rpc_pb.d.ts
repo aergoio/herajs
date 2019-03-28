@@ -20,6 +20,11 @@ export class BlockchainStatus extends jspb.Message {
   getConsensusInfo(): string;
   setConsensusInfo(value: string): void;
 
+  getBestChainIdHash(): Uint8Array | string;
+  getBestChainIdHash_asU8(): Uint8Array;
+  getBestChainIdHash_asB64(): string;
+  setBestChainIdHash(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockchainStatus.AsObject;
   static toObject(includeInstance: boolean, msg: BlockchainStatus): BlockchainStatus.AsObject;
@@ -35,6 +40,7 @@ export namespace BlockchainStatus {
     bestBlockHash: Uint8Array | string,
     bestHeight: number,
     consensusInfo: string,
+    bestChainIdHash: Uint8Array | string,
   }
 }
 
@@ -71,10 +77,10 @@ export namespace ChainId {
 }
 
 export class ChainInfo extends jspb.Message {
-  hasChainid(): boolean;
-  clearChainid(): void;
-  getChainid(): ChainId | undefined;
-  setChainid(value?: ChainId): void;
+  hasId(): boolean;
+  clearId(): void;
+  getId(): ChainId | undefined;
+  setId(value?: ChainId): void;
 
   getBpnumber(): number;
   setBpnumber(value: number): void;
@@ -92,6 +98,21 @@ export class ChainInfo extends jspb.Message {
   getStakingminimum_asB64(): string;
   setStakingminimum(value: Uint8Array | string): void;
 
+  getTotalstaking(): Uint8Array | string;
+  getTotalstaking_asU8(): Uint8Array;
+  getTotalstaking_asB64(): string;
+  setTotalstaking(value: Uint8Array | string): void;
+
+  getGasprice(): Uint8Array | string;
+  getGasprice_asU8(): Uint8Array;
+  getGasprice_asB64(): string;
+  setGasprice(value: Uint8Array | string): void;
+
+  getNameprice(): Uint8Array | string;
+  getNameprice_asU8(): Uint8Array;
+  getNameprice_asB64(): string;
+  setNameprice(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ChainInfo.AsObject;
   static toObject(includeInstance: boolean, msg: ChainInfo): ChainInfo.AsObject;
@@ -104,11 +125,14 @@ export class ChainInfo extends jspb.Message {
 
 export namespace ChainInfo {
   export type AsObject = {
-    chainid?: ChainId.AsObject,
+    id?: ChainId.AsObject,
     bpnumber: number,
     maxblocksize: number,
     maxtokens: Uint8Array | string,
     stakingminimum: Uint8Array | string,
+    totalstaking: Uint8Array | string,
+    gasprice: Uint8Array | string,
+    nameprice: Uint8Array | string,
   }
 }
 

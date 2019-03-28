@@ -1489,8 +1489,8 @@ proto.types.TxBody.toObject = function(includeInstance, msg) {
     recipient: msg.getRecipient_asB64(),
     amount: msg.getAmount_asB64(),
     payload: msg.getPayload_asB64(),
-    limit: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    price: msg.getPrice_asB64(),
+    gaslimit: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    gasprice: msg.getGasprice_asB64(),
     type: jspb.Message.getFieldWithDefault(msg, 8, 0),
     chainidhash: msg.getChainidhash_asB64(),
     sign: msg.getSign_asB64()
@@ -1552,11 +1552,11 @@ proto.types.TxBody.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 6:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setLimit(value);
+      msg.setGaslimit(value);
       break;
     case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setPrice(value);
+      msg.setGasprice(value);
       break;
     case 8:
       var value = /** @type {!proto.types.TxType} */ (reader.readEnum());
@@ -1634,14 +1634,14 @@ proto.types.TxBody.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getLimit();
+  f = message.getGaslimit();
   if (f !== 0) {
     writer.writeUint64(
       6,
       f
     );
   }
-  f = message.getPrice_asU8();
+  f = message.getGasprice_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       7,
@@ -1844,55 +1844,55 @@ proto.types.TxBody.prototype.setPayload = function(value) {
 
 
 /**
- * optional uint64 limit = 6;
+ * optional uint64 gasLimit = 6;
  * @return {number}
  */
-proto.types.TxBody.prototype.getLimit = function() {
+proto.types.TxBody.prototype.getGaslimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /** @param {number} value */
-proto.types.TxBody.prototype.setLimit = function(value) {
+proto.types.TxBody.prototype.setGaslimit = function(value) {
   jspb.Message.setField(this, 6, value);
 };
 
 
 /**
- * optional bytes price = 7;
+ * optional bytes gasPrice = 7;
  * @return {!(string|Uint8Array)}
  */
-proto.types.TxBody.prototype.getPrice = function() {
+proto.types.TxBody.prototype.getGasprice = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
 /**
- * optional bytes price = 7;
- * This is a type-conversion wrapper around `getPrice()`
+ * optional bytes gasPrice = 7;
+ * This is a type-conversion wrapper around `getGasprice()`
  * @return {string}
  */
-proto.types.TxBody.prototype.getPrice_asB64 = function() {
+proto.types.TxBody.prototype.getGasprice_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getPrice()));
+      this.getGasprice()));
 };
 
 
 /**
- * optional bytes price = 7;
+ * optional bytes gasPrice = 7;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getPrice()`
+ * This is a type-conversion wrapper around `getGasprice()`
  * @return {!Uint8Array}
  */
-proto.types.TxBody.prototype.getPrice_asU8 = function() {
+proto.types.TxBody.prototype.getGasprice_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getPrice()));
+      this.getGasprice()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.types.TxBody.prototype.setPrice = function(value) {
+proto.types.TxBody.prototype.setGasprice = function(value) {
   jspb.Message.setField(this, 7, value);
 };
 
@@ -1913,7 +1913,7 @@ proto.types.TxBody.prototype.setType = function(value) {
 
 
 /**
- * optional bytes chainIDHash = 9;
+ * optional bytes chainIdHash = 9;
  * @return {!(string|Uint8Array)}
  */
 proto.types.TxBody.prototype.getChainidhash = function() {
@@ -1922,7 +1922,7 @@ proto.types.TxBody.prototype.getChainidhash = function() {
 
 
 /**
- * optional bytes chainIDHash = 9;
+ * optional bytes chainIdHash = 9;
  * This is a type-conversion wrapper around `getChainidhash()`
  * @return {string}
  */
@@ -1933,7 +1933,7 @@ proto.types.TxBody.prototype.getChainidhash_asB64 = function() {
 
 
 /**
- * optional bytes chainIDHash = 9;
+ * optional bytes chainIdHash = 9;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getChainidhash()`

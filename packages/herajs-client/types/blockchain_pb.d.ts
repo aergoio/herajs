@@ -209,13 +209,13 @@ export class TxBody extends jspb.Message {
   getPayload_asB64(): string;
   setPayload(value: Uint8Array | string): void;
 
-  getLimit(): number;
-  setLimit(value: number): void;
+  getGaslimit(): number;
+  setGaslimit(value: number): void;
 
-  getPrice(): Uint8Array | string;
-  getPrice_asU8(): Uint8Array;
-  getPrice_asB64(): string;
-  setPrice(value: Uint8Array | string): void;
+  getGasprice(): Uint8Array | string;
+  getGasprice_asU8(): Uint8Array;
+  getGasprice_asB64(): string;
+  setGasprice(value: Uint8Array | string): void;
 
   getType(): TxType;
   setType(value: TxType): void;
@@ -247,8 +247,8 @@ export namespace TxBody {
     recipient: Uint8Array | string,
     amount: Uint8Array | string,
     payload: Uint8Array | string,
-    limit: number,
-    price: Uint8Array | string,
+    gaslimit: number,
+    gasprice: Uint8Array | string,
     type: TxType,
     chainidhash: Uint8Array | string,
     sign: Uint8Array | string,

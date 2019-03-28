@@ -32,8 +32,8 @@ export default class Tx {
             payload: grpcObject.getBody().getPayload_asU8(),
             sign: grpcObject.getBody().getSign_asB64(),
             type: grpcObject.getBody().getType(),
-            limit: grpcObject.getBody().getLimit(),
-            price: new Amount(grpcObject.getBody().getPrice_asU8())
+            limit: grpcObject.getBody().getGaslimit(),
+            price: new Amount(grpcObject.getBody().getGasprice_asU8())
         });
     }
     toGrpc() {
@@ -59,11 +59,11 @@ export default class Tx {
         msgtxbody.setType(this.type);
 
         if (typeof this.limit !== 'undefined') {
-            msgtxbody.setLimit(this.limit);
+            msgtxbody.setGaslimit(this.limit);
         }
 
         if (typeof this.price !== 'undefined') {
-            msgtxbody.setPrice(this.price.asBytes());
+            msgtxbody.setGasprice(this.price.asBytes());
         }
 
         const msgtx = new GrpcTx();

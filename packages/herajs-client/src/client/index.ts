@@ -14,7 +14,8 @@ import {
     SingleBytes,
     EventList,
     PeersParams,
-    ConsensusInfo
+    ConsensusInfo,
+    VoteParams
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -399,10 +400,11 @@ class AergoClient {
      * Return the top voted-for block producer
      * @param count number
      */
-    getTopVotes(count: number): Promise<any> {
-        const singleBytes = new rpcTypes.SingleBytes();
-        singleBytes.setValue(new Uint8Array(toBytesUint32(count)));
-        return promisify(this.client.client.getVotes, this.client.client)(singleBytes).then(
+    getTopVotes(count: number, id: string = "voteBP"): Promise<any> {
+        const params = new VoteParams();
+        params.setCount(count);
+        params.setId(id);
+        return promisify(this.client.client.getVotes, this.client.client)(params).then(
             state => state.getVotesList().map(item => ({
                 amount: new Amount(item.getAmount_asU8()),
                 candidate: bs58.encode(item.getCandidate_asU8())

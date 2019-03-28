@@ -102,7 +102,8 @@ proto.types.BlockchainStatus.toObject = function(includeInstance, msg) {
   var f, obj = {
     bestBlockHash: msg.getBestBlockHash_asB64(),
     bestHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    consensusInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
+    consensusInfo: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    bestChainIdHash: msg.getBestChainIdHash_asB64()
   };
 
   if (includeInstance) {
@@ -151,6 +152,10 @@ proto.types.BlockchainStatus.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {string} */ (reader.readString());
       msg.setConsensusInfo(value);
       break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBestChainIdHash(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -198,6 +203,13 @@ proto.types.BlockchainStatus.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getBestChainIdHash_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
       f
     );
   }
@@ -270,6 +282,45 @@ proto.types.BlockchainStatus.prototype.getConsensusInfo = function() {
 /** @param {string} value */
 proto.types.BlockchainStatus.prototype.setConsensusInfo = function(value) {
   jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional bytes best_chain_id_hash = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.BlockchainStatus.prototype.getBestChainIdHash = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes best_chain_id_hash = 4;
+ * This is a type-conversion wrapper around `getBestChainIdHash()`
+ * @return {string}
+ */
+proto.types.BlockchainStatus.prototype.getBestChainIdHash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBestChainIdHash()));
+};
+
+
+/**
+ * optional bytes best_chain_id_hash = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBestChainIdHash()`
+ * @return {!Uint8Array}
+ */
+proto.types.BlockchainStatus.prototype.getBestChainIdHash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBestChainIdHash()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.BlockchainStatus.prototype.setBestChainIdHash = function(value) {
+  jspb.Message.setField(this, 4, value);
 };
 
 
@@ -547,11 +598,14 @@ proto.types.ChainInfo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.ChainInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    chainid: (f = msg.getChainid()) && proto.types.ChainId.toObject(includeInstance, f),
+    id: (f = msg.getId()) && proto.types.ChainId.toObject(includeInstance, f),
     bpnumber: jspb.Message.getFieldWithDefault(msg, 2, 0),
     maxblocksize: jspb.Message.getFieldWithDefault(msg, 3, 0),
     maxtokens: msg.getMaxtokens_asB64(),
-    stakingminimum: msg.getStakingminimum_asB64()
+    stakingminimum: msg.getStakingminimum_asB64(),
+    totalstaking: msg.getTotalstaking_asB64(),
+    gasprice: msg.getGasprice_asB64(),
+    nameprice: msg.getNameprice_asB64()
   };
 
   if (includeInstance) {
@@ -591,7 +645,7 @@ proto.types.ChainInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = new proto.types.ChainId;
       reader.readMessage(value,proto.types.ChainId.deserializeBinaryFromReader);
-      msg.setChainid(value);
+      msg.setId(value);
       break;
     case 2:
       var value = /** @type {number} */ (reader.readUint32());
@@ -608,6 +662,18 @@ proto.types.ChainInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setStakingminimum(value);
+      break;
+    case 6:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setTotalstaking(value);
+      break;
+    case 7:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setGasprice(value);
+      break;
+    case 8:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setNameprice(value);
       break;
     default:
       reader.skipField();
@@ -638,7 +704,7 @@ proto.types.ChainInfo.prototype.serializeBinary = function() {
  */
 proto.types.ChainInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getChainid();
+  f = message.getId();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -674,27 +740,48 @@ proto.types.ChainInfo.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getTotalstaking_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      6,
+      f
+    );
+  }
+  f = message.getGasprice_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      7,
+      f
+    );
+  }
+  f = message.getNameprice_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      8,
+      f
+    );
+  }
 };
 
 
 /**
- * optional ChainId chainid = 1;
+ * optional ChainId id = 1;
  * @return {?proto.types.ChainId}
  */
-proto.types.ChainInfo.prototype.getChainid = function() {
+proto.types.ChainInfo.prototype.getId = function() {
   return /** @type{?proto.types.ChainId} */ (
     jspb.Message.getWrapperField(this, proto.types.ChainId, 1));
 };
 
 
 /** @param {?proto.types.ChainId|undefined} value */
-proto.types.ChainInfo.prototype.setChainid = function(value) {
+proto.types.ChainInfo.prototype.setId = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.types.ChainInfo.prototype.clearChainid = function() {
-  this.setChainid(undefined);
+proto.types.ChainInfo.prototype.clearId = function() {
+  this.setId(undefined);
 };
 
 
@@ -702,13 +789,13 @@ proto.types.ChainInfo.prototype.clearChainid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.types.ChainInfo.prototype.hasChainid = function() {
+proto.types.ChainInfo.prototype.hasId = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional uint32 bpnumber = 2;
+ * optional uint32 bpNumber = 2;
  * @return {number}
  */
 proto.types.ChainInfo.prototype.getBpnumber = function() {
@@ -812,6 +899,123 @@ proto.types.ChainInfo.prototype.getStakingminimum_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setStakingminimum = function(value) {
   jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * optional bytes totalstaking = 6;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ChainInfo.prototype.getTotalstaking = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * optional bytes totalstaking = 6;
+ * This is a type-conversion wrapper around `getTotalstaking()`
+ * @return {string}
+ */
+proto.types.ChainInfo.prototype.getTotalstaking_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getTotalstaking()));
+};
+
+
+/**
+ * optional bytes totalstaking = 6;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getTotalstaking()`
+ * @return {!Uint8Array}
+ */
+proto.types.ChainInfo.prototype.getTotalstaking_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getTotalstaking()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.ChainInfo.prototype.setTotalstaking = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * optional bytes gasprice = 7;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ChainInfo.prototype.getGasprice = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * optional bytes gasprice = 7;
+ * This is a type-conversion wrapper around `getGasprice()`
+ * @return {string}
+ */
+proto.types.ChainInfo.prototype.getGasprice_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getGasprice()));
+};
+
+
+/**
+ * optional bytes gasprice = 7;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getGasprice()`
+ * @return {!Uint8Array}
+ */
+proto.types.ChainInfo.prototype.getGasprice_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getGasprice()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.ChainInfo.prototype.setGasprice = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+/**
+ * optional bytes nameprice = 8;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ChainInfo.prototype.getNameprice = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * optional bytes nameprice = 8;
+ * This is a type-conversion wrapper around `getNameprice()`
+ * @return {string}
+ */
+proto.types.ChainInfo.prototype.getNameprice_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getNameprice()));
+};
+
+
+/**
+ * optional bytes nameprice = 8;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getNameprice()`
+ * @return {!Uint8Array}
+ */
+proto.types.ChainInfo.prototype.getNameprice_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getNameprice()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.ChainInfo.prototype.setNameprice = function(value) {
+  jspb.Message.setField(this, 8, value);
 };
 
 

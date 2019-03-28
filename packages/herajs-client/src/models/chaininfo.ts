@@ -20,7 +20,7 @@ export default class ChainInfo {
     }
 
     static fromGrpc(grpcObject: GrpcChainInfo) {
-        const chainid = grpcObject.getChainid();
+        const chainid = grpcObject.getId();
         return new ChainInfo(<Partial<ChainInfo>>{
             chainid: {
                 magic: chainid.getMagic(),
