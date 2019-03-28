@@ -141,7 +141,7 @@ describe('Aergo.Accounts', () => {
             const tx = await aergo.accounts.signTransaction(testtx);
             return assert.isRejected(
                 aergo.sendSignedTransaction(tx),
-                Error, 'UNDEFINED_ERROR: payload size of tx exceeds max length'
+                Error, 'UNDEFINED_ERROR: size of tx exceeds max length'
             );
         });
     });
