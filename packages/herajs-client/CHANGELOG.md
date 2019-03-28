@@ -1,5 +1,6 @@
-## 0.8.0 (Unreleased)
+## 0.8.0 (March 28, 2019)
 
+- Compatability with aergosvr 1.0
 - New API method: getConsensusInfo()
 - Additional fields in transaction receipt
 - More Typescript annotations
