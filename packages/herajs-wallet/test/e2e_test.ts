@@ -184,7 +184,8 @@ describe('Wallet scenarios', async () => {
             to: address,
             amount: '123 aer'
         });
-        const receipt = await txTracker.getReceipt();
+        await txTracker.getReceipt();
+        //const receipt = 
         //console.log('receipt', receipt);
         
         // Set up readonly account
