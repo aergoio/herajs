@@ -15,7 +15,7 @@ import {
     EventList,
     PeersParams,
     ConsensusInfo,
-    VoteParams
+    VoteParams, Vote
 } from '../../types/rpc_pb';
 import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -405,7 +405,7 @@ class AergoClient {
         params.setCount(count);
         params.setId(id);
         return promisify(this.client.client.getVotes, this.client.client)(params).then(
-            state => state.getVotesList().map(item => ({
+            state => state.getVotesList().map((item: Vote) => ({
                 amount: new Amount(item.getAmount_asU8()),
                 candidate: bs58.encode(item.getCandidate_asU8())
             }))
