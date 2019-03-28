@@ -4,7 +4,8 @@ import {
     TxInBlock, Tx as GrpcTx,
     StateQueryProof,
     ABI as GrpcABI,
-    Block as GrpcBlock
+    Block as GrpcBlock,
+    Receipt as GrpcReceipt,
 } from '../../types/blockchain_pb';
 import {
     Empty, PeerList as GrpcPeerList, Peer as GrpcPeer,
@@ -62,6 +63,10 @@ interface GetReceiptResult {
     contractaddress: Address;
     result: string;
     status: string;
+    fee: Amount;
+    cumulativefee: Amount;
+    blockno: number;
+    blockhash: string;
 };
 
 interface NameInfoResult {
@@ -430,12 +435,16 @@ class AergoClient {
     getTransactionReceipt (txhash): Promise<GetReceiptResult> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
-        return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then(grpcObject => {
+        return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then((grpcObject: GrpcReceipt) => {
             const obj = grpcObject.toObject();
             return {
                 contractaddress: new Address(grpcObject.getContractaddress_asU8()),
                 result: obj.ret,
-                status: obj.status
+                status: obj.status,
+                fee: new Amount(grpcObject.getFeeused_asU8()),
+                cumulativefee: new Amount(grpcObject.getCumulativefeeused_asU8()),
+                blockno: obj.blockno,
+                blockhash: Block.encodeHash(grpcObject.getBlockhash_asU8()),
             };
         });
     }

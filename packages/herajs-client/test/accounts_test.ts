@@ -10,6 +10,10 @@ import { longPolling } from '../src/utils';
 
 import JSBI from 'jsbi';
 
+const waitFor = (ms) => new Promise(resolve => {
+    setTimeout(resolve, ms);
+});
+
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
     let testAddress: string | Address = 'INVALIDADDRESS';
@@ -107,9 +111,18 @@ describe('Aergo.Accounts', () => {
             assert.typeOf(txhash, 'string');
 
             // Tx can be retrieved again from mempool
-            const tx2 = await aergo.getTransaction(tx.hash);
+            await waitFor(500);
+            const tx2 = await longPolling(async () => {
+                return await aergo.getTransaction(txhash);
+            }, result => 'block' in result, 5000);
             assert.equal(tx2.tx.hash, tx.hash);
             assert.isTrue(JSBI.equal(tx2.tx.amount.value, tx.amount.value));
+
+            // Tx has receipt
+            const txReceipt = await aergo.getTransactionReceipt(tx.hash);
+            assert.isTrue(txReceipt.fee.equal(0));
+            assert.isTrue(txReceipt.cumulativefee.equal(0));
+            assert.equal(txReceipt.blockhash, tx2.block.hash);
 
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendSignedTransaction(tx));
@@ -128,7 +141,7 @@ describe('Aergo.Accounts', () => {
             const tx = await aergo.accounts.signTransaction(testtx);
             return assert.isRejected(
                 aergo.sendSignedTransaction(tx),
-                Error, 'UNDEFINED_ERROR: size of tx exceeds max length'
+                Error, 'UNDEFINED_ERROR: payload size of tx exceeds max length'
             );
         });
     });
