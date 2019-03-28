@@ -1,6 +1,6 @@
 {
   "name": "@herajs/crypto",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Cryptography tools for aergo",
   "main": "dist/herajs-crypto.cjs.js",
   "module": "dist/herajs-crypto.esm.js",
