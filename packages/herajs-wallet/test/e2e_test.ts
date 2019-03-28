@@ -38,7 +38,7 @@ describe('Wallet scenarios', async () => {
             const accountTracker = await wallet.accountManager.trackAccount(testAccountSpec);
             accountTracker.once('update', account => {
                 assert.deepEqual(account.data.spec, testAccountSpec);
-                assert.equal(account.balance.toUnit('aergo').toString(), '10 aergo');
+                assert.equal(account.balance.toUnit('aergo').toString(), '20000 aergo');
                 wallet.accountManager.pause();
                 done();
             });
@@ -161,7 +161,7 @@ describe('Wallet scenarios', async () => {
         const callTxTracker = await wallet.sendTransaction(account, callTx);
         const callTxReceipt = await callTxTracker.getReceipt();
         assert.equal(callTxReceipt.status, 'ERROR');
-        assert.equal(callTxReceipt.result, `[string "${contractId.substr(0, 45)}..."]:0: failed as expected`);
+        assert.equal(callTxReceipt.result, `[string "${contractId}"]:0: failed as expected`);
     }).timeout(5000);
 
     it('get account transactions', async () => {
@@ -185,7 +185,7 @@ describe('Wallet scenarios', async () => {
             amount: '123 aer'
         });
         const receipt = await txTracker.getReceipt();
-        console.log('receipt', receipt);
+        //console.log('receipt', receipt);
         
         // Set up readonly account
         const account = await wallet.accountManager.addAccount({ address });
