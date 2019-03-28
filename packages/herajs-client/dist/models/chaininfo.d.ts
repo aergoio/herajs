@@ -4,7 +4,6 @@ export declare type ChainId = {
     magic: string;
     public: Boolean;
     mainnet: Boolean;
-    coinbasefee: Amount;
     consensus: string;
 };
 export default class ChainInfo {

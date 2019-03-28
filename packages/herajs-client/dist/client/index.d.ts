@@ -4,7 +4,9 @@ import Tx from '../models/tx';
 import Block from '../models/block';
 import Address from '../models/address';
 import State from '../models/state';
+import Amount from '../models/amount';
 import ChainInfo from '../models/chaininfo';
+import Event from '../models/event';
 import { FunctionCall, StateQuery } from '../models/contract';
 import FilterInfo from '../models/filterinfo';
 declare const CommitStatus: any;
@@ -20,11 +22,25 @@ interface GetReceiptResult {
     contractaddress: Address;
     result: string;
     status: string;
+    fee: Amount;
+    cumulativefee: Amount;
+    blockno: number;
+    blockhash: string;
 }
 interface NameInfoResult {
     name: string;
     owner: Address;
     destination: Address;
+}
+interface ConsensusInfoResult {
+    type: string;
+    info: object;
+    bpsList: object[];
+}
+interface Stream<T> {
+    on(eventName: string, callback: ((obj: T) => void)): void;
+    cancel(): void;
+    _stream: any;
 }
 /**
  * Main aergo client controller.
@@ -34,6 +50,10 @@ declare class AergoClient {
     client: any;
     accounts: Accounts;
     target: string;
+    static defaultProviderClass?: {
+        new (...args: any[]): any;
+    };
+    static platform: string;
     /**
      * Create a new auto-configured client with:
      *
@@ -46,7 +66,7 @@ declare class AergoClient {
      * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
      */
     constructor(config?: {}, provider?: any);
-    defaultProvider(): void;
+    defaultProvider(): any;
     /**
      * Set a new provider
      * @param {Provider} provider
@@ -75,8 +95,8 @@ declare class AergoClient {
     /**
      * Retrieve information about a block.
      *
-     * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
-     * @returns {Promise<Block>} block details
+     * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
+     * @returns block details
      */
     getBlock(hashOrNumber: string | number): Promise<Block>;
     /**
@@ -87,11 +107,7 @@ declare class AergoClient {
      * @returns {Promise<Block[]>} list of block headers (blocks without body)
      */
     getBlockHeaders(hashOrNumber: any, size?: number, offset?: number, desc?: boolean): any;
-    getBlockStream(): {
-        _stream: any;
-        on: (ev: any, callback: any) => any;
-        cancel: () => any;
-    };
+    getBlockStream(): Stream<Block>;
     getBlockMetadataStream(): {
         _stream: any;
         on: (ev: any, callback: any) => any;
@@ -110,13 +126,10 @@ declare class AergoClient {
      *         stream.cancel();
      *      });
      *
-     * @param filter FilterInfo
+     * @param {FilterInfo} filter :class:`FilterInfo`
+     * @returns {Stream<Event>} event stream
      */
-    getEventStream(filter: Partial<FilterInfo>): {
-        _stream: any;
-        on: (ev: any, callback: any) => any;
-        cancel: () => any;
-    };
+    getEventStream(filter: Partial<FilterInfo>): Stream<Event>;
     /**
      * Retrieve account state, including current balance and nonce.
      * @param {string} address Account address encoded in Base58check
@@ -135,7 +148,7 @@ declare class AergoClient {
      * Return the top voted-for block producer
      * @param count number
      */
-    getTopVotes(count: number): Promise<any>;
+    getTopVotes(count: number, id?: string): Promise<any>;
     /**
      * Return information for account name
      * @param {string} address Account address encoded in Base58check
@@ -163,10 +176,10 @@ declare class AergoClient {
     /**
      * Query contract state
      * This only works vor variables explicitly defines as state variables.
-     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
-     * @returns {Promise<object>} result of query
+     * @param {FilterInfo} filter :class:`FilterInfo`
+     * @returns {Event[]} list of events
      */
-    getEvents(filter: Partial<FilterInfo>): any;
+    getEvents(filter: Partial<FilterInfo>): Event[];
     /**
      * Query contract ABI
      * @param {string} address of contract
@@ -182,5 +195,9 @@ declare class AergoClient {
      * @param name
      */
     getNameInfo(name: any): Promise<NameInfoResult>;
+    /**
+     * Return consensus info. The included fields can differ by consensus type.
+     */
+    getConsensusInfo(): Promise<ConsensusInfoResult>;
 }
 export default AergoClient;

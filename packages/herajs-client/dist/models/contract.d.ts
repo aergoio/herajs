@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 declare type _PrimitiveType = string | number | boolean;

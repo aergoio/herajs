@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
  * but client-side they are displayed as base58-check encoded strings.
