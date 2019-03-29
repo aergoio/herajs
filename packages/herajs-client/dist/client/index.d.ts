@@ -50,6 +50,7 @@ declare class AergoClient {
     client: any;
     accounts: Accounts;
     target: string;
+    private chainIdHash?;
     static defaultProviderClass?: {
         new (...args: any[]): any;
     };
@@ -75,6 +76,19 @@ declare class AergoClient {
     getConfig(): object;
     isConnected(): boolean;
     grpcMethod<I, O>(method: Function): (request: I) => Promise<O>;
+    /**
+     * Set the chain id hash to use for subsequent transactions.
+     * @param hash string (base58 encoded) or byte array
+     */
+    setChainIdHash(hash: string | Uint8Array): void;
+    /**
+     * Request chain id hash. This automatically gathers the chain id hash
+     * from the current node if not specified.
+     * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
+     * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
+     */
+    getChainIdHash(enc?: 'base58'): Promise<string>;
+    getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
     /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status

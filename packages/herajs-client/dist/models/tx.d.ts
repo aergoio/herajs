@@ -12,6 +12,7 @@ export default class Tx {
     type: number;
     limit: number;
     price: Amount;
+    chainIdHash: string;
     constructor(data: Partial<Tx>);
     static fromGrpc(grpcObject: GrpcTx): Tx;
     toGrpc(): GrpcTx;

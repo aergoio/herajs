@@ -1,5 +1,5 @@
 /*!
- * herajs v0.8.0
+ * herajs v0.8.1
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -24159,6 +24159,8 @@ function () {
 
     _defineProperty(this, "price", void 0);
 
+    _defineProperty(this, "chainIdHash", void 0);
+
     Object.assign(this, data);
     this.amount = new Amount(this.amount || 0);
     this.price = new Amount(this.price || 0);
@@ -24202,6 +24204,17 @@ function () {
         msgtxbody.setGasprice(this.price.asBytes());
       }
 
+      if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
+        var msg = 'Missing required transaction parameter \'chainIdHash\'. ' + 'Use aergoClient.getChainIdHash() to retrieve from connected node, ' + 'or hard-code for increased security.';
+        throw new Error(msg);
+      }
+
+      if (typeof this.chainIdHash === 'string') {
+        msgtxbody.setChainidhash(bs58.decode(this.chainIdHash));
+      } else {
+        msgtxbody.setChainidhash(this.chainIdHash);
+      }
+
       var msgtx = new blockchain_pb_3();
 
       if (this.hash != null) {
@@ -24233,7 +24246,8 @@ function () {
         sign: grpcObject.getBody().getSign_asB64(),
         type: grpcObject.getBody().getType(),
         limit: grpcObject.getBody().getGaslimit(),
-        price: new Amount(grpcObject.getBody().getGasprice_asU8())
+        price: new Amount(grpcObject.getBody().getGasprice_asU8()),
+        chainIdHash: bs58.encode(grpcObject.getBody().getChainidhash_asU8())
       });
     }
   }]);
@@ -24925,6 +24939,8 @@ function () {
 
     _defineProperty(this, "target", void 0);
 
+    _defineProperty(this, "chainIdHash", void 0);
+
     this.config = _objectSpread({}, config);
     this.client = provider || this.defaultProvider();
     this.accounts = new Accounts(this);
@@ -24961,12 +24977,58 @@ function () {
   }, {
     key: "grpcMethod",
     value: function grpcMethod(method) {
-      var _this = this;
+      var _this2 = this;
 
       return function (request) {
-        return promisify(method, _this.client.client)(request);
+        return promisify(method, _this2.client.client)(request);
       };
     }
+    /**
+     * Set the chain id hash to use for subsequent transactions.
+     * @param hash string (base58 encoded) or byte array
+     */
+
+  }, {
+    key: "setChainIdHash",
+    value: function setChainIdHash(hash) {
+      if (typeof hash === 'string') {
+        this.chainIdHash = bs58.decode(hash);
+      } else {
+        this.chainIdHash = hash;
+      }
+    }
+    /**
+     * Request chain id hash. This automatically gathers the chain id hash
+     * from the current node if not specified.
+     * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
+     * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
+     */
+
+  }, {
+    key: "getChainIdHash",
+    value: function () {
+      var _getChainIdHash = _asyncToGenerator(function* () {
+        var enc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var hash;
+
+        if (typeof this.chainIdHash === 'undefined') {
+          // Fetch blockchain data to set chainIdHash
+          yield this.blockchain();
+        }
+
+        hash = this.chainIdHash;
+
+        if (enc === 'base58') {
+          return bs58.encode(hash);
+        }
+
+        return hash;
+      });
+
+      return function getChainIdHash() {
+        return _getChainIdHash.apply(this, arguments);
+      };
+    }()
     /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
@@ -24975,12 +25037,20 @@ function () {
   }, {
     key: "blockchain",
     value: function blockchain() {
+      var _this = this;
+
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.blockchain),
       /*#__PURE__*/
       function () {
         var _unmarshal = _asyncToGenerator(function* (response) {
+          if (typeof _this.chainIdHash === 'undefined') {
+            // set chainIdHash automatically
+            _this.setChainIdHash(response.getBestChainIdHash_asU8());
+          }
+
           return _objectSpread({}, response.toObject(), {
-            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8()),
+            bestChainIdHash: bs58.encode(response.getBestChainIdHash_asU8())
           });
         });
 
@@ -25019,14 +25089,14 @@ function () {
   }, {
     key: "getTransaction",
     value: function getTransaction(txhash) {
-      var _this2 = this;
+      var _this3 = this;
 
       var singleBytes = new typesNode.SingleBytes();
       singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
       return new Promise(function (resolve, reject) {
-        _this2.client.client.getBlockTX(singleBytes, function (err, result) {
+        _this3.client.client.getBlockTX(singleBytes, function (err, result) {
           if (err) {
-            _this2.client.client.getTX(singleBytes, function (err, result) {
+            _this3.client.client.getTX(singleBytes, function (err, result) {
               if (err) {
                 reject(err);
               } else {
@@ -25281,7 +25351,7 @@ function () {
   }, {
     key: "sendSignedTransaction",
     value: function sendSignedTransaction(tx) {
-      var _this3 = this;
+      var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         var txs = new typesNode.TxList();
@@ -25292,7 +25362,7 @@ function () {
 
         txs.addTxs(tx.toGrpc(), 0);
 
-        _this3.client.client.commitTX(txs, function (err, result) {
+        _this4.client.client.commitTX(txs, function (err, result) {
           if (err == null && result.getResultsList()[0].getError()) {
             var obj = result.getResultsList()[0].toObject();
             err = new TransactionError(errorMessageForCode(obj.error) + ': ' + obj.detail);
