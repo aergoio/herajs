@@ -208,6 +208,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         if (typeof tx.nonce === 'undefined') {
             tx.nonce = await this.getNonceForAccount(account);
         }
+        if (typeof tx.chainIdHash === 'undefined') {
+            tx.chainIdHash = await this.wallet.getClient().getChainIdHash();
+        }
         return new Transaction('', {
             chainId: account.data.spec.chainId,
             from: tx.from.toString(),

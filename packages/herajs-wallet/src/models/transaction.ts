@@ -31,7 +31,8 @@ export interface TxBody {
     from: string | Address;
     to: string | Address | null;
     amount: string | number | Amount;
-    payload: Uint8Array | string | null;
+    payload: Uint8Array | null;
+    chainIdHash: string | Uint8Array;
     type?: number;
     limit?: number;
     price?: string | Amount;
@@ -102,7 +103,10 @@ export class SignedTransaction extends Transaction {
      * Calculate the hash, including all present body
      */
     async getHash(): Promise<string> {
-        const hash = await hashTransaction({ ...this.txBody }, 'base58') as string;
+        if (typeof this.txBody.nonce !== 'number') {
+            throw new Error('missing required parameter `nonce`');
+        }
+        const hash = await hashTransaction({ ...this.txBody, nonce: this.txBody.nonce || 0 }, 'base58');
         this._signedHash = hash;
         return hash;
     }
