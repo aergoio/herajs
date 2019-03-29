@@ -1,5 +1,5 @@
 /*!
- * herajs v0.8.2
+ * herajs v0.8.3
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -30923,6 +30923,63 @@
 	  return Amount;
 	}();
 
+	var Block =
+	/*#__PURE__*/
+	function () {
+	  function Block(data) {
+	    _classCallCheck(this, Block);
+
+	    _defineProperty(this, "hash", void 0);
+
+	    _defineProperty(this, "header", void 0);
+
+	    _defineProperty(this, "body", void 0);
+
+	    Object.assign(this, data);
+	  }
+
+	  _createClass(Block, [{
+	    key: "toGrpc",
+	    value: function toGrpc() {
+	      throw new Error('Not implemented');
+	    }
+	  }], [{
+	    key: "fromGrpc",
+	    value: function fromGrpc(grpcObject) {
+	      var obj = grpcObject.toObject();
+
+	      if (obj.body) {
+	        obj.body.txsList = grpcObject.getBody().getTxsList().map(function (tx) {
+	          return Tx.fromGrpc(tx);
+	        });
+	      }
+
+	      return new Block({
+	        hash: Block.encodeHash(grpcObject.getHash_asU8()),
+	        header: _objectSpread({}, obj.header, {
+	          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
+	          prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
+	          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
+	          pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
+	        }),
+	        body: obj.body
+	      });
+	    }
+	  }, {
+	    key: "encodeHash",
+	    value: function encodeHash(bytes) {
+	      return bs58.encode(Buffer$1.from(bytes));
+	    }
+	  }, {
+	    key: "decodeHash",
+	    value: function decodeHash(bs58string) {
+	      return bs58.decode(bs58string);
+	    }
+	  }]);
+
+	  return Block;
+	}();
+
 	var Tx =
 	/*#__PURE__*/
 	function () {
@@ -30995,29 +31052,33 @@
 	      }
 
 	      if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
-	        var msg = 'Missing required transaction parameter \'chainIdHash\'. ' + 'Use aergoClient.getChainIdHash() to retrieve from connected node, ' + 'or hard-code for increased security.';
+	        var msg = 'Missing required transaction parameter \'chainIdHash\'. ' + 'Use aergoClient.getChainIdHash() to retrieve from connected node, ' + 'or hard-code for increased security and performance.';
 	        throw new Error(msg);
 	      }
 
+	      var hashBuffer;
+
 	      if (typeof this.chainIdHash === 'string') {
-	        msgtxbody.setChainidhash(bs58.decode(this.chainIdHash));
+	        hashBuffer = new Uint8Array(Block.decodeHash(this.chainIdHash));
 	      } else {
-	        msgtxbody.setChainidhash(this.chainIdHash);
+	        hashBuffer = new Uint8Array(Buffer$1.from(this.chainIdHash));
 	      }
 
+	      msgtxbody.setChainidhash(hashBuffer);
 	      var msgtx = new blockchain_pb_3();
 
 	      if (this.hash != null) {
 	        var hash = this.hash;
-	        var hashBuffer;
+
+	        var _hashBuffer;
 
 	        if (typeof hash === 'string') {
-	          hashBuffer = new Uint8Array(Buffer$1.from(decodeTxHash(hash)));
+	          _hashBuffer = new Uint8Array(Buffer$1.from(decodeTxHash(hash)));
 	        } else {
-	          hashBuffer = new Uint8Array(Buffer$1.from(hash));
+	          _hashBuffer = new Uint8Array(Buffer$1.from(hash));
 	        }
 
-	        msgtx.setHash(hashBuffer);
+	        msgtx.setHash(_hashBuffer);
 	      }
 
 	      msgtx.setBody(msgtxbody);
@@ -31037,7 +31098,7 @@
 	        type: grpcObject.getBody().getType(),
 	        limit: grpcObject.getBody().getGaslimit(),
 	        price: new Amount(grpcObject.getBody().getGasprice_asU8()),
-	        chainIdHash: bs58.encode(grpcObject.getBody().getChainidhash_asU8())
+	        chainIdHash: Block.encodeHash(grpcObject.getBody().getChainidhash_asU8())
 	      });
 	    }
 	  }]);
@@ -31276,63 +31337,6 @@
 	  }]);
 
 	  return Accounts;
-	}();
-
-	var Block =
-	/*#__PURE__*/
-	function () {
-	  function Block(data) {
-	    _classCallCheck(this, Block);
-
-	    _defineProperty(this, "hash", void 0);
-
-	    _defineProperty(this, "header", void 0);
-
-	    _defineProperty(this, "body", void 0);
-
-	    Object.assign(this, data);
-	  }
-
-	  _createClass(Block, [{
-	    key: "toGrpc",
-	    value: function toGrpc() {
-	      throw new Error('Not implemented');
-	    }
-	  }], [{
-	    key: "fromGrpc",
-	    value: function fromGrpc(grpcObject) {
-	      var obj = grpcObject.toObject();
-
-	      if (obj.body) {
-	        obj.body.txsList = grpcObject.getBody().getTxsList().map(function (tx) {
-	          return Tx.fromGrpc(tx);
-	        });
-	      }
-
-	      return new Block({
-	        hash: Block.encodeHash(grpcObject.getHash_asU8()),
-	        header: _objectSpread({}, obj.header, {
-	          chainid: Buffer$1.from(grpcObject.getHeader().getChainid_asU8()).toString('utf8'),
-	          prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
-	          coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
-	          pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8())
-	        }),
-	        body: obj.body
-	      });
-	    }
-	  }, {
-	    key: "encodeHash",
-	    value: function encodeHash(bytes) {
-	      return bs58.encode(Buffer$1.from(bytes));
-	    }
-	  }, {
-	    key: "decodeHash",
-	    value: function decodeHash(bs58string) {
-	      return bs58.decode(bs58string);
-	    }
-	  }]);
-
-	  return Block;
 	}();
 
 	var BlockMetadata =
