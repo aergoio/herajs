@@ -31,6 +31,7 @@ describe('Contracts', () => {
                 from: testAddress,
                 to: null,
                 payload: contract.asPayload([10]),
+                chainIdHash: await aergo.getChainIdHash()
             };
             deployTxhash = await aergo.accounts.sendTransaction(testtx);
             assert.typeOf(deployTxhash, 'string');
@@ -62,7 +63,8 @@ describe('Contracts', () => {
             // Call contract
             // @ts-ignore
             const callTx = contract.inc().asTransaction({
-                from: testAddress
+                from: testAddress,
+                chainIdHash: await aergo.getChainIdHash()
             });
             assert.equal(callTx.from, testAddress);
             const calltxhash = await aergo.accounts.sendTransaction(callTx);
@@ -79,7 +81,7 @@ describe('Contracts', () => {
             assert.throws(() => {
                 // @ts-ignore
                 aergo.accounts.sendTransaction(contract.inc().asTransaction({
-                    from: null
+                    from: null,
                 }));
             }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
         });
@@ -96,7 +98,8 @@ describe('Contracts', () => {
             // Call contract again
             // @ts-ignore
             const callTx = contract.inc().asTransaction({
-                from: testAddress
+                from: testAddress,
+                chainIdHash: await aergo.getChainIdHash()
             });
             const callTxHash = await aergo.accounts.sendTransaction(callTx);
             const callTxReceipt = await longPolling(async () =>
@@ -159,7 +162,8 @@ describe('Contracts', () => {
                 const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
                 // @ts-ignore
                 const callTx = contract.inc().asTransaction({
-                    from: testAddress
+                    from: testAddress,
+                    chainIdHash: await aergo.getChainIdHash()
                 });
                 txhash = await aergo.accounts.sendTransaction(callTx);
             }

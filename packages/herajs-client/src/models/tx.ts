@@ -3,6 +3,7 @@ import { encodeTxHash, decodeTxHash } from '../transactions/utils';
 import Address from './address';
 import Amount from './amount';
 import { Buffer } from 'buffer';
+import bs58 from 'bs58';
 
 export default class Tx {
     hash: string /*bytes*/;
@@ -15,6 +16,7 @@ export default class Tx {
     type: number /*uint32*/;
     limit: number /*uint64*/;
     price: Amount /*uint64*/;
+    chainIdHash: string /*bytes*/;
 
     constructor(data: Partial<Tx>) {
         Object.assign(this, data);
@@ -33,7 +35,8 @@ export default class Tx {
             sign: grpcObject.getBody().getSign_asB64(),
             type: grpcObject.getBody().getType(),
             limit: grpcObject.getBody().getGaslimit(),
-            price: new Amount(grpcObject.getBody().getGasprice_asU8())
+            price: new Amount(grpcObject.getBody().getGasprice_asU8()),
+            chainIdHash: bs58.encode(grpcObject.getBody().getChainidhash_asU8())
         });
     }
     toGrpc() {
@@ -64,6 +67,18 @@ export default class Tx {
 
         if (typeof this.price !== 'undefined') {
             msgtxbody.setGasprice(this.price.asBytes());
+        }
+
+        if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
+            const msg = 'Missing required transaction parameter \'chainIdHash\'. ' +
+                        'Use aergoClient.getChainIdHash() to retrieve from connected node, ' +
+                        'or hard-code for increased security.';
+            throw new Error(msg);
+        }
+        if (typeof this.chainIdHash === 'string') {
+            msgtxbody.setChainidhash(bs58.decode(this.chainIdHash));
+        } else {
+            msgtxbody.setChainidhash(this.chainIdHash);
         }
 
         const msgtx = new GrpcTx();

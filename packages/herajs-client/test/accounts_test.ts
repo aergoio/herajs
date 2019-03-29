@@ -64,7 +64,8 @@ describe('Aergo.Accounts', () => {
             const testtx = {
                 from: testAddress,
                 to: testAddress,
-                amount: '123 aer'
+                amount: '123 aer',
+                chainIdHash: await aergo.getChainIdHash()
             };
             return aergo.accounts.sendTransaction(testtx)
                 .then((txhash) => {
@@ -74,21 +75,21 @@ describe('Aergo.Accounts', () => {
     });
 
     describe('signTX()', () => {
-        it('should return tx which has a unlocked account sign', (done) => {
+        it('should return tx which has a unlocked account sign', async () => {
             const testtx = {
                 nonce: 1,
                 from: testAddress,
                 to: testAddress,
                 amount: '123 aer',
                 payload: null,
+                chainIdHash: await aergo.getChainIdHash()
             };
-            aergo.accounts.signTransaction(testtx)
+            return aergo.accounts.signTransaction(testtx)
                 .then((result) => {
                     assert.equal(testtx.nonce, result.nonce);
                     assert.deepEqual(testtx.from.toString(), result.from.toString());
                     assert.typeOf(result.sign, 'string');
                     assert.equal(result.sign.length, 96);
-                    done();
                 });
         });
     });
@@ -104,6 +105,7 @@ describe('Aergo.Accounts', () => {
                 to: address,
                 amount: '123 aer',
                 payload: null,
+                chainIdHash: await aergo.getChainIdHash()
             };
             // Tx is signed and submitted correctly
             const tx = await aergo.accounts.signTransaction(testtx);
@@ -137,6 +139,7 @@ describe('Aergo.Accounts', () => {
                 to: address,
                 amount: '123 aer',
                 payload: Buffer.allocUnsafe(250000).fill(1),
+                chainIdHash: await aergo.getChainIdHash()
             };
             const tx = await aergo.accounts.signTransaction(testtx);
             return assert.isRejected(
@@ -156,6 +159,7 @@ describe('Aergo.Accounts', () => {
                     from: address,
                     to: createdAddress,
                     amount: `${i} aer`,
+                    chainIdHash: await aergo.getChainIdHash()
                 };
                 const signedtx = await aergo.accounts.signTransaction(testtx);
                 const txhash = await aergo.sendSignedTransaction(signedtx);
@@ -173,7 +177,8 @@ describe('Aergo.Accounts', () => {
                 to: 'aergo.name',
                 amount: '1 aergo',
                 payload: `{"Name":"v1createName","Args":["${name}"]}`,
-                type: 1
+                type: 1,
+                chainIdHash: await aergo.getChainIdHash()
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);
             await longPolling(async () => {
@@ -199,7 +204,8 @@ describe('Aergo.Accounts', () => {
                 to: 'aergo.system',
                 amount: info.stakingminimum,
                 payload: '{"Name":"v1stake"}',
-                type: 1
+                type: 1,
+                chainIdHash: await aergo.getChainIdHash()
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);
             await longPolling(async () => {

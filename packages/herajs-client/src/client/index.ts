@@ -17,7 +17,7 @@ import {
     ConsensusInfo,
     VoteParams, Vote
 } from '../../types/rpc_pb';
-import { fromNumber, toBytesUint32, errorMessageForCode } from '../utils';
+import { fromNumber, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import Tx from '../models/tx';
@@ -97,6 +97,7 @@ class AergoClient {
     client: any;
     accounts: Accounts;
     target: string;
+    private chainIdHash?: Uint8Array;
     static defaultProviderClass?: {new (...args : any[]): any;};
     static platform: string = '';
 
@@ -147,19 +148,58 @@ class AergoClient {
     }
 
     /**
+     * Set the chain id hash to use for subsequent transactions.
+     * @param hash string (base58 encoded) or byte array
+     */
+    setChainIdHash(hash: string | Uint8Array) {
+        if (typeof hash === 'string') {
+            this.chainIdHash = bs58.decode(hash);
+        } else {
+            this.chainIdHash = hash;
+        }
+    }
+
+    /**
+     * Request chain id hash. This automatically gathers the chain id hash
+     * from the current node if not specified.
+     * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
+     * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
+     */
+    async getChainIdHash(enc?: 'base58'): Promise<string>;
+    async getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
+    async getChainIdHash(enc: string = ''): Promise<Uint8Array | string> {
+        let hash: Uint8Array;
+        if (typeof this.chainIdHash === 'undefined') {
+            // Fetch blockchain data to set chainIdHash
+            await this.blockchain();
+        }
+        hash = this.chainIdHash;
+        if (enc === 'base58') {
+            return bs58.encode(hash);
+        }
+        return hash;
+    }
+
+    /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
      */
     blockchain (): Promise<GrpcBlockchainStatus.AsObject> {
+        const _this = this;
         return waterfall([
             marshalEmpty,
             this.grpcMethod<Empty, GrpcBlockchainStatus>(this.client.client.blockchain),
             async function unmarshal(response: GrpcBlockchainStatus): Promise<GrpcBlockchainStatus.AsObject> {
+                if (typeof _this.chainIdHash === 'undefined') {
+                    // set chainIdHash automatically
+                    _this.setChainIdHash(response.getBestChainIdHash_asU8());
+                }
                 return {
                     ...response.toObject(),
-                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8())
+                    bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8()),
+                    bestChainIdHash: bs58.encode(response.getBestChainIdHash_asU8())
                 };
-            }
+            },
         ])(null);
     }
 

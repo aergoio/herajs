@@ -242,7 +242,8 @@ describe('Aergo', () => {
             const tx = {
                 from: testaddress,
                 to: testaddress,
-                amount: '1337 aer'
+                amount: '1337 aer',
+                chainIdHash: await aergo.getChainIdHash()
             };
             txhash = await aergo.accounts.sendTransaction(tx);
             await waitFor(500);
@@ -277,6 +278,7 @@ describe('Aergo', () => {
                 to: address,
                 amount: '123 aer',
                 payload: '',
+                chainIdHash: await aergo.getChainIdHash()
             };
             // Tx is signed and submitted correctly
             testtx = await aergo.accounts.signTransaction(unsignedtx);
@@ -295,8 +297,8 @@ describe('Aergo', () => {
                 nonce: 1,
                 from: identity.address,
                 to: identity.address,
-                amount: '100',
-                payload: '',
+                amount: '100 aer',
+                chainIdHash: await aergo.getChainIdHash(),
                 sign: null,
                 hash: null
             };
