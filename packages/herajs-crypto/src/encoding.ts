@@ -46,7 +46,7 @@ const fromNumber = (d: number, bitLength = 64): Uint8Array => {
  * Convert BigInt to Uint8 array
  * @param {JSBI} d 
  */
-const fromBigInt = (d: JSBI): Uint8Array => fromHexString(JSBI.BigInt(d).toString(16));
+const fromBigInt = (d: JSBI | string | number): Uint8Array => fromHexString(JSBI.BigInt(d).toString(16));
 
 /**
  * Encodes address form byte array to string.

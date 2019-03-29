@@ -27,6 +27,9 @@ describe('hashTransaction()', () => {
     it('should fail with invalid amount', async () => {
         const tx = {
             amount: '100000 aergo',
+            nonce: 1,
+            from: '',
+            chainIdHash: ''
         };
         return assert.isRejected(hashTransaction(tx), Error, 'Can only hash amounts provided in the base unit (aer), not 100000 aergo. Convert to aer or remove unit.');
     });
@@ -40,9 +43,10 @@ describe('signTransaction()', () => {
             from: identity.address,
             to: identity.address,
             amount: '100000 aer',
-            payload: '',
+            payload: null,
             signature: '',
-            hash: ''
+            hash: '',
+            chainIdHash: 'foo'
         };
         tx.signature = await signTransaction(tx, identity.keyPair);
         tx.hash = await hashTransaction(tx);
