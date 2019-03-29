@@ -1,3 +1,7 @@
+## 0.8.1 (March 29, 2019)
+
+- Add chainIdHash to blockchain() and tx calls
+
 ## 0.8.0 (March 28, 2019)
 
 - Compatability with aergosvr 1.0
