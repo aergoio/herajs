@@ -1,5 +1,5 @@
 /*!
- * herajs v0.8.1
+ * herajs v0.8.2
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -31835,12 +31835,12 @@
 	        var _unmarshal = _asyncToGenerator(function* (response) {
 	          if (typeof _this.chainIdHash === 'undefined') {
 	            // set chainIdHash automatically
-	            _this.setChainIdHash(response.getBestChainIdHash_asU8());
+	            _this.setChainIdHash(Buffer$1.from(response.getBestChainIdHash_asU8()));
 	          }
 
 	          return _objectSpread({}, response.toObject(), {
 	            bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8()),
-	            bestChainIdHash: bs58.encode(response.getBestChainIdHash_asU8())
+	            bestChainIdHash: Block.encodeHash(response.getBestChainIdHash_asU8())
 	          });
 	        });
 
@@ -32239,7 +32239,7 @@
 	    value: function queryContract(functionCall) {
 	      var query = functionCall.toGrpc();
 	      return promisify(this.client.client.queryContract, this.client.client)(query).then(function (grpcObject) {
-	        return JSON.parse(Buffer.from(grpcObject.getValue()).toString());
+	        return JSON.parse(Buffer$1.from(grpcObject.getValue()).toString());
 	      });
 	    }
 	    /**
@@ -32264,7 +32264,7 @@
 	        var value = varProof.getValue_asU8();
 
 	        if (value.length > 0) {
-	          return JSON.parse(Buffer.from(varProof.getValue_asU8()).toString());
+	          return JSON.parse(Buffer$1.from(varProof.getValue_asU8()).toString());
 	        }
 
 	        return null;
