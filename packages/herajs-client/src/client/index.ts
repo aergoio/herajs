@@ -32,6 +32,7 @@ import Event from '../models/event';
 import { FunctionCall, StateQuery } from '../models/contract';
 import FilterInfo from '../models/filterinfo';
 import { TransactionError } from '../errors';
+import { Buffer } from 'buffer';
 
 import bs58 from 'bs58';
 
@@ -192,12 +193,12 @@ class AergoClient {
             async function unmarshal(response: GrpcBlockchainStatus): Promise<GrpcBlockchainStatus.AsObject> {
                 if (typeof _this.chainIdHash === 'undefined') {
                     // set chainIdHash automatically
-                    _this.setChainIdHash(response.getBestChainIdHash_asU8());
+                    _this.setChainIdHash(Buffer.from(response.getBestChainIdHash_asU8()));
                 }
                 return {
                     ...response.toObject(),
                     bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8()),
-                    bestChainIdHash: bs58.encode(response.getBestChainIdHash_asU8())
+                    bestChainIdHash: Block.encodeHash(response.getBestChainIdHash_asU8())
                 };
             },
         ])(null);
