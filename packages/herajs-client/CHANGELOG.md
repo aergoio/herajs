@@ -1,3 +1,7 @@
+## 0.8.2 (March 29, 2019)
+
+- Bugfix: buffer conversion
+
 ## 0.8.1 (March 29, 2019)
 
 - Add chainIdHash to blockchain() and tx calls
