@@ -21,7 +21,7 @@ declare const fromNumber: (d: number, bitLength?: number) => Uint8Array;
  * Convert BigInt to Uint8 array
  * @param {JSBI} d
  */
-declare const fromBigInt: (d: JSBI) => Uint8Array;
+declare const fromBigInt: (d: string | number | JSBI) => Uint8Array;
 /**
  * Encodes address form byte array to string.
  * @param {number[]} byteArray

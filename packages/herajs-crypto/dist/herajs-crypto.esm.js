@@ -320,17 +320,23 @@ function _encryptPrivateKey() {
 
 var ecdsa$1 = new ec('secp256k1');
 
+function bufferOrB58(input) {
+  if (typeof input === 'string') {
+    return bs58.decode(input);
+  }
+
+  if (typeof input === 'undefined') {
+    return new Uint8Array([]);
+  }
+
+  return input;
+}
+
 function hash(data) {
   var h = ecdsa$1.hash();
   h.update(data);
   return h.digest();
 }
-/**
- * Calculate hash of transaction
- * @param {object} tx Transaction
- * @return {string} transaction hash
- */
-
 
 function hashTransaction(_x) {
   return _hashTransaction.apply(this, arguments);
@@ -342,6 +348,8 @@ function _hashTransaction() {
     var includeSign = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     // check amount format
     tx.amount = '' + tx.amount;
+    if (typeof tx.amount !== 'string') throw new Error(); // this is a type-hint for ts
+
     var amountUnit = tx.amount.match(/\s*([^0-9]+)\s*/);
 
     if (amountUnit && amountUnit[1] !== 'aer') {
@@ -349,12 +357,12 @@ function _hashTransaction() {
     }
 
     tx.amount = tx.amount.replace(/[^0-9]/g, '');
-    var items = [fromNumber(tx.nonce, 64), decodeAddress(tx.from.toString()), tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]), fromBigInt(tx.amount || 0), Buffer.from(tx.payload), fromNumber(tx.limit, 64), fromBigInt(tx.price || 0), fromNumber(tx.type, 32)];
+    var items = [fromNumber(tx.nonce, 64), decodeAddress(tx.from.toString()), tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]), fromBigInt(tx.amount ? tx.amount.toString() : 0), tx.payload ? Buffer.from(tx.payload) : Buffer.from([]), fromNumber(tx.limit || 0, 64), fromBigInt(tx.price ? tx.price.toString() : 0), fromNumber(tx.type || 0, 32), Buffer.from(bufferOrB58(tx.chainIdHash))];
     var data = Buffer.concat(items.map(function (item) {
       return Buffer.from(item);
     }));
 
-    if (includeSign && 'sign' in tx) {
+    if (includeSign && typeof tx.sign !== 'undefined') {
       data = Buffer.concat([data, Buffer.from(tx.sign, 'base64')]);
     }
 
