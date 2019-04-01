@@ -1,5 +1,5 @@
 /*!
- * herajs v0.8.3
+ * herajs v0.8.4
  * (c) 2019 AERGO
  * Released under MIT license.
  */
@@ -23708,6 +23708,7 @@ var rpc_pb_9 = rpc_pb.Query;
 var rpc_pb_10 = rpc_pb.Name;
 var rpc_pb_11 = rpc_pb.PeersParams;
 var rpc_pb_12 = rpc_pb.VoteParams;
+var rpc_pb_13 = rpc_pb.NodeReq;
 
 var typesNode = /*#__PURE__*/Object.freeze({
 	default: rpc_pb,
@@ -23723,7 +23724,8 @@ var typesNode = /*#__PURE__*/Object.freeze({
 	Query: rpc_pb_9,
 	Name: rpc_pb_10,
 	PeersParams: rpc_pb_11,
-	VoteParams: rpc_pb_12
+	VoteParams: rpc_pb_12,
+	NodeReq: rpc_pb_13
 });
 
 function encodeTxHash(bytes) {
@@ -25084,6 +25086,44 @@ function () {
       }()])(null);
     }
     /**
+     * Request current status of node.
+     * @returns {Promise<any>} an object detailing the state of various node components
+     */
+
+  }, {
+    key: "getNodeState",
+    value: function getNodeState(component) {
+      var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
+      return waterfall([
+      /*#__PURE__*/
+      function () {
+        var _marshal = _asyncToGenerator(function* (component) {
+          var params = new rpc_pb_13();
+          params.setTimeout(fromNumber(timeout));
+
+          if (typeof component !== 'undefined') {
+            params.setComponent(Buffer$2.from(component));
+          }
+
+          return params;
+        });
+
+        return function marshal(_x4) {
+          return _marshal.apply(this, arguments);
+        };
+      }(), this.grpcMethod(this.client.client.nodeState),
+      /*#__PURE__*/
+      function () {
+        var _unmarshal3 = _asyncToGenerator(function* (response) {
+          return JSON.parse(Buffer$2.from(response.getValue_asU8()).toString());
+        });
+
+        return function unmarshal(_x5) {
+          return _unmarshal3.apply(this, arguments);
+        };
+      }()])(component);
+    }
+    /**
      * Get transaction information in the aergo node. 
      * If transaction is in the block return result with block hash and index.
      * @param {string} txhash transaction hash
@@ -25134,7 +25174,7 @@ function () {
       return waterfall([
       /*#__PURE__*/
       function () {
-        var _marshal = _asyncToGenerator(function* (hashOrNumber) {
+        var _marshal2 = _asyncToGenerator(function* (hashOrNumber) {
           if (typeof hashOrNumber === 'undefined') {
             throw new Error('Missing argument block hash or number');
           }
@@ -25156,18 +25196,18 @@ function () {
           return singleBytes;
         });
 
-        return function marshal(_x4) {
-          return _marshal.apply(this, arguments);
+        return function marshal(_x6) {
+          return _marshal2.apply(this, arguments);
         };
       }(), this.grpcMethod(this.client.client.getBlock),
       /*#__PURE__*/
       function () {
-        var _unmarshal3 = _asyncToGenerator(function* (response) {
+        var _unmarshal4 = _asyncToGenerator(function* (response) {
           return Block.fromGrpc(response);
         });
 
-        return function unmarshal(_x5) {
-          return _unmarshal3.apply(this, arguments);
+        return function unmarshal(_x7) {
+          return _unmarshal4.apply(this, arguments);
         };
       }()])(hashOrNumber);
     }
@@ -25576,7 +25616,7 @@ function () {
       return waterfall([marshalEmpty, this.grpcMethod(this.client.client.getConsensusInfo),
       /*#__PURE__*/
       function () {
-        var _unmarshal4 = _asyncToGenerator(function* (response) {
+        var _unmarshal5 = _asyncToGenerator(function* (response) {
           var obj = response.toObject();
           var result = {
             type: obj.type,
@@ -25588,8 +25628,8 @@ function () {
           return result;
         });
 
-        return function unmarshal(_x6) {
-          return _unmarshal4.apply(this, arguments);
+        return function unmarshal(_x8) {
+          return _unmarshal5.apply(this, arguments);
         };
       }()])(null);
     }

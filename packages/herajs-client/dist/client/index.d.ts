@@ -87,8 +87,8 @@ declare class AergoClient {
      * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
      * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
      */
-    getChainIdHash(enc?: 'base58'): Promise<string>;
-    getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
+    getChainIdHash(enc: 'base58'): Promise<string>;
+    getChainIdHash(enc: '' | undefined): Promise<Uint8Array>;
     /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
@@ -99,6 +99,11 @@ declare class AergoClient {
      * @returns {Promise<object>} an object detailing the current status
      */
     getChainInfo(): Promise<ChainInfo>;
+    /**
+     * Request current status of node.
+     * @returns {Promise<any>} an object detailing the state of various node components
+     */
+    getNodeState(component?: string, timeout?: number): Promise<any>;
     /**
      * Get transaction information in the aergo node.
      * If transaction is in the block return result with block hash and index.
