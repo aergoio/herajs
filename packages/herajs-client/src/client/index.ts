@@ -15,7 +15,8 @@ import {
     EventList,
     PeersParams,
     ConsensusInfo,
-    VoteParams, Vote
+    VoteParams, Vote,
+    NodeReq
 } from '../../types/rpc_pb';
 import { fromNumber, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -166,8 +167,8 @@ class AergoClient {
      * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
      * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
      */
-    async getChainIdHash(enc?: 'base58'): Promise<string>;
-    async getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
+    async getChainIdHash(enc: 'base58'): Promise<string>;
+    async getChainIdHash(enc: '' | undefined): Promise<Uint8Array>;
     async getChainIdHash(enc: string = ''): Promise<Uint8Array | string> {
         let hash: Uint8Array;
         if (typeof this.chainIdHash === 'undefined') {
@@ -216,6 +217,27 @@ class AergoClient {
                 return ChainInfo.fromGrpc(response);
             }
         ])(null);
+    }
+
+    /**
+     * Request current status of node.
+     * @returns {Promise<any>} an object detailing the state of various node components
+     */
+    getNodeState (component?: string, timeout = 5): Promise<any> {
+        return waterfall([
+            async function marshal(component?: string): Promise<NodeReq> {
+                const params = new NodeReq();
+                params.setTimeout(fromNumber(timeout));
+                if (typeof component !== 'undefined') {
+                    params.setComponent(Buffer.from(component));
+                }
+                return params;
+            },
+            this.grpcMethod<NodeReq, SingleBytes>(this.client.client.nodeState),
+            async function unmarshal(response: SingleBytes): Promise<any> {
+                return JSON.parse(Buffer.from(response.getValue_asU8()).toString());
+            }
+        ])(component);
     }
 
     /**

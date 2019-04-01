@@ -76,6 +76,19 @@ describe('Aergo', () => {
         });
     });
 
+    describe('getNodeState()', () => {
+        it('should return node state for all components', async () => {
+            const info = await aergo.getNodeState();
+            assert.equal(info.AccountsSvc.status, 'started');
+            assert.isTrue(Object.keys(info).length > 1);
+        });
+        it('should return node state for single components', async () => {
+            const info = await aergo.getNodeState('RPCSvc');
+            assert.equal(info.RPCSvc.status, 'started');
+            assert.equal(Object.keys(info).length, 1);
+        });
+    });
+
     describe('getConsensusInfo()', () => {
         it('should return consensus information', async () => {
             const info = await aergo.getConsensusInfo();
