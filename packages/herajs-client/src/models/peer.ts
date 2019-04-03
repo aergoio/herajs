@@ -15,7 +15,7 @@ export default class Peer {
         obj.address = {
             address: obj.address.address,
             port: obj.address.port,
-            peerid: bs58.encode(grpcObject.getAddress().getPeerid_asU8()),
+            peerid: bs58.encode(Buffer.from(grpcObject.getAddress().getPeerid_asU8())),
         };
         return new Peer(<Partial<Peer>>obj);
     }

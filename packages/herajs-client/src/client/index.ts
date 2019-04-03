@@ -178,7 +178,7 @@ class AergoClient {
         }
         hash = this.chainIdHash;
         if (enc === 'base58') {
-            return bs58.encode(hash);
+            return bs58.encode(Buffer.from(hash));
         }
         return hash;
     }
@@ -471,7 +471,7 @@ class AergoClient {
         return promisify(this.client.client.getVotes, this.client.client)(params).then(
             state => state.getVotesList().map((item: Vote) => ({
                 amount: new Amount(item.getAmount_asU8()),
-                candidate: bs58.encode(item.getCandidate_asU8())
+                candidate: bs58.encode(Buffer.from(item.getCandidate_asU8()))
             }))
         );
     }

@@ -93,8 +93,7 @@ describe('Aergo.Accounts', () => {
                 to: name,
                 chainIdHash: await aergo.getChainIdHash()
             };
-            const txhash2 = await aergo.accounts.sendTransaction(testtx2);
-            console.log(txhash2);
+            await aergo.accounts.sendTransaction(testtx2);
         });
     });
 
