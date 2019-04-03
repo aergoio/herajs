@@ -134,6 +134,7 @@ class AergoClient {
      */
     setProvider(provider) {
         this.client = provider;
+        this.chainIdHash = undefined;
     }
 
     getConfig () {
@@ -583,7 +584,9 @@ class AergoClient {
                     version: obj.version,
                     functions: obj.functionsList.map(item => ({
                         name: item.name,
-                        arguments: item.argumentsList
+                        arguments: item.argumentsList,
+                        view: item.view,
+                        payable: item.payable
                     })),
                     state_variables: obj.stateVariablesList
                 };

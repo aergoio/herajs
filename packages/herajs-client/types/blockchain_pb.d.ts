@@ -670,6 +670,12 @@ export class Function extends jspb.Message {
   setArgumentsList(value: Array<FnArgument>): void;
   addArguments(value?: FnArgument, index?: number): FnArgument;
 
+  getPayable(): boolean;
+  setPayable(value: boolean): void;
+
+  getView(): boolean;
+  setView(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Function.AsObject;
   static toObject(includeInstance: boolean, msg: Function): Function.AsObject;
@@ -684,6 +690,8 @@ export namespace Function {
   export type AsObject = {
     name: string,
     argumentsList: Array<FnArgument.AsObject>,
+    payable: boolean,
+    view: boolean,
   }
 }
 

@@ -72,6 +72,30 @@ describe('Aergo.Accounts', () => {
                     assert.typeOf(txhash, 'string');
                 });
         });
+        it('should send to a name', async () => {
+            const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
+            await aergo.accounts.unlock(testAddress, 'testpass');
+            const testtx = {
+                from: testAddress,
+                to: 'aergo.name',
+                amount: '1 aergo',
+                payload: `{"Name":"v1createName","Args":["${name}"]}`,
+                type: 1,
+                chainIdHash: await aergo.getChainIdHash()
+            };
+            const txhash = await aergo.accounts.sendTransaction(testtx);
+            await longPolling(async () => {
+                return await aergo.getTransaction(txhash);
+            }, result => 'block' in result, 2000);
+
+            const testtx2 = {
+                from: testAddress,
+                to: name,
+                chainIdHash: await aergo.getChainIdHash()
+            };
+            const txhash2 = await aergo.accounts.sendTransaction(testtx2);
+            console.log(txhash2);
+        });
     });
 
     describe('signTX()', () => {

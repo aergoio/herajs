@@ -5170,7 +5170,9 @@ proto.types.Function.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     argumentsList: jspb.Message.toObjectList(msg.getArgumentsList(),
-    proto.types.FnArgument.toObject, includeInstance)
+    proto.types.FnArgument.toObject, includeInstance),
+    payable: jspb.Message.getFieldWithDefault(msg, 3, false),
+    view: jspb.Message.getFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -5216,6 +5218,14 @@ proto.types.Function.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.types.FnArgument.deserializeBinaryFromReader);
       msg.addArguments(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPayable(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setView(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5258,6 +5268,20 @@ proto.types.Function.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       proto.types.FnArgument.serializeBinaryToWriter
+    );
+  }
+  f = message.getPayable();
+  if (f) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
+  f = message.getView();
+  if (f) {
+    writer.writeBool(
+      4,
+      f
     );
   }
 };
@@ -5306,6 +5330,40 @@ proto.types.Function.prototype.addArguments = function(opt_value, opt_index) {
 
 proto.types.Function.prototype.clearArgumentsList = function() {
   this.setArgumentsList([]);
+};
+
+
+/**
+ * optional bool payable = 3;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Function.prototype.getPayable = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Function.prototype.setPayable = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional bool view = 4;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Function.prototype.getView = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Function.prototype.setView = function(value) {
+  jspb.Message.setField(this, 4, value);
 };
 
 
