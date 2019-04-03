@@ -1,3 +1,7 @@
+## 0.8.5 (April 3, 2019)
+
+- Add fields 'payable' and 'view' to getABI output
+
 ## 0.8.4 (April 1, 2019)
 
 - New API method: getNodeState()
