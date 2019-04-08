@@ -192,7 +192,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
 
     async getChainIdHashForAccount(account: Account): Promise<string> {
         // TODO: smart caching
-        return await this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58');
+        return await this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58') as string;
     }
 
     /**
