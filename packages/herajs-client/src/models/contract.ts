@@ -99,17 +99,17 @@ export class FunctionCall {
  */
 export class StateQuery {
     contractInstance: Contract;
-    storageKey: string;
+    storageKeys: string[];
 
-    constructor(contractInstance, storageKey) {
+    constructor(contractInstance, storageKeys) {
         this.contractInstance = contractInstance;
-        this.storageKey = storageKey;
+        this.storageKeys = storageKeys;
     }
 
     toGrpc() {
         const q = new GrpcStateQuery();
         q.setContractaddress(this.contractInstance.address.asBytes());
-        q.setStoragekeysList([this.storageKey]);
+        q.setStoragekeysList(this.storageKeys);
         return q;
     }
 }
@@ -229,8 +229,8 @@ class Contract {
      * @param varname 
      * @param varindex 
      */
-    queryState(key: string): StateQuery {
-        return new StateQuery(this, key);
+    queryState(...args: string[]): StateQuery {
+        return new StateQuery(this, args);
     }
 
     static encodeCode(byteArray: Buffer): string {
