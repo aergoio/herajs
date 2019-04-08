@@ -16,7 +16,7 @@ import { GetAccountTxParams } from '../datasources/types';
 export interface Events {
     'add': Transaction;
     'update': Transaction;
-    'error': Transaction;
+    'error': Error;
 }
 
 export interface TrackerEvents {
@@ -83,17 +83,23 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
     async load(): Promise<void> {
         console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
         const client = this.manager.wallet.getClient(this.transaction.data.chainId);
-        const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
-        if (typeof result.block !== 'undefined') {
-            this.transaction.data.status = Transaction.Status.Confirmed;
-            this.transaction.data.blockhash = result.block.hash;
-            this.manager.addTransaction(this.transaction);
-            this.emit('block', this.transaction);
-            if (this.listeners('receipt').length) {
-                client.getTransactionReceipt(this.transaction.data.hash).then((receipt: GetReceiptResult) => {
-                    this.emit('receipt', receipt);
-                });
+        try {
+            const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
+            if (typeof result.block !== 'undefined') {
+                this.transaction.data.status = Transaction.Status.Confirmed;
+                this.transaction.data.blockhash = result.block.hash;
+                this.manager.addTransaction(this.transaction);
+                this.emit('block', this.transaction);
+                if (this.listeners('receipt').length) {
+                    client.getTransactionReceipt(this.transaction.data.hash).then((receipt: GetReceiptResult) => {
+                        this.emit('receipt', receipt);
+                    });
+                }
+                this.cancel();
+                return;
             }
+        } catch (e) {
+            this.emit('error', e);
             this.cancel();
             return;
         }
@@ -249,8 +255,6 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
             }
         )({ account, blockno, limit });
     }
-
-    
 
     /**
      * Returns transactions stored for an account

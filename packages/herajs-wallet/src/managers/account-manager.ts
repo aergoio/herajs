@@ -2,7 +2,7 @@ import { Wallet } from '../wallet';
 import { Account, AccountSpec, AccountData, CompleteAccountSpec } from '../models/account';
 import { Transaction, TxBody } from '../models/transaction';
 import { serializeAccountSpec, HashMap } from '../utils';
-import { Amount } from '@herajs/client';
+import { Amount, Address } from '@herajs/client';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { PausableTypedEventEmitter } from '../utils';
 import { createIdentity } from '@herajs/crypto';
@@ -118,9 +118,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
 
     async getAccounts(): Promise<Account[]> {
         if (!this.loadedFromStore && this.wallet.datastore) {
-            const accounts = Array.from(await this.wallet.datastore.getIndex('accounts').getAll()) as Account[];
+            const records = Array.from(await this.wallet.datastore.getIndex('accounts').getAll());
+            const accounts = records.map(record => new Account(record.key, record.data as AccountData));
             for (const account of accounts) {
-                this.accounts.set(account.data.spec, Promise.resolve(account));
+                this.accounts.set(this.getCompleteAccountSpec(account.data.spec), Promise.resolve(account));
             }
             this.loadedFromStore = true;
             return accounts;
@@ -147,11 +148,11 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         } else {
             account = accountOrSpec as Account;
         }
-        console.log('[accountManager] track account', account.data.spec);
         this.resume();
         if (this.trackers.has(account.data.spec)) {
             return this.trackers.get(account.data.spec) as AccountTracker;
         }
+        console.log('[accountManager] track account', account.data.spec);
         const tracker = new AccountTracker(this, account);
         tracker.resume();
         this.trackers.set(account.data.spec, tracker);
@@ -189,6 +190,11 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return 1 + await client.getNonce(account.data.spec.address);
     }
 
+    async getChainIdHashForAccount(account: Account): Promise<string> {
+        // TODO: smart caching
+        return await this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58');
+    }
+
     /**
      * Calculates nonce and converts transaction body into tx ready for signing
      * @param account 
@@ -196,7 +202,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
      */
     async prepareTransaction(account: Account, tx: Partial<TxBody>): Promise<Transaction> {
         if (!tx.from) throw new Error('missing required transaction parameter `from` (address or name)');
-        if (!account.address.equal(tx.from)) throw new Error('transaction parameter `from` does not match account address');
+        if (!new Address(account.data.spec.address).equal(tx.from)) throw new Error('transaction parameter `from` does not match account address');
         if (typeof tx.to === 'undefined') throw new Error('missing required transaction parameter `to` (address, name, or explicit null)');
         if (typeof tx.amount === 'undefined') throw new Error('missing required transaction parameter amount');
         tx.amount = new Amount(tx.amount).toUnit('aer').toString();
@@ -209,14 +215,14 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             tx.nonce = await this.getNonceForAccount(account);
         }
         if (typeof tx.chainIdHash === 'undefined') {
-            tx.chainIdHash = await this.wallet.getClient().getChainIdHash();
+            tx.chainIdHash = await this.getChainIdHashForAccount(account);
         }
         return new Transaction('', {
             chainId: account.data.spec.chainId,
             from: tx.from.toString(),
             to: tx.to ? tx.to.toString() : '',
             hash: '',
-            ts: '',
+            ts: new Date().toISOString(),
             blockhash: null,
             blockno: null,
             amount: new Amount(tx.amount).toString(),

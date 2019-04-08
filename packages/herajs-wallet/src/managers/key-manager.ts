@@ -52,7 +52,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     }
 
     async getKey(account: Account): Promise<Key> {
-        const address = account.address.toString();
+        const address = account.data.spec.address;
         if (!this.keys.has(address) && this.wallet.keystore) {
             try {
                 const keyRecord = await this.wallet.keystore.getIndex('keys').get(address);
@@ -69,6 +69,11 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
         const key = await this.getKey(account);
         return key.signTransaction(transaction);
+    }
+
+    async signMessage(account: Account, message: Buffer): Promise<string> {
+        const key = await this.getKey(account);
+        return await key.signMessage(message);
     }
 
     async importKey(importSpec: ImportSpec): Promise<Key> {

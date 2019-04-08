@@ -180,7 +180,7 @@ export class Wallet extends MiddlewareConsumer {
         this.keyManager.lock();
     }
 
-    unlocked () {
+    get unlocked () {
         return this.keyManager.unlocked;
     }
 }

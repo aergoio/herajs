@@ -37,6 +37,7 @@ export function deserializeAccountSpec(serialized: string): AccountSpec {
 
 /**
  * A simple extension of the native Map using stringified objects as keys.
+ * The order of object properties matters.
  */
 export class HashMap<K, V> {
     private map: Map<string, V> = new Map();

@@ -1,7 +1,7 @@
 import { Transaction, SignedTransaction } from './transaction';
 import { Record, Data } from './record';
 //import Tx from '@herajs/client/src/models/tx';
-import { identifyFromPrivateKey, signTransaction } from '@herajs/crypto';
+import { identifyFromPrivateKey, signTransaction, signMessage } from '@herajs/crypto';
 //import { Amount } from '@herajs/client';
 
 export interface KeyData extends Data {
@@ -21,6 +21,10 @@ export class Key extends Record<KeyData> {
         signedTx.txBody.sign = signature;
         signedTx.txBody.hash = await signedTx.getHash();
         return signedTx;
+    }
+
+    async signMessage(message: Buffer) {
+        return await signMessage(message, this.keyPair);
     }
 
     get keyPair(): any {
