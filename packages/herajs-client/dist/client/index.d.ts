@@ -37,6 +37,10 @@ interface ConsensusInfoResult {
     info: object;
     bpsList: object[];
 }
+interface ServerInfoResult {
+    configMap: Map<string, Map<string, string>>;
+    statusMap: Map<string, string>;
+}
 interface Stream<T> {
     on(eventName: string, callback: ((obj: T) => void)): void;
     cancel(): void;
@@ -87,8 +91,7 @@ declare class AergoClient {
      * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
      * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
      */
-    getChainIdHash(enc: 'base58'): Promise<string>;
-    getChainIdHash(enc: '' | undefined): Promise<Uint8Array>;
+    getChainIdHash(enc?: string): Promise<Uint8Array | string>;
     /**
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
@@ -218,5 +221,9 @@ declare class AergoClient {
      * Return consensus info. The included fields can differ by consensus type.
      */
     getConsensusInfo(): Promise<ConsensusInfoResult>;
+    /**
+     * Return server info
+     */
+    getServerInfo(keys?: string[]): Promise<ServerInfoResult>;
 }
 export default AergoClient;

@@ -65,8 +65,8 @@ export declare class FunctionCall {
  */
 export declare class StateQuery {
     contractInstance: Contract;
-    storageKey: string;
-    constructor(contractInstance: any, storageKey: any);
+    storageKeys: string[];
+    constructor(contractInstance: any, storageKeys: any);
     toGrpc(): GrpcStateQuery;
 }
 /**
@@ -131,7 +131,7 @@ declare class Contract {
      * @param varname
      * @param varindex
      */
-    queryState(key: string): StateQuery;
+    queryState(...args: string[]): StateQuery;
     static encodeCode(byteArray: Buffer): string;
     static decodeCode(bs58checkCode: string): Buffer;
 }
