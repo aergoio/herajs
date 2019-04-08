@@ -72,6 +72,15 @@ for (const key in storages) {
             assert.equal(results[0].data.foo, 4567);
             await storage.close();
         });
+        it('doesnt store private key', async () => {
+            const wallet = new Wallet();
+            wallet.useStorage(cls);
+            await wallet.setupAndUnlock('password');
+            const account = await wallet.accountManager.createAccount();
+            const key = await wallet.keyManager.getKey(account);
+            assert.isNull(key.data.privateKey);
+            await wallet.close();
+        });
         it('works with Wallet', async () => {
             const wallet = new Wallet();
             wallet.useStorage(cls);

@@ -1,12 +1,13 @@
 import { Transaction, SignedTransaction } from './transaction';
 import { Record, Data } from './record';
 //import Tx from '@herajs/client/src/models/tx';
-import { identifyFromPrivateKey, signTransaction, signMessage } from '@herajs/crypto';
+import { identifyFromPrivateKey, decryptPrivateKey, signTransaction, signMessage } from '@herajs/crypto';
 //import { Amount } from '@herajs/client';
 
 export interface KeyData extends Data {
     address: string;
-    privateKey: number[];
+    privateKey: number[] | null;
+    privateKeyEncrypted: number[] | null;
 }
 
 export class Key extends Record<KeyData> {
@@ -27,8 +28,16 @@ export class Key extends Record<KeyData> {
         return await signMessage(message, this.keyPair, enc);
     }
 
+    unlock(passphrase?: string) {
+        if (this.data.privateKey) return; // already unlocked
+        if (!passphrase) throw new Error('unlock wallet before using key');
+        if (!this.data.privateKeyEncrypted) throw new Error('missing encrypted private key');
+        this.data.privateKey = Array.from(decryptPrivateKey(Uint8Array.from(this.data.privateKeyEncrypted), passphrase));
+    }
+
     get keyPair(): any {
         if (!this._keyPair) {
+            if (!this.data.privateKey) throw new Error('missing private key, did you forget to unlock?');
             const identity = identifyFromPrivateKey(Uint8Array.from(this.data.privateKey));
             this._keyPair = identity.keyPair;
         }

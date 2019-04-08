@@ -41,13 +41,20 @@ export default class KeyManager extends TypedEventEmitter<Events> {
 
     addKey(account: Account, privateKey: Uint8Array | number[]): Key {
         const address = account.data.spec.address;
-        // TODO: encryption
+        
         const key = new Key(address, {
             privateKey: Array.from(privateKey),
-            address
+            address,
+            privateKeyEncrypted: null
         });
         this.keys.set(address, key);
-        this.wallet.keystore && this.wallet.keystore.getIndex('keys').put(key);
+        if (this.wallet.keystore) {
+            if (!this.masterPassphrase) throw new Error('unlock wallet before adding key');
+            const privateKeyEncrypted = encryptPrivateKey(Uint8Array.from(privateKey), this.masterPassphrase);
+            key.data.privateKeyEncrypted = Array.from(privateKeyEncrypted);
+            key.data.privateKey = null;
+            this.wallet.keystore.getIndex('keys').put(key);
+        }
         return key;
     }
 
@@ -68,11 +75,13 @@ export default class KeyManager extends TypedEventEmitter<Events> {
 
     async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
         const key = await this.getKey(account);
+        key.unlock(this.masterPassphrase);
         return key.signTransaction(transaction);
     }
 
     async signMessage(account: Account, message: Buffer, enc = 'hex'): Promise<string> {
         const key = await this.getKey(account);
+        key.unlock(this.masterPassphrase);
         return await key.signMessage(message, enc);
     }
 

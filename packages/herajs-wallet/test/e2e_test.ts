@@ -15,7 +15,7 @@ import { resolve } from 'path';
 const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.txt')).toString().trim();
 import contractAbi from './fixtures/contract.abi.json';
 import { SignedTransaction } from '../src/models/transaction';
-
+import MemoryStorage from '../src/storages/memory';
 
 describe('Wallet scenarios', async () => {
     const ids = [createIdentity(), createIdentity()];
@@ -63,18 +63,60 @@ describe('Wallet scenarios', async () => {
                 to: account.address,
                 amount: '1 aergo'
             };
-            const txTracker = await wallet.sendTransaction(account, tx);
-            console.log(txTracker.transaction.hash);
-            txTracker.on('block', (/*transaction*/) => {
-                // console.log('confirmed in block', transaction.data.blockhash, transaction);
-                resolve();
-            });
-            txTracker.on('error', (error) => {
-                reject(error);
-            });
-            txTracker.on('timeout', (error) => {
-                reject(error);
-            });
+            let txTracker;
+            try {
+                txTracker = await wallet.sendTransaction(account, tx);
+            } catch (e) {
+                return reject(e);
+            }
+            txTracker.on('block', resolve);
+            txTracker.on('error', reject);
+            txTracker.on('timeout', reject);
+        });
+    });
+
+    it('sends tx (loads key, uses keystore, requires unlock, sends tx)', async () => {
+        // Config
+        const wallet = new Wallet();
+        wallet.useStorage(MemoryStorage);
+        wallet.useChain({
+            chainId: 'testnet.localhost',
+            nodeUrl: '127.0.0.1:7845'
+        });
+
+        // Set up account and key
+        await wallet.setupAndUnlock('password');
+
+        await wallet.lock();
+        await assert.isRejected(
+            wallet.accountManager.createAccount(),
+            Error, 'unlock wallet before adding key'
+        );
+        await wallet.unlock('password');
+        const account = await wallet.accountManager.createAccount();
+        await wallet.lock();
+
+        return new Promise(async (resolve, reject) => {
+            // Build tx
+            const tx = {
+                from: account.address,
+                to: account.address,
+                amount: '1 aergo'
+            };
+            let txTracker;
+            try {
+                await assert.isRejected(
+                    wallet.sendTransaction(account, tx),
+                    Error, 'unlock wallet before using key'
+                );
+                await wallet.unlock('password');
+                txTracker = await wallet.sendTransaction(account, tx);
+            } catch (e) {
+                return reject(e);
+            }
+            txTracker.on('block', resolve);
+            txTracker.on('error', reject);
+            txTracker.on('timeout', reject);
         });
     });
 

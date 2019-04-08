@@ -152,7 +152,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         if (this.trackers.has(account.data.spec)) {
             return this.trackers.get(account.data.spec) as AccountTracker;
         }
-        console.log('[accountManager] track account', account.data.spec);
+        //console.log('[accountManager] track account', account.data.spec);
         const tracker = new AccountTracker(this, account);
         tracker.resume();
         this.trackers.set(account.data.spec, tracker);
@@ -185,13 +185,12 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     }
 
     async getNonceForAccount(account: Account): Promise<number> {
-        // TODO: smart caching
+        // TODO: smart caching of last used nonce
         const client = this.wallet.getClient(account.data.spec.chainId);
         return 1 + await client.getNonce(account.data.spec.address);
     }
 
     async getChainIdHashForAccount(account: Account): Promise<string> {
-        // TODO: smart caching
         return await this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58') as string;
     }
 

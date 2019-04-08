@@ -81,7 +81,7 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
      * Emits events according to changed status.
      */
     async load(): Promise<void> {
-        console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
+        //console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
         const client = this.manager.wallet.getClient(this.transaction.data.chainId);
         try {
             const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
@@ -268,7 +268,6 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
         } else {
             account = accountOrSpec as Account;
         }
-        console.log('txManager.getAccountTransactions', account);
         const index = this.wallet.datastore.getIndex('transactions');
         const txsFrom = Array.from(await index.getAll(account.address.toString(), 'from')) as Transaction[];
         const txsTo = Array.from(await index.getAll(account.address.toString(), 'to')) as Transaction[];
