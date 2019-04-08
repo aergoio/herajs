@@ -440,7 +440,8 @@ function (_Record) {
     key: "signMessage",
     value: function () {
       var _signMessage2 = _asyncToGenerator(function* (message) {
-        return yield signMessage(message, this.keyPair);
+        var enc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'hex';
+        return yield signMessage(message, this.keyPair, enc);
       });
 
       function signMessage$1(_x2) {
@@ -678,8 +679,9 @@ function (_TypedEventEmitter) {
     key: "signMessage",
     value: function () {
       var _signMessage = _asyncToGenerator(function* (account, message) {
+        var enc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'hex';
         var key = yield this.getKey(account);
-        return yield key.signMessage(message);
+        return yield key.signMessage(message, enc);
       });
 
       function signMessage(_x4, _x5) {

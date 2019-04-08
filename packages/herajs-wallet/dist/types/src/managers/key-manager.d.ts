@@ -28,7 +28,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     addKey(account: Account, privateKey: Uint8Array | number[]): Key;
     getKey(account: Account): Promise<Key>;
     signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction>;
-    signMessage(account: Account, message: Buffer): Promise<string>;
+    signMessage(account: Account, message: Buffer, enc?: string): Promise<string>;
     importKey(importSpec: ImportSpec): Promise<Key>;
     readonly unlocked: boolean;
     unlock(passphrase: string): Promise<void>;
