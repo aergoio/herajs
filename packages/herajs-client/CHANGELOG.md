@@ -1,3 +1,8 @@
+## 0.8.6 (April 8, 2019)
+
+- New API method: getServerInfo()
+- Change queryState to allow querying for multiple state keys at once
+
 ## 0.8.5 (April 3, 2019)
 
 - Add fields 'payable' and 'view' to getABI output
