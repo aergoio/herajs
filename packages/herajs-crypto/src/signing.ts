@@ -7,7 +7,7 @@ import { hashTransaction } from './hashing';
  * @param sig 
  */
 const encodeSignature = (sig: ec.Signature): string => {
-    return Buffer.from(sig.toDER()).toString('base64');
+    return Buffer.from(sig.toDER()).toString('hex');
 };
 
 /**
@@ -37,7 +37,7 @@ const signTransaction = async (tx: any, key: ec.KeyPair): Promise<string> => {
  */
 const verifySignature = async (msg: Buffer, key: ec.KeyPair, signature: string): Promise<boolean> => {
     try {
-        const sign = Buffer.from(signature, 'base64');
+        const sign = Buffer.from(signature, 'hex');
         // @ts-ignore: the typedef is wrong, a Buffer is an allowed input
         return key.verify(msg, sign);
     } catch (e) {
