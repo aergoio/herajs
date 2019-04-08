@@ -8,6 +8,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
     "build": "npm run lint && npm run build:types && npm run build:js",
+    "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
     "test:ts": "run(){ mocha -r babel-register-ts ${1-'test/*.ts'}; }; run",
     "test": "npm run lint & npm run type-check && npm run test:ts"
