@@ -23,8 +23,8 @@ export class Key extends Record<KeyData> {
         return signedTx;
     }
 
-    async signMessage(message: Buffer) {
-        return await signMessage(message, this.keyPair);
+    async signMessage(message: Buffer, enc = 'hex') {
+        return await signMessage(message, this.keyPair, enc);
     }
 
     get keyPair(): any {

@@ -71,9 +71,9 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         return key.signTransaction(transaction);
     }
 
-    async signMessage(account: Account, message: Buffer): Promise<string> {
+    async signMessage(account: Account, message: Buffer, enc = 'hex'): Promise<string> {
         const key = await this.getKey(account);
-        return await key.signMessage(message);
+        return await key.signMessage(message, enc);
     }
 
     async importKey(importSpec: ImportSpec): Promise<Key> {
