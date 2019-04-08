@@ -265,57 +265,34 @@ function publicKeyFromAddress(address) {
   return ecdsa.keyFromPublic(pubkey);
 }
 
-var _keyAndNonceFromPassword =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(function* (password) {
-    // Make a key from double hashing the password
-    var hash = ecdsa.hash();
-    hash.update(password);
-    var addr = hash.digest();
-    var rehash = ecdsa.hash();
-    rehash.update(password);
-    rehash.update(addr);
-    var key = Buffer.from(rehash.digest());
-    var nonce = Buffer.from(addr.slice(4, 16));
-    return [key, nonce];
-  });
+var _keyAndNonceFromPassword = function _keyAndNonceFromPassword(password) {
+  // Make a key from double hashing the password
+  var hash = ecdsa.hash();
+  hash.update(password);
+  var addr = hash.digest();
+  var rehash = ecdsa.hash();
+  rehash.update(password);
+  rehash.update(addr);
+  var key = Buffer.from(rehash.digest());
+  var nonce = Buffer.from(addr.slice(4, 16));
+  return [key, nonce];
+};
 
-  return function _keyAndNonceFromPassword(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
+function decryptPrivateKey(encryptedBytes, password) {
+  var _keyAndNonceFromPassw = _keyAndNonceFromPassword(password),
+      _keyAndNonceFromPassw2 = _slicedToArray(_keyAndNonceFromPassw, 2),
+      key = _keyAndNonceFromPassw2[0],
+      nonce = _keyAndNonceFromPassw2[1];
 
-function decryptPrivateKey(_x2, _x3) {
-  return _decryptPrivateKey.apply(this, arguments);
+  return AES_GCM.decrypt(Uint8Array.from(encryptedBytes), key, nonce);
 }
+function encryptPrivateKey(clearBytes, password) {
+  var _keyAndNonceFromPassw3 = _keyAndNonceFromPassword(password),
+      _keyAndNonceFromPassw4 = _slicedToArray(_keyAndNonceFromPassw3, 2),
+      key = _keyAndNonceFromPassw4[0],
+      nonce = _keyAndNonceFromPassw4[1];
 
-function _decryptPrivateKey() {
-  _decryptPrivateKey = _asyncToGenerator(function* (encryptedBytes, password) {
-    var _ref2 = yield _keyAndNonceFromPassword(password),
-        _ref3 = _slicedToArray(_ref2, 2),
-        key = _ref3[0],
-        nonce = _ref3[1];
-
-    return AES_GCM.decrypt(Uint8Array.from(encryptedBytes), key, nonce);
-  });
-  return _decryptPrivateKey.apply(this, arguments);
-}
-
-function encryptPrivateKey(_x4, _x5) {
-  return _encryptPrivateKey.apply(this, arguments);
-}
-
-function _encryptPrivateKey() {
-  _encryptPrivateKey = _asyncToGenerator(function* (clearBytes, password) {
-    var _ref4 = yield _keyAndNonceFromPassword(password),
-        _ref5 = _slicedToArray(_ref4, 2),
-        key = _ref5[0],
-        nonce = _ref5[1];
-
-    return AES_GCM.encrypt(Uint8Array.from(clearBytes), key, nonce);
-  });
-  return _encryptPrivateKey.apply(this, arguments);
+  return AES_GCM.encrypt(Uint8Array.from(clearBytes), key, nonce);
 }
 
 var ecdsa$1 = new ec('secp256k1');

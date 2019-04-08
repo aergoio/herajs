@@ -34,6 +34,6 @@ export declare function identifyFromPrivateKey(privKeyBytes: Uint8Array): Identi
  * @return {string} base58check encoded address
  */
 export declare function publicKeyFromAddress(address: string): ec.KeyPair;
-export declare function decryptPrivateKey(encryptedBytes: Uint8Array, password: string): Promise<Uint8Array>;
-export declare function encryptPrivateKey(clearBytes: Uint8Array, password: string): Promise<Uint8Array>;
+export declare function decryptPrivateKey(encryptedBytes: Uint8Array, password: string): Uint8Array;
+export declare function encryptPrivateKey(clearBytes: Uint8Array, password: string): Uint8Array;
 export {};
