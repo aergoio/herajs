@@ -69,7 +69,7 @@ export function publicKeyFromAddress(address: string): ec.KeyPair {
     return ecdsa.keyFromPublic(pubkey);
 }
 
-const _keyAndNonceFromPassword = async (password: string): Promise<[Buffer, Buffer]> => {
+const _keyAndNonceFromPassword = (password: string): [Buffer, Buffer] => {
     // Make a key from double hashing the password
     const hash = ecdsa.hash();
     hash.update(password);
@@ -82,13 +82,13 @@ const _keyAndNonceFromPassword = async (password: string): Promise<[Buffer, Buff
     return [key, nonce];
 };
 
-export async function decryptPrivateKey(encryptedBytes: Uint8Array, password: string): Promise<Uint8Array> {
-    const [key, nonce] = await _keyAndNonceFromPassword(password);
+export function decryptPrivateKey(encryptedBytes: Uint8Array, password: string): Uint8Array {
+    const [key, nonce] = _keyAndNonceFromPassword(password);
     return AES_GCM.decrypt(Uint8Array.from(encryptedBytes), key, nonce);
 }
 
-export async function encryptPrivateKey(clearBytes: Uint8Array, password: string): Promise<Uint8Array> {
-    const [key, nonce] = await _keyAndNonceFromPassword(password);
+export function encryptPrivateKey(clearBytes: Uint8Array, password: string): Uint8Array {
+    const [key, nonce] = _keyAndNonceFromPassword(password);
     return AES_GCM.encrypt(Uint8Array.from(clearBytes), key, nonce);
 }
 
