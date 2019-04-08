@@ -15,6 +15,7 @@ import {
     EventList,
     PeersParams,
     ConsensusInfo,
+    ServerInfo, KeyParams,
     VoteParams, Vote,
     NodeReq
 } from '../../types/rpc_pb';
@@ -36,6 +37,7 @@ import { TransactionError } from '../errors';
 import { Buffer } from 'buffer';
 
 import bs58 from 'bs58';
+import { stringToArrayBuffer } from '@improbable-eng/grpc-web/dist/typings/transports/http/xhr';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -60,7 +62,7 @@ interface GetTxResult {
         idx: number;
     }
     tx: Tx
-};
+}
 
 interface GetReceiptResult {
     contractaddress: Address;
@@ -70,7 +72,7 @@ interface GetReceiptResult {
     cumulativefee: Amount;
     blockno: number;
     blockhash: string;
-};
+}
 
 interface NameInfoResult {
     name: string;
@@ -82,6 +84,11 @@ interface ConsensusInfoResult {
     type: string;
     info: object;
     bpsList: object[];
+}
+
+interface ServerInfoResult {
+    configMap: Map<string, Map<string, string>>;
+    statusMap: Map<string, string>;
 }
 
 
@@ -168,9 +175,9 @@ class AergoClient {
      * @param enc set to 'base58' to retrieve the hash encoded in base58. Otherwise returns a Uint8Array.
      * @returns {Promise<Uint8Array | string>} Uint8Array by default, base58 encoded string if enc = 'base58'.
      */
-    async getChainIdHash(enc: 'base58'): Promise<string>;
-    async getChainIdHash(enc: '' | undefined): Promise<Uint8Array>;
-    async getChainIdHash(enc: string = ''): Promise<Uint8Array | string> {
+    //async getChainIdHash(enc?: 'base58'): Promise<string>;
+    //async getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
+    async getChainIdHash(enc?: string): Promise<Uint8Array | string> {
         let hash: Uint8Array;
         if (typeof this.chainIdHash === 'undefined') {
             // Fetch blockchain data to set chainIdHash
@@ -537,16 +544,26 @@ class AergoClient {
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: StateQueryProof) => {
-                const varProof = grpcObject.getVarproofsList()[0];
-                if (varProof.getInclusion() === false) {
-                    const addr = new Address(query.getContractaddress_asU8());
-                    throw Error(`queried variable ${query.getStoragekeysList()[0]} does not exists in state at address ${addr.toString()}`);
+                const list = grpcObject.getVarproofsList();
+                if (list.length === 0) return null;
+                if (list.length === 1) {
+                    const varProof = list[0];
+                    if (varProof.getInclusion() === false) {
+                        const addr = new Address(query.getContractaddress_asU8());
+                        throw Error(`queried variable ${query.getStoragekeysList()[0]} does not exist in state at address ${addr.toString()}`);
+                    }
+                    const value = varProof.getValue_asU8();
+                    if (value.length > 0) {
+                        return JSON.parse(Buffer.from(value).toString());
+                    }
                 }
-                const value = varProof.getValue_asU8();
-                if (value.length > 0) {
-                    return JSON.parse(Buffer.from(varProof.getValue_asU8()).toString());
-                }
-                return null;
+                return list.map(varProof => {
+                    const value = varProof.getValue_asU8();
+                    if (value.length > 0) {
+                        return JSON.parse(Buffer.from(value).toString());
+                    }
+                    return void 0;
+                });
             }
         );
     }
@@ -644,6 +661,35 @@ class AergoClient {
                 return result;
             }
         ])(null);
+    }
+
+    /**
+     * Return server info
+     */
+    getServerInfo (keys?: string[]): Promise<ServerInfoResult> {
+        return waterfall([
+            async function marshal(keys?: string[]): Promise<KeyParams> {
+                const params = new KeyParams();
+                if (typeof keys !== 'undefined') {
+                    params.setKeyList(keys);
+                }
+                return params;
+            },
+            this.grpcMethod<KeyParams, ServerInfo>(this.client.client.getServerInfo),
+            async function unmarshal(response: ServerInfo): Promise<ServerInfoResult> {
+                const obj = response.toObject();
+                const result: ServerInfoResult = {
+                    configMap: new Map<string, Map<string, string>>(),
+                    statusMap: new Map<string, string>(obj.statusMap)
+                };
+                const configMap = new Map(obj.configMap);
+                for (const [key, item] of configMap) {
+                    result.configMap.set(key, new Map(item.propsMap));
+                }
+                return result;
+                
+            }
+        ])(keys);
     }
 }
 

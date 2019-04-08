@@ -76,6 +76,15 @@ describe('Aergo', () => {
         });
     });
 
+    describe('getServerInfo()', () => {
+        it('should return server information', async () => {
+            const info = await aergo.getServerInfo();
+            assert.equal(info.configMap.get('base').get('personal'), 'true');
+            assert.equal(info.configMap.get('account').get('unlocktimeout'), '60');
+            assert.equal(info.statusMap.get('addr'), '127.0.0.1');
+        });
+    });
+
     describe('getNodeState()', () => {
         it('should return node state for all components', async () => {
             const info = await aergo.getNodeState();

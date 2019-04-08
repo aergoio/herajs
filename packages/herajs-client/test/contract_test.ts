@@ -52,6 +52,10 @@ describe('Contracts', () => {
                 functions: abi.functions.map(func => ({
                     name: func.name,
                     arguments: func.arguments,
+                })),
+                state_variables: abi.state_variables.map(variable => ({
+                    name: variable.name,
+                    type: variable.type,
                 }))
             }
             assert.deepEqual(abiFiltered, contractAbi);
