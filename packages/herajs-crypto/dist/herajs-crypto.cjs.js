@@ -391,7 +391,7 @@ function _hashTransaction() {
  */
 
 var encodeSignature = function encodeSignature(sig) {
-  return Buffer.from(sig.toDER()).toString('base64');
+  return Buffer.from(sig.toDER()).toString('hex');
 };
 /**
  * Sign transaction with key.
@@ -442,7 +442,7 @@ var verifySignature =
 function () {
   var _ref3 = _asyncToGenerator(function* (msg, key, signature) {
     try {
-      var sign = Buffer.from(signature, 'base64'); // @ts-ignore: the typedef is wrong, a Buffer is an allowed input
+      var sign = Buffer.from(signature, 'hex'); // @ts-ignore: the typedef is wrong, a Buffer is an allowed input
 
       return key.verify(msg, sign);
     } catch (e) {
