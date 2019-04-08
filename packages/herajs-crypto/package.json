@@ -12,6 +12,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
     "build": "npm run lint && npm run build:types && npm run build:js",
+    "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
     "test": "npm run lint && npm run type-check && mocha -r babel-register-ts test/*.ts"
   },
