@@ -121,6 +121,6 @@ describe('message signing', () => {
         const msg = Buffer.from('hello');
         const signature = '30450220624ba49c48add697b8ce76d09111fa9f5f5a7c182626449b35259031f292470f022100ab8d1059d9addf281cc7b10cfe95cbe6b9244f418a46fd130796836e8ea35c25';
         const pubkey = publicKeyFromAddress(address);
-        assert.isTrue(await verifySignature(msg, pubkey, signature));
+        assert.isTrue(await verifySignature(msg, pubkey, signature, 'hex'));
     });
 });
