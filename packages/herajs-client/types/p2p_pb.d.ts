@@ -162,6 +162,9 @@ export class Status extends jspb.Message {
   getChainid_asB64(): string;
   setChainid(value: Uint8Array | string): void;
 
+  getNoexpose(): boolean;
+  setNoexpose(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Status.AsObject;
   static toObject(includeInstance: boolean, msg: Status): Status.AsObject;
@@ -178,6 +181,7 @@ export namespace Status {
     bestblockhash: Uint8Array | string,
     bestheight: number,
     chainid: Uint8Array | string,
+    noexpose: boolean,
   }
 }
 

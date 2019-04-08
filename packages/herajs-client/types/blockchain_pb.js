@@ -5415,7 +5415,8 @@ proto.types.StateVar.prototype.toObject = function(opt_includeInstance) {
 proto.types.StateVar.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 2, "")
+    type: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    len: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -5460,6 +5461,10 @@ proto.types.StateVar.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setType(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setLen(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5503,6 +5508,13 @@ proto.types.StateVar.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getLen();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -5533,6 +5545,21 @@ proto.types.StateVar.prototype.getType = function() {
 /** @param {string} value */
 proto.types.StateVar.prototype.setType = function(value) {
   jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional int32 len = 3;
+ * @return {number}
+ */
+proto.types.StateVar.prototype.getLen = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.types.StateVar.prototype.setLen = function(value) {
+  jspb.Message.setField(this, 3, value);
 };
 
 

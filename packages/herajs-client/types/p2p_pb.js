@@ -1116,7 +1116,8 @@ proto.types.Status.toObject = function(includeInstance, msg) {
     sender: (f = msg.getSender()) && node_pb.PeerAddress.toObject(includeInstance, f),
     bestblockhash: msg.getBestblockhash_asB64(),
     bestheight: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    chainid: msg.getChainid_asB64()
+    chainid: msg.getChainid_asB64(),
+    noexpose: jspb.Message.getFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -1169,6 +1170,10 @@ proto.types.Status.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setChainid(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setNoexpose(value);
       break;
     default:
       reader.skipField();
@@ -1225,6 +1230,13 @@ proto.types.Status.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       4,
+      f
+    );
+  }
+  f = message.getNoexpose();
+  if (f) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -1351,6 +1363,23 @@ proto.types.Status.prototype.getChainid_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.Status.prototype.setChainid = function(value) {
   jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * optional bool noExpose = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Status.prototype.getNoexpose = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Status.prototype.setNoexpose = function(value) {
+  jspb.Message.setField(this, 5, value);
 };
 
 

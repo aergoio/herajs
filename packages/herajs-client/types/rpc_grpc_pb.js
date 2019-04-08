@@ -262,6 +262,17 @@ function deserialize_types_ImportFormat(buffer_arg) {
   return rpc_pb.ImportFormat.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_KeyParams(arg) {
+  if (!(arg instanceof rpc_pb.KeyParams)) {
+    throw new Error('Expected argument of type types.KeyParams');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_KeyParams(buffer_arg) {
+  return rpc_pb.KeyParams.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_ListParams(arg) {
   if (!(arg instanceof rpc_pb.ListParams)) {
     throw new Error('Expected argument of type types.ListParams');
@@ -381,6 +392,17 @@ function serialize_types_Receipt(arg) {
 
 function deserialize_types_Receipt(buffer_arg) {
   return blockchain_pb.Receipt.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_ServerInfo(arg) {
+  if (!(arg instanceof rpc_pb.ServerInfo)) {
+    throw new Error('Expected argument of type types.ServerInfo');
+  }
+  return new Buffer(arg.serializeBinary());
+}
+
+function deserialize_types_ServerInfo(buffer_arg) {
+  return rpc_pb.ServerInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_SingleBytes(arg) {
@@ -940,6 +962,18 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_FilterInfo,
     responseSerialize: serialize_types_EventList,
     responseDeserialize: deserialize_types_EventList,
+  },
+  // Returns configs and statuses of server
+  getServerInfo: {
+    path: '/types.AergoRPCService/GetServerInfo',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.KeyParams,
+    responseType: rpc_pb.ServerInfo,
+    requestSerialize: serialize_types_KeyParams,
+    requestDeserialize: deserialize_types_KeyParams,
+    responseSerialize: serialize_types_ServerInfo,
+    responseDeserialize: deserialize_types_ServerInfo,
   },
   // Returns status of consensus and bps
   getConsensusInfo: {

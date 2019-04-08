@@ -972,6 +972,69 @@ export namespace PeersParams {
   }
 }
 
+export class KeyParams extends jspb.Message {
+  clearKeyList(): void;
+  getKeyList(): Array<string>;
+  setKeyList(value: Array<string>): void;
+  addKey(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): KeyParams.AsObject;
+  static toObject(includeInstance: boolean, msg: KeyParams): KeyParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: KeyParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): KeyParams;
+  static deserializeBinaryFromReader(message: KeyParams, reader: jspb.BinaryReader): KeyParams;
+}
+
+export namespace KeyParams {
+  export type AsObject = {
+    keyList: Array<string>,
+  }
+}
+
+export class ServerInfo extends jspb.Message {
+  getStatusMap(): jspb.Map<string, string>;
+  clearStatusMap(): void;
+  getConfigMap(): jspb.Map<string, ConfigItem>;
+  clearConfigMap(): void;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ServerInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ServerInfo): ServerInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ServerInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ServerInfo;
+  static deserializeBinaryFromReader(message: ServerInfo, reader: jspb.BinaryReader): ServerInfo;
+}
+
+export namespace ServerInfo {
+  export type AsObject = {
+    statusMap: Array<[string, string]>,
+    configMap: Array<[string, ConfigItem.AsObject]>,
+  }
+}
+
+export class ConfigItem extends jspb.Message {
+  getPropsMap(): jspb.Map<string, string>;
+  clearPropsMap(): void;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ConfigItem.AsObject;
+  static toObject(includeInstance: boolean, msg: ConfigItem): ConfigItem.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ConfigItem, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ConfigItem;
+  static deserializeBinaryFromReader(message: ConfigItem, reader: jspb.BinaryReader): ConfigItem;
+}
+
+export namespace ConfigItem {
+  export type AsObject = {
+    propsMap: Array<[string, string]>,
+  }
+}
+
 export class EventList extends jspb.Message {
   clearEventsList(): void;
   getEventsList(): Array<blockchain_pb.Event>;

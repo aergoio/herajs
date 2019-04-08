@@ -337,6 +337,15 @@ AergoRPCService.ListEvents = {
   responseType: rpc_pb.EventList
 };
 
+AergoRPCService.GetServerInfo = {
+  methodName: "GetServerInfo",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.KeyParams,
+  responseType: rpc_pb.ServerInfo
+};
+
 AergoRPCService.GetConsensusInfo = {
   methodName: "GetConsensusInfo",
   service: AergoRPCService,
@@ -1467,6 +1476,37 @@ AergoRPCServiceClient.prototype.listEvents = function listEvents(requestMessage,
     callback = arguments[1];
   }
   var client = grpc.unary(AergoRPCService.ListEvents, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getServerInfo = function getServerInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.GetServerInfo, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

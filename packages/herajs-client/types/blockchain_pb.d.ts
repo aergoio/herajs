@@ -702,6 +702,9 @@ export class StateVar extends jspb.Message {
   getType(): string;
   setType(value: string): void;
 
+  getLen(): number;
+  setLen(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StateVar.AsObject;
   static toObject(includeInstance: boolean, msg: StateVar): StateVar.AsObject;
@@ -716,6 +719,7 @@ export namespace StateVar {
   export type AsObject = {
     name: string,
     type: string,
+    len: number,
   }
 }
 
