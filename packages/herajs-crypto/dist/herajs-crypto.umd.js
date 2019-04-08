@@ -389,7 +389,8 @@
    */
 
   var encodeSignature = function encodeSignature(sig) {
-    return Buffer.from(sig.toDER()).toString('hex');
+    var enc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'base64';
+    return Buffer.from(sig.toDER()).toString(enc);
   };
   /**
    * Sign transaction with key.
@@ -402,8 +403,9 @@
   /*#__PURE__*/
   function () {
     var _ref = _asyncToGenerator(function* (msgHash, key) {
+      var enc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'base64';
       var sig = key.sign(msgHash);
-      return encodeSignature(sig);
+      return encodeSignature(sig, enc);
     });
 
     return function signMessage(_x, _x2) {
@@ -421,8 +423,9 @@
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (tx, key) {
+      var enc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'base64';
       var msgHash = yield hashTransaction(tx, 'bytes', false);
-      return signMessage(msgHash, key);
+      return signMessage(msgHash, key, enc);
     });
 
     return function signTransaction(_x3, _x4) {
@@ -439,8 +442,10 @@
   /*#__PURE__*/
   function () {
     var _ref3 = _asyncToGenerator(function* (msg, key, signature) {
+      var enc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'base64';
+
       try {
-        var sign = Buffer.from(signature, 'hex'); // @ts-ignore: the typedef is wrong, a Buffer is an allowed input
+        var sign = Buffer.from(signature, enc); // @ts-ignore: the typedef is wrong, a Buffer is an allowed input
 
         return key.verify(msg, sign);
       } catch (e) {
