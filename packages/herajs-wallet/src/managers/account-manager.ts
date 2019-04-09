@@ -105,6 +105,26 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return accountPromise;
     }
 
+    async removeAccount(accountSpec: AccountSpec): Promise<void> {
+        const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
+        if (this.accounts.has(completeAccountSpec)) {
+            // Remove account from local cache
+            this.accounts.delete(completeAccountSpec);
+        }
+        if (this.wallet.datastore) {
+            // Remove account from store
+            const index = this.wallet.datastore.getIndex('accounts');
+            await index.delete(serializeAccountSpec(completeAccountSpec));
+            if (this.wallet.keystore) {
+                // Also remove key if there's no other account with this address
+                const remainingAccounts = Array.from(await index.getAll(completeAccountSpec.address.toString(), 'spec.address'));
+                if (remainingAccounts.length === 0) {
+                    await this.wallet.keyManager.removeKey(completeAccountSpec.address.toString());
+                }
+            }
+        }
+    }
+
     async createAccount(chainId?: string): Promise<Account> {
         const identity = createIdentity();
         const address = identity.address;

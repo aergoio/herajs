@@ -83,7 +83,7 @@ for (const key in storages) {
             const storage = new cls('test-4', 1);
             await storage.open();
             const records: TestDeepRecord[] = [
-                { key: 'my-key', data: { foo: { bar: '1234' } } },
+                { key: 'My-key', data: { foo: { bar: '1234' } } }, // uppercase to test sorting
                 { key: 'your-key', data: { foo: { bar: '2345' } } },
                 { key: 'our-key', data: { foo: { bar: '1234' } } }
             ];
@@ -92,7 +92,7 @@ for (const key in storages) {
             }
             const results = Array.from(await storage.getIndex('records').getAll('1234', 'foo.bar')) as TestDeepRecord[];
             assert.equal(results.length, 2);
-            assert.equal(results[0].key, 'my-key');
+            assert.equal(results[0].key, 'My-key');
             assert.equal(results[0].data.foo.bar, '1234');
             assert.equal(results[1].key, 'our-key');
             assert.equal(results[1].data.foo.bar, '1234');

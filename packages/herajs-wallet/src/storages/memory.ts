@@ -22,7 +22,7 @@ class MemoryIndex extends Index {
         let entries = Array.from(this.data.entries()).sort((a, b) => a[0].localeCompare(b[0]));
         if (indexName && indexValue) {
             entries = entries.filter(
-                ([_, record]) => propPath(record.data, indexName) === indexValue
+                ([, record]) => propPath(record.data, indexName) === indexValue
             );
         }
         return entries.map(entry => entry[1])[Symbol.iterator]();
@@ -39,6 +39,10 @@ class MemoryIndex extends Index {
     }
 }
 
+/**
+ * MemoryStorage is a storage interface compatabile with other LevelDB-like storages.
+ * It is mostly used for testing. It is not very efficient.
+ */
 export default class MemoryStorage extends Storage {
     name: string;
     version: number;

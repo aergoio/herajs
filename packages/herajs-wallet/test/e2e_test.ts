@@ -120,6 +120,41 @@ describe('Wallet scenarios', async () => {
         });
     });
 
+    it('adds account and keys and removes them again', async () => {
+        // Config
+        const wallet = new Wallet();
+        wallet.useStorage(MemoryStorage);
+        wallet.useChain({
+            chainId: 'testnet1',
+            nodeUrl: '127.0.0.1:7845'
+        });
+        wallet.useChain({
+            chainId: 'testnet2',
+            nodeUrl: '127.0.0.1:7845'
+        });
+        await wallet.setupAndUnlock('password');
+        // Add 2 different accounts using same address/key
+        const account1 = await wallet.accountManager.createAccount();
+        const account2 = await wallet.accountManager.addAccount({
+            address: account1.address,
+            chainId: 'testnet2'
+        });
+        assert.equal(account1.data.spec.chainId, 'testnet1');
+        assert.equal(account2.data.spec.chainId, 'testnet2');
+        // Should have same key
+        assert.deepEqual(await wallet.keyManager.getKey(account1), await wallet.keyManager.getKey(account2));
+        // Remove one account
+        await wallet.accountManager.removeAccount(account1.data.spec);
+        // Key2 should still be here
+        const key2 = await wallet.keyManager.getKey(account2);
+        assert.equal(key2.key, account2.data.spec.address);
+        await wallet.accountManager.removeAccount(account2.data.spec);
+        return assert.isRejected(
+            wallet.keyManager.getKey(account2),
+            Error, `missing key for account ${account2.address}`
+        );
+    });
+
     it('deploys and calls contract resulting in success', async () => {
         // Config
         const wallet = new Wallet();

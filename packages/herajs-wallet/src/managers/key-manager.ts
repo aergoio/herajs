@@ -73,15 +73,28 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         return this.keys.get(address) as Key;
     }
 
-    async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
+    async getUnlockedKey(account: Account): Promise<Key> {
         const key = await this.getKey(account);
         key.unlock(this.masterPassphrase);
+        return key;
+    }
+
+    async removeKey(address: string): Promise<void> {
+        if (this.keys.has(address)) {
+            this.keys.delete(address);
+        }
+        if (this.wallet.keystore) {
+            await this.wallet.keystore.getIndex('keys').delete(address);
+        }
+    }
+
+    async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
+        const key = await this.getUnlockedKey(account);
         return key.signTransaction(transaction);
     }
 
     async signMessage(account: Account, message: Buffer, enc = 'hex'): Promise<string> {
-        const key = await this.getKey(account);
-        key.unlock(this.masterPassphrase);
+        const key = await this.getUnlockedKey(account);
         return await key.signMessage(message, enc);
     }
 
@@ -130,7 +143,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         await this.unlock(passphrase);
     }
 
-    lock () {
+    lock (): void {
         this.masterPassphrase = undefined;
         this.emit('lock', null);
     }
