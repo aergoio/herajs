@@ -20,6 +20,8 @@ export declare class HashMap<K, V> {
     set(key: K, value: V): this;
     get(key: K): V | undefined;
     has(key: K): boolean;
+    delete(key: K): boolean;
+    clear(): void;
     values(): IterableIterator<V>;
     keys(): IterableIterator<string>;
     readonly size: number;
@@ -33,3 +35,10 @@ export interface Constructor<T> {
     new (...args: any[]): T;
 }
 export declare function isConstructor<T>(arg: T | Constructor<T>): arg is Constructor<T>;
+/**
+ * Access a property using dot syntax
+ * Example: propPath({ a: { b: 1 }}, 'a.b') => 1
+ * @param obj
+ * @param path
+ */
+export declare function propPath(obj: any, path: string): any;

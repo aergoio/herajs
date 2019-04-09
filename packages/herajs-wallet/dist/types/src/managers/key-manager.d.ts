@@ -27,12 +27,15 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     constructor(wallet: Wallet);
     addKey(account: Account, privateKey: Uint8Array | number[]): Key;
     getKey(account: Account): Promise<Key>;
+    getUnlockedKey(account: Account): Promise<Key>;
+    removeKey(address: string): Promise<void>;
     signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction>;
     signMessage(account: Account, message: Buffer, enc?: string): Promise<string>;
     importKey(importSpec: ImportSpec): Promise<Key>;
     readonly unlocked: boolean;
     unlock(passphrase: string): Promise<void>;
     setupAndUnlock(appId: string, passphrase: string): Promise<void>;
+    clearKeys(): Promise<void>;
     lock(): void;
 }
 export {};

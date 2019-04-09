@@ -6,6 +6,7 @@ import { PausableTypedEventEmitter } from '../utils';
 export interface Events {
     'add': Account;
     'update': Account;
+    'remove': AccountSpec;
     'change': Account[];
 }
 export interface TrackerEvents {
@@ -33,6 +34,8 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     pause(): void;
     getCompleteAccountSpec(accountSpec: AccountSpec): CompleteAccountSpec;
     addAccount(accountSpec: AccountSpec): Promise<Account>;
+    removeAccount(accountSpec: AccountSpec): Promise<void>;
+    clearAccounts(): Promise<void>;
     createAccount(chainId?: string): Promise<Account>;
     getAccounts(): Promise<Account[]>;
     getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec): Promise<Account>;

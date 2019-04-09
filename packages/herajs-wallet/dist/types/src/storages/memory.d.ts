@@ -11,6 +11,10 @@ declare class MemoryIndex extends Index {
     delete(key: string): Promise<void>;
     clear(): Promise<void>;
 }
+/**
+ * MemoryStorage is a storage interface compatabile with other LevelDB-like storages.
+ * It is mostly used for testing. It is not very efficient.
+ */
 export default class MemoryStorage extends Storage {
     name: string;
     version: number;

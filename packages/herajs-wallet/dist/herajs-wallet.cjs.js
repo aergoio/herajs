@@ -7,6 +7,20 @@ var client = require('@herajs/client');
 var crypto = require('@herajs/crypto');
 var idb = require('idb');
 
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -144,6 +158,44 @@ function _possibleConstructorReturn(self, call) {
   }
 
   return _assertThisInitialized(self);
+}
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArrayLimit(arr, i) {
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 var Middleware = function Middleware() {
@@ -455,9 +507,19 @@ function (_Record) {
       return signMessage;
     }()
   }, {
+    key: "unlock",
+    value: function unlock(passphrase) {
+      if (this.data.privateKey && this.data.privateKey.length) return; // already unlocked
+
+      if (!passphrase) throw new Error('unlock wallet before using key');
+      if (!this.data.privateKeyEncrypted) throw new Error('missing encrypted private key');
+      this.data.privateKey = Array.from(crypto.decryptPrivateKey(Uint8Array.from(this.data.privateKeyEncrypted), passphrase));
+    }
+  }, {
     key: "keyPair",
     get: function get() {
       if (!this._keyPair) {
+        if (!this.data.privateKey || !this.data.privateKey.length) throw new Error('missing private key, did you forget to unlock?');
         var identity = crypto.identifyFromPrivateKey(Uint8Array.from(this.data.privateKey));
         this._keyPair = identity.keyPair;
       }
@@ -540,6 +602,16 @@ function () {
       return this.map.has(this.hash(key));
     }
   }, {
+    key: "delete",
+    value: function _delete(key) {
+      return this.map.delete(this.hash(key));
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.map.clear();
+    }
+  }, {
     key: "values",
     value: function values() {
       return this.map.values();
@@ -600,6 +672,27 @@ function (_TypedEventEmitter) {
 function isConstructor(arg) {
   return typeof arg === 'function';
 }
+/**
+ * Access a property using dot syntax
+ * Example: propPath({ a: { b: 1 }}, 'a.b') => 1
+ * @param obj 
+ * @param path 
+ */
+
+function propPath(obj, path) {
+  if (typeof obj === 'undefined') return undefined;
+  var dotIndex = path.indexOf('.');
+
+  if (dotIndex !== -1) {
+    if (_typeof(obj) !== 'object') return undefined;
+    var _ref = [path.slice(0, dotIndex), path.slice(dotIndex + 1)],
+        firstSegment = _ref[0],
+        rest = _ref[1];
+    return propPath(obj[firstSegment], rest);
+  }
+
+  return obj[path];
+}
 
 /**
  * KeyManager manages and tracks keys for accounts
@@ -629,14 +722,22 @@ function (_TypedEventEmitter) {
   _createClass(KeyManager, [{
     key: "addKey",
     value: function addKey(account, privateKey) {
-      var address = account.data.spec.address; // TODO: encryption
-
+      var address = account.data.spec.address;
       var key = new Key(address, {
         privateKey: Array.from(privateKey),
-        address: address
+        address: address,
+        privateKeyEncrypted: null
       });
       this.keys.set(address, key);
-      this.wallet.keystore && this.wallet.keystore.getIndex('keys').put(key);
+
+      if (this.wallet.keystore) {
+        if (!this.masterPassphrase) throw new Error('unlock wallet before adding key');
+        var privateKeyEncrypted = crypto.encryptPrivateKey(Uint8Array.from(privateKey), this.masterPassphrase);
+        key.data.privateKeyEncrypted = Array.from(privateKeyEncrypted);
+        key.data.privateKey = null;
+        this.wallet.keystore.getIndex('keys').put(key);
+      }
+
       return key;
     }
   }, {
@@ -666,14 +767,48 @@ function (_TypedEventEmitter) {
       return getKey;
     }()
   }, {
+    key: "getUnlockedKey",
+    value: function () {
+      var _getUnlockedKey = _asyncToGenerator(function* (account) {
+        var key = yield this.getKey(account);
+        key.unlock(this.masterPassphrase);
+        return key;
+      });
+
+      function getUnlockedKey(_x2) {
+        return _getUnlockedKey.apply(this, arguments);
+      }
+
+      return getUnlockedKey;
+    }()
+  }, {
+    key: "removeKey",
+    value: function () {
+      var _removeKey = _asyncToGenerator(function* (address) {
+        if (this.keys.has(address)) {
+          this.keys.delete(address);
+        }
+
+        if (this.wallet.keystore) {
+          yield this.wallet.keystore.getIndex('keys').delete(address);
+        }
+      });
+
+      function removeKey(_x3) {
+        return _removeKey.apply(this, arguments);
+      }
+
+      return removeKey;
+    }()
+  }, {
     key: "signTransaction",
     value: function () {
       var _signTransaction = _asyncToGenerator(function* (account, transaction) {
-        var key = yield this.getKey(account);
+        var key = yield this.getUnlockedKey(account);
         return key.signTransaction(transaction);
       });
 
-      function signTransaction(_x2, _x3) {
+      function signTransaction(_x4, _x5) {
         return _signTransaction.apply(this, arguments);
       }
 
@@ -684,11 +819,11 @@ function (_TypedEventEmitter) {
     value: function () {
       var _signMessage = _asyncToGenerator(function* (account, message) {
         var enc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'hex';
-        var key = yield this.getKey(account);
+        var key = yield this.getUnlockedKey(account);
         return yield key.signMessage(message, enc);
       });
 
-      function signMessage(_x4, _x5) {
+      function signMessage(_x6, _x7) {
         return _signMessage.apply(this, arguments);
       }
 
@@ -713,7 +848,7 @@ function (_TypedEventEmitter) {
         return this.addKey(importSpec.account, rawKey);
       });
 
-      function importKey(_x6) {
+      function importKey(_x8) {
         return _importKey.apply(this, arguments);
       }
 
@@ -741,7 +876,7 @@ function (_TypedEventEmitter) {
         this.emit('unlock', null);
       });
 
-      function unlock(_x7) {
+      function unlock(_x9) {
         return _unlock.apply(this, arguments);
       }
 
@@ -760,11 +895,28 @@ function (_TypedEventEmitter) {
         yield this.unlock(passphrase);
       });
 
-      function setupAndUnlock(_x8, _x9) {
+      function setupAndUnlock(_x10, _x11) {
         return _setupAndUnlock.apply(this, arguments);
       }
 
       return setupAndUnlock;
+    }()
+  }, {
+    key: "clearKeys",
+    value: function () {
+      var _clearKeys = _asyncToGenerator(function* () {
+        this.keys.clear();
+
+        if (this.wallet.keystore) {
+          yield this.wallet.keystore.getIndex('keys').clear();
+        }
+      });
+
+      function clearKeys() {
+        return _clearKeys.apply(this, arguments);
+      }
+
+      return clearKeys;
     }()
   }, {
     key: "lock",
@@ -845,10 +997,14 @@ function (_PausableTypedEventEm) {
       var _load = _asyncToGenerator(function* () {
         var client = this.manager.wallet.getClient(this.account.data.spec.chainId);
         var state = yield client.getState(this.account.data.spec.address);
-        this.account.data.balance = state.balance.toString();
-        this.account.data.nonce = state.nonce;
-        this.emit('update', this.account);
-        this.manager.wallet.datastore && this.manager.wallet.datastore.getIndex('accounts').put(this.account);
+
+        if (this.account.data.balance !== state.balance.toString() || this.account.data.nonce !== state.nonce) {
+          this.account.data.balance = state.balance.toString();
+          this.account.data.nonce = state.nonce;
+          this.emit('update', this.account);
+          this.manager.wallet.datastore && this.manager.wallet.datastore.getIndex('accounts').put(this.account);
+        }
+
         return this.account;
       });
 
@@ -991,10 +1147,64 @@ function (_PausableTypedEventEm2) {
       var accountPromise = this.loadAccount(completeAccountSpec);
       this.accounts.set(completeAccountSpec, accountPromise);
       accountPromise.then(function (account) {
+        _this4.emit('add', account);
+
         _this4.wallet.datastore && _this4.wallet.datastore.getIndex('accounts').put(account);
       });
       return accountPromise;
     }
+  }, {
+    key: "removeAccount",
+    value: function () {
+      var _removeAccount = _asyncToGenerator(function* (accountSpec) {
+        var completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
+
+        if (this.accounts.has(completeAccountSpec)) {
+          // Remove account from local cache
+          this.accounts.delete(completeAccountSpec);
+        }
+
+        if (this.wallet.datastore) {
+          // Remove account from store
+          var index = this.wallet.datastore.getIndex('accounts');
+          yield index.delete(serializeAccountSpec(completeAccountSpec));
+
+          if (this.wallet.keystore) {
+            // Also remove key if there's no other account with this address
+            var remainingAccounts = Array.from((yield index.getAll(completeAccountSpec.address.toString(), 'spec.address')));
+
+            if (remainingAccounts.length === 0) {
+              yield this.wallet.keyManager.removeKey(completeAccountSpec.address.toString());
+            }
+          }
+        }
+
+        this.emit('remove', completeAccountSpec);
+      });
+
+      function removeAccount(_x) {
+        return _removeAccount.apply(this, arguments);
+      }
+
+      return removeAccount;
+    }()
+  }, {
+    key: "clearAccounts",
+    value: function () {
+      var _clearAccounts = _asyncToGenerator(function* () {
+        this.accounts.clear();
+
+        if (this.wallet.datastore) {
+          yield this.wallet.datastore.getIndex('accounts').clear();
+        }
+      });
+
+      function clearAccounts() {
+        return _clearAccounts.apply(this, arguments);
+      }
+
+      return clearAccounts;
+    }()
   }, {
     key: "createAccount",
     value: function () {
@@ -1012,7 +1222,7 @@ function (_PausableTypedEventEm2) {
         return account;
       });
 
-      function createAccount(_x) {
+      function createAccount(_x2) {
         return _createAccount.apply(this, arguments);
       }
 
@@ -1081,7 +1291,7 @@ function (_PausableTypedEventEm2) {
         return account;
       });
 
-      function getOrAddAccount(_x2) {
+      function getOrAddAccount(_x3) {
         return _getOrAddAccount.apply(this, arguments);
       }
 
@@ -1103,16 +1313,16 @@ function (_PausableTypedEventEm2) {
 
         if (this.trackers.has(account.data.spec)) {
           return this.trackers.get(account.data.spec);
-        }
+        } //console.log('[accountManager] track account', account.data.spec);
 
-        console.log('[accountManager] track account', account.data.spec);
+
         var tracker = new AccountTracker(this, account);
         tracker.resume();
         this.trackers.set(account.data.spec, tracker);
         return tracker;
       });
 
-      function trackAccount(_x3) {
+      function trackAccount(_x4) {
         return _trackAccount.apply(this, arguments);
       }
 
@@ -1144,7 +1354,7 @@ function (_PausableTypedEventEm2) {
         });
       });
 
-      function loadAccount(_x4) {
+      function loadAccount(_x5) {
         return _loadAccount.apply(this, arguments);
       }
 
@@ -1154,12 +1364,12 @@ function (_PausableTypedEventEm2) {
     key: "getNonceForAccount",
     value: function () {
       var _getNonceForAccount = _asyncToGenerator(function* (account) {
-        // TODO: smart caching
+        // TODO: smart caching of last used nonce
         var client = this.wallet.getClient(account.data.spec.chainId);
         return 1 + (yield client.getNonce(account.data.spec.address));
       });
 
-      function getNonceForAccount(_x5) {
+      function getNonceForAccount(_x6) {
         return _getNonceForAccount.apply(this, arguments);
       }
 
@@ -1169,11 +1379,10 @@ function (_PausableTypedEventEm2) {
     key: "getChainIdHashForAccount",
     value: function () {
       var _getChainIdHashForAccount = _asyncToGenerator(function* (account) {
-        // TODO: smart caching
         return yield this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58');
       });
 
-      function getChainIdHashForAccount(_x6) {
+      function getChainIdHashForAccount(_x7) {
         return _getChainIdHashForAccount.apply(this, arguments);
       }
 
@@ -1223,7 +1432,7 @@ function (_PausableTypedEventEm2) {
         }, tx);
       });
 
-      function prepareTransaction(_x7, _x8) {
+      function prepareTransaction(_x8, _x9) {
         return _prepareTransaction.apply(this, arguments);
       }
 
@@ -1295,7 +1504,7 @@ function (_PausableTypedEventEm) {
       var _load = _asyncToGenerator(function* () {
         var _this3 = this;
 
-        console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
+        //console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
         var client = this.manager.wallet.getClient(this.transaction.data.chainId);
 
         try {
@@ -1452,7 +1661,11 @@ function (_PausableTypedEventEm2) {
     value: function resume() {
       var _this6 = this;
 
-      this.load();
+      this.load().catch(function (e) {
+        console.error('Loading account tx failed, pausing tracker', e);
+
+        _this6.pause();
+      });
       this.intervalId = setInterval(function () {
         _this6.load();
       }, ACCOUNT_UPDATE_INTERVAL);
@@ -1673,7 +1886,6 @@ function (_PausableTypedEventEm3) {
           account = accountOrSpec;
         }
 
-        console.log('txManager.getAccountTransactions', account);
         var index = this.wallet.datastore.getIndex('transactions');
         var txsFrom = Array.from((yield index.getAll(account.address.toString(), 'from')));
         var txsTo = Array.from((yield index.getAll(account.address.toString(), 'to'))); // unique txs by hash
@@ -1957,6 +2169,25 @@ function (_MiddlewareConsumer) {
     value: function lock() {
       this.keyManager.lock();
     }
+  }, {
+    key: "deleteAllData",
+    value: function () {
+      var _deleteAllData = _asyncToGenerator(function* () {
+        yield this.accountManager.clearAccounts();
+        yield this.keyManager.clearKeys();
+
+        if (this.datastore) {
+          yield this.datastore.getIndex('transactions').clear();
+          yield this.datastore.getIndex('settings').clear();
+        }
+      });
+
+      function deleteAllData() {
+        return _deleteAllData.apply(this, arguments);
+      }
+
+      return deleteAllData;
+    }()
   }, {
     key: "unlocked",
     get: function get() {
@@ -2292,6 +2523,17 @@ function (_Index) {
           }
         }
 
+        if (this.name === 'accounts' && typeof indexName !== 'undefined') {
+          indexName = indexName;
+
+          if (['spec.address'].indexOf(indexName) !== -1) {
+            // @ts-ignore: not sure why this does not type-check
+            var _records2 = yield this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
+
+            return _records2[Symbol.iterator]();
+          }
+        }
+
         var records = yield this.db.transaction(this.name).objectStore(this.name).getAll(q);
         return records[Symbol.iterator]();
       });
@@ -2363,8 +2605,9 @@ function (_Storage) {
       var _open = _asyncToGenerator(function* () {
         if (typeof this.db !== 'undefined') return this;
 
-        function upgrade(db, oldVersion) {
+        function upgrade(db, oldVersion, _newVersion, tx) {
           switch (oldVersion) {
+            // @ts-ignore: falls through
             case 0:
               {
                 var txOS = db.createObjectStore('transactions', {
@@ -2384,6 +2627,14 @@ function (_Storage) {
                 });
                 db.createObjectStore('keys', {
                   keyPath: 'key'
+                });
+              }
+            // @ts-ignore: falls through
+
+            case 1:
+              {
+                tx.objectStore('accounts').createIndex('spec.address', 'data.spec.address', {
+                  unique: false
                 });
               }
           }
@@ -2472,13 +2723,26 @@ function (_Index) {
     key: "getAll",
     value: function () {
       var _getAll = _asyncToGenerator(function* (indexValue, indexName) {
+        // leveldb keeps entries sorted by key, so we emulate this for compatability
+        var entries = Array.from(this.data.entries()).sort(function (a, b) {
+          return a[0].localeCompare(b[0]);
+        });
+
         if (indexName && indexValue) {
-          return Array.from(this.data.values()).reverse().filter(function (record) {
-            return record.data[indexName] === indexValue;
-          })[Symbol.iterator]();
+          entries = entries.filter(function (_ref) {
+            var _ref2 = _slicedToArray(_ref, 2),
+                record = _ref2[1];
+
+            return propPath(record.data, indexName) === indexValue;
+          });
         }
 
-        return this.data.values();
+        return entries.map(function (_ref3) {
+          var _ref4 = _slicedToArray(_ref3, 2),
+              value = _ref4[1];
+
+          return value;
+        })[Symbol.iterator]();
       });
 
       function getAll(_x2, _x3) {
@@ -2531,6 +2795,11 @@ function (_Index) {
 
   return MemoryIndex;
 }(Index);
+/**
+ * MemoryStorage is a storage interface compatabile with other LevelDB-like storages.
+ * It is mostly used for testing. It is not very efficient.
+ */
+
 
 var MemoryStorage =
 /*#__PURE__*/

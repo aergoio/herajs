@@ -19,6 +19,9 @@ interface IdbSchema extends DBSchema {
     'accounts': {
         key: string;
         value: Record;
+        indexes: {
+            'spec.address': string;
+        };
     };
     'settings': {
         key: string;

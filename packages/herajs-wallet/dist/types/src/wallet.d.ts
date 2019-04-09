@@ -67,5 +67,6 @@ export declare class Wallet extends MiddlewareConsumer {
     setupAndUnlock(passphrase: string): Promise<void>;
     lock(): void;
     readonly unlocked: boolean;
+    deleteAllData(): Promise<void>;
 }
 export {};
