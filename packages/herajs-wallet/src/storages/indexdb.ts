@@ -18,6 +18,7 @@ interface IdbSchema extends DBSchema {
     'accounts': {
         key: string;
         value: Record;
+        indexes: { 'spec.address': string };
     };
     'settings': {
         key: string;
@@ -91,6 +92,7 @@ export default class IndexedDbStorage extends Storage {
 
         function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number) {
             switch (oldVersion) {
+                // @ts-ignore: falls through
                 case 0: {
                     const txOS = db.createObjectStore('transactions', { keyPath: 'key' });
                     txOS.createIndex('from', 'data.from', { unique: false });
@@ -98,6 +100,11 @@ export default class IndexedDbStorage extends Storage {
                     db.createObjectStore('accounts', { keyPath: 'key' });
                     db.createObjectStore('settings', { keyPath: 'key' });
                     db.createObjectStore('keys', { keyPath: 'key' });
+                }
+                // @ts-ignore: falls through
+                case 1: {
+                    const txOS = db.transaction('accounts', 'readwrite').objectStore('accounts');
+                    txOS.createIndex('spec.address', 'data.spec.address', { unique: false });
                 }
             }
         }

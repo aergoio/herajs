@@ -2,6 +2,7 @@ import { Storage, Index } from './storage';
 import { Record, BasicType } from '../models/record';
 import { LevelUp } from 'levelup';
 import level from 'level';
+import { propPath } from '../utils';
 
 class LevelDbIndex extends Index {
     storage: LevelDbStorage;
@@ -25,7 +26,8 @@ class LevelDbIndex extends Index {
             this.db.createReadStream()
                 .on('data', (data) => {
                     if (indexName && indexValue) {
-                        if (data.value.data[indexName] && data.value.data[indexName] !== indexValue) return;
+                        const propValue = propPath(data.value.data, indexName);
+                        if (propValue && propValue !== indexValue) return;
                     }
                     results.push(data.value as Record);
                 })

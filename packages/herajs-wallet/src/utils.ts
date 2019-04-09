@@ -59,6 +59,10 @@ export class HashMap<K, V> {
         return this.map.has(this.hash(key));
     }
 
+    delete(key: K): boolean {
+        return this.map.delete(this.hash(key));
+    }
+
     values() {
         return this.map.values();
     }
@@ -92,4 +96,18 @@ export interface Constructor<T> {
 
 export function isConstructor<T>(arg: T | Constructor<T>): arg is Constructor<T> {
     return (typeof arg === 'function');
+}
+
+/**
+ * Access a property using dot syntax
+ * Example: propPath({ a: { b: 1 }}, 'a.b') => 1
+ * @param obj 
+ * @param path 
+ */
+export function propPath(obj: any, path: string): any {
+    if (path.indexOf('.') !== -1) {
+        const [firstSegment, rest] = path.split('.', 2);
+        return propPath(obj[firstSegment], rest);
+    }
+    return obj[path];
 }

@@ -1,5 +1,6 @@
 import { Storage, Index } from './storage';
 import { Record, BasicType } from '../models/record';
+import { propPath } from '../utils';
 
 class MemoryIndex extends Index {
     storage: MemoryStorage;
@@ -17,10 +18,14 @@ class MemoryIndex extends Index {
         return record;
     }
     async getAll(indexValue?: BasicType, indexName?: string): Promise<IterableIterator<Record>> {
+        // leveldb keeps entries sorted by key, so we emulate this for compatability
+        let entries = Array.from(this.data.entries()).sort((a, b) => a[0].localeCompare(b[0]));
         if (indexName && indexValue) {
-            return Array.from(this.data.values()).reverse().filter(record => record.data[indexName] === indexValue)[Symbol.iterator]();
+            entries = entries.filter(
+                ([_, record]) => propPath(record.data, indexName) === indexValue
+            );
         }
-        return this.data.values();
+        return entries.map(entry => entry[1])[Symbol.iterator]();
     }
     async put(data: Record): Promise<string> {
         this.data.set(data.key, data);

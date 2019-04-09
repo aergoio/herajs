@@ -15,6 +15,13 @@ interface TestData extends Data {
 }
 type TestRecord = Record<TestData>;
 
+interface TestDeepData extends Data {
+    foo: {
+        bar: string;
+    };
+}
+type TestDeepRecord = Record<TestDeepData>;
+
 interface Storages {
     [key: string]: Constructor<Storage>;
 }
@@ -64,12 +71,31 @@ for (const key in storages) {
             for (const record of records) {
                 await storage.getIndex('records').put(record);
             }
-            const results = Array.from(await storage.getIndex('records').getAll(4567, 'foo'));
+            const results = Array.from(await storage.getIndex('records').getAll(4567, 'foo')) as TestRecord[];
             assert.equal(results.length, 2);
-            assert.equal(results[1].key, 'your-key');
-            assert.equal(results[1].data.foo, 4567);
             assert.equal(results[0].key, 'our-key');
             assert.equal(results[0].data.foo, 4567);
+            assert.equal(results[1].key, 'your-key');
+            assert.equal(results[1].data.foo, 4567);
+            await storage.close();
+        });
+        it('index with dot path', async () => {
+            const storage = new cls('test-4', 1);
+            await storage.open();
+            const records: TestDeepRecord[] = [
+                { key: 'my-key', data: { foo: { bar: '1234' } } },
+                { key: 'your-key', data: { foo: { bar: '2345' } } },
+                { key: 'our-key', data: { foo: { bar: '1234' } } }
+            ];
+            for (const record of records) {
+                await storage.getIndex('records').put(record);
+            }
+            const results = Array.from(await storage.getIndex('records').getAll('1234', 'foo.bar')) as TestDeepRecord[];
+            assert.equal(results.length, 2);
+            assert.equal(results[0].key, 'my-key');
+            assert.equal(results[0].data.foo.bar, '1234');
+            assert.equal(results[1].key, 'our-key');
+            assert.equal(results[1].data.foo.bar, '1234');
             await storage.close();
         });
         it('doesnt store private key', async () => {
