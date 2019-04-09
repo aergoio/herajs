@@ -143,6 +143,13 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         await this.unlock(passphrase);
     }
 
+    async clearKeys(): Promise<void> {
+        this.keys.clear();
+        if (this.wallet.keystore) {
+            await this.wallet.keystore.getIndex('keys').clear();
+        }
+    }
+
     lock (): void {
         this.masterPassphrase = undefined;
         this.emit('lock', null);

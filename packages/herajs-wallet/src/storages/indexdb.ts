@@ -1,4 +1,4 @@
-import { openDB, IDBPDatabase, DBSchema } from 'idb';
+import { openDB, IDBPDatabase, IDBPTransaction, DBSchema } from 'idb';
 import { Record, BasicType } from '../models/record';
 import { Storage, Index } from './storage';
 
@@ -60,6 +60,14 @@ class IDBIndex extends Index {
                 return records[Symbol.iterator]();
             }
         }
+        if (this.name === 'accounts' && typeof indexName !== 'undefined') {
+            indexName = indexName as keyof IdbSchema['accounts']['indexes'];
+            if (['spec.address'].indexOf(indexName) !== -1) {
+                // @ts-ignore: not sure why this does not type-check
+                const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
+                return records[Symbol.iterator]();
+            }
+        }
         const records = await this.db.transaction(this.name).objectStore(this.name).getAll(q);
         return records[Symbol.iterator]();
     }
@@ -90,7 +98,7 @@ export default class IndexedDbStorage extends Storage {
     async open(): Promise<this> {
         if (typeof this.db !== 'undefined') return this;
 
-        function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number): void {
+        function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number, _newVersion: number, tx: IDBPTransaction<IdbSchema>): void {
             switch (oldVersion) {
                 // @ts-ignore: falls through
                 case 0: {
@@ -103,8 +111,7 @@ export default class IndexedDbStorage extends Storage {
                 }
                 // @ts-ignore: falls through
                 case 1: {
-                    const txOS = db.transaction('accounts', 'readwrite').objectStore('accounts');
-                    txOS.createIndex('spec.address', 'data.spec.address', { unique: false });
+                    tx.objectStore('accounts').createIndex('spec.address', 'data.spec.address', { unique: false });
                 }
             }
         }

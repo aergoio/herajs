@@ -10,6 +10,7 @@ import { createIdentity } from '@herajs/crypto';
 export interface Events {
     'add': Account;
     'update': Account;
+    'remove': AccountSpec;
     'change': Account[];
 }
 
@@ -31,10 +32,12 @@ class AccountTracker extends PausableTypedEventEmitter<TrackerEvents> {
     async load(): Promise<Account> {
         const client = this.manager.wallet.getClient(this.account.data.spec.chainId);
         const state = await client.getState(this.account.data.spec.address);
-        this.account.data.balance = state.balance.toString();
-        this.account.data.nonce = state.nonce;
-        this.emit('update', this.account);
-        this.manager.wallet.datastore && this.manager.wallet.datastore.getIndex('accounts').put(this.account);
+        if (this.account.data.balance !== state.balance.toString() || this.account.data.nonce !== state.nonce) {
+            this.account.data.balance = state.balance.toString();
+            this.account.data.nonce = state.nonce;
+            this.emit('update', this.account);
+            this.manager.wallet.datastore && this.manager.wallet.datastore.getIndex('accounts').put(this.account);
+        }
         return this.account;
     }
 
@@ -100,6 +103,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         const accountPromise = this.loadAccount(completeAccountSpec);
         this.accounts.set(completeAccountSpec, accountPromise);
         accountPromise.then(account => {
+            this.emit('add', account);
             this.wallet.datastore && this.wallet.datastore.getIndex('accounts').put(account);
         });
         return accountPromise;
@@ -122,6 +126,14 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
                     await this.wallet.keyManager.removeKey(completeAccountSpec.address.toString());
                 }
             }
+        }
+        this.emit('remove', completeAccountSpec);
+    }
+
+    async clearAccounts(): Promise<void> {
+        this.accounts.clear();
+        if (this.wallet.datastore) {
+            await this.wallet.datastore.getIndex('accounts').clear();
         }
     }
 

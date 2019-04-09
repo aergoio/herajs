@@ -183,6 +183,15 @@ export class Wallet extends MiddlewareConsumer {
     get unlocked () {
         return this.keyManager.unlocked;
     }
+
+    async deleteAllData(): Promise<void> {
+        await this.accountManager.clearAccounts();
+        await this.keyManager.clearKeys();
+        if (this.datastore) {
+            await this.datastore.getIndex('transactions').clear();
+            await this.datastore.getIndex('settings').clear();
+        }
+    }
 }
 
 /*

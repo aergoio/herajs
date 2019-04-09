@@ -45,8 +45,7 @@ class LevelDbIndex extends Index {
         await this.db.del(key);
     }
     async clear(): Promise<void> {
-        // TODO
-        //this.db.clear();
+        throw new Error('clear is not supported on leveldb');
     }
 }
 

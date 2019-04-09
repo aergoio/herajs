@@ -160,7 +160,10 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
     }
 
     resume(): void {
-        this.load();
+        this.load().catch((e) => {
+            console.error('Loading account tx failed, pausing tracker', e);
+            this.pause();
+        });
         this.intervalId = setInterval(() => {
             this.load();
         }, ACCOUNT_UPDATE_INTERVAL);

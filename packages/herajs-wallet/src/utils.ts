@@ -63,6 +63,10 @@ export class HashMap<K, V> {
         return this.map.delete(this.hash(key));
     }
 
+    clear(): void {
+        this.map.clear();
+    }
+
     values() {
         return this.map.values();
     }
