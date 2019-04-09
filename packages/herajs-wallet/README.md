@@ -1,5 +1,8 @@
 # Herajs Wallet SDK
 
+[![Travis_ci](https://travis-ci.org/aergoio/herajs-wallet.svg?branch=master)](https://travis-ci.org/aergoio/herajs-wallet)
+[![npm](https://img.shields.io/npm/v/@herajs/wallet.svg)](https://www.npmjs.com/package/@herajs/wallet)
+
 This package includes everything you need to build a wallet application on Aergo.
 It is useful for other kinds of dapps, too.
 
