@@ -90,7 +90,7 @@ export default class IndexedDbStorage extends Storage {
     async open(): Promise<this> {
         if (typeof this.db !== 'undefined') return this;
 
-        function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number) {
+        function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number): void {
             switch (oldVersion) {
                 // @ts-ignore: falls through
                 case 0: {

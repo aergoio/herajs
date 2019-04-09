@@ -25,7 +25,7 @@ class MemoryIndex extends Index {
                 ([, record]) => propPath(record.data, indexName) === indexValue
             );
         }
-        return entries.map(entry => entry[1])[Symbol.iterator]();
+        return entries.map(([, value]) => value)[Symbol.iterator]();
     }
     async put(data: Record): Promise<string> {
         this.data.set(data.key, data);

@@ -105,8 +105,11 @@ export function isConstructor<T>(arg: T | Constructor<T>): arg is Constructor<T>
  * @param path 
  */
 export function propPath(obj: any, path: string): any {
-    if (path.indexOf('.') !== -1) {
-        const [firstSegment, rest] = path.split('.', 2);
+    if (typeof obj === 'undefined') return undefined;
+    const dotIndex = path.indexOf('.');
+    if (dotIndex !== -1) {
+        if (typeof obj !== 'object') return undefined;
+        const [firstSegment, rest] = [path.slice(0, dotIndex), path.slice(dotIndex + 1)];
         return propPath(obj[firstSegment], rest);
     }
     return obj[path];
