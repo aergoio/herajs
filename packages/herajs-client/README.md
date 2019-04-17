@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client) [![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs.svg)](https://greenkeeper.io/)
 
 Tested with aergo server version
-[0.12.1](https://github.com/aergoio/aergo/tree/v0.12.1)
+[1.0.2](https://github.com/aergoio/aergo/tree/v1.0.2)
 
 [Documentation](https://herajs.readthedocs.io/)
 
