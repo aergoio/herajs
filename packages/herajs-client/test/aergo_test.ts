@@ -24,7 +24,7 @@ describe('Aergo invalid config', () => {
 
     describe('blockchain()', () => {
         it('should return disconnected error', async () => {
-            return assert.isRejected(invalidAergo.blockchain(), Error, '14 UNAVAILABLE: Name resolution failure');
+            return assert.isRejected(invalidAergo.blockchain(), Error, '14 UNAVAILABLE: DNS resolution failed');
         });
     });
 

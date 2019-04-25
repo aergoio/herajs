@@ -1,0 +1,27 @@
+language: node_js
+cache:
+  directories:
+    - ~/.npm
+sudo: required
+node_js:
+  - '10'
+services:
+  - docker
+
+env:
+  matrix:
+    - PACKAGE=@herajs/client
+    - PACKAGE=@herajs/crypto
+    - PACKAGE=@herajs/wallet
+  
+before_install:
+  - docker run -d -p 7845:7845 --name aergosvr aergo/node:1.0.2 aergosvr --config /aergo/testmode.toml
+before_script:
+  - sleep 10
+script: lerna run test --scope $PACKAGE
+after_failure:
+  - docker logs aergosvr
+
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/
