@@ -1,14 +1,8 @@
-# herajs - Javascript client framework for aergo
+# @herajs/client
 
-[![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs)
-[![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client) [![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs.svg)](https://greenkeeper.io/)
+[![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client) 
 
-Tested with aergo server version
-[1.0.2](https://github.com/aergoio/aergo/tree/v1.0.2)
-
-[Documentation](https://herajs.readthedocs.io/)
-
-Javascript client SDK for AERGO blockchain.
+This package includes the API client and common classes and utils.
 
 This package supports both Node.js and Web platforms. Please refer to the documentation how to select the platform.
 

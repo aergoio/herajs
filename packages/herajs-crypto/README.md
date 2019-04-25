@@ -1,8 +1,6 @@
 # Multi-purpose javascript crypto library for aergo
 
-[![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs-crypto)
 [![npm](https://img.shields.io/npm/v/@herajs/crypto.svg)](https://www.npmjs.com/package/@herajs/crypto)
-[![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs-crypto.svg)](https://greenkeeper.io/)
 
 It is used by Aergo dapps to manage keys and sign transactions offline.
 
