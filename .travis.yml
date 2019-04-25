@@ -1,7 +1,8 @@
 language: node_js
 cache:
+  yarn: true
   directories:
-    - ~/.npm
+    - "node_modules"
 sudo: required
 node_js:
   - '10'
@@ -15,10 +16,16 @@ env:
     - PACKAGE=@herajs/wallet
   
 before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s
+  - export PATH="$HOME/.yarn/bin:$PATH"
   - docker run -d -p 7845:7845 --name aergosvr aergo/node:1.0.2 aergosvr --config /aergo/testmode.toml
+
 before_script:
+  - yarn run lerna run prepublish
   - sleep 10
-script: lerna run test --scope $PACKAGE
+
+script: yarn run lerna run test --scope $PACKAGE
+
 after_failure:
   - docker logs aergosvr
 

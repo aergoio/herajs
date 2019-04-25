@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "herajs",
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",
@@ -15,7 +15,6 @@
     "@babel/preset-env": "7.3.1",
     "@babel/preset-typescript": "7.1.0",
     "@babel/register": "^7.0.0",
-    "@herajs/crypto": "0.4.1",
     "@improbable-eng/grpc-web-node-http-transport": "^0.9.1",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
