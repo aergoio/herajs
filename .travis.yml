@@ -24,7 +24,7 @@ before_script:
   - yarn run lerna run prepublish
   - sleep 10
 
-script: yarn run lerna run test --scope $PACKAGE
+script: yarn run lerna run test --scope $PACKAGE --stream
 
 after_failure:
   - docker logs aergosvr

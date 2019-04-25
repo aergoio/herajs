@@ -151,7 +151,7 @@ describe('Aergo.Accounts', () => {
 
             // Submitting same tx again should error
             return assert.isRejected(aergo.sendSignedTransaction(tx));
-        });
+        }).timeout(5000);
         it('should catch a max payload error', async () => {
             const createdAddress = await aergo.accounts.create('testpass');
             const address = await aergo.accounts.unlock(createdAddress, 'testpass');
