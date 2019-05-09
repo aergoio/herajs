@@ -22,6 +22,7 @@ before_install:
 
 before_script:
   - yarn run lerna run prepublish
+  - yarn run lerna run build
   - sleep 10
 
 script: yarn run lerna run test --scope $PACKAGE --stream

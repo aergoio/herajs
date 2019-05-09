@@ -15,8 +15,8 @@ const name = 'HerajsWallet';
 
 const namedExports = {
     'node_modules/elliptic/lib/elliptic.js': 'ec'.split(', '),
-    '../herajs/dist/herajs.js': 'AergoClient, Amount, Address'.split(', '),
-    '../herajs-crypto/dist/herajs-crypto.iife.js': [
+    '../client/dist/herajs.js': 'AergoClient, Amount, Address'.split(', '),
+    '../crypto/dist/herajs-crypto.iife.js': [
         'encodeAddress',
         'decodeAddress',
         'encodePrivateKey',
