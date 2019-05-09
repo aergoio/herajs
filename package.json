@@ -49,8 +49,8 @@
     "uglify-js": "^3.4.5"
   },
   "dependencies": {
-    "@herajs/client": "file:packages/herajs-client",
-    "@herajs/crypto": "file:packages/herajs-crypto",
-    "@herajs/wallet": "file:packages/herajs-wallet"
+    "@herajs/client": "file:packages/@herajs/client",
+    "@herajs/crypto": "file:packages/@herajs/crypto",
+    "@herajs/wallet": "file:packages/@herajs/wallet"
   }
 }

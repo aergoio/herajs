@@ -24,8 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "@elderapo/typed-event-emitter": "^1.4.1",
-    "@herajs/client": "file:../herajs-client",
-    "@herajs/crypto": "file:../herajs-crypto",
+    "@herajs/client": "file:../client",
+    "@herajs/crypto": "file:../crypto",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "@types/leveldown": "^4.0.0",
