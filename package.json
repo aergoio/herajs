@@ -3,8 +3,13 @@
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",
-    "test": "lerna run test --stream"
+    "test": "lerna run test --stream",
+    "build": "lerna run build",
+    "clean": "yarn cache clean && rm -rf packages/@herajs/client/dist && rm -rf packages/@herajs/wallet/dist && rm -rf packages/@herajs/crypto/dist"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.1.0",
     "@babel/core": "7.2.2",
@@ -47,10 +52,5 @@
     "ts-protoc-gen": "^0.9.0",
     "typescript": "3.3.1",
     "uglify-js": "^3.4.5"
-  },
-  "dependencies": {
-    "@herajs/client": "file:packages/@herajs/client",
-    "@herajs/crypto": "file:packages/@herajs/crypto",
-    "@herajs/wallet": "file:packages/@herajs/wallet"
   }
 }

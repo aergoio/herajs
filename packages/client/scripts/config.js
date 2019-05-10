@@ -122,7 +122,7 @@ function genConfig (name) {
         [resolve('types/rpc_pb.js')]: 'Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name, PeersParams, VoteParams, NodeReq, KeyParams'.split(', '),
         [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block, Query, StateQuery, FilterInfo'.split(', '),
         [resolve('types/account_pb.js')]: 'Account'.split(', '),
-        ['../../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js']: 'grpc'.split(',')
+        ['../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js']: 'grpc'.split(',')
     };
 
     const config = {

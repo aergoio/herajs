@@ -706,43 +706,6 @@
   resolved "https://registry.yarnpkg.com/@elderapo/typed-event-emitter/-/typed-event-emitter-1.5.0.tgz#f93065d52f2eacf7f4ba6b755234303ab355daba"
   integrity sha512-AkYXp51pJeLV2zr4YjwJfkfvnFbba3geP+vQ7awStOsz/av56fCisy+quwD9wFeYbhGTMOA6LZ8RKtfX8mYqDQ==
 
-"@herajs/client@file:packages/@herajs/client":
-  version "0.8.6"
-  dependencies:
-    "@improbable-eng/grpc-web" "^0.9.1"
-    "@types/google-protobuf" "^3.2.7"
-    bs58 "^4.0.1"
-    bs58check "^2.1.2"
-    google-protobuf "^3.6.0"
-    grpc "^1.13.1"
-    jsbi "^2.0.5"
-
-"@herajs/crypto@file:packages/@herajs/crypto":
-  version "0.4.2"
-  dependencies:
-    "@types/bs58" "^4.0.0"
-    "@types/elliptic" "^6.4.0"
-    aes-js "^3.1.1"
-    asmcrypto.js "^2.3.2"
-    bs58 "^4.0.1"
-    bs58check "^2.1.2"
-    elliptic "^6.4.1"
-    jsbi "^2.0.5"
-
-"@herajs/wallet@file:packages/@herajs/wallet":
-  version "0.3.0"
-  dependencies:
-    "@elderapo/typed-event-emitter" "^1.4.1"
-    "@herajs/client" "file:../../../Library/Caches/Yarn/v4/npm-@herajs-wallet-0.3.0-1173c3fb-3f6f-4e7c-a0b4-d41c6effe42f-1557389429919/node_modules/@herajs/client"
-    "@herajs/crypto" "file:../../../Library/Caches/Yarn/v4/npm-@herajs-wallet-0.3.0-1173c3fb-3f6f-4e7c-a0b4-d41c6effe42f-1557389429919/node_modules/@herajs/crypto"
-    "@types/google-protobuf" "^3.2.7"
-    "@types/hashmap" "^2.0.29"
-    "@types/leveldown" "^4.0.0"
-    "@types/levelup" "^3.1.0"
-    hashmap "^2.3.0"
-    idb "^4.0.0"
-    level "^4.0.0"
-
 "@improbable-eng/grpc-web-node-http-transport@^0.9.1":
   version "0.9.5"
   resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.9.5.tgz#b727c65841d6b8406f08012d73cfb1ffce733f51"
@@ -1473,9 +1436,9 @@
   integrity sha512-2Y8uPt0/jwjhQ6EiluT0XCri1Dbplr0ZxfFXUz+ye13gaqE8u5gL5ppao1JrUYr9cIip5S6MvQzBS7Kke7U9VA==
 
 "@types/elliptic@^6.4.0":
-  version "6.4.6"
-  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.6.tgz#16fe24b8a47d98377eb97e683fa47c5831bcb4a4"
-  integrity sha512-rAQEVgU0P+VWWTjUw3yGlVeDezyObfjfWq1d1noDOKB1VldM1u6Uvz4Va6eGkWUSDRFfDCOQmiRvqHRO8EvZGg==
+  version "6.4.7"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.7.tgz#69a9c9bfe040be46ae3f031319709357c09f48f8"
+  integrity sha512-iTGYL+VmYHT5Py8UWcQiL0wB8K7ml6olDP+wOP4Yj35Ra+yafD0d0VkZvgxduQe5qgRq7bhwK5UDfCvDGm3yqA==
   dependencies:
     "@types/bn.js" "*"
 

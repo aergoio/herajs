@@ -20,7 +20,7 @@ Javascript client SDK for the Aergo blockchain platform.
 Clone this repository and run
 
 ```console
-yarn install
+yarn
 ```
 
 ### Scripts
@@ -28,7 +28,7 @@ yarn install
 Run tests (requires a local Aergo node running in `--testmode`, listening on port `7845`).
 
 ```console
-yarn run test
+yarn test
 ```
 
 Regenerate GRPC type definitions
