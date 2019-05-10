@@ -19,7 +19,8 @@
         ],
         "indent": [
             "error",
-            4
+            4,
+            {"SwitchCase": 1}
         ],
         "linebreak-style": [
             "error",
@@ -44,7 +45,13 @@
         "prefer-arrow-callback": "warn",
         "prefer-const": "warn",
         "no-var": "error",
+        "no-unused-vars": "warn",
         "@typescript-eslint/explicit-member-accessibility": 0,
-        "@typescript-eslint/no-explicit-any": 0
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-namespace": 0,
+        "@typescript-eslint/explicit-function-return-type": [
+            "warn",
+            { "allowExpressions": true }
+        ]
     }
 }
