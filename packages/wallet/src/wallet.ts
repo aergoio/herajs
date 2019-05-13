@@ -193,35 +193,3 @@ export class Wallet extends MiddlewareConsumer {
         }
     }
 }
-
-/*
-
-wallet.accountManager -> tracks balances and nonces
-wallet.transactionManager -> tracks txs
-wallet.keyManager -> signs/verifies, keeps keys
-
-
-const key = await this.keystore.get(account);
-//tx.hash -> getter that calculates hash when necessary
-//tx.unsignedHash
-const signedTx = key.signTransaction(tx);
-
-this.keystore.put(account);
-
-this.datastore.transactions.get(hash)
-this.datastore.transactions.put(tx);
-this.datastore.transactions.filterIndex(['from', 'to'], address)
-
-wallet.transactionManager.trackAccount(account)
--> Error: no data source for account transactions. Please configure a data source such as AergoNodeSource.
-
-// maybe add this inefficient data source?
-wallet.use(new AergoNodeSource(chainId => wallet.getClient(chainId)));
-wallet.transactionManager.trackAccount(account)
--> tracking transactions for account by reading blockchain. inefficient.
-
-wallet.use(new AergoscanIndexSource((chainId) => `https://api.aergoscan.io/${chainId}`));
-wallet.transactionManager.trackAccount(account)
--> tracking transactions for account by reading API. more efficient
-
-*/
