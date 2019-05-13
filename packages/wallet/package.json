@@ -16,7 +16,7 @@
   "main": "dist/herajs-wallet.cjs.js",
   "module": "dist/herajs-wallet.esm.js",
   "browser": "dist/herajs-wallet.iife.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/types/src/index.d.ts",
   "author": {
     "name": "AERGO and contributors",
     "email": "hello@aergo.io"
