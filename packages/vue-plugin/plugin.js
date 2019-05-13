@@ -1,8 +1,15 @@
+import { Wallet } from '@herajs/wallet';
+import { GrpcWebProvider } from '@herajs/client';
+
 export default {
     install (Vue, options) {
-        console.log('installing herajs', options);
-        Vue.prototype.$aergo = function() {
-            console.log('hello aergo in vue');
-        };
+        const wallet = new Wallet();
+        for (const chain of options.chains || []) {
+            wallet.useChain({
+                chainId: chain.chainId,
+                provider: new GrpcWebProvider({ url: chain.nodeUrl })
+            });
+        }
+        Vue.prototype.$aergo = wallet;
     }
-}
+};
