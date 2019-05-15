@@ -28,6 +28,9 @@ yarn
 Run tests (requires a local Aergo node running in `--testmode`, listening on port `7845`).
 
 ```console
+yarn run build
+```
+```console
 yarn test
 ```
 

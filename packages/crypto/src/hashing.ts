@@ -47,18 +47,24 @@ async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: bool
 async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
     // check amount format
     tx.amount = '' + tx.amount;
+    const amount = tx.amount.replace(/[^0-9]/g,'');
+    
+    // check '' amount
+    if (amount === '') {
+        tx.amount = '0 aer';
+    }
+
     if (typeof tx.amount !== 'string') throw new Error(); // this is a type-hint for ts
     const amountUnit = tx.amount.match(/\s*([^0-9]+)\s*/);
     if (amountUnit && amountUnit[1] !== 'aer') {
         throw Error(`Can only hash amounts provided in the base unit (aer), not ${tx.amount}. Convert to aer or remove unit.`);
     }
-    tx.amount = tx.amount.replace(/[^0-9]/g, '');
 
     const items = [
         fromNumber(tx.nonce, 64),
         decodeAddress(tx.from.toString()),
         tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]),
-        fromBigInt(tx.amount ? tx.amount.toString() : 0),
+        fromBigInt(amount!= '' ? amount : 0),
         tx.payload ? Buffer.from(tx.payload) : Buffer.from([]),
         fromNumber(tx.limit || 0, 64),
         fromBigInt(tx.price ? tx.price.toString() : 0),
