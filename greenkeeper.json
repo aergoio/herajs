@@ -1,0 +1,13 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "packages/client/package.json",
+        "packages/crypto/package.json",
+        "packages/vue-plugin/package.json",
+        "packages/wallet/package.json"
+      ]
+    }
+  }
+}
