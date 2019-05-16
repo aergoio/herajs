@@ -47,10 +47,10 @@ async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: bool
 async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
     // check amount format
     tx.amount = '' + tx.amount;
-    const amount = tx.amount.toString().replace(/[^0-9]/g,'');
-    
+    const amount = tx.amount.replace(/[^0-9]/g,'');
+
     // check '' amount
-    if (amount) {
+    if (!amount) {
         tx.amount = '0 aer';
     }
 
