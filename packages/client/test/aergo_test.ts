@@ -312,28 +312,6 @@ describe('Aergo', () => {
         });
     });
 
-    describe('sendLocallySignedTransactionWithoutAmount()', () => {
-        it('should return hash for comitted tx', async () => {
-            const identity = createIdentity();
-            const tx = {
-                nonce: 1,
-                from: identity.address,
-                to: identity.address,
-                amount: 'aer',
-                chainIdHash: await aergo.getChainIdHash(),
-                sign: null,
-                hash: null
-            };
-            tx.sign = await signTransaction(tx, identity.keyPair);
-            tx.hash = await hashTransaction(tx, 'bytes');
-
-            const txhash = await aergo.sendSignedTransaction(tx);
-            assert.typeOf(txhash, 'string');
-            const commitedTx = await aergo.getTransaction(txhash);
-            assert.equal(commitedTx.tx.amount.toString(), tx.amount.toString());
-        });
-    });
-
     describe('sendLocallySignedTransaction()', () => {
         it('should return hash for comitted tx', async () => {
             const identity = createIdentity();

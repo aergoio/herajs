@@ -57,7 +57,7 @@ async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = tr
             }
             // Strip unit
             amount = amountStr.replace(/[^0-9]/g,'');
-            // If amount is an empty string at this point, throw an error
+            // Throw error if amount is an empty string at this point (amount with unit but without value)
             if (amount === '') {
                 throw Error(`Could not parse numeric value from amount '${tx.amount}'.`);
             }
