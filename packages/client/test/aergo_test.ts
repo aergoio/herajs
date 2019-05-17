@@ -312,6 +312,28 @@ describe('Aergo', () => {
         });
     });
 
+    describe('sendLocallySignedTransactionWithoutAmount()', () => {
+        it('should return hash for comitted tx', async () => {
+            const identity = createIdentity();
+            const tx = {
+                nonce: 1,
+                from: identity.address,
+                to: identity.address,
+                amount: 'aer',
+                chainIdHash: await aergo.getChainIdHash(),
+                sign: null,
+                hash: null
+            };
+            tx.sign = await signTransaction(tx, identity.keyPair);
+            tx.hash = await hashTransaction(tx, 'bytes');
+
+            const txhash = await aergo.sendSignedTransaction(tx);
+            assert.typeOf(txhash, 'string');
+            const commitedTx = await aergo.getTransaction(txhash);
+            assert.equal(commitedTx.tx.amount.toString(), tx.amount.toString());
+        });
+    });
+
     describe('sendLocallySignedTransaction()', () => {
         it('should return hash for comitted tx', async () => {
             const identity = createIdentity();
@@ -326,9 +348,6 @@ describe('Aergo', () => {
             };
             tx.sign = await signTransaction(tx, identity.keyPair);
             tx.hash = await hashTransaction(tx, 'bytes');
-            // TODO: signTransaction only understands unitless number, string, or BigInt for amount
-            // but sendSignedTransaction assumes aergo if no unit given
-            tx.amount = '100 aer';
 
             const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
