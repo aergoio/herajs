@@ -49,13 +49,19 @@ async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = tr
     let amount = '0';
     if (tx.amount) {
         const amountStr = tx.amount.toString().trim();
-        // Throw error if unit is given other than aer
-        const amountUnit = amountStr.match(/\s*([^0-9]+)\s*/);
-        if (amountUnit && amountUnit[1] !== 'aer') {
-            throw Error(`Can only hash amounts provided in the base unit (aer), not ${tx.amount}. Convert to aer or remove unit.`);
+        if (amountStr !== '') {
+            // Throw error if unit is given other than aer
+            const amountUnit = amountStr.match(/\s*([^0-9]+)\s*/);
+            if (amountUnit && amountUnit[1] !== 'aer') {
+                throw Error(`Can only hash amounts provided in the base unit (aer), not '${tx.amount}'. Convert to aer or remove unit.`);
+            }
+            // Strip unit
+            amount = amountStr.replace(/[^0-9]/g,'');
+            // If amount is an empty string at this point, throw an error
+            if (amount === '') {
+                throw Error(`Could not parse numeric value from amount '${tx.amount}'.`);
+            }
         }
-        // Strip unit
-        amount = amountStr.replace(/[^0-9]/g,'');
     }
 
     const items = [
