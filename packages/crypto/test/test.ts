@@ -24,6 +24,23 @@ describe('createIdentity()', () => {
 });
 
 describe('hashTransaction()', () => {
+    it('should default amount to 0 and treat falsy values as 0', async () => {
+        const hashPromises = [];
+        const amounts = ['0 aer', 'aer', ' aer', ' ', '0', 0, '', false, null, undefined];
+        for (const amount of amounts) {
+            const tx = {
+                amount,
+                nonce: 1,
+                from: '',
+                chainIdHash: ''
+            };
+            hashPromises.push(hashTransaction(tx));
+        }
+        const hashes = await Promise.all(hashPromises);
+        for (const [idx, hash] of hashes.entries()) {
+            assert.equal(hash, hashes[0], `hash differs (idx: ${idx}, amount: ${amounts[idx]})`);
+        }
+    });
     it('should fail with invalid amount', async () => {
         const tx = {
             amount: '100000 aergo',

@@ -45,19 +45,17 @@ async function hashTransaction(tx: TxBody, encoding: 'base64', includeSign?: boo
 async function hashTransaction(tx: TxBody, encoding: 'base58', includeSign?: boolean): Promise<string>;
 async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: boolean): Promise<Buffer>;
 async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
-    // check amount format
-    tx.amount = '' + tx.amount;
-    const amount = tx.amount.replace(/[^0-9]/g,'');
-
-    // check '' amount
-    if (!amount) {
-        tx.amount = '0 aer';
-    }
-
-    if (typeof tx.amount !== 'string') throw new Error(); // this is a type-hint for ts
-    const amountUnit = tx.amount.match(/\s*([^0-9]+)\s*/);
-    if (amountUnit && amountUnit[1] !== 'aer') {
-        throw Error(`Can only hash amounts provided in the base unit (aer), not ${tx.amount}. Convert to aer or remove unit.`);
+    // Amount defaults to zero if tx.amount is falsy
+    let amount = '0';
+    if (tx.amount) {
+        const amountStr = tx.amount.toString().trim();
+        // Throw error if unit is given other than aer
+        const amountUnit = amountStr.match(/\s*([^0-9]+)\s*/);
+        if (amountUnit && amountUnit[1] !== 'aer') {
+            throw Error(`Can only hash amounts provided in the base unit (aer), not ${tx.amount}. Convert to aer or remove unit.`);
+        }
+        // Strip unit
+        amount = amountStr.replace(/[^0-9]/g,'');
     }
 
     const items = [
