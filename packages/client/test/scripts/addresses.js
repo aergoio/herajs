@@ -3,7 +3,7 @@ import base58check from 'base58check';
 const prefix = 0x42;
 console.log('Account addresses', prefix.toString(16));
 for (let i = 0; i < 20; i++) {
-    const bytes = Array.from({length: 33}, () => Math.floor(Math.random() * 256)); // X
+    const bytes = Array.from({ length: 33 }, () => Math.floor(Math.random() * 256)); // X
     const data = Buffer.from([...bytes]);
     const encoded = base58check.encode(data, prefix.toString(16));
     console.log(data, encoded, encoded.length);

@@ -98,6 +98,25 @@ interface Stream<T> {
     _stream: any;
 }
 
+async function marshalBlockHashOrNumber(hashOrNumber: string | number): Promise<SingleBytes> {
+    if (typeof hashOrNumber === 'undefined') {
+        throw new Error('Missing argument block hash or number');
+    }
+    let input;
+    if (typeof hashOrNumber === 'string') {
+        input = Block.decodeHash(hashOrNumber);
+    } else
+    if (typeof hashOrNumber === 'number') {
+        input = fromNumber(hashOrNumber);
+    }
+    if (input.length != 32 && input.length != 8) {
+        throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+    }
+    const singleBytes = new SingleBytes();
+    singleBytes.setValue(Uint8Array.from(input));
+    return singleBytes;
+}
+
 /**
  * Main aergo client controller.
  */
@@ -290,24 +309,7 @@ class AergoClient {
      */
     getBlock (hashOrNumber: string | number): Promise<Block> {
         return waterfall([
-            async function marshal(hashOrNumber: string | number): Promise<SingleBytes> {
-                if (typeof hashOrNumber === 'undefined') {
-                    throw new Error('Missing argument block hash or number');
-                }
-                let input;
-                if (typeof hashOrNumber === 'string') {
-                    input = Block.decodeHash(hashOrNumber);
-                } else
-                if (typeof hashOrNumber === 'number') {
-                    input = fromNumber(hashOrNumber);
-                }
-                if (input.length != 32 && input.length != 8) {
-                    throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-                }
-                const singleBytes = new SingleBytes();
-                singleBytes.setValue(Uint8Array.from(input));
-                return singleBytes;
-            },
+            marshalBlockHashOrNumber,
             this.grpcMethod<SingleBytes, GrpcBlock>(this.client.client.getBlock),
             async function unmarshal(response: GrpcBlock): Promise<Block> {
                 return Block.fromGrpc(response);
@@ -342,6 +344,20 @@ class AergoClient {
         return promisify(this.client.client.listBlockHeaders, this.client.client)(params).then(result => {
             return result.getBlocksList().map(item => Block.fromGrpc(item));
         });
+    }
+
+    /**
+     * Retrieve meta data about a block (excluding body).
+     * 
+     * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
+     * @returns block metadata
+     */
+    getBlockMetadata (hashOrNumber: string | number): Promise<BlockMetadata> {
+        return waterfall([
+            marshalBlockHashOrNumber,
+            this.grpcMethod<SingleBytes, GrpcBlock>(this.client.client.getBlockMetadata),
+            async (response) => BlockMetadata.fromGrpc(response),
+        ])(hashOrNumber);
     }
 
     getBlockStream () {

@@ -163,6 +163,15 @@ describe('Aergo', () => {
         });
     });
 
+    describe('getBlock() and getMetadata()', () => {
+        it('should return block info by hash', async () => {
+            const block = await aergo.getBlock(bestBlockHash);
+            const blockMetadata = await aergo.getBlockMetadata(bestBlockHash);
+            assert.equal(block.body.txsList.length, blockMetadata.txcount);
+            assert.equal(block.header.prevblockhash, blockMetadata.header.prevblockhash);
+        });
+    });
+
     describe('getBlockStream()', () => {
         it('should stream new blocks', (done) => {
             const stream = aergo.getBlockStream();
@@ -193,6 +202,7 @@ describe('Aergo', () => {
                     assert.isTrue(blockMetadata.hasOwnProperty('hash'));
                     assert.isTrue(blockMetadata.header.hasOwnProperty('blockno'));
                     assert.typeOf(blockMetadata.txcount, 'number');
+                    assert.typeOf(blockMetadata.size, 'number');
                     if (countBlocks == 0) {
                         stream.cancel();
                         done();

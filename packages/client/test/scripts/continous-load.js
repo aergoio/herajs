@@ -26,7 +26,7 @@ async function step() {
         const address = await aergo.accounts.unlock(createdAddress, 'testpass');
 
         // Create transactions
-        const transactions = Array.from({length: targetTps}).map((u, i) => ({
+        const transactions = Array.from({ length: targetTps }).map((u, i) => ({
             nonce: i + 1 + j,
             from: address,
             to: address,

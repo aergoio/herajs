@@ -1,0 +1,3 @@
+[submodule "packages/client/aergo-protobuf"]
+	path = packages/client/aergo-protobuf
+	url = https://github.com/aergoio/aergo-protobuf
