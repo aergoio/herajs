@@ -8,6 +8,7 @@ import GrpcProvider from '../src/providers/grpc';
 
 import { createIdentity, signTransaction, hashTransaction } from '@herajs/crypto';
 import { longPolling } from '../src/utils';
+import { commitTestTransaction } from './utils';
 
 const waitFor = (ms) => new Promise(resolve => {
     setTimeout(resolve, ms);
@@ -333,6 +334,34 @@ describe('Aergo', () => {
             assert.equal(commitedTx.tx.amount.toString(), tx.amount.toString());
         });
     });
+
+    describe('getBlockMetadata and getBlockBody', () => {
+        it('should retrieve metadata and body separately', async () => {
+            const commitedTx = await commitTestTransaction(aergo);
+
+            const metadata = await aergo.getBlockMetadata(commitedTx.block.hash);
+            const body = await aergo.getBlockBody(commitedTx.block.hash);
+
+            assert.isAtLeast(metadata.txcount, 1);
+            assert.equal(metadata.txcount, body.body.txsList.length);
+            assert.equal(metadata.txcount, body.total);
+            assert.equal(metadata.hash, commitedTx.block.hash);
+            const tx = body.body.txsList.find(tx => tx.hash === commitedTx.tx.hash);
+            assert.equal(tx.from.toString(), commitedTx.tx.from.toString());
+        });
+        it('should page getBlockBody', async () => {
+            const commitedTx = await commitTestTransaction(aergo);
+
+            const body = await aergo.getBlockBody(commitedTx.block.hash, 0, 1);
+            assert.isAtLeast(body.total, 1);
+            assert.equal(body.body.txsList.length, 1);
+            
+            const body2 = await aergo.getBlockBody(commitedTx.block.hash, 1, 1);
+            assert.equal(body2.total, body.total);
+            assert.isBelow(body2.body.txsList.length, body2.total);
+        });
+    });
+
     
     describe.skip('getVotingResult()', () => {
         it('should return given number of voting result', async () => {

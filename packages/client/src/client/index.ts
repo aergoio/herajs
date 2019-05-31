@@ -17,7 +17,9 @@ import {
     ConsensusInfo,
     ServerInfo, KeyParams,
     VoteParams, Vote,
-    NodeReq
+    NodeReq,
+    BlockMetadata as GrpcBlockMetadata,
+    BlockBodyParams, PageParams, BlockBodyPaged as GrpcBlockBodyPaged
 } from '../../types/rpc_pb';
 import { fromNumber, errorMessageForCode } from '../utils';
 import promisify from '../promisify';
@@ -37,7 +39,6 @@ import { TransactionError } from '../errors';
 import { Buffer } from 'buffer';
 
 import bs58 from 'bs58';
-import { stringToArrayBuffer } from '@improbable-eng/grpc-web/dist/typings/transports/http/xhr';
 
 const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
@@ -56,7 +57,26 @@ async function marshalEmpty(): Promise<Empty> {
     return new Empty();
 }
 
-interface GetTxResult {
+async function marshalHashOrNumberToSingleBytes(hashOrNumber: string | number): Promise<SingleBytes> {
+    if (typeof hashOrNumber === 'undefined') {
+        throw new Error('Missing argument block hash or number');
+    }
+    let input;
+    if (typeof hashOrNumber === 'string') {
+        input = Block.decodeHash(hashOrNumber);
+    } else
+    if (typeof hashOrNumber === 'number') {
+        input = fromNumber(hashOrNumber);
+    }
+    if (input.length != 32 && input.length != 8) {
+        throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
+    }
+    const singleBytes = new SingleBytes();
+    singleBytes.setValue(Uint8Array.from(input));
+    return singleBytes;
+}
+
+export interface GetTxResult {
     block?: {
         hash: string;
         idx: number;
@@ -89,6 +109,15 @@ interface ConsensusInfoResult {
 interface ServerInfoResult {
     configMap: Map<string, Map<string, string>>;
     statusMap: Map<string, string>;
+}
+
+interface BlockBodyPaged {
+    total: number;
+    size: number;
+    offset: number;
+    body: {
+        txsList: Tx[]
+    }
 }
 
 
@@ -290,27 +319,26 @@ class AergoClient {
      */
     getBlock (hashOrNumber: string | number): Promise<Block> {
         return waterfall([
-            async function marshal(hashOrNumber: string | number): Promise<SingleBytes> {
-                if (typeof hashOrNumber === 'undefined') {
-                    throw new Error('Missing argument block hash or number');
-                }
-                let input;
-                if (typeof hashOrNumber === 'string') {
-                    input = Block.decodeHash(hashOrNumber);
-                } else
-                if (typeof hashOrNumber === 'number') {
-                    input = fromNumber(hashOrNumber);
-                }
-                if (input.length != 32 && input.length != 8) {
-                    throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
-                }
-                const singleBytes = new SingleBytes();
-                singleBytes.setValue(Uint8Array.from(input));
-                return singleBytes;
-            },
+            marshalHashOrNumberToSingleBytes,
             this.grpcMethod<SingleBytes, GrpcBlock>(this.client.client.getBlock),
             async function unmarshal(response: GrpcBlock): Promise<Block> {
                 return Block.fromGrpc(response);
+            }
+        ])(hashOrNumber);
+    }
+
+    /**
+     * Retrieve block metadata (excluding body).
+     * 
+     * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
+     * @returns block metadata
+     */
+    getBlockMetadata (hashOrNumber: string | number): Promise<BlockMetadata> {
+        return waterfall([
+            marshalHashOrNumberToSingleBytes,
+            this.grpcMethod<SingleBytes, GrpcBlockMetadata>(this.client.client.getBlockMetadata),
+            async function unmarshal(response: GrpcBlockMetadata): Promise<BlockMetadata> {
+                return BlockMetadata.fromGrpc(response);
             }
         ])(hashOrNumber);
     }
@@ -380,6 +408,30 @@ class AergoClient {
             on: (ev, callback) => stream.on(ev, data => callback(BlockMetadata.fromGrpc(data))),
             cancel: () => stream.cancel()
         };
+    }
+
+
+
+    /**
+     * Get the transactions of a block in a paged manner
+     * @param hash 
+     * @param offset 
+     * @param size 
+     */
+    async getBlockBody (hashOrNumber: string|number, offset = 0, size = 10): Promise<BlockBodyPaged> {
+        const paging = new PageParams();
+        paging.setOffset(offset);
+        paging.setSize(size);
+        const params = new BlockBodyParams();
+        params.setHashornumber((await marshalHashOrNumberToSingleBytes(hashOrNumber)).getValue());
+        params.setPaging(paging);
+        return await promisify(this.client.client.getBlockBody, this.client.client)(params).then((grpcObject: GrpcBlockBodyPaged) => {
+            const obj = grpcObject.toObject();
+            if (obj.body && obj.body.txsList) {
+                obj.body.txsList = grpcObject.getBody().getTxsList().map(tx => Tx.fromGrpc(tx));
+            }
+            return obj as BlockBodyPaged;
+        });
     }
 
     /**

@@ -52,7 +52,7 @@ export async function main(aergo) {
     const address = await aergo.accounts.unlock(createdAddress, 'testpass');
 
     // Create transactions
-    const transactions = Array.from({length: numberOfTx}).map((u, i) => ({
+    const transactions = Array.from({ length: numberOfTx }).map((u, i) => ({
         nonce: i + 1,
         from: address,
         to: address,
