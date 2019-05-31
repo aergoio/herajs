@@ -15,6 +15,7 @@ var p2p_pb = require('./p2p_pb.js');
 goog.object.extend(proto, p2p_pb);
 goog.exportSymbol('proto.types.GetClusterInfoRequest', null, global);
 goog.exportSymbol('proto.types.GetClusterInfoResponse', null, global);
+goog.exportSymbol('proto.types.HardStateInfo', null, global);
 goog.exportSymbol('proto.types.MemberAttr', null, global);
 goog.exportSymbol('proto.types.MembershipChange', null, global);
 goog.exportSymbol('proto.types.MembershipChangeReply', null, global);
@@ -622,6 +623,175 @@ proto.types.MembershipChangeReply.prototype.hasAttr = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.types.HardStateInfo = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.HardStateInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.HardStateInfo.displayName = 'proto.types.HardStateInfo';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.HardStateInfo.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.HardStateInfo.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.HardStateInfo} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.HardStateInfo.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    term: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    commit: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.HardStateInfo}
+ */
+proto.types.HardStateInfo.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.HardStateInfo;
+  return proto.types.HardStateInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.HardStateInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.HardStateInfo}
+ */
+proto.types.HardStateInfo.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setTerm(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setCommit(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.HardStateInfo.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.HardStateInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.HardStateInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.HardStateInfo.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getTerm();
+  if (f !== 0) {
+    writer.writeUint64(
+      1,
+      f
+    );
+  }
+  f = message.getCommit();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional uint64 term = 1;
+ * @return {number}
+ */
+proto.types.HardStateInfo.prototype.getTerm = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.types.HardStateInfo.prototype.setTerm = function(value) {
+  jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional uint64 commit = 2;
+ * @return {number}
+ */
+proto.types.HardStateInfo.prototype.getCommit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.types.HardStateInfo.prototype.setCommit = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.types.GetClusterInfoRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -658,7 +828,7 @@ proto.types.GetClusterInfoRequest.prototype.toObject = function(opt_includeInsta
  */
 proto.types.GetClusterInfoRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    bestblockhash: msg.getBestblockhash_asB64()
   };
 
   if (includeInstance) {
@@ -695,6 +865,10 @@ proto.types.GetClusterInfoRequest.deserializeBinaryFromReader = function(msg, re
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBestblockhash(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -724,6 +898,52 @@ proto.types.GetClusterInfoRequest.prototype.serializeBinary = function() {
  */
 proto.types.GetClusterInfoRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getBestblockhash_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional bytes bestBlockHash = 1;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.GetClusterInfoRequest.prototype.getBestblockhash = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes bestBlockHash = 1;
+ * This is a type-conversion wrapper around `getBestblockhash()`
+ * @return {string}
+ */
+proto.types.GetClusterInfoRequest.prototype.getBestblockhash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBestblockhash()));
+};
+
+
+/**
+ * optional bytes bestBlockHash = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBestblockhash()`
+ * @return {!Uint8Array}
+ */
+proto.types.GetClusterInfoRequest.prototype.getBestblockhash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBestblockhash()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.GetClusterInfoRequest.prototype.setBestblockhash = function(value) {
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -784,7 +1004,8 @@ proto.types.GetClusterInfoResponse.toObject = function(includeInstance, msg) {
     chainid: msg.getChainid_asB64(),
     error: jspb.Message.getFieldWithDefault(msg, 2, ""),
     mbrattrsList: jspb.Message.toObjectList(msg.getMbrattrsList(),
-    proto.types.MemberAttr.toObject, includeInstance)
+    proto.types.MemberAttr.toObject, includeInstance),
+    hardstateinfo: (f = msg.getHardstateinfo()) && proto.types.HardStateInfo.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -833,6 +1054,11 @@ proto.types.GetClusterInfoResponse.deserializeBinaryFromReader = function(msg, r
       var value = new proto.types.MemberAttr;
       reader.readMessage(value,proto.types.MemberAttr.deserializeBinaryFromReader);
       msg.addMbrattrs(value);
+      break;
+    case 4:
+      var value = new proto.types.HardStateInfo;
+      reader.readMessage(value,proto.types.HardStateInfo.deserializeBinaryFromReader);
+      msg.setHardstateinfo(value);
       break;
     default:
       reader.skipField();
@@ -883,6 +1109,14 @@ proto.types.GetClusterInfoResponse.serializeBinaryToWriter = function(message, w
       3,
       f,
       proto.types.MemberAttr.serializeBinaryToWriter
+    );
+  }
+  f = message.getHardstateinfo();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.types.HardStateInfo.serializeBinaryToWriter
     );
   }
 };
@@ -970,6 +1204,36 @@ proto.types.GetClusterInfoResponse.prototype.addMbrattrs = function(opt_value, o
 
 proto.types.GetClusterInfoResponse.prototype.clearMbrattrsList = function() {
   this.setMbrattrsList([]);
+};
+
+
+/**
+ * optional HardStateInfo hardStateInfo = 4;
+ * @return {?proto.types.HardStateInfo}
+ */
+proto.types.GetClusterInfoResponse.prototype.getHardstateinfo = function() {
+  return /** @type{?proto.types.HardStateInfo} */ (
+    jspb.Message.getWrapperField(this, proto.types.HardStateInfo, 4));
+};
+
+
+/** @param {?proto.types.HardStateInfo|undefined} value */
+proto.types.GetClusterInfoResponse.prototype.setHardstateinfo = function(value) {
+  jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+proto.types.GetClusterInfoResponse.prototype.clearHardstateinfo = function() {
+  this.setHardstateinfo(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.types.GetClusterInfoResponse.prototype.hasHardstateinfo = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

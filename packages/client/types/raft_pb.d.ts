@@ -86,7 +86,36 @@ export namespace MembershipChangeReply {
   }
 }
 
+export class HardStateInfo extends jspb.Message {
+  getTerm(): number;
+  setTerm(value: number): void;
+
+  getCommit(): number;
+  setCommit(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): HardStateInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: HardStateInfo): HardStateInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: HardStateInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): HardStateInfo;
+  static deserializeBinaryFromReader(message: HardStateInfo, reader: jspb.BinaryReader): HardStateInfo;
+}
+
+export namespace HardStateInfo {
+  export type AsObject = {
+    term: number,
+    commit: number,
+  }
+}
+
 export class GetClusterInfoRequest extends jspb.Message {
+  getBestblockhash(): Uint8Array | string;
+  getBestblockhash_asU8(): Uint8Array;
+  getBestblockhash_asB64(): string;
+  setBestblockhash(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetClusterInfoRequest.AsObject;
   static toObject(includeInstance: boolean, msg: GetClusterInfoRequest): GetClusterInfoRequest.AsObject;
@@ -99,6 +128,7 @@ export class GetClusterInfoRequest extends jspb.Message {
 
 export namespace GetClusterInfoRequest {
   export type AsObject = {
+    bestblockhash: Uint8Array | string,
   }
 }
 
@@ -116,6 +146,11 @@ export class GetClusterInfoResponse extends jspb.Message {
   setMbrattrsList(value: Array<MemberAttr>): void;
   addMbrattrs(value?: MemberAttr, index?: number): MemberAttr;
 
+  hasHardstateinfo(): boolean;
+  clearHardstateinfo(): void;
+  getHardstateinfo(): HardStateInfo | undefined;
+  setHardstateinfo(value?: HardStateInfo): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetClusterInfoResponse.AsObject;
   static toObject(includeInstance: boolean, msg: GetClusterInfoResponse): GetClusterInfoResponse.AsObject;
@@ -131,6 +166,7 @@ export namespace GetClusterInfoResponse {
     chainid: Uint8Array | string,
     error: string,
     mbrattrsList: Array<MemberAttr.AsObject>,
+    hardstateinfo?: HardStateInfo.AsObject,
   }
 }
 
