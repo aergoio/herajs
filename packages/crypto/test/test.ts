@@ -24,14 +24,49 @@ describe('createIdentity()', () => {
 });
 
 describe('hashTransaction()', () => {
-    it('should fail with invalid amount', async () => {
-        const tx = {
-            amount: '100000 aergo',
-            nonce: 1,
-            from: '',
-            chainIdHash: ''
-        };
-        return assert.isRejected(hashTransaction(tx), Error, 'Can only hash amounts provided in the base unit (aer), not 100000 aergo. Convert to aer or remove unit.');
+    it('should default amount to 0 and treat falsy values as 0', async () => {
+        const hashPromises = [];
+        // These are all valid and treated like 0
+        const amounts = ['0 aer', ' ', '0', 0, '', false, null, undefined];
+        for (const amount of amounts) {
+            const tx = {
+                amount,
+                nonce: 1,
+                from: '',
+                chainIdHash: ''
+            };
+            hashPromises.push(hashTransaction(tx));
+        }
+        const hashes = await Promise.all(hashPromises);
+        for (const [idx, hash] of hashes.entries()) {
+            assert.equal(hash, hashes[0], `hash differs (idx: ${idx}, amount: ${amounts[idx]})`);
+        }
+    });
+    it('should fail with invalid unit', async () => {
+        // These are all invalid and throw 'invalid unit' error
+        const amounts = ['100000 aergo', 'foo aergo', 'one aer', '123 whatever'];
+        for (const amount of amounts) {
+            const tx = {
+                amount,
+                nonce: 1,
+                from: '',
+                chainIdHash: ''
+            };
+            await assert.isRejected(hashTransaction(tx), Error, `Can only hash amounts provided in the base unit (aer), not '${amount}'. Convert to aer or remove unit.`);
+        }
+    });
+    it('should fail with non-numeric amounts', async () => {
+        // These are all invalid and throw 'invalid numeric value' error
+        const amounts = ['aer', ' aer', '  aer  '];
+        for (const amount of amounts) {
+            const tx = {
+                amount,
+                nonce: 1,
+                from: '',
+                chainIdHash: ''
+            };
+            await assert.isRejected(hashTransaction(tx), Error, `Could not parse numeric value from amount '${amount}'.`);
+        }
     });
 });
 
