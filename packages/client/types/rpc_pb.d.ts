@@ -7,6 +7,7 @@ import * as account_pb from "./account_pb";
 import * as node_pb from "./node_pb";
 import * as p2p_pb from "./p2p_pb";
 import * as metric_pb from "./metric_pb";
+import * as raft_pb from "./raft_pb";
 
 export class BlockchainStatus extends jspb.Message {
   getBestBlockHash(): Uint8Array | string;
@@ -133,6 +134,26 @@ export namespace ChainInfo {
     totalstaking: Uint8Array | string,
     gasprice: Uint8Array | string,
     nameprice: Uint8Array | string,
+  }
+}
+
+export class ChainStats extends jspb.Message {
+  getReport(): string;
+  setReport(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChainStats.AsObject;
+  static toObject(includeInstance: boolean, msg: ChainStats): ChainStats.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ChainStats, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChainStats;
+  static deserializeBinaryFromReader(message: ChainStats, reader: jspb.BinaryReader): ChainStats;
+}
+
+export namespace ChainStats {
+  export type AsObject = {
+    report: string,
   }
 }
 
@@ -331,6 +352,9 @@ export class Peer extends jspb.Message {
   getSelfpeer(): boolean;
   setSelfpeer(value: boolean): void;
 
+  getVersion(): string;
+  setVersion(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Peer.AsObject;
   static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
@@ -349,6 +373,7 @@ export namespace Peer {
     hidden: boolean,
     lashcheck: number,
     selfpeer: boolean,
+    version: string,
   }
 }
 
@@ -534,6 +559,9 @@ export class BlockMetadata extends jspb.Message {
   getTxcount(): number;
   setTxcount(value: number): void;
 
+  getSize(): number;
+  setSize(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockMetadata.AsObject;
   static toObject(includeInstance: boolean, msg: BlockMetadata): BlockMetadata.AsObject;
@@ -549,6 +577,7 @@ export namespace BlockMetadata {
     hash: Uint8Array | string,
     header?: blockchain_pb.BlockHeader.AsObject,
     txcount: number,
+    size: number,
   }
 }
 
@@ -580,8 +609,8 @@ export class CommitResult extends jspb.Message {
   getHash_asB64(): string;
   setHash(value: Uint8Array | string): void;
 
-  getError(): CommitStatus;
-  setError(value: CommitStatus): void;
+  getError(): CommitStatusMap[keyof CommitStatusMap];
+  setError(value: CommitStatusMap[keyof CommitStatusMap]): void;
 
   getDetail(): string;
   setDetail(value: string): void;
@@ -599,7 +628,7 @@ export class CommitResult extends jspb.Message {
 export namespace CommitResult {
   export type AsObject = {
     hash: Uint8Array | string,
-    error: CommitStatus,
+    error: CommitStatusMap[keyof CommitStatusMap],
     detail: string,
   }
 }
@@ -632,8 +661,8 @@ export class VerifyResult extends jspb.Message {
   getTx(): blockchain_pb.Tx | undefined;
   setTx(value?: blockchain_pb.Tx): void;
 
-  getError(): VerifyStatus;
-  setError(value: VerifyStatus): void;
+  getError(): VerifyStatusMap[keyof VerifyStatusMap];
+  setError(value: VerifyStatusMap[keyof VerifyStatusMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VerifyResult.AsObject;
@@ -648,7 +677,7 @@ export class VerifyResult extends jspb.Message {
 export namespace VerifyResult {
   export type AsObject = {
     tx?: blockchain_pb.Tx.AsObject,
-    error: VerifyStatus,
+    error: VerifyStatusMap[keyof VerifyStatusMap],
   }
 }
 
@@ -898,6 +927,9 @@ export class Name extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
+  getBlockno(): number;
+  setBlockno(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Name.AsObject;
   static toObject(includeInstance: boolean, msg: Name): Name.AsObject;
@@ -911,6 +943,7 @@ export class Name extends jspb.Message {
 export namespace Name {
   export type AsObject = {
     name: string,
+    blockno: number,
   }
 }
 
@@ -1087,21 +1120,25 @@ export namespace ConsensusInfo {
   }
 }
 
-export enum CommitStatus {
-  TX_OK = 0,
-  TX_NONCE_TOO_LOW = 1,
-  TX_ALREADY_EXISTS = 2,
-  TX_INVALID_HASH = 3,
-  TX_INVALID_SIGN = 4,
-  TX_INVALID_FORMAT = 5,
-  TX_INSUFFICIENT_BALANCE = 6,
-  TX_HAS_SAME_NONCE = 7,
-  TX_INTERNAL_ERROR = 9,
+export interface CommitStatusMap {
+  TX_OK: 0;
+  TX_NONCE_TOO_LOW: 1;
+  TX_ALREADY_EXISTS: 2;
+  TX_INVALID_HASH: 3;
+  TX_INVALID_SIGN: 4;
+  TX_INVALID_FORMAT: 5;
+  TX_INSUFFICIENT_BALANCE: 6;
+  TX_HAS_SAME_NONCE: 7;
+  TX_INTERNAL_ERROR: 9;
 }
 
-export enum VerifyStatus {
-  VERIFY_STATUS_OK = 0,
-  VERIFY_STATUS_SIGN_NOT_MATCH = 1,
-  VERIFY_STATUS_INVALID_HASH = 2,
+export const CommitStatus: CommitStatusMap;
+
+export interface VerifyStatusMap {
+  VERIFY_STATUS_OK: 0;
+  VERIFY_STATUS_SIGN_NOT_MATCH: 1;
+  VERIFY_STATUS_INVALID_HASH: 2;
 }
+
+export const VerifyStatus: VerifyStatusMap;
 

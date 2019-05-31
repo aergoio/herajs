@@ -8,12 +8,13 @@ var account_pb = require('./account_pb.js');
 var node_pb = require('./node_pb.js');
 var p2p_pb = require('./p2p_pb.js');
 var metric_pb = require('./metric_pb.js');
+var raft_pb = require('./raft_pb.js');
 
 function serialize_types_ABI(arg) {
   if (!(arg instanceof blockchain_pb.ABI)) {
     throw new Error('Expected argument of type types.ABI');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ABI(buffer_arg) {
@@ -24,7 +25,7 @@ function serialize_types_Account(arg) {
   if (!(arg instanceof account_pb.Account)) {
     throw new Error('Expected argument of type types.Account');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Account(buffer_arg) {
@@ -35,7 +36,7 @@ function serialize_types_AccountAddress(arg) {
   if (!(arg instanceof rpc_pb.AccountAddress)) {
     throw new Error('Expected argument of type types.AccountAddress');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_AccountAddress(buffer_arg) {
@@ -46,7 +47,7 @@ function serialize_types_AccountAndRoot(arg) {
   if (!(arg instanceof rpc_pb.AccountAndRoot)) {
     throw new Error('Expected argument of type types.AccountAndRoot');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_AccountAndRoot(buffer_arg) {
@@ -57,7 +58,7 @@ function serialize_types_AccountList(arg) {
   if (!(arg instanceof account_pb.AccountList)) {
     throw new Error('Expected argument of type types.AccountList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_AccountList(buffer_arg) {
@@ -68,7 +69,7 @@ function serialize_types_AccountProof(arg) {
   if (!(arg instanceof blockchain_pb.AccountProof)) {
     throw new Error('Expected argument of type types.AccountProof');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_AccountProof(buffer_arg) {
@@ -79,7 +80,7 @@ function serialize_types_AccountVoteInfo(arg) {
   if (!(arg instanceof rpc_pb.AccountVoteInfo)) {
     throw new Error('Expected argument of type types.AccountVoteInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_AccountVoteInfo(buffer_arg) {
@@ -90,7 +91,7 @@ function serialize_types_Block(arg) {
   if (!(arg instanceof blockchain_pb.Block)) {
     throw new Error('Expected argument of type types.Block');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Block(buffer_arg) {
@@ -101,7 +102,7 @@ function serialize_types_BlockBodyPaged(arg) {
   if (!(arg instanceof rpc_pb.BlockBodyPaged)) {
     throw new Error('Expected argument of type types.BlockBodyPaged');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockBodyPaged(buffer_arg) {
@@ -112,7 +113,7 @@ function serialize_types_BlockBodyParams(arg) {
   if (!(arg instanceof rpc_pb.BlockBodyParams)) {
     throw new Error('Expected argument of type types.BlockBodyParams');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockBodyParams(buffer_arg) {
@@ -123,7 +124,7 @@ function serialize_types_BlockHeaderList(arg) {
   if (!(arg instanceof rpc_pb.BlockHeaderList)) {
     throw new Error('Expected argument of type types.BlockHeaderList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockHeaderList(buffer_arg) {
@@ -134,7 +135,7 @@ function serialize_types_BlockMetadata(arg) {
   if (!(arg instanceof rpc_pb.BlockMetadata)) {
     throw new Error('Expected argument of type types.BlockMetadata');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockMetadata(buffer_arg) {
@@ -145,7 +146,7 @@ function serialize_types_BlockMetadataList(arg) {
   if (!(arg instanceof rpc_pb.BlockMetadataList)) {
     throw new Error('Expected argument of type types.BlockMetadataList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockMetadataList(buffer_arg) {
@@ -156,7 +157,7 @@ function serialize_types_BlockchainStatus(arg) {
   if (!(arg instanceof rpc_pb.BlockchainStatus)) {
     throw new Error('Expected argument of type types.BlockchainStatus');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_BlockchainStatus(buffer_arg) {
@@ -167,18 +168,29 @@ function serialize_types_ChainInfo(arg) {
   if (!(arg instanceof rpc_pb.ChainInfo)) {
     throw new Error('Expected argument of type types.ChainInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ChainInfo(buffer_arg) {
   return rpc_pb.ChainInfo.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_ChainStats(arg) {
+  if (!(arg instanceof rpc_pb.ChainStats)) {
+    throw new Error('Expected argument of type types.ChainStats');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_ChainStats(buffer_arg) {
+  return rpc_pb.ChainStats.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_CommitResult(arg) {
   if (!(arg instanceof rpc_pb.CommitResult)) {
     throw new Error('Expected argument of type types.CommitResult');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_CommitResult(buffer_arg) {
@@ -189,7 +201,7 @@ function serialize_types_CommitResultList(arg) {
   if (!(arg instanceof rpc_pb.CommitResultList)) {
     throw new Error('Expected argument of type types.CommitResultList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_CommitResultList(buffer_arg) {
@@ -200,7 +212,7 @@ function serialize_types_ConsensusInfo(arg) {
   if (!(arg instanceof rpc_pb.ConsensusInfo)) {
     throw new Error('Expected argument of type types.ConsensusInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ConsensusInfo(buffer_arg) {
@@ -211,7 +223,7 @@ function serialize_types_Empty(arg) {
   if (!(arg instanceof rpc_pb.Empty)) {
     throw new Error('Expected argument of type types.Empty');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Empty(buffer_arg) {
@@ -222,7 +234,7 @@ function serialize_types_Event(arg) {
   if (!(arg instanceof blockchain_pb.Event)) {
     throw new Error('Expected argument of type types.Event');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Event(buffer_arg) {
@@ -233,7 +245,7 @@ function serialize_types_EventList(arg) {
   if (!(arg instanceof rpc_pb.EventList)) {
     throw new Error('Expected argument of type types.EventList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_EventList(buffer_arg) {
@@ -244,7 +256,7 @@ function serialize_types_FilterInfo(arg) {
   if (!(arg instanceof blockchain_pb.FilterInfo)) {
     throw new Error('Expected argument of type types.FilterInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_FilterInfo(buffer_arg) {
@@ -255,7 +267,7 @@ function serialize_types_ImportFormat(arg) {
   if (!(arg instanceof rpc_pb.ImportFormat)) {
     throw new Error('Expected argument of type types.ImportFormat');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ImportFormat(buffer_arg) {
@@ -266,7 +278,7 @@ function serialize_types_KeyParams(arg) {
   if (!(arg instanceof rpc_pb.KeyParams)) {
     throw new Error('Expected argument of type types.KeyParams');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_KeyParams(buffer_arg) {
@@ -277,18 +289,40 @@ function serialize_types_ListParams(arg) {
   if (!(arg instanceof rpc_pb.ListParams)) {
     throw new Error('Expected argument of type types.ListParams');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ListParams(buffer_arg) {
   return rpc_pb.ListParams.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_MembershipChange(arg) {
+  if (!(arg instanceof raft_pb.MembershipChange)) {
+    throw new Error('Expected argument of type types.MembershipChange');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_MembershipChange(buffer_arg) {
+  return raft_pb.MembershipChange.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_MembershipChangeReply(arg) {
+  if (!(arg instanceof raft_pb.MembershipChangeReply)) {
+    throw new Error('Expected argument of type types.MembershipChangeReply');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_MembershipChangeReply(buffer_arg) {
+  return raft_pb.MembershipChangeReply.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_Metrics(arg) {
   if (!(arg instanceof metric_pb.Metrics)) {
     throw new Error('Expected argument of type types.Metrics');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Metrics(buffer_arg) {
@@ -299,7 +333,7 @@ function serialize_types_MetricsRequest(arg) {
   if (!(arg instanceof metric_pb.MetricsRequest)) {
     throw new Error('Expected argument of type types.MetricsRequest');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_MetricsRequest(buffer_arg) {
@@ -310,7 +344,7 @@ function serialize_types_Name(arg) {
   if (!(arg instanceof rpc_pb.Name)) {
     throw new Error('Expected argument of type types.Name');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Name(buffer_arg) {
@@ -321,7 +355,7 @@ function serialize_types_NameInfo(arg) {
   if (!(arg instanceof rpc_pb.NameInfo)) {
     throw new Error('Expected argument of type types.NameInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_NameInfo(buffer_arg) {
@@ -332,7 +366,7 @@ function serialize_types_NodeReq(arg) {
   if (!(arg instanceof rpc_pb.NodeReq)) {
     throw new Error('Expected argument of type types.NodeReq');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_NodeReq(buffer_arg) {
@@ -343,7 +377,7 @@ function serialize_types_PeerList(arg) {
   if (!(arg instanceof rpc_pb.PeerList)) {
     throw new Error('Expected argument of type types.PeerList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_PeerList(buffer_arg) {
@@ -354,7 +388,7 @@ function serialize_types_PeersParams(arg) {
   if (!(arg instanceof rpc_pb.PeersParams)) {
     throw new Error('Expected argument of type types.PeersParams');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_PeersParams(buffer_arg) {
@@ -365,7 +399,7 @@ function serialize_types_Personal(arg) {
   if (!(arg instanceof rpc_pb.Personal)) {
     throw new Error('Expected argument of type types.Personal');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Personal(buffer_arg) {
@@ -376,7 +410,7 @@ function serialize_types_Query(arg) {
   if (!(arg instanceof blockchain_pb.Query)) {
     throw new Error('Expected argument of type types.Query');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Query(buffer_arg) {
@@ -387,7 +421,7 @@ function serialize_types_Receipt(arg) {
   if (!(arg instanceof blockchain_pb.Receipt)) {
     throw new Error('Expected argument of type types.Receipt');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Receipt(buffer_arg) {
@@ -398,7 +432,7 @@ function serialize_types_ServerInfo(arg) {
   if (!(arg instanceof rpc_pb.ServerInfo)) {
     throw new Error('Expected argument of type types.ServerInfo');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_ServerInfo(buffer_arg) {
@@ -409,7 +443,7 @@ function serialize_types_SingleBytes(arg) {
   if (!(arg instanceof rpc_pb.SingleBytes)) {
     throw new Error('Expected argument of type types.SingleBytes');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_SingleBytes(buffer_arg) {
@@ -420,7 +454,7 @@ function serialize_types_Staking(arg) {
   if (!(arg instanceof rpc_pb.Staking)) {
     throw new Error('Expected argument of type types.Staking');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Staking(buffer_arg) {
@@ -431,7 +465,7 @@ function serialize_types_State(arg) {
   if (!(arg instanceof blockchain_pb.State)) {
     throw new Error('Expected argument of type types.State');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_State(buffer_arg) {
@@ -442,7 +476,7 @@ function serialize_types_StateQuery(arg) {
   if (!(arg instanceof blockchain_pb.StateQuery)) {
     throw new Error('Expected argument of type types.StateQuery');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_StateQuery(buffer_arg) {
@@ -453,7 +487,7 @@ function serialize_types_StateQueryProof(arg) {
   if (!(arg instanceof blockchain_pb.StateQueryProof)) {
     throw new Error('Expected argument of type types.StateQueryProof');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_StateQueryProof(buffer_arg) {
@@ -464,7 +498,7 @@ function serialize_types_Tx(arg) {
   if (!(arg instanceof blockchain_pb.Tx)) {
     throw new Error('Expected argument of type types.Tx');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_Tx(buffer_arg) {
@@ -475,7 +509,7 @@ function serialize_types_TxInBlock(arg) {
   if (!(arg instanceof blockchain_pb.TxInBlock)) {
     throw new Error('Expected argument of type types.TxInBlock');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_TxInBlock(buffer_arg) {
@@ -486,7 +520,7 @@ function serialize_types_TxList(arg) {
   if (!(arg instanceof blockchain_pb.TxList)) {
     throw new Error('Expected argument of type types.TxList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_TxList(buffer_arg) {
@@ -497,7 +531,7 @@ function serialize_types_VerifyResult(arg) {
   if (!(arg instanceof rpc_pb.VerifyResult)) {
     throw new Error('Expected argument of type types.VerifyResult');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_VerifyResult(buffer_arg) {
@@ -508,7 +542,7 @@ function serialize_types_VoteList(arg) {
   if (!(arg instanceof rpc_pb.VoteList)) {
     throw new Error('Expected argument of type types.VoteList');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_VoteList(buffer_arg) {
@@ -519,7 +553,7 @@ function serialize_types_VoteParams(arg) {
   if (!(arg instanceof rpc_pb.VoteParams)) {
     throw new Error('Expected argument of type types.VoteParams');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_types_VoteParams(buffer_arg) {
@@ -578,6 +612,18 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Empty,
     responseSerialize: serialize_types_ChainInfo,
     responseDeserialize: deserialize_types_ChainInfo,
+  },
+  // Returns current chain statistics
+  chainStat: {
+    path: '/types.AergoRPCService/ChainStat',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.Empty,
+    responseType: rpc_pb.ChainStats,
+    requestSerialize: serialize_types_Empty,
+    requestDeserialize: deserialize_types_Empty,
+    responseSerialize: serialize_types_ChainStats,
+    responseDeserialize: deserialize_types_ChainStats,
   },
   // Returns list of Blocks without body according to request
   listBlockHeaders: {
@@ -986,6 +1032,18 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_Empty,
     responseSerialize: serialize_types_ConsensusInfo,
     responseDeserialize: deserialize_types_ConsensusInfo,
+  },
+  // Add & remove member of raft cluster
+  changeMembership: {
+    path: '/types.AergoRPCService/ChangeMembership',
+    requestStream: false,
+    responseStream: false,
+    requestType: raft_pb.MembershipChange,
+    responseType: raft_pb.MembershipChangeReply,
+    requestSerialize: serialize_types_MembershipChange,
+    requestDeserialize: deserialize_types_MembershipChange,
+    responseSerialize: serialize_types_MembershipChangeReply,
+    responseDeserialize: deserialize_types_MembershipChangeReply,
   },
 };
 

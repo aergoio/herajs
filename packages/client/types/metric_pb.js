@@ -107,7 +107,7 @@ proto.types.MetricsRequest.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Array.<!proto.types.MetricType>} */ (reader.readPackedEnum());
+      var value = /** @type {!Array<!proto.types.MetricType>} */ (reader.readPackedEnum());
       msg.setTypesList(value);
       break;
     default:
@@ -151,14 +151,14 @@ proto.types.MetricsRequest.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated MetricType types = 1;
- * @return {!Array.<!proto.types.MetricType>}
+ * @return {!Array<!proto.types.MetricType>}
  */
 proto.types.MetricsRequest.prototype.getTypesList = function() {
-  return /** @type {!Array.<!proto.types.MetricType>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array<!proto.types.MetricType>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<!proto.types.MetricType>} value */
+/** @param {!Array<!proto.types.MetricType>} value */
 proto.types.MetricsRequest.prototype.setTypesList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
@@ -317,15 +317,15 @@ proto.types.Metrics.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated PeerMetric peers = 1;
- * @return {!Array.<!proto.types.PeerMetric>}
+ * @return {!Array<!proto.types.PeerMetric>}
  */
 proto.types.Metrics.prototype.getPeersList = function() {
-  return /** @type{!Array.<!proto.types.PeerMetric>} */ (
+  return /** @type{!Array<!proto.types.PeerMetric>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.PeerMetric, 1));
 };
 
 
-/** @param {!Array.<!proto.types.PeerMetric>} value */
+/** @param {!Array<!proto.types.PeerMetric>} value */
 proto.types.Metrics.prototype.setPeersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -556,7 +556,7 @@ proto.types.PeerMetric.prototype.getPeerid_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.PeerMetric.prototype.setPeerid = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -571,7 +571,7 @@ proto.types.PeerMetric.prototype.getSumin = function() {
 
 /** @param {number} value */
 proto.types.PeerMetric.prototype.setSumin = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -586,7 +586,7 @@ proto.types.PeerMetric.prototype.getAvrin = function() {
 
 /** @param {number} value */
 proto.types.PeerMetric.prototype.setAvrin = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -601,7 +601,7 @@ proto.types.PeerMetric.prototype.getSumout = function() {
 
 /** @param {number} value */
 proto.types.PeerMetric.prototype.setSumout = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -616,7 +616,7 @@ proto.types.PeerMetric.prototype.getAvrout = function() {
 
 /** @param {number} value */
 proto.types.PeerMetric.prototype.setAvrout = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 

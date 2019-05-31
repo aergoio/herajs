@@ -12,10 +12,17 @@ var goog = jspb;
 var global = Function('return this')();
 
 var blockchain_pb = require('./blockchain_pb.js');
+goog.object.extend(proto, blockchain_pb);
 var account_pb = require('./account_pb.js');
+goog.object.extend(proto, account_pb);
 var node_pb = require('./node_pb.js');
+goog.object.extend(proto, node_pb);
 var p2p_pb = require('./p2p_pb.js');
+goog.object.extend(proto, p2p_pb);
 var metric_pb = require('./metric_pb.js');
+goog.object.extend(proto, metric_pb);
+var raft_pb = require('./raft_pb.js');
+goog.object.extend(proto, raft_pb);
 goog.exportSymbol('proto.types.AccountAddress', null, global);
 goog.exportSymbol('proto.types.AccountAndRoot', null, global);
 goog.exportSymbol('proto.types.AccountVoteInfo', null, global);
@@ -27,6 +34,7 @@ goog.exportSymbol('proto.types.BlockMetadataList', null, global);
 goog.exportSymbol('proto.types.BlockchainStatus', null, global);
 goog.exportSymbol('proto.types.ChainId', null, global);
 goog.exportSymbol('proto.types.ChainInfo', null, global);
+goog.exportSymbol('proto.types.ChainStats', null, global);
 goog.exportSymbol('proto.types.CommitResult', null, global);
 goog.exportSymbol('proto.types.CommitResultList', null, global);
 goog.exportSymbol('proto.types.CommitStatus', null, global);
@@ -254,7 +262,7 @@ proto.types.BlockchainStatus.prototype.getBestBlockHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockchainStatus.prototype.setBestBlockHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -269,7 +277,7 @@ proto.types.BlockchainStatus.prototype.getBestHeight = function() {
 
 /** @param {number} value */
 proto.types.BlockchainStatus.prototype.setBestHeight = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -284,7 +292,7 @@ proto.types.BlockchainStatus.prototype.getConsensusInfo = function() {
 
 /** @param {string} value */
 proto.types.BlockchainStatus.prototype.setConsensusInfo = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -323,7 +331,7 @@ proto.types.BlockchainStatus.prototype.getBestChainIdHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockchainStatus.prototype.setBestChainIdHash = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -501,7 +509,7 @@ proto.types.ChainId.prototype.getMagic = function() {
 
 /** @param {string} value */
 proto.types.ChainId.prototype.setMagic = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -518,7 +526,7 @@ proto.types.ChainId.prototype.getPublic = function() {
 
 /** @param {boolean} value */
 proto.types.ChainId.prototype.setPublic = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -535,7 +543,7 @@ proto.types.ChainId.prototype.getMainnet = function() {
 
 /** @param {boolean} value */
 proto.types.ChainId.prototype.setMainnet = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -550,7 +558,7 @@ proto.types.ChainId.prototype.getConsensus = function() {
 
 /** @param {string} value */
 proto.types.ChainId.prototype.setConsensus = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -790,7 +798,7 @@ proto.types.ChainInfo.prototype.clearId = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.ChainInfo.prototype.hasId = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -808,7 +816,7 @@ proto.types.ChainInfo.prototype.getBpnumber = function() {
 
 /** @param {number} value */
 proto.types.ChainInfo.prototype.setBpnumber = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -823,7 +831,7 @@ proto.types.ChainInfo.prototype.getMaxblocksize = function() {
 
 /** @param {number} value */
 proto.types.ChainInfo.prototype.setMaxblocksize = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -862,7 +870,7 @@ proto.types.ChainInfo.prototype.getMaxtokens_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setMaxtokens = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -901,7 +909,7 @@ proto.types.ChainInfo.prototype.getStakingminimum_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setStakingminimum = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -940,7 +948,7 @@ proto.types.ChainInfo.prototype.getTotalstaking_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setTotalstaking = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -979,7 +987,7 @@ proto.types.ChainInfo.prototype.getGasprice_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setGasprice = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
@@ -1018,7 +1026,149 @@ proto.types.ChainInfo.prototype.getNameprice_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setNameprice = function(value) {
-  jspb.Message.setField(this, 8, value);
+  jspb.Message.setProto3BytesField(this, 8, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.ChainStats = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.ChainStats, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.ChainStats.displayName = 'proto.types.ChainStats';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.ChainStats.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.ChainStats.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.ChainStats} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.ChainStats.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    report: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.ChainStats}
+ */
+proto.types.ChainStats.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.ChainStats;
+  return proto.types.ChainStats.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.ChainStats} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.ChainStats}
+ */
+proto.types.ChainStats.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReport(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.ChainStats.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.ChainStats.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.ChainStats} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.ChainStats.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getReport();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string report = 1;
+ * @return {string}
+ */
+proto.types.ChainStats.prototype.getReport = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.types.ChainStats.prototype.setReport = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1227,7 +1377,7 @@ proto.types.Input.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Input.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -1243,10 +1393,10 @@ proto.types.Input.prototype.getAddressList = function() {
 /**
  * repeated bytes address = 2;
  * This is a type-conversion wrapper around `getAddressList()`
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.Input.prototype.getAddressList_asB64 = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.bytesListAsB64(
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
       this.getAddressList()));
 };
 
@@ -1256,10 +1406,10 @@ proto.types.Input.prototype.getAddressList_asB64 = function() {
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAddressList()`
- * @return {!Array.<!Uint8Array>}
+ * @return {!Array<!Uint8Array>}
  */
 proto.types.Input.prototype.getAddressList_asU8 = function() {
-  return /** @type {!Array.<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
       this.getAddressList()));
 };
 
@@ -1319,7 +1469,7 @@ proto.types.Input.prototype.getValue_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Input.prototype.setValue = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -1358,7 +1508,7 @@ proto.types.Input.prototype.getScript_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Input.prototype.setScript = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1536,7 +1686,7 @@ proto.types.Output.prototype.getIndex = function() {
 
 /** @param {number} value */
 proto.types.Output.prototype.setIndex = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1575,7 +1725,7 @@ proto.types.Output.prototype.getAddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Output.prototype.setAddress = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -1614,7 +1764,7 @@ proto.types.Output.prototype.getValue_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Output.prototype.setValue = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -1653,7 +1803,7 @@ proto.types.Output.prototype.getScript_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Output.prototype.setScript = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1935,7 +2085,7 @@ proto.types.SingleBytes.prototype.getValue_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.SingleBytes.prototype.setValue = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -2101,7 +2251,7 @@ proto.types.AccountAddress.prototype.getValue_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountAddress.prototype.setValue = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -2291,7 +2441,7 @@ proto.types.AccountAndRoot.prototype.getAccount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountAndRoot.prototype.setAccount = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -2330,7 +2480,7 @@ proto.types.AccountAndRoot.prototype.getRoot_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountAndRoot.prototype.setRoot = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -2347,7 +2497,7 @@ proto.types.AccountAndRoot.prototype.getCompressed = function() {
 
 /** @param {boolean} value */
 proto.types.AccountAndRoot.prototype.setCompressed = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -2403,7 +2553,8 @@ proto.types.Peer.toObject = function(includeInstance, msg) {
     state: jspb.Message.getFieldWithDefault(msg, 3, 0),
     hidden: jspb.Message.getFieldWithDefault(msg, 4, false),
     lashcheck: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    selfpeer: jspb.Message.getFieldWithDefault(msg, 6, false)
+    selfpeer: jspb.Message.getFieldWithDefault(msg, 6, false),
+    version: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -2465,6 +2616,10 @@ proto.types.Peer.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setSelfpeer(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVersion(value);
       break;
     default:
       reader.skipField();
@@ -2539,6 +2694,13 @@ proto.types.Peer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getVersion();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
 };
 
 
@@ -2565,7 +2727,7 @@ proto.types.Peer.prototype.clearAddress = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Peer.prototype.hasAddress = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -2595,7 +2757,7 @@ proto.types.Peer.prototype.clearBestblock = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Peer.prototype.hasBestblock = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -2613,7 +2775,7 @@ proto.types.Peer.prototype.getState = function() {
 
 /** @param {number} value */
 proto.types.Peer.prototype.setState = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2630,7 +2792,7 @@ proto.types.Peer.prototype.getHidden = function() {
 
 /** @param {boolean} value */
 proto.types.Peer.prototype.setHidden = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -2645,7 +2807,7 @@ proto.types.Peer.prototype.getLashcheck = function() {
 
 /** @param {number} value */
 proto.types.Peer.prototype.setLashcheck = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -2662,7 +2824,22 @@ proto.types.Peer.prototype.getSelfpeer = function() {
 
 /** @param {boolean} value */
 proto.types.Peer.prototype.setSelfpeer = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional string version = 7;
+ * @return {string}
+ */
+proto.types.Peer.prototype.getVersion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.types.Peer.prototype.setVersion = function(value) {
+  jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -2805,15 +2982,15 @@ proto.types.PeerList.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Peer peers = 1;
- * @return {!Array.<!proto.types.Peer>}
+ * @return {!Array<!proto.types.Peer>}
  */
 proto.types.PeerList.prototype.getPeersList = function() {
-  return /** @type{!Array.<!proto.types.Peer>} */ (
+  return /** @type{!Array<!proto.types.Peer>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Peer, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Peer>} value */
+/** @param {!Array<!proto.types.Peer>} value */
 proto.types.PeerList.prototype.setPeersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -3044,7 +3221,7 @@ proto.types.ListParams.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ListParams.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -3059,7 +3236,7 @@ proto.types.ListParams.prototype.getHeight = function() {
 
 /** @param {number} value */
 proto.types.ListParams.prototype.setHeight = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -3074,7 +3251,7 @@ proto.types.ListParams.prototype.getSize = function() {
 
 /** @param {number} value */
 proto.types.ListParams.prototype.setSize = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3089,7 +3266,7 @@ proto.types.ListParams.prototype.getOffset = function() {
 
 /** @param {number} value */
 proto.types.ListParams.prototype.setOffset = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -3106,7 +3283,7 @@ proto.types.ListParams.prototype.getAsc = function() {
 
 /** @param {boolean} value */
 proto.types.ListParams.prototype.setAsc = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -3260,7 +3437,7 @@ proto.types.PageParams.prototype.getOffset = function() {
 
 /** @param {number} value */
 proto.types.PageParams.prototype.setOffset = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -3275,7 +3452,7 @@ proto.types.PageParams.prototype.getSize = function() {
 
 /** @param {number} value */
 proto.types.PageParams.prototype.setSize = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -3455,7 +3632,7 @@ proto.types.BlockBodyPaged.prototype.getTotal = function() {
 
 /** @param {number} value */
 proto.types.BlockBodyPaged.prototype.setTotal = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -3470,7 +3647,7 @@ proto.types.BlockBodyPaged.prototype.getOffset = function() {
 
 /** @param {number} value */
 proto.types.BlockBodyPaged.prototype.setOffset = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -3485,7 +3662,7 @@ proto.types.BlockBodyPaged.prototype.getSize = function() {
 
 /** @param {number} value */
 proto.types.BlockBodyPaged.prototype.setSize = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3512,7 +3689,7 @@ proto.types.BlockBodyPaged.prototype.clearBody = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.BlockBodyPaged.prototype.hasBody = function() {
   return jspb.Message.getField(this, 4) != null;
@@ -3695,7 +3872,7 @@ proto.types.BlockBodyParams.prototype.getHashornumber_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockBodyParams.prototype.setHashornumber = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -3722,7 +3899,7 @@ proto.types.BlockBodyParams.prototype.clearPaging = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.BlockBodyParams.prototype.hasPaging = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -3868,15 +4045,15 @@ proto.types.BlockHeaderList.serializeBinaryToWriter = function(message, writer) 
 
 /**
  * repeated Block blocks = 1;
- * @return {!Array.<!proto.types.Block>}
+ * @return {!Array<!proto.types.Block>}
  */
 proto.types.BlockHeaderList.prototype.getBlocksList = function() {
-  return /** @type{!Array.<!proto.types.Block>} */ (
+  return /** @type{!Array<!proto.types.Block>} */ (
     jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Block, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Block>} value */
+/** @param {!Array<!proto.types.Block>} value */
 proto.types.BlockHeaderList.prototype.setBlocksList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -3946,7 +4123,8 @@ proto.types.BlockMetadata.toObject = function(includeInstance, msg) {
   var f, obj = {
     hash: msg.getHash_asB64(),
     header: (f = msg.getHeader()) && blockchain_pb.BlockHeader.toObject(includeInstance, f),
-    txcount: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    txcount: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    size: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -3995,6 +4173,10 @@ proto.types.BlockMetadata.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setTxcount(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSize(value);
       break;
     default:
       reader.skipField();
@@ -4047,6 +4229,13 @@ proto.types.BlockMetadata.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
 };
 
 
@@ -4085,7 +4274,7 @@ proto.types.BlockMetadata.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockMetadata.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -4112,7 +4301,7 @@ proto.types.BlockMetadata.prototype.clearHeader = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.BlockMetadata.prototype.hasHeader = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -4130,7 +4319,22 @@ proto.types.BlockMetadata.prototype.getTxcount = function() {
 
 /** @param {number} value */
 proto.types.BlockMetadata.prototype.setTxcount = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 size = 4;
+ * @return {number}
+ */
+proto.types.BlockMetadata.prototype.getSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {number} value */
+proto.types.BlockMetadata.prototype.setSize = function(value) {
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -4273,15 +4477,15 @@ proto.types.BlockMetadataList.serializeBinaryToWriter = function(message, writer
 
 /**
  * repeated BlockMetadata blocks = 1;
- * @return {!Array.<!proto.types.BlockMetadata>}
+ * @return {!Array<!proto.types.BlockMetadata>}
  */
 proto.types.BlockMetadataList.prototype.getBlocksList = function() {
-  return /** @type{!Array.<!proto.types.BlockMetadata>} */ (
+  return /** @type{!Array<!proto.types.BlockMetadata>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.BlockMetadata, 1));
 };
 
 
-/** @param {!Array.<!proto.types.BlockMetadata>} value */
+/** @param {!Array<!proto.types.BlockMetadata>} value */
 proto.types.BlockMetadataList.prototype.setBlocksList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -4488,7 +4692,7 @@ proto.types.CommitResult.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.CommitResult.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -4503,7 +4707,7 @@ proto.types.CommitResult.prototype.getError = function() {
 
 /** @param {!proto.types.CommitStatus} value */
 proto.types.CommitResult.prototype.setError = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
@@ -4518,7 +4722,7 @@ proto.types.CommitResult.prototype.getDetail = function() {
 
 /** @param {string} value */
 proto.types.CommitResult.prototype.setDetail = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4661,15 +4865,15 @@ proto.types.CommitResultList.serializeBinaryToWriter = function(message, writer)
 
 /**
  * repeated CommitResult results = 1;
- * @return {!Array.<!proto.types.CommitResult>}
+ * @return {!Array<!proto.types.CommitResult>}
  */
 proto.types.CommitResultList.prototype.getResultsList = function() {
-  return /** @type{!Array.<!proto.types.CommitResult>} */ (
+  return /** @type{!Array<!proto.types.CommitResult>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.CommitResult, 1));
 };
 
 
-/** @param {!Array.<!proto.types.CommitResult>} value */
+/** @param {!Array<!proto.types.CommitResult>} value */
 proto.types.CommitResultList.prototype.setResultsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -4854,7 +5058,7 @@ proto.types.VerifyResult.prototype.clearTx = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.VerifyResult.prototype.hasTx = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -4872,7 +5076,7 @@ proto.types.VerifyResult.prototype.getError = function() {
 
 /** @param {!proto.types.VerifyStatus} value */
 proto.types.VerifyResult.prototype.setError = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
@@ -5028,7 +5232,7 @@ proto.types.Personal.prototype.getPassphrase = function() {
 
 /** @param {string} value */
 proto.types.Personal.prototype.setPassphrase = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5055,7 +5259,7 @@ proto.types.Personal.prototype.clearAccount = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Personal.prototype.hasAccount = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -5238,7 +5442,7 @@ proto.types.ImportFormat.prototype.clearWif = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.ImportFormat.prototype.hasWif = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -5256,7 +5460,7 @@ proto.types.ImportFormat.prototype.getOldpass = function() {
 
 /** @param {string} value */
 proto.types.ImportFormat.prototype.setOldpass = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -5271,7 +5475,7 @@ proto.types.ImportFormat.prototype.getNewpass = function() {
 
 /** @param {string} value */
 proto.types.ImportFormat.prototype.setNewpass = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -5449,7 +5653,7 @@ proto.types.Staking.prototype.getAmount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Staking.prototype.setAmount = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -5464,7 +5668,7 @@ proto.types.Staking.prototype.getWhen = function() {
 
 /** @param {number} value */
 proto.types.Staking.prototype.setWhen = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -5642,7 +5846,7 @@ proto.types.Vote.prototype.getCandidate_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Vote.prototype.setCandidate = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -5681,7 +5885,7 @@ proto.types.Vote.prototype.getAmount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Vote.prototype.setAmount = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -5835,7 +6039,7 @@ proto.types.VoteParams.prototype.getId = function() {
 
 /** @param {string} value */
 proto.types.VoteParams.prototype.setId = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5850,7 +6054,7 @@ proto.types.VoteParams.prototype.getCount = function() {
 
 /** @param {number} value */
 proto.types.VoteParams.prototype.setCount = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -6028,7 +6232,7 @@ proto.types.AccountVoteInfo.prototype.clearStaking = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.AccountVoteInfo.prototype.hasStaking = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -6037,15 +6241,15 @@ proto.types.AccountVoteInfo.prototype.hasStaking = function() {
 
 /**
  * repeated VoteInfo voting = 2;
- * @return {!Array.<!proto.types.VoteInfo>}
+ * @return {!Array<!proto.types.VoteInfo>}
  */
 proto.types.AccountVoteInfo.prototype.getVotingList = function() {
-  return /** @type{!Array.<!proto.types.VoteInfo>} */ (
+  return /** @type{!Array<!proto.types.VoteInfo>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.VoteInfo, 2));
 };
 
 
-/** @param {!Array.<!proto.types.VoteInfo>} value */
+/** @param {!Array<!proto.types.VoteInfo>} value */
 proto.types.AccountVoteInfo.prototype.setVotingList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -6223,27 +6427,27 @@ proto.types.VoteInfo.prototype.getId = function() {
 
 /** @param {string} value */
 proto.types.VoteInfo.prototype.setId = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * repeated string candidates = 3;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.VoteInfo.prototype.getCandidatesList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 3));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.types.VoteInfo.prototype.setCandidatesList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
 
 /**
- * @param {!string} value
+ * @param {string} value
  * @param {number=} opt_index
  */
 proto.types.VoteInfo.prototype.addCandidates = function(value, opt_index) {
@@ -6407,15 +6611,15 @@ proto.types.VoteList.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Vote votes = 1;
- * @return {!Array.<!proto.types.Vote>}
+ * @return {!Array<!proto.types.Vote>}
  */
 proto.types.VoteList.prototype.getVotesList = function() {
-  return /** @type{!Array.<!proto.types.Vote>} */ (
+  return /** @type{!Array<!proto.types.Vote>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Vote, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Vote>} value */
+/** @param {!Array<!proto.types.Vote>} value */
 proto.types.VoteList.prototype.setVotesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -6447,7 +6651,7 @@ proto.types.VoteList.prototype.getId = function() {
 
 /** @param {string} value */
 proto.types.VoteList.prototype.setId = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -6625,7 +6829,7 @@ proto.types.NodeReq.prototype.getTimeout_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.NodeReq.prototype.setTimeout = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -6664,7 +6868,7 @@ proto.types.NodeReq.prototype.getComponent_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.NodeReq.prototype.setComponent = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -6715,7 +6919,8 @@ proto.types.Name.prototype.toObject = function(opt_includeInstance) {
  */
 proto.types.Name.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    blockno: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -6756,6 +6961,10 @@ proto.types.Name.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setBlockno(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6792,6 +7001,13 @@ proto.types.Name.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getBlockno();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -6806,7 +7022,22 @@ proto.types.Name.prototype.getName = function() {
 
 /** @param {string} value */
 proto.types.Name.prototype.setName = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional uint64 blockNo = 2;
+ * @return {number}
+ */
+proto.types.Name.prototype.getBlockno = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.types.Name.prototype.setBlockno = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -6986,7 +7217,7 @@ proto.types.NameInfo.prototype.clearName = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.NameInfo.prototype.hasName = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -7028,7 +7259,7 @@ proto.types.NameInfo.prototype.getOwner_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.NameInfo.prototype.setOwner = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -7067,7 +7298,7 @@ proto.types.NameInfo.prototype.getDestination_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.NameInfo.prototype.setDestination = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -7223,7 +7454,7 @@ proto.types.PeersParams.prototype.getNohidden = function() {
 
 /** @param {boolean} value */
 proto.types.PeersParams.prototype.setNohidden = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -7240,7 +7471,7 @@ proto.types.PeersParams.prototype.getShowself = function() {
 
 /** @param {boolean} value */
 proto.types.PeersParams.prototype.setShowself = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -7380,21 +7611,21 @@ proto.types.KeyParams.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated string key = 1;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.KeyParams.prototype.getKeyList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.types.KeyParams.prototype.setKeyList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
 
 
 /**
- * @param {!string} value
+ * @param {string} value
  * @param {number=} opt_index
  */
 proto.types.KeyParams.prototype.addKey = function(value, opt_index) {
@@ -7495,13 +7726,13 @@ proto.types.ServerInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = msg.getStatusMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "");
          });
       break;
     case 2:
       var value = msg.getConfigMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.types.ConfigItem.deserializeBinaryFromReader);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.types.ConfigItem.deserializeBinaryFromReader, "");
          });
       break;
     default:
@@ -7667,7 +7898,7 @@ proto.types.ConfigItem.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = msg.getPropsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "");
          });
       break;
     default:
@@ -7863,15 +8094,15 @@ proto.types.EventList.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Event events = 1;
- * @return {!Array.<!proto.types.Event>}
+ * @return {!Array<!proto.types.Event>}
  */
 proto.types.EventList.prototype.getEventsList = function() {
-  return /** @type{!Array.<!proto.types.Event>} */ (
+  return /** @type{!Array<!proto.types.Event>} */ (
     jspb.Message.getRepeatedWrapperField(this, blockchain_pb.Event, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Event>} value */
+/** @param {!Array<!proto.types.Event>} value */
 proto.types.EventList.prototype.setEventsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -8061,7 +8292,7 @@ proto.types.ConsensusInfo.prototype.getType = function() {
 
 /** @param {string} value */
 proto.types.ConsensusInfo.prototype.setType = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -8076,27 +8307,27 @@ proto.types.ConsensusInfo.prototype.getInfo = function() {
 
 /** @param {string} value */
 proto.types.ConsensusInfo.prototype.setInfo = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * repeated string bps = 3;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.ConsensusInfo.prototype.getBpsList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 3));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.types.ConsensusInfo.prototype.setBpsList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
 
 /**
- * @param {!string} value
+ * @param {string} value
  * @param {number=} opt_index
  */
 proto.types.ConsensusInfo.prototype.addBps = function(value, opt_index) {

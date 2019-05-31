@@ -165,6 +165,9 @@ export class Status extends jspb.Message {
   getNoexpose(): boolean;
   setNoexpose(value: boolean): void;
 
+  getVersion(): string;
+  setVersion(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Status.AsObject;
   static toObject(includeInstance: boolean, msg: Status): Status.AsObject;
@@ -182,6 +185,7 @@ export namespace Status {
     bestheight: number,
     chainid: Uint8Array | string,
     noexpose: boolean,
+    version: string,
   }
 }
 
@@ -232,8 +236,8 @@ export namespace AddressesRequest {
 }
 
 export class AddressesResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   clearPeersList(): void;
   getPeersList(): Array<node_pb.PeerAddress>;
@@ -252,7 +256,7 @@ export class AddressesResponse extends jspb.Message {
 
 export namespace AddressesResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     peersList: Array<node_pb.PeerAddress.AsObject>,
   }
 }
@@ -354,8 +358,8 @@ export namespace GetBlockHeadersRequest {
 }
 
 export class GetBlockHeadersResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   clearHashesList(): void;
   getHashesList(): Array<Uint8Array | string>;
@@ -384,7 +388,7 @@ export class GetBlockHeadersResponse extends jspb.Message {
 
 export namespace GetBlockHeadersResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     hashesList: Array<Uint8Array | string>,
     headersList: Array<blockchain_pb.BlockHeader.AsObject>,
     hasnext: boolean,
@@ -416,8 +420,8 @@ export namespace GetBlockRequest {
 }
 
 export class GetBlockResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   clearBlocksList(): void;
   getBlocksList(): Array<blockchain_pb.Block>;
@@ -439,7 +443,7 @@ export class GetBlockResponse extends jspb.Message {
 
 export namespace GetBlockResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     blocksList: Array<blockchain_pb.Block.AsObject>,
     hasnext: boolean,
   }
@@ -494,8 +498,8 @@ export namespace GetTransactionsRequest {
 }
 
 export class GetTransactionsResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   clearHashesList(): void;
   getHashesList(): Array<Uint8Array | string>;
@@ -524,7 +528,7 @@ export class GetTransactionsResponse extends jspb.Message {
 
 export namespace GetTransactionsResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     hashesList: Array<Uint8Array | string>,
     txsList: Array<blockchain_pb.Tx.AsObject>,
     hasnext: boolean,
@@ -586,8 +590,8 @@ export namespace GetAncestorRequest {
 }
 
 export class GetAncestorResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   getAncestorhash(): Uint8Array | string;
   getAncestorhash_asU8(): Uint8Array;
@@ -609,7 +613,7 @@ export class GetAncestorResponse extends jspb.Message {
 
 export namespace GetAncestorResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     ancestorhash: Uint8Array | string,
     ancestorno: number,
   }
@@ -636,8 +640,8 @@ export namespace GetHashByNo {
 }
 
 export class GetHashByNoResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   getBlockhash(): Uint8Array | string;
   getBlockhash_asU8(): Uint8Array;
@@ -656,7 +660,7 @@ export class GetHashByNoResponse extends jspb.Message {
 
 export namespace GetHashByNoResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     blockhash: Uint8Array | string,
   }
 }
@@ -692,8 +696,8 @@ export namespace GetHashesRequest {
 }
 
 export class GetHashesResponse extends jspb.Message {
-  getStatus(): ResultStatus;
-  setStatus(value: ResultStatus): void;
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
 
   clearHashesList(): void;
   getHashesList(): Array<Uint8Array | string>;
@@ -717,29 +721,31 @@ export class GetHashesResponse extends jspb.Message {
 
 export namespace GetHashesResponse {
   export type AsObject = {
-    status: ResultStatus,
+    status: ResultStatusMap[keyof ResultStatusMap],
     hashesList: Array<Uint8Array | string>,
     hasnext: boolean,
   }
 }
 
-export enum ResultStatus {
-  OK = 0,
-  CANCELED = 1,
-  UNKNOWN = 2,
-  INVALID_ARGUMENT = 3,
-  DEADLINE_EXCEEDED = 4,
-  NOT_FOUND = 5,
-  ALREADY_EXISTS = 6,
-  PERMISSION_DENIED = 7,
-  RESOURCE_EXHAUSTED = 8,
-  FAILED_PRECONDITION = 9,
-  ABORTED = 10,
-  OUT_OF_RANGE = 11,
-  UNIMPLEMENTED = 12,
-  INTERNAL = 13,
-  UNAVAILABLE = 14,
-  DATA_LOSS = 15,
-  UNAUTHENTICATED = 16,
+export interface ResultStatusMap {
+  OK: 0;
+  CANCELED: 1;
+  UNKNOWN: 2;
+  INVALID_ARGUMENT: 3;
+  DEADLINE_EXCEEDED: 4;
+  NOT_FOUND: 5;
+  ALREADY_EXISTS: 6;
+  PERMISSION_DENIED: 7;
+  RESOURCE_EXHAUSTED: 8;
+  FAILED_PRECONDITION: 9;
+  ABORTED: 10;
+  OUT_OF_RANGE: 11;
+  UNIMPLEMENTED: 12;
+  INTERNAL: 13;
+  UNAVAILABLE: 14;
+  DATA_LOSS: 15;
+  UNAUTHENTICATED: 16;
 }
+
+export const ResultStatus: ResultStatusMap;
 

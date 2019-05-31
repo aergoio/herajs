@@ -217,8 +217,8 @@ export class TxBody extends jspb.Message {
   getGasprice_asB64(): string;
   setGasprice(value: Uint8Array | string): void;
 
-  getType(): TxType;
-  setType(value: TxType): void;
+  getType(): TxTypeMap[keyof TxTypeMap];
+  setType(value: TxTypeMap[keyof TxTypeMap]): void;
 
   getChainidhash(): Uint8Array | string;
   getChainidhash_asU8(): Uint8Array;
@@ -249,7 +249,7 @@ export namespace TxBody {
     payload: Uint8Array | string,
     gaslimit: number,
     gasprice: Uint8Array | string,
-    type: TxType,
+    type: TxTypeMap[keyof TxTypeMap],
     chainidhash: Uint8Array | string,
     sign: Uint8Array | string,
   }
@@ -873,8 +873,10 @@ export namespace FilterInfo {
   }
 }
 
-export enum TxType {
-  NORMAL = 0,
-  GOVERNANCE = 1,
+export interface TxTypeMap {
+  NORMAL: 0;
+  GOVERNANCE: 1;
 }
+
+export const TxType: TxTypeMap;
 

@@ -174,7 +174,7 @@ proto.types.PeerAddress.prototype.getAddress = function() {
 
 /** @param {string} value */
 proto.types.PeerAddress.prototype.setAddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -189,7 +189,7 @@ proto.types.PeerAddress.prototype.getPort = function() {
 
 /** @param {number} value */
 proto.types.PeerAddress.prototype.setPort = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -228,7 +228,7 @@ proto.types.PeerAddress.prototype.getPeerid_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.PeerAddress.prototype.setPeerid = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 

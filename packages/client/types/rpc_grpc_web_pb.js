@@ -5,6 +5,7 @@ var rpc_pb = require("./rpc_pb");
 var blockchain_pb = require("./blockchain_pb");
 var account_pb = require("./account_pb");
 var metric_pb = require("./metric_pb");
+var raft_pb = require("./raft_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var AergoRPCService = (function () {
@@ -47,6 +48,15 @@ AergoRPCService.GetChainInfo = {
   responseStream: false,
   requestType: rpc_pb.Empty,
   responseType: rpc_pb.ChainInfo
+};
+
+AergoRPCService.ChainStat = {
+  methodName: "ChainStat",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Empty,
+  responseType: rpc_pb.ChainStats
 };
 
 AergoRPCService.ListBlockHeaders = {
@@ -355,6 +365,15 @@ AergoRPCService.GetConsensusInfo = {
   responseType: rpc_pb.ConsensusInfo
 };
 
+AergoRPCService.ChangeMembership = {
+  methodName: "ChangeMembership",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: raft_pb.MembershipChange,
+  responseType: raft_pb.MembershipChangeReply
+};
+
 exports.AergoRPCService = AergoRPCService;
 
 function AergoRPCServiceClient(serviceHost, options) {
@@ -486,6 +505,37 @@ AergoRPCServiceClient.prototype.getChainInfo = function getChainInfo(requestMess
   };
 };
 
+AergoRPCServiceClient.prototype.chainStat = function chainStat(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.ChainStat, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
 AergoRPCServiceClient.prototype.listBlockHeaders = function listBlockHeaders(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
@@ -566,10 +616,10 @@ AergoRPCServiceClient.prototype.listBlockStream = function listBlockStream(reque
       });
     },
     onEnd: function (status, statusMessage, trailers) {
-      listeners.end.forEach(function (handler) {
-        handler();
-      });
       listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners.end.forEach(function (handler) {
         handler({ code: status, details: statusMessage, metadata: trailers });
       });
       listeners = null;
@@ -605,10 +655,10 @@ AergoRPCServiceClient.prototype.listBlockMetadataStream = function listBlockMeta
       });
     },
     onEnd: function (status, statusMessage, trailers) {
-      listeners.end.forEach(function (handler) {
-        handler();
-      });
       listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners.end.forEach(function (handler) {
         handler({ code: status, details: statusMessage, metadata: trailers });
       });
       listeners = null;
@@ -1450,10 +1500,10 @@ AergoRPCServiceClient.prototype.listEventStream = function listEventStream(reque
       });
     },
     onEnd: function (status, statusMessage, trailers) {
-      listeners.end.forEach(function (handler) {
-        handler();
-      });
       listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners.end.forEach(function (handler) {
         handler({ code: status, details: statusMessage, metadata: trailers });
       });
       listeners = null;
@@ -1538,6 +1588,37 @@ AergoRPCServiceClient.prototype.getConsensusInfo = function getConsensusInfo(req
     callback = arguments[1];
   }
   var client = grpc.unary(AergoRPCService.GetConsensusInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.changeMembership = function changeMembership(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.ChangeMembership, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

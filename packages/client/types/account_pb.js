@@ -175,7 +175,7 @@ proto.types.Account.prototype.getAddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Account.prototype.setAddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -318,15 +318,15 @@ proto.types.AccountList.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Account accounts = 1;
- * @return {!Array.<!proto.types.Account>}
+ * @return {!Array<!proto.types.Account>}
  */
 proto.types.AccountList.prototype.getAccountsList = function() {
-  return /** @type{!Array.<!proto.types.Account>} */ (
+  return /** @type{!Array<!proto.types.Account>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Account, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Account>} value */
+/** @param {!Array<!proto.types.Account>} value */
 proto.types.AccountList.prototype.setAccountsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };

@@ -7,6 +7,7 @@ export default class BlockMetadata {
     hash: string;
     header?: BlockHeader;
     txcount: number;
+    size: number;
 
     constructor(data: Partial<BlockMetadata>) {
         Object.assign(this, data);
@@ -23,7 +24,8 @@ export default class BlockMetadata {
                 coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
                 pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8()),
             },
-            txcount: obj.txcount
+            txcount: obj.txcount,
+            size: obj.size,
         });
     }
     toGrpc() {

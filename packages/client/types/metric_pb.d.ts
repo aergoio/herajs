@@ -5,9 +5,9 @@ import * as jspb from "google-protobuf";
 
 export class MetricsRequest extends jspb.Message {
   clearTypesList(): void;
-  getTypesList(): Array<MetricType>;
-  setTypesList(value: Array<MetricType>): void;
-  addTypes(value: MetricType, index?: number): MetricType;
+  getTypesList(): Array<MetricTypeMap[keyof MetricTypeMap]>;
+  setTypesList(value: Array<MetricTypeMap[keyof MetricTypeMap]>): void;
+  addTypes(value: MetricTypeMap[keyof MetricTypeMap], index?: number): MetricTypeMap[keyof MetricTypeMap];
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MetricsRequest.AsObject;
@@ -21,7 +21,7 @@ export class MetricsRequest extends jspb.Message {
 
 export namespace MetricsRequest {
   export type AsObject = {
-    typesList: Array<MetricType>,
+    typesList: Array<MetricTypeMap[keyof MetricTypeMap]>,
   }
 }
 
@@ -85,8 +85,10 @@ export namespace PeerMetric {
   }
 }
 
-export enum MetricType {
-  NOTHING = 0,
-  P2P_NETWORK = 1,
+export interface MetricTypeMap {
+  NOTHING: 0;
+  P2P_NETWORK: 1;
 }
+
+export const MetricType: MetricTypeMap;
 

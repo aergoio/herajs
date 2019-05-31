@@ -410,8 +410,6 @@ class AergoClient {
         };
     }
 
-
-
     /**
      * Get the transactions of a block in a paged manner
      * @param hash 

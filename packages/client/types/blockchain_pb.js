@@ -223,7 +223,7 @@ proto.types.Block.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Block.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -250,7 +250,7 @@ proto.types.Block.prototype.clearHeader = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Block.prototype.hasHeader = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -280,7 +280,7 @@ proto.types.Block.prototype.clearBody = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Block.prototype.hasBody = function() {
   return jspb.Message.getField(this, 3) != null;
@@ -569,7 +569,7 @@ proto.types.BlockHeader.prototype.getChainid_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setChainid = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -608,7 +608,7 @@ proto.types.BlockHeader.prototype.getPrevblockhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setPrevblockhash = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -623,7 +623,7 @@ proto.types.BlockHeader.prototype.getBlockno = function() {
 
 /** @param {number} value */
 proto.types.BlockHeader.prototype.setBlockno = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -638,7 +638,7 @@ proto.types.BlockHeader.prototype.getTimestamp = function() {
 
 /** @param {number} value */
 proto.types.BlockHeader.prototype.setTimestamp = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -677,7 +677,7 @@ proto.types.BlockHeader.prototype.getBlocksroothash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setBlocksroothash = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -716,7 +716,7 @@ proto.types.BlockHeader.prototype.getTxsroothash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setTxsroothash = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -755,7 +755,7 @@ proto.types.BlockHeader.prototype.getReceiptsroothash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setReceiptsroothash = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
@@ -770,7 +770,7 @@ proto.types.BlockHeader.prototype.getConfirms = function() {
 
 /** @param {number} value */
 proto.types.BlockHeader.prototype.setConfirms = function(value) {
-  jspb.Message.setField(this, 8, value);
+  jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
@@ -809,7 +809,7 @@ proto.types.BlockHeader.prototype.getPubkey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setPubkey = function(value) {
-  jspb.Message.setField(this, 9, value);
+  jspb.Message.setProto3BytesField(this, 9, value);
 };
 
 
@@ -848,7 +848,7 @@ proto.types.BlockHeader.prototype.getCoinbaseaccount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setCoinbaseaccount = function(value) {
-  jspb.Message.setField(this, 10, value);
+  jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
@@ -887,7 +887,7 @@ proto.types.BlockHeader.prototype.getSign_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setSign = function(value) {
-  jspb.Message.setField(this, 11, value);
+  jspb.Message.setProto3BytesField(this, 11, value);
 };
 
 
@@ -1030,15 +1030,15 @@ proto.types.BlockBody.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Tx txs = 1;
- * @return {!Array.<!proto.types.Tx>}
+ * @return {!Array<!proto.types.Tx>}
  */
 proto.types.BlockBody.prototype.getTxsList = function() {
-  return /** @type{!Array.<!proto.types.Tx>} */ (
+  return /** @type{!Array<!proto.types.Tx>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Tx, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Tx>} value */
+/** @param {!Array<!proto.types.Tx>} value */
 proto.types.BlockBody.prototype.setTxsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -1198,15 +1198,15 @@ proto.types.TxList.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated Tx txs = 1;
- * @return {!Array.<!proto.types.Tx>}
+ * @return {!Array<!proto.types.Tx>}
  */
 proto.types.TxList.prototype.getTxsList = function() {
-  return /** @type{!Array.<!proto.types.Tx>} */ (
+  return /** @type{!Array<!proto.types.Tx>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Tx, 1));
 };
 
 
-/** @param {!Array.<!proto.types.Tx>} value */
+/** @param {!Array<!proto.types.Tx>} value */
 proto.types.TxList.prototype.setTxsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -1403,7 +1403,7 @@ proto.types.Tx.prototype.getHash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Tx.prototype.setHash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -1430,7 +1430,7 @@ proto.types.Tx.prototype.clearBody = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.Tx.prototype.hasBody = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -1683,7 +1683,7 @@ proto.types.TxBody.prototype.getNonce = function() {
 
 /** @param {number} value */
 proto.types.TxBody.prototype.setNonce = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1722,7 +1722,7 @@ proto.types.TxBody.prototype.getAccount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setAccount = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -1761,7 +1761,7 @@ proto.types.TxBody.prototype.getRecipient_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setRecipient = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -1800,7 +1800,7 @@ proto.types.TxBody.prototype.getAmount_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setAmount = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1839,7 +1839,7 @@ proto.types.TxBody.prototype.getPayload_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setPayload = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -1854,7 +1854,7 @@ proto.types.TxBody.prototype.getGaslimit = function() {
 
 /** @param {number} value */
 proto.types.TxBody.prototype.setGaslimit = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -1893,7 +1893,7 @@ proto.types.TxBody.prototype.getGasprice_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setGasprice = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
@@ -1908,7 +1908,7 @@ proto.types.TxBody.prototype.getType = function() {
 
 /** @param {!proto.types.TxType} value */
 proto.types.TxBody.prototype.setType = function(value) {
-  jspb.Message.setField(this, 8, value);
+  jspb.Message.setProto3EnumField(this, 8, value);
 };
 
 
@@ -1947,7 +1947,7 @@ proto.types.TxBody.prototype.getChainidhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setChainidhash = function(value) {
-  jspb.Message.setField(this, 9, value);
+  jspb.Message.setProto3BytesField(this, 9, value);
 };
 
 
@@ -1986,7 +1986,7 @@ proto.types.TxBody.prototype.getSign_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxBody.prototype.setSign = function(value) {
-  jspb.Message.setField(this, 10, value);
+  jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
@@ -2164,7 +2164,7 @@ proto.types.TxIdx.prototype.getBlockhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.TxIdx.prototype.setBlockhash = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -2179,7 +2179,7 @@ proto.types.TxIdx.prototype.getIdx = function() {
 
 /** @param {number} value */
 proto.types.TxIdx.prototype.setIdx = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -2349,7 +2349,7 @@ proto.types.TxInBlock.prototype.clearTxidx = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.TxInBlock.prototype.hasTxidx = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -2379,7 +2379,7 @@ proto.types.TxInBlock.prototype.clearTx = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.TxInBlock.prototype.hasTx = function() {
   return jspb.Message.getField(this, 2) != null;
@@ -2572,7 +2572,7 @@ proto.types.State.prototype.getNonce = function() {
 
 /** @param {number} value */
 proto.types.State.prototype.setNonce = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -2611,7 +2611,7 @@ proto.types.State.prototype.getBalance_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.State.prototype.setBalance = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -2650,7 +2650,7 @@ proto.types.State.prototype.getCodehash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.State.prototype.setCodehash = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -2689,7 +2689,7 @@ proto.types.State.prototype.getStorageroot_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.State.prototype.setStorageroot = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -2704,7 +2704,7 @@ proto.types.State.prototype.getSqlrecoverypoint = function() {
 
 /** @param {number} value */
 proto.types.State.prototype.setSqlrecoverypoint = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -2951,7 +2951,7 @@ proto.types.AccountProof.prototype.clearState = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.AccountProof.prototype.hasState = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -2971,7 +2971,7 @@ proto.types.AccountProof.prototype.getInclusion = function() {
 
 /** @param {boolean} value */
 proto.types.AccountProof.prototype.setInclusion = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -3010,7 +3010,7 @@ proto.types.AccountProof.prototype.getKey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountProof.prototype.setKey = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -3049,7 +3049,7 @@ proto.types.AccountProof.prototype.getProofkey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountProof.prototype.setProofkey = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -3088,7 +3088,7 @@ proto.types.AccountProof.prototype.getProofval_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountProof.prototype.setProofval = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -3127,7 +3127,7 @@ proto.types.AccountProof.prototype.getBitmap_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.AccountProof.prototype.setBitmap = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -3142,7 +3142,7 @@ proto.types.AccountProof.prototype.getHeight = function() {
 
 /** @param {number} value */
 proto.types.AccountProof.prototype.setHeight = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -3158,10 +3158,10 @@ proto.types.AccountProof.prototype.getAuditpathList = function() {
 /**
  * repeated bytes auditPath = 8;
  * This is a type-conversion wrapper around `getAuditpathList()`
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.AccountProof.prototype.getAuditpathList_asB64 = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.bytesListAsB64(
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
       this.getAuditpathList()));
 };
 
@@ -3171,10 +3171,10 @@ proto.types.AccountProof.prototype.getAuditpathList_asB64 = function() {
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuditpathList()`
- * @return {!Array.<!Uint8Array>}
+ * @return {!Array<!Uint8Array>}
  */
 proto.types.AccountProof.prototype.getAuditpathList_asU8 = function() {
-  return /** @type {!Array.<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
       this.getAuditpathList()));
 };
 
@@ -3452,7 +3452,7 @@ proto.types.ContractVarProof.prototype.getValue_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setValue = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -3469,7 +3469,7 @@ proto.types.ContractVarProof.prototype.getInclusion = function() {
 
 /** @param {boolean} value */
 proto.types.ContractVarProof.prototype.setInclusion = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -3484,7 +3484,7 @@ proto.types.ContractVarProof.prototype.getKey = function() {
 
 /** @param {string} value */
 proto.types.ContractVarProof.prototype.setKey = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3523,7 +3523,7 @@ proto.types.ContractVarProof.prototype.getProofkey_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setProofkey = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -3562,7 +3562,7 @@ proto.types.ContractVarProof.prototype.getProofval_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setProofval = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -3601,7 +3601,7 @@ proto.types.ContractVarProof.prototype.getBitmap_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.ContractVarProof.prototype.setBitmap = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -3616,7 +3616,7 @@ proto.types.ContractVarProof.prototype.getHeight = function() {
 
 /** @param {number} value */
 proto.types.ContractVarProof.prototype.setHeight = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -3632,10 +3632,10 @@ proto.types.ContractVarProof.prototype.getAuditpathList = function() {
 /**
  * repeated bytes auditPath = 8;
  * This is a type-conversion wrapper around `getAuditpathList()`
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.ContractVarProof.prototype.getAuditpathList_asB64 = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.bytesListAsB64(
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
       this.getAuditpathList()));
 };
 
@@ -3645,10 +3645,10 @@ proto.types.ContractVarProof.prototype.getAuditpathList_asB64 = function() {
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuditpathList()`
- * @return {!Array.<!Uint8Array>}
+ * @return {!Array<!Uint8Array>}
  */
 proto.types.ContractVarProof.prototype.getAuditpathList_asU8 = function() {
-  return /** @type {!Array.<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
       this.getAuditpathList()));
 };
 
@@ -3847,7 +3847,7 @@ proto.types.StateQueryProof.prototype.clearContractproof = function() {
 
 /**
  * Returns whether this field is set.
- * @return {!boolean}
+ * @return {boolean}
  */
 proto.types.StateQueryProof.prototype.hasContractproof = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -3856,15 +3856,15 @@ proto.types.StateQueryProof.prototype.hasContractproof = function() {
 
 /**
  * repeated ContractVarProof varProofs = 2;
- * @return {!Array.<!proto.types.ContractVarProof>}
+ * @return {!Array<!proto.types.ContractVarProof>}
  */
 proto.types.StateQueryProof.prototype.getVarproofsList = function() {
-  return /** @type{!Array.<!proto.types.ContractVarProof>} */ (
+  return /** @type{!Array<!proto.types.ContractVarProof>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.ContractVarProof, 2));
 };
 
 
-/** @param {!Array.<!proto.types.ContractVarProof>} value */
+/** @param {!Array<!proto.types.ContractVarProof>} value */
 proto.types.StateQueryProof.prototype.setVarproofsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -4201,7 +4201,7 @@ proto.types.Receipt.prototype.getContractaddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setContractaddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -4216,7 +4216,7 @@ proto.types.Receipt.prototype.getStatus = function() {
 
 /** @param {string} value */
 proto.types.Receipt.prototype.setStatus = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -4231,7 +4231,7 @@ proto.types.Receipt.prototype.getRet = function() {
 
 /** @param {string} value */
 proto.types.Receipt.prototype.setRet = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4270,7 +4270,7 @@ proto.types.Receipt.prototype.getTxhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setTxhash = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -4309,7 +4309,7 @@ proto.types.Receipt.prototype.getFeeused_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setFeeused = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -4348,7 +4348,7 @@ proto.types.Receipt.prototype.getCumulativefeeused_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setCumulativefeeused = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -4387,21 +4387,21 @@ proto.types.Receipt.prototype.getBloom_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setBloom = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
 /**
  * repeated Event events = 8;
- * @return {!Array.<!proto.types.Event>}
+ * @return {!Array<!proto.types.Event>}
  */
 proto.types.Receipt.prototype.getEventsList = function() {
-  return /** @type{!Array.<!proto.types.Event>} */ (
+  return /** @type{!Array<!proto.types.Event>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Event, 8));
 };
 
 
-/** @param {!Array.<!proto.types.Event>} value */
+/** @param {!Array<!proto.types.Event>} value */
 proto.types.Receipt.prototype.setEventsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 8, value);
 };
@@ -4433,7 +4433,7 @@ proto.types.Receipt.prototype.getBlockno = function() {
 
 /** @param {number} value */
 proto.types.Receipt.prototype.setBlockno = function(value) {
-  jspb.Message.setField(this, 9, value);
+  jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -4472,7 +4472,7 @@ proto.types.Receipt.prototype.getBlockhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setBlockhash = function(value) {
-  jspb.Message.setField(this, 10, value);
+  jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
@@ -4487,7 +4487,7 @@ proto.types.Receipt.prototype.getTxindex = function() {
 
 /** @param {number} value */
 proto.types.Receipt.prototype.setTxindex = function(value) {
-  jspb.Message.setField(this, 11, value);
+  jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
@@ -4526,7 +4526,7 @@ proto.types.Receipt.prototype.getFrom_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setFrom = function(value) {
-  jspb.Message.setField(this, 12, value);
+  jspb.Message.setProto3BytesField(this, 12, value);
 };
 
 
@@ -4565,7 +4565,7 @@ proto.types.Receipt.prototype.getTo_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setTo = function(value) {
-  jspb.Message.setField(this, 13, value);
+  jspb.Message.setProto3BytesField(this, 13, value);
 };
 
 
@@ -4815,7 +4815,7 @@ proto.types.Event.prototype.getContractaddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Event.prototype.setContractaddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -4830,7 +4830,7 @@ proto.types.Event.prototype.getEventname = function() {
 
 /** @param {string} value */
 proto.types.Event.prototype.setEventname = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -4845,7 +4845,7 @@ proto.types.Event.prototype.getJsonargs = function() {
 
 /** @param {string} value */
 proto.types.Event.prototype.setJsonargs = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4860,7 +4860,7 @@ proto.types.Event.prototype.getEventidx = function() {
 
 /** @param {number} value */
 proto.types.Event.prototype.setEventidx = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -4899,7 +4899,7 @@ proto.types.Event.prototype.getTxhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Event.prototype.setTxhash = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -4938,7 +4938,7 @@ proto.types.Event.prototype.getBlockhash_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Event.prototype.setBlockhash = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -4953,7 +4953,7 @@ proto.types.Event.prototype.getBlockno = function() {
 
 /** @param {number} value */
 proto.types.Event.prototype.setBlockno = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -4968,7 +4968,7 @@ proto.types.Event.prototype.getTxindex = function() {
 
 /** @param {number} value */
 proto.types.Event.prototype.setTxindex = function(value) {
-  jspb.Message.setField(this, 8, value);
+  jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
@@ -5110,7 +5110,7 @@ proto.types.FnArgument.prototype.getName = function() {
 
 /** @param {string} value */
 proto.types.FnArgument.prototype.setName = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5298,21 +5298,21 @@ proto.types.Function.prototype.getName = function() {
 
 /** @param {string} value */
 proto.types.Function.prototype.setName = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
  * repeated FnArgument arguments = 2;
- * @return {!Array.<!proto.types.FnArgument>}
+ * @return {!Array<!proto.types.FnArgument>}
  */
 proto.types.Function.prototype.getArgumentsList = function() {
-  return /** @type{!Array.<!proto.types.FnArgument>} */ (
+  return /** @type{!Array<!proto.types.FnArgument>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.FnArgument, 2));
 };
 
 
-/** @param {!Array.<!proto.types.FnArgument>} value */
+/** @param {!Array<!proto.types.FnArgument>} value */
 proto.types.Function.prototype.setArgumentsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -5346,7 +5346,7 @@ proto.types.Function.prototype.getPayable = function() {
 
 /** @param {boolean} value */
 proto.types.Function.prototype.setPayable = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -5363,7 +5363,7 @@ proto.types.Function.prototype.getView = function() {
 
 /** @param {boolean} value */
 proto.types.Function.prototype.setView = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -5529,7 +5529,7 @@ proto.types.StateVar.prototype.getName = function() {
 
 /** @param {string} value */
 proto.types.StateVar.prototype.setName = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5544,7 +5544,7 @@ proto.types.StateVar.prototype.getType = function() {
 
 /** @param {string} value */
 proto.types.StateVar.prototype.setType = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -5559,7 +5559,7 @@ proto.types.StateVar.prototype.getLen = function() {
 
 /** @param {number} value */
 proto.types.StateVar.prototype.setLen = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -5750,7 +5750,7 @@ proto.types.ABI.prototype.getVersion = function() {
 
 /** @param {string} value */
 proto.types.ABI.prototype.setVersion = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5765,21 +5765,21 @@ proto.types.ABI.prototype.getLanguage = function() {
 
 /** @param {string} value */
 proto.types.ABI.prototype.setLanguage = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
  * repeated Function functions = 3;
- * @return {!Array.<!proto.types.Function>}
+ * @return {!Array<!proto.types.Function>}
  */
 proto.types.ABI.prototype.getFunctionsList = function() {
-  return /** @type{!Array.<!proto.types.Function>} */ (
+  return /** @type{!Array<!proto.types.Function>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.Function, 3));
 };
 
 
-/** @param {!Array.<!proto.types.Function>} value */
+/** @param {!Array<!proto.types.Function>} value */
 proto.types.ABI.prototype.setFunctionsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
@@ -5802,15 +5802,15 @@ proto.types.ABI.prototype.clearFunctionsList = function() {
 
 /**
  * repeated StateVar state_variables = 4;
- * @return {!Array.<!proto.types.StateVar>}
+ * @return {!Array<!proto.types.StateVar>}
  */
 proto.types.ABI.prototype.getStateVariablesList = function() {
-  return /** @type{!Array.<!proto.types.StateVar>} */ (
+  return /** @type{!Array<!proto.types.StateVar>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.types.StateVar, 4));
 };
 
 
-/** @param {!Array.<!proto.types.StateVar>} value */
+/** @param {!Array<!proto.types.StateVar>} value */
 proto.types.ABI.prototype.setStateVariablesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
@@ -6005,7 +6005,7 @@ proto.types.Query.prototype.getContractaddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Query.prototype.setContractaddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -6044,7 +6044,7 @@ proto.types.Query.prototype.getQueryinfo_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.Query.prototype.setQueryinfo = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -6253,27 +6253,27 @@ proto.types.StateQuery.prototype.getContractaddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.StateQuery.prototype.setContractaddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
  * repeated string storageKeys = 2;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.types.StateQuery.prototype.getStoragekeysList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.types.StateQuery.prototype.setStoragekeysList = function(value) {
   jspb.Message.setField(this, 2, value || []);
 };
 
 
 /**
- * @param {!string} value
+ * @param {string} value
  * @param {number=} opt_index
  */
 proto.types.StateQuery.prototype.addStoragekeys = function(value, opt_index) {
@@ -6321,7 +6321,7 @@ proto.types.StateQuery.prototype.getRoot_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.StateQuery.prototype.setRoot = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -6338,7 +6338,7 @@ proto.types.StateQuery.prototype.getCompressed = function() {
 
 /** @param {boolean} value */
 proto.types.StateQuery.prototype.setCompressed = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -6576,7 +6576,7 @@ proto.types.FilterInfo.prototype.getContractaddress_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.FilterInfo.prototype.setContractaddress = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -6591,7 +6591,7 @@ proto.types.FilterInfo.prototype.getEventname = function() {
 
 /** @param {string} value */
 proto.types.FilterInfo.prototype.setEventname = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -6606,7 +6606,7 @@ proto.types.FilterInfo.prototype.getBlockfrom = function() {
 
 /** @param {number} value */
 proto.types.FilterInfo.prototype.setBlockfrom = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -6621,7 +6621,7 @@ proto.types.FilterInfo.prototype.getBlockto = function() {
 
 /** @param {number} value */
 proto.types.FilterInfo.prototype.setBlockto = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -6638,7 +6638,7 @@ proto.types.FilterInfo.prototype.getDesc = function() {
 
 /** @param {boolean} value */
 proto.types.FilterInfo.prototype.setDesc = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -6677,7 +6677,7 @@ proto.types.FilterInfo.prototype.getArgfilter_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.types.FilterInfo.prototype.setArgfilter = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -6692,7 +6692,7 @@ proto.types.FilterInfo.prototype.getRecentblockcnt = function() {
 
 /** @param {number} value */
 proto.types.FilterInfo.prototype.setRecentblockcnt = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3IntField(this, 7, value);
 };
 
 

@@ -60,7 +60,7 @@ export default class Tx {
             msgtxbody.setSign(this.sign);
         }
         
-        msgtxbody.setType(this.type);
+        msgtxbody.setType(this.type === 1 ? 1 : 0);
 
         if (typeof this.limit !== 'undefined') {
             msgtxbody.setGaslimit(this.limit);
