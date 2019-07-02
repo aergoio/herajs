@@ -93,7 +93,18 @@ describe('Aergo.Accounts', () => {
                 to: name,
                 chainIdHash: await aergo.getChainIdHash()
             };
-            await aergo.accounts.sendTransaction(testtx2);
+            const txhash2 = await aergo.accounts.sendTransaction(testtx2);
+            console.log(txhash2);
+        });
+        it('should error when sending to unregistered name', async () => {
+            const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
+            await aergo.accounts.unlock(testAddress, 'testpass');
+            const testtx = {
+                from: testAddress,
+                to: name,
+                chainIdHash: await aergo.getChainIdHash()
+            };
+            return assert.isRejected(aergo.accounts.sendTransaction(testtx), 'UNDEFINED_ERROR: tx invalid recipient');
         });
     });
 
@@ -112,7 +123,6 @@ describe('Aergo.Accounts', () => {
                     assert.equal(testtx.nonce, result.nonce);
                     assert.deepEqual(testtx.from.toString(), result.from.toString());
                     assert.typeOf(result.sign, 'string');
-                    assert.equal(result.sign.length, 96);
                 });
         });
     });
