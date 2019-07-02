@@ -8,6 +8,6 @@
   "license": "MIT",
   "dependencies": {
     "@herajs/client": "0.10.1",
-    "@herajs/wallet": "0.3.0"
+    "@herajs/wallet": "0.10.1"
   }
 }
