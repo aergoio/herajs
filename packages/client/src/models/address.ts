@@ -2,6 +2,8 @@ import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants';
 import bs58check from 'bs58check';
 import { Buffer } from 'buffer';
 
+let systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise'];
+
 /**
  * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
  * but client-side they are displayed as base58-check encoded strings.
@@ -13,35 +15,42 @@ export default class Address {
     isName: boolean;
 
     constructor(address: Address|string|Buffer|Uint8Array) {
+        this.isName = false;
+
         if (address instanceof Address) {
             // Copy buffer
             this.value = Buffer.from(address.value);
         } else if (typeof address === 'string') {
-            if (address.length <= ACCOUNT_NAME_LENGTH) {
-                this.value = Buffer.from(address); // .padEnd(ACCOUNT_NAME_LENGTH, "\0")
+            if (address.length <= ACCOUNT_NAME_LENGTH || Address.isSystemName(address)) {
+                this.value = Buffer.from(address);
+                this.isName = true;
             } else {
-                this.value = Address.decode(address);
+                try {
+                    this.value = Address.decode(address);
+                } catch(e) {
+                    throw new Error(`Address "${address}" could not be parsed as a base58-check encoded string and is not a valid name. ${e}`);
+                }
             }
             this.encoded = address;
         } else if (address instanceof Buffer) {
-            // Treat array-like as buffer
             this.value = address;
         } else if (address instanceof Uint8Array) {
             // Treat array-like as buffer
             this.value = Buffer.from(address);
-        }  else {
-            throw new Error('Instantiate Address with raw bytes or string in base58-check encoding, not ' + address);
+        } else {
+            throw new Error(`Instantiate Address with raw bytes, a string in base58-check encoding, or a valid name, not ${address}`);
         }
 
-        // Test if this is a name
-        this.isName = false;
-        let arrValue = Array.from(this.value);
-        while(arrValue[arrValue.length-1] === 0) {
-            arrValue.pop(); // remove trailing 0
-        }
-        if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
-            this.isName = true;
-            this.value = Buffer.from(arrValue);
+        // Check for name encoded as bytes
+        if (!this.isName) {
+            let arrValue = Array.from(this.value);
+            while(arrValue[arrValue.length-1] === 0) {
+                arrValue.pop(); // remove trailing 0
+            }
+            if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
+                this.isName = true;
+                this.value = Buffer.from(arrValue);
+            }
         }
     }
     asBytes(): Uint8Array {
@@ -75,6 +84,18 @@ export default class Address {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);
+    }
+
+    isSystemAddress(): boolean {
+        return this.isName && Address.isSystemName(this.encoded);
+    }
+
+    static isSystemName(name: string): boolean {
+        return systemAddresses.indexOf(name) !== -1;
+    }
+
+    static setSystemAddresses(addresses: string[]): void {
+        systemAddresses = addresses;
     }
 
     private static valueEqual(a: Buffer, b: Buffer) {

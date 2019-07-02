@@ -37,13 +37,38 @@ describe('Address', () => {
         assert.throws(() => new Address('abcabcabcabcabcabc'), Error, 'Invalid checksum');
         assert.throws(() => new Address('2DEMLvmHGwDgSSjYAgDS57YLM6YnrSbjswrnzXXXQD6Wa9nuUT63AcY1MV3DqyANrd2T4CEGF'), Error, 'invalid address length (48)');
     });
-    it('should encode account names', () => {
+    it('should encode account names from bytes', () => {
         const a1 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109]));
         assert.equal(a1.toString(), 'aergo.system');
         const a2 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
         assert.equal(a2.toString(), 'aergo.system');
         const a3 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 110, 97, 109, 101]));
-        assert.equal(a3.toString(), 'aergo.name');     
+        assert.equal(a3.toString(), 'aergo.name');
+    });
+    it('should recognize system addresses', () => {
+        const systemAddresses = ['aergo.system', 'aergo.enterprise', 'aergo.name'];
+        const nonSystemAddresses = ['aergosystem', 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX'];
+        const invalidAddresses = ['aergo.something', 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HXABC'];
+        for (const addr of systemAddresses) {
+            const obj = new Address(addr);
+            assert.equal(obj.toString(), addr);
+            assert.isTrue(obj.isSystemAddress(), `Expected ${addr} to be parsed as system address`);
+        }
+        for (const addr of nonSystemAddresses) {
+            const obj = new Address(addr);
+            assert.equal(obj.toString(), addr);
+            assert.isFalse(obj.isSystemAddress(), `Expected ${addr} to not be parsed as system address`);
+        }
+        for (const addr of invalidAddresses) {
+            assert.throws(() => {
+                new Address(addr);
+            });
+        }
+    });
+    it('should be able to set custom system addresses', () => {
+        Address.setSystemAddresses(['foo.bar']);
+        assert.isTrue(new Address('foo.bar').isSystemAddress());
+        assert.isFalse(new Address('aergo.system').isSystemAddress());
     });
 });
 
