@@ -56,6 +56,7 @@ describe('Wallet scenarios', async () => {
         // Set up account and key
         const account = await wallet.accountManager.createAccount();
 
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // Build tx
             const tx = {
@@ -96,6 +97,7 @@ describe('Wallet scenarios', async () => {
         const account = await wallet.accountManager.createAccount();
         await wallet.lock();
 
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // Build tx
             const tx = {

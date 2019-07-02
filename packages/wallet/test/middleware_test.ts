@@ -37,7 +37,7 @@ class Client extends MiddlewareConsumer {
     middlewareRequired(key: string): number {
         return this.applyMiddlewares<string, number>('middlewareRequired')()(key);
     }
-    get keystore() {
+    get keystore(): Record<string, any> {
         return this.applyMiddlewares<undefined, Record<string, any>>('keystore')()(undefined);
     }
 }

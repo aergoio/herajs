@@ -21,6 +21,7 @@ function pollTxStatus(hash) {
 }
 
 async function step() {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
         const createdAddress = await aergo.accounts.create('testpass');
         const address = await aergo.accounts.unlock(createdAddress, 'testpass');

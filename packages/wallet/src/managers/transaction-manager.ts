@@ -161,7 +161,7 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
 
     resume(): void {
         this.load().catch((e) => {
-            console.error('Loading account tx failed, pausing tracker', e);
+            //console.error('Loading account tx failed, pausing tracker', e);
             this.pause();
         });
         this.intervalId = setInterval(() => {
@@ -286,7 +286,9 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
     async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> { // implicit send, add, and track
         const client = this.wallet.getClient(transaction.data.chainId);
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
+        // eslint-disable-next-line require-atomic-updates
         transaction.key = txhash;
+        // eslint-disable-next-line require-atomic-updates
         transaction.data.hash = txhash;
         this.addTransaction(transaction);
         return this.trackTransaction(transaction);

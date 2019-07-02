@@ -243,9 +243,11 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             tx.payload = Uint8Array.from(tx.payload || []);
         }
         if (typeof tx.nonce === 'undefined') {
+            // eslint-disable-next-line require-atomic-updates
             tx.nonce = await this.getNonceForAccount(account);
         }
         if (typeof tx.chainIdHash === 'undefined') {
+            // eslint-disable-next-line require-atomic-updates
             tx.chainIdHash = await this.getChainIdHashForAccount(account);
         }
         return new Transaction('', {
