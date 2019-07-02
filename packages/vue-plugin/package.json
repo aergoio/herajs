@@ -7,7 +7,7 @@
   "author": "aergo team and contributors",
   "license": "MIT",
   "dependencies": {
-    "@herajs/client": "0.8.6",
+    "@herajs/client": "0.10.1",
     "@herajs/wallet": "0.3.0"
   }
 }
