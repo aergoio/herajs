@@ -1,3 +1,12 @@
+## 0.10.0 (May 31, 2019)
+
+- Add Address.isSystemAddress function
+- Change version to be in-sync with wallet and crypto
+
+## 0.9.0 (May 31, 2019)
+
+- Configuration and build changes
+
 ## 0.8.6 (April 8, 2019)
 
 - New API method: getServerInfo()
