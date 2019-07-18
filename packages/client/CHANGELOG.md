@@ -1,4 +1,8 @@
-## 0.10.0 (May 31, 2019)
+## 0.10.2 (July 18, 2019)
+
+- Bug fix: Address did not recognize certain system addresses passed in as bytes
+
+## 0.10.0 (June 31, 2019)
 
 - Add Address.isSystemAddress function
 - Change version to be in-sync with wallet and crypto
