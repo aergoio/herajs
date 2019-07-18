@@ -47,7 +47,7 @@ export default class Address {
             while(arrValue[arrValue.length-1] === 0) {
                 arrValue.pop(); // remove trailing 0
             }
-            if (arrValue.length <= ACCOUNT_NAME_LENGTH) {
+            if (arrValue.length <= ACCOUNT_NAME_LENGTH || Address.isSystemName(this.value.toString())) {
                 this.isName = true;
                 this.value = Buffer.from(arrValue);
             }

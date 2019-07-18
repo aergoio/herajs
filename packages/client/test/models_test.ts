@@ -44,6 +44,8 @@ describe('Address', () => {
         assert.equal(a2.toString(), 'aergo.system');
         const a3 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 110, 97, 109, 101]));
         assert.equal(a3.toString(), 'aergo.name');
+        const a4 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 101, 110, 116, 101, 114, 112, 114, 105, 115, 101]));
+        assert.equal(a4.toString(), 'aergo.enterprise');
     });
     it('should recognize system addresses', () => {
         const systemAddresses = ['aergo.system', 'aergo.enterprise', 'aergo.name'];
