@@ -6,7 +6,7 @@
     "test": "lerna run test --stream",
     "lint": "lerna run lint",
     "build": "lerna run build",
-    "publish": "lerna run build && lerna publish",
+    "build-publish": "lerna run build && lerna publish",
     "clean": "yarn cache clean && rm -rf packages/@herajs/client/dist && rm -rf packages/@herajs/wallet/dist && rm -rf packages/@herajs/crypto/dist"
   },
   "workspaces": [
