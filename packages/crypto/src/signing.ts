@@ -1,6 +1,6 @@
 import { ec } from 'elliptic';
 import { hashTransaction } from './hashing';
-
+import { Buffer } from 'buffer';
 
 /**
  * Returns signature encoded in DER format in base64.

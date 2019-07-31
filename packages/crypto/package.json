@@ -35,5 +35,9 @@
     "bs58check": "^2.1.2",
     "elliptic": "^6.4.1",
     "jsbi": "^3.0.0"
+  },
+  "devDependencies": {
+    "rollup-plugin-ignore": "^1.0.5",
+    "rollup-plugin-terser": "^5.1.1"
   }
 }

@@ -4,6 +4,8 @@ import babel from 'rollup-plugin-babel';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import json from 'rollup-plugin-json';
+import ignore from 'rollup-plugin-ignore';
+import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 import { resolve as _resolve } from 'path';
@@ -17,58 +19,75 @@ const extensions = [
 const name = 'HerajsCrypto';
 
 const namedExports = {
-    [resolvePath('node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
+    [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
 };
 
 const builtinExternal = [
     'crypto'
 ];
 
-const external = Object.keys(pkg.dependencies).concat(...builtinExternal);
-
-export default {
-    input: './src/index.ts',
-    
-    external,
-    
-    plugins: [
-        resolve({ extensions }),
+function genConfig(browser = false, output) {
+    const external = browser ? [] : Object.keys(pkg.dependencies).concat(...builtinExternal);
+    return {
+        input: './src/index.ts',
         
-        commonjs({ namedExports }),
-
-        json(),
+        external,
         
-        babel({ extensions, include: ['src/**/*'] }),
-
-        builtins(),
-        globals(),
-    ],
+        plugins: [
+            browser
+                ? resolve({ extensions, preferBuiltins: true, browser: true })
+                : resolve({ extensions, preferBuiltins: true }),
+            
+            commonjs({ namedExports }),
     
-    output: [{
+            json(),
+            
+            babel({ extensions, include: ['src/**/*'] }),
+    
+            globals(),
+            builtins(),
+            
+            terser({
+                include: [/^.+\.min\.js$/], 
+            }),
+
+            browser ? ignore(builtinExternal) : undefined,
+        ],
+        
+        output,
+    
+        onwarn(warning, warn) {
+            const ignoredCircular = [
+                'elliptic'
+            ];
+            if (
+                warning.code === 'CIRCULAR_DEPENDENCY' &&
+                ignoredCircular.some(d => warning.importer.includes(d))
+            ) {
+                return;
+            }
+            warn(warning.message);
+        },
+    }
+}
+
+export default [
+    // CJS and ES builds with external dependencies
+    genConfig(false, [{
         file: pkg.main,
         format: 'cjs',
     }, {
         file: pkg.module,
         format: 'es',
-    }, {
+    }]),
+    // UMD build with bundled dependencies
+    genConfig(true, [{
         file: pkg.browser,
         format: 'umd',
         name,
-        globals: external.reduce((prev, cur) => {
-            prev[cur] = cur; return prev;
-        }, {}),
-    }],
-
-    onwarn(warning, warn) {
-        const ignoredCircular = [
-            'elliptic'
-        ];
-        if (
-            warning.code === 'CIRCULAR_DEPENDENCY' &&
-            ignoredCircular.some(d => warning.importer.includes(d))
-        ) {
-            return;
-        }
-        warn(warning.message);
-    },
-};
+    }, {
+        file: pkg.browser.replace(/\.js$/, '.min.js'),
+        format: 'umd',
+        name,
+    }])
+];

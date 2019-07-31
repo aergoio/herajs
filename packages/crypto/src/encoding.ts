@@ -3,6 +3,7 @@ import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from './constants';
 import JSBI from 'jsbi';
 import { padStart } from './utils';
 import bs58 from 'bs58';
+import { Buffer } from 'buffer';
 
 /**
  * Convert Uint8 array to hex string

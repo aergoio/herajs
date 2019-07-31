@@ -2,6 +2,7 @@ import { ec } from 'elliptic';
 import { fromNumber, fromBigInt, decodeAddress, encodeTxHash } from './encoding';
 import bs58 from 'bs58';
 import JSBI from 'jsbi';
+import { Buffer } from 'buffer';
 
 const ecdsa = new ec('secp256k1');
 

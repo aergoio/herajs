@@ -1,6 +1,7 @@
 import { ec } from 'elliptic';
 import { AES_GCM } from 'asmcrypto.js';
 import { encodeAddress, decodeAddress } from './encoding';
+import { Buffer } from 'buffer';
 
 const ecdsa = new ec('secp256k1');
 
