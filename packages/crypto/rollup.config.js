@@ -23,7 +23,7 @@ const namedExports = {
 };
 
 const builtinExternal = [
-    'crypto'
+    'crypto', 'buffer'
 ];
 
 function genConfig(browser = false, output) {
