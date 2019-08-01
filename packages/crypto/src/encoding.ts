@@ -5,10 +5,15 @@ import { padStart } from './utils';
 import bs58 from 'bs58';
 import { Buffer } from 'buffer';
 
+const systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise'];
+function isSystemAddress(address: string): boolean {
+    return systemAddresses.indexOf(address) !== -1;
+}
+
 /**
  * Convert Uint8 array to hex string
  * @param {string} hexString
- * @return {Uint8Array} 
+ * @return {Uint8Array}
  */
 const fromHexString = function(hexString: string): Uint8Array {
     if (hexString.length % 2 === 1) hexString = '0' + hexString;
@@ -19,7 +24,7 @@ const fromHexString = function(hexString: string): Uint8Array {
 
 /**
  * Convert Uint8 array to hex string
- * @param {Uint8Array} bytes 
+ * @param {Uint8Array} bytes
  * @return {string}
  */
 const toHexString = function(bytes: Uint8Array): string {
@@ -28,7 +33,7 @@ const toHexString = function(bytes: Uint8Array): string {
 
 /**
  * Convert number to Uint8 array
- * @param {number} d 
+ * @param {number} d
  * @param {number} bitLength default 64, can also use 32
  */
 const fromNumber = (d: number, bitLength = 64): Uint8Array => {
@@ -45,17 +50,17 @@ const fromNumber = (d: number, bitLength = 64): Uint8Array => {
 
 /**
  * Convert BigInt to Uint8 array
- * @param {JSBI} d 
+ * @param {JSBI} d
  */
 const fromBigInt = (d: JSBI | string | number): Uint8Array => fromHexString(JSBI.BigInt(d).toString(16));
 
 /**
  * Encodes address form byte array to string.
- * @param {number[]} byteArray 
+ * @param {number[]} byteArray
  * @param {string} address
  */
 const encodeAddress = (byteArray: Uint8Array): string => {
-    if (byteArray.length <= ACCOUNT_NAME_LENGTH) {
+    if (byteArray.length <= ACCOUNT_NAME_LENGTH || isSystemAddress(Buffer.from(byteArray).toString())) {
         return Buffer.from(byteArray).toString();
     }
     const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
@@ -68,7 +73,7 @@ const encodeAddress = (byteArray: Uint8Array): string => {
  * @return {number[]} byte array
  */
 const decodeAddress = (address: string): Uint8Array => {
-    if (address.length <= ACCOUNT_NAME_LENGTH) {
+    if (address.length <= ACCOUNT_NAME_LENGTH || isSystemAddress(address)) {
         return Buffer.from(address);
     }
     return bs58check.decode(address).slice(1);

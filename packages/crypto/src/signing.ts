@@ -20,7 +20,6 @@ const signMessage = async (msgHash: Buffer, key: ec.KeyPair, enc = 'base64'): Pr
     return encodeSignature(sig, enc);
 };
 
-
 /**
  * Sign transaction with key.
  * @param {object} tx transaction
