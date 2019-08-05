@@ -22,7 +22,7 @@
     "@babel/preset-env": "7.4.5",
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "^7.4.4",
-    "@improbable-eng/grpc-web-node-http-transport": "^0.9.1",
+    "@improbable-eng/grpc-web-node-http-transport": "^0.10.0",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^5.2.6",
