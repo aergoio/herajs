@@ -745,10 +745,10 @@
   resolved "https://registry.yarnpkg.com/@elderapo/typed-event-emitter/-/typed-event-emitter-1.5.1.tgz#63e2b406e9e1dd39950402618fafe194e779e660"
   integrity sha512-jQ1GfrrPmLKlWCd+FfqzaFZ4jErgvnFghu0Oc3QHygmt9LeXZDvq0tbI/2PKlx+NXQJ/tjDUMrj54K+7KXOTEw==
 
-"@improbable-eng/grpc-web-node-http-transport@^0.9.1":
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.9.5.tgz#b727c65841d6b8406f08012d73cfb1ffce733f51"
-  integrity sha512-bKU/qa5gbghSeP5VMxXU9O2DBPbhw7+MwoWSQpuRfbfpvRJ17geUUGNK72HSDnBMWMI89e5f/ZGqZ1vvn3WUlg==
+"@improbable-eng/grpc-web-node-http-transport@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.10.0.tgz#0e82c69690812c84870b26d732c86845093370c4"
+  integrity sha512-ZyWk/BaNCnCEMtunarMUwqSXP8SIA2cnY6Gou1TM6zfA1l3aQ2c1qUnKTomT8V32FIHRute28tMwHm76jFjuvQ==
 
 "@improbable-eng/grpc-web@^0.9.1":
   version "0.9.6"
