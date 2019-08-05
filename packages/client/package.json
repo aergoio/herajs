@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
-    "@improbable-eng/grpc-web": "^0.9.1",
+    "@improbable-eng/grpc-web": "^0.10.0",
     "@types/google-protobuf": "^3.2.7",
     "bs58": "^4.0.1",
     "bs58check": "^2.1.2",
