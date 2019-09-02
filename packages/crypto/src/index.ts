@@ -2,7 +2,7 @@ export {
     encodeAddress,
     decodeAddress,
     encodePrivateKey,
-    decodePrivateKey
+    decodePrivateKey,
 } from './encoding';
 
 export {
@@ -11,16 +11,17 @@ export {
     addressFromPublicKey,
     publicKeyFromAddress,
     decryptPrivateKey,
-    encryptPrivateKey
+    encryptPrivateKey,
 } from './keys';
 
 export {
     signMessage,
     signTransaction,
     verifySignature,
-    verifyTxSignature
+    verifyTxSignature,
 } from './signing';
 
 export {
-    hashTransaction
+    hash,
+    hashTransaction,
 } from './hashing';
