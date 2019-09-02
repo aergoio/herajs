@@ -9,6 +9,7 @@ import Address from '../src/models/address';
 import { longPolling } from '../src/utils';
 
 import JSBI from 'jsbi';
+import Amount from '../src/models/amount';
 
 const waitFor = (ms) => new Promise(resolve => {
     setTimeout(resolve, ms);
@@ -155,7 +156,7 @@ describe('Aergo.Accounts', () => {
 
             // Tx has receipt
             const txReceipt = await aergo.getTransactionReceipt(tx.hash);
-            assert.isTrue(txReceipt.fee.equal(0));
+            assert.isTrue(txReceipt.fee.equal(new Amount('2000000000000000 aer')));
             assert.isTrue(txReceipt.cumulativefee.equal(0));
             assert.equal(txReceipt.blockhash, tx2.block.hash);
 
@@ -222,34 +223,5 @@ describe('Aergo.Accounts', () => {
             assert.equal(info.owner.toString(), testAddress);
             assert.equal(info.destination.toString(), testAddress);
         });
-    });
-
-    describe('staking', () => {
-        let testaddress;
-
-        it('should stake', async () => {
-            const info = await aergo.getChainInfo();
-
-            testaddress = await aergo.accounts.create('testpass');
-            await aergo.accounts.unlock(testaddress, 'testpass');
-            const testtx = {
-                from: testaddress,
-                to: 'aergo.system',
-                amount: info.stakingminimum,
-                payload: '{"Name":"v1stake"}',
-                type: 1,
-                chainIdHash: await aergo.getChainIdHash()
-            };
-            const txhash = await aergo.accounts.sendTransaction(testtx);
-            await longPolling(async () => {
-                return await aergo.getTransaction(txhash);
-            }, result => 'block' in result, 2000);
-        }).timeout(2500);
-
-        /*it('should return staking info', async () => {
-            const state = await aergo.getStaking(testaddress);
-            assert.equal(state.amount.toUnit('aergo').toString(), '1 aergo');
-            assert.isTrue(state.when > 0);
-        });*/
     });
 });

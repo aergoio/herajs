@@ -3,6 +3,7 @@ import bs58check from 'bs58check';
 import { fromNumber } from '../utils.js';
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
+import { hash } from '@herajs/crypto';
 
 type _PrimitiveType = string | number | boolean;
 export type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
@@ -109,7 +110,10 @@ export class StateQuery {
     toGrpc() {
         const q = new GrpcStateQuery();
         q.setContractaddress(this.contractInstance.address.asBytes());
-        q.setStoragekeysList(this.storageKeys);
+        const storageKeys = this.storageKeys.map((key: string) => {
+            return Buffer.from(hash(Buffer.from(key)));
+        });
+        q.setStoragekeysList(storageKeys);
         return q;
     }
 }

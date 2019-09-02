@@ -91,7 +91,7 @@ describe('Aergo', () => {
             const info = await aergo.getNodeState();
             assert.equal(info.AccountsSvc.status, 'started');
             assert.isTrue(Object.keys(info).length > 1);
-        });
+        }).timeout(10000);
         it('should return node state for single components', async () => {
             const info = await aergo.getNodeState('RPCSvc');
             assert.equal(info.RPCSvc.status, 'started');

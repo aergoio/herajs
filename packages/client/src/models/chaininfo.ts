@@ -14,6 +14,7 @@ export default class ChainInfo {
     maxblocksize: number;
     maxtokens: Amount;
     stakingminimum: Amount;
+    stakingtotal: Amount;
 
     constructor(data: Partial<ChainInfo>) {
         Object.assign(this, data);
@@ -32,6 +33,7 @@ export default class ChainInfo {
             maxblocksize: grpcObject.getMaxblocksize(),
             maxtokens: new Amount(grpcObject.getMaxtokens_asU8()),
             stakingminimum: new Amount(grpcObject.getStakingminimum_asU8()),
+            stakingtotal: new Amount(grpcObject.getTotalstaking_asU8()),
         });
     }
 
