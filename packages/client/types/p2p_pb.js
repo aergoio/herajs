@@ -1120,7 +1120,8 @@ proto.types.Status.toObject = function(includeInstance, msg) {
     bestheight: jspb.Message.getFieldWithDefault(msg, 3, 0),
     chainid: msg.getChainid_asB64(),
     noexpose: jspb.Message.getFieldWithDefault(msg, 5, false),
-    version: jspb.Message.getFieldWithDefault(msg, 6, "")
+    version: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    genesis: msg.getGenesis_asB64()
   };
 
   if (includeInstance) {
@@ -1181,6 +1182,10 @@ proto.types.Status.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setVersion(value);
+      break;
+    case 7:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setGenesis(value);
       break;
     default:
       reader.skipField();
@@ -1251,6 +1256,13 @@ proto.types.Status.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       6,
+      f
+    );
+  }
+  f = message.getGenesis_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      7,
       f
     );
   }
@@ -1409,6 +1421,45 @@ proto.types.Status.prototype.getVersion = function() {
 /** @param {string} value */
 proto.types.Status.prototype.setVersion = function(value) {
   jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional bytes genesis = 7;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.Status.prototype.getGenesis = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * optional bytes genesis = 7;
+ * This is a type-conversion wrapper around `getGenesis()`
+ * @return {string}
+ */
+proto.types.Status.prototype.getGenesis_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getGenesis()));
+};
+
+
+/**
+ * optional bytes genesis = 7;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getGenesis()`
+ * @return {!Uint8Array}
+ */
+proto.types.Status.prototype.getGenesis_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getGenesis()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.Status.prototype.setGenesis = function(value) {
+  jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 

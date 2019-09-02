@@ -168,6 +168,11 @@ export class Status extends jspb.Message {
   getVersion(): string;
   setVersion(value: string): void;
 
+  getGenesis(): Uint8Array | string;
+  getGenesis_asU8(): Uint8Array;
+  getGenesis_asB64(): string;
+  setGenesis(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Status.AsObject;
   static toObject(includeInstance: boolean, msg: Status): Status.AsObject;
@@ -186,6 +191,7 @@ export namespace Status {
     chainid: Uint8Array | string,
     noexpose: boolean,
     version: string,
+    genesis: Uint8Array | string,
   }
 }
 

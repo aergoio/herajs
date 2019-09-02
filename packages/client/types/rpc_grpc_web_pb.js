@@ -374,6 +374,24 @@ AergoRPCService.ChangeMembership = {
   responseType: raft_pb.MembershipChangeReply
 };
 
+AergoRPCService.GetEnterpriseConfig = {
+  methodName: "GetEnterpriseConfig",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.EnterpriseConfigKey,
+  responseType: rpc_pb.EnterpriseConfig
+};
+
+AergoRPCService.GetConfChangeProgress = {
+  methodName: "GetConfChangeProgress",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.SingleBytes,
+  responseType: raft_pb.ConfChangeProgress
+};
+
 exports.AergoRPCService = AergoRPCService;
 
 function AergoRPCServiceClient(serviceHost, options) {
@@ -1619,6 +1637,68 @@ AergoRPCServiceClient.prototype.changeMembership = function changeMembership(req
     callback = arguments[1];
   }
   var client = grpc.unary(AergoRPCService.ChangeMembership, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getEnterpriseConfig = function getEnterpriseConfig(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.GetEnterpriseConfig, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AergoRPCServiceClient.prototype.getConfChangeProgress = function getConfChangeProgress(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.GetConfChangeProgress, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

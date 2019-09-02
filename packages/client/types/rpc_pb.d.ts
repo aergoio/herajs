@@ -26,6 +26,11 @@ export class BlockchainStatus extends jspb.Message {
   getBestChainIdHash_asB64(): string;
   setBestChainIdHash(value: Uint8Array | string): void;
 
+  hasChainInfo(): boolean;
+  clearChainInfo(): void;
+  getChainInfo(): ChainInfo | undefined;
+  setChainInfo(value?: ChainInfo): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockchainStatus.AsObject;
   static toObject(includeInstance: boolean, msg: BlockchainStatus): BlockchainStatus.AsObject;
@@ -42,6 +47,7 @@ export namespace BlockchainStatus {
     bestHeight: number,
     consensusInfo: string,
     bestChainIdHash: Uint8Array | string,
+    chainInfo?: ChainInfo.AsObject,
   }
 }
 
@@ -1117,6 +1123,56 @@ export namespace ConsensusInfo {
     type: string,
     info: string,
     bpsList: Array<string>,
+  }
+}
+
+export class EnterpriseConfigKey extends jspb.Message {
+  getKey(): string;
+  setKey(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EnterpriseConfigKey.AsObject;
+  static toObject(includeInstance: boolean, msg: EnterpriseConfigKey): EnterpriseConfigKey.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EnterpriseConfigKey, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnterpriseConfigKey;
+  static deserializeBinaryFromReader(message: EnterpriseConfigKey, reader: jspb.BinaryReader): EnterpriseConfigKey;
+}
+
+export namespace EnterpriseConfigKey {
+  export type AsObject = {
+    key: string,
+  }
+}
+
+export class EnterpriseConfig extends jspb.Message {
+  getKey(): string;
+  setKey(value: string): void;
+
+  getOn(): boolean;
+  setOn(value: boolean): void;
+
+  clearValuesList(): void;
+  getValuesList(): Array<string>;
+  setValuesList(value: Array<string>): void;
+  addValues(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EnterpriseConfig.AsObject;
+  static toObject(includeInstance: boolean, msg: EnterpriseConfig): EnterpriseConfig.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EnterpriseConfig, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnterpriseConfig;
+  static deserializeBinaryFromReader(message: EnterpriseConfig, reader: jspb.BinaryReader): EnterpriseConfig;
+}
+
+export namespace EnterpriseConfig {
+  export type AsObject = {
+    key: string,
+    on: boolean,
+    valuesList: Array<string>,
   }
 }
 
