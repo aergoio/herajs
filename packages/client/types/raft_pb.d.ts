@@ -11,8 +11,8 @@ export class MemberAttr extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
-  getUrl(): string;
-  setUrl(value: string): void;
+  getAddress(): string;
+  setAddress(value: string): void;
 
   getPeerid(): Uint8Array | string;
   getPeerid_asU8(): Uint8Array;
@@ -33,7 +33,7 @@ export namespace MemberAttr {
   export type AsObject = {
     id: number,
     name: string,
-    url: string,
+    address: string,
     peerid: Uint8Array | string,
   }
 }
@@ -41,6 +41,9 @@ export namespace MemberAttr {
 export class MembershipChange extends jspb.Message {
   getType(): MembershipChangeTypeMap[keyof MembershipChangeTypeMap];
   setType(value: MembershipChangeTypeMap[keyof MembershipChangeTypeMap]): void;
+
+  getRequestid(): number;
+  setRequestid(value: number): void;
 
   hasAttr(): boolean;
   clearAttr(): void;
@@ -60,6 +63,7 @@ export class MembershipChange extends jspb.Message {
 export namespace MembershipChange {
   export type AsObject = {
     type: MembershipChangeTypeMap[keyof MembershipChangeTypeMap],
+    requestid: number,
     attr?: MemberAttr.AsObject,
   }
 }
@@ -138,6 +142,9 @@ export class GetClusterInfoResponse extends jspb.Message {
   getChainid_asB64(): string;
   setChainid(value: Uint8Array | string): void;
 
+  getClusterid(): number;
+  setClusterid(value: number): void;
+
   getError(): string;
   setError(value: string): void;
 
@@ -145,6 +152,9 @@ export class GetClusterInfoResponse extends jspb.Message {
   getMbrattrsList(): Array<MemberAttr>;
   setMbrattrsList(value: Array<MemberAttr>): void;
   addMbrattrs(value?: MemberAttr, index?: number): MemberAttr;
+
+  getBestblockno(): number;
+  setBestblockno(value: number): void;
 
   hasHardstateinfo(): boolean;
   clearHardstateinfo(): void;
@@ -164,9 +174,65 @@ export class GetClusterInfoResponse extends jspb.Message {
 export namespace GetClusterInfoResponse {
   export type AsObject = {
     chainid: Uint8Array | string,
+    clusterid: number,
     error: string,
     mbrattrsList: Array<MemberAttr.AsObject>,
+    bestblockno: number,
     hardstateinfo?: HardStateInfo.AsObject,
+  }
+}
+
+export class ConfChangeProgress extends jspb.Message {
+  getState(): ConfChangeStateMap[keyof ConfChangeStateMap];
+  setState(value: ConfChangeStateMap[keyof ConfChangeStateMap]): void;
+
+  getErr(): string;
+  setErr(value: string): void;
+
+  clearMembersList(): void;
+  getMembersList(): Array<MemberAttr>;
+  setMembersList(value: Array<MemberAttr>): void;
+  addMembers(value?: MemberAttr, index?: number): MemberAttr;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ConfChangeProgress.AsObject;
+  static toObject(includeInstance: boolean, msg: ConfChangeProgress): ConfChangeProgress.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ConfChangeProgress, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ConfChangeProgress;
+  static deserializeBinaryFromReader(message: ConfChangeProgress, reader: jspb.BinaryReader): ConfChangeProgress;
+}
+
+export namespace ConfChangeProgress {
+  export type AsObject = {
+    state: ConfChangeStateMap[keyof ConfChangeStateMap],
+    err: string,
+    membersList: Array<MemberAttr.AsObject>,
+  }
+}
+
+export class SnapshotResponse extends jspb.Message {
+  getStatus(): p2p_pb.ResultStatusMap[keyof p2p_pb.ResultStatusMap];
+  setStatus(value: p2p_pb.ResultStatusMap[keyof p2p_pb.ResultStatusMap]): void;
+
+  getMessage(): string;
+  setMessage(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SnapshotResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: SnapshotResponse): SnapshotResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SnapshotResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SnapshotResponse;
+  static deserializeBinaryFromReader(message: SnapshotResponse, reader: jspb.BinaryReader): SnapshotResponse;
+}
+
+export namespace SnapshotResponse {
+  export type AsObject = {
+    status: p2p_pb.ResultStatusMap[keyof p2p_pb.ResultStatusMap],
+    message: string,
   }
 }
 
@@ -176,4 +242,12 @@ export interface MembershipChangeTypeMap {
 }
 
 export const MembershipChangeType: MembershipChangeTypeMap;
+
+export interface ConfChangeStateMap {
+  CONF_CHANGE_STATE_PROPOSED: 0;
+  CONF_CHANGE_STATE_SAVED: 1;
+  CONF_CHANGE_STATE_APPLIED: 2;
+}
+
+export const ConfChangeState: ConfChangeStateMap;
 

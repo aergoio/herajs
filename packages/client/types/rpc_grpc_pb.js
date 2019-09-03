@@ -208,6 +208,17 @@ function deserialize_types_CommitResultList(buffer_arg) {
   return rpc_pb.CommitResultList.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_types_ConfChangeProgress(arg) {
+  if (!(arg instanceof raft_pb.ConfChangeProgress)) {
+    throw new Error('Expected argument of type types.ConfChangeProgress');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_ConfChangeProgress(buffer_arg) {
+  return raft_pb.ConfChangeProgress.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_types_ConsensusInfo(arg) {
   if (!(arg instanceof rpc_pb.ConsensusInfo)) {
     throw new Error('Expected argument of type types.ConsensusInfo');
@@ -228,6 +239,28 @@ function serialize_types_Empty(arg) {
 
 function deserialize_types_Empty(buffer_arg) {
   return rpc_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_EnterpriseConfig(arg) {
+  if (!(arg instanceof rpc_pb.EnterpriseConfig)) {
+    throw new Error('Expected argument of type types.EnterpriseConfig');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_EnterpriseConfig(buffer_arg) {
+  return rpc_pb.EnterpriseConfig.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_types_EnterpriseConfigKey(arg) {
+  if (!(arg instanceof rpc_pb.EnterpriseConfigKey)) {
+    throw new Error('Expected argument of type types.EnterpriseConfigKey');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_types_EnterpriseConfigKey(buffer_arg) {
+  return rpc_pb.EnterpriseConfigKey.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_types_Event(arg) {
@@ -1044,6 +1077,30 @@ var AergoRPCServiceService = exports.AergoRPCServiceService = {
     requestDeserialize: deserialize_types_MembershipChange,
     responseSerialize: serialize_types_MembershipChangeReply,
     responseDeserialize: deserialize_types_MembershipChangeReply,
+  },
+  // Returns enterprise config
+  getEnterpriseConfig: {
+    path: '/types.AergoRPCService/GetEnterpriseConfig',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.EnterpriseConfigKey,
+    responseType: rpc_pb.EnterpriseConfig,
+    requestSerialize: serialize_types_EnterpriseConfigKey,
+    requestDeserialize: deserialize_types_EnterpriseConfigKey,
+    responseSerialize: serialize_types_EnterpriseConfig,
+    responseDeserialize: deserialize_types_EnterpriseConfig,
+  },
+  // Return a status of changeCluster enterprise tx,  queried by requestID
+  getConfChangeProgress: {
+    path: '/types.AergoRPCService/GetConfChangeProgress',
+    requestStream: false,
+    responseStream: false,
+    requestType: rpc_pb.SingleBytes,
+    responseType: raft_pb.ConfChangeProgress,
+    requestSerialize: serialize_types_SingleBytes,
+    requestDeserialize: deserialize_types_SingleBytes,
+    responseSerialize: serialize_types_ConfChangeProgress,
+    responseDeserialize: deserialize_types_ConfChangeProgress,
   },
 };
 
