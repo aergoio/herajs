@@ -1,3 +1,9 @@
+## 0.11.0 (September 3, 2019)
+
+- Support for Aergo 1.2
+- Updated implementation of queryState
+- Added `stakingtotal` amount to chain info
+
 ## 0.10.2 (July 18, 2019)
 
 - Bug fix: Address did not recognize certain system addresses passed in as bytes
