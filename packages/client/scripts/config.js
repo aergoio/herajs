@@ -32,6 +32,7 @@ const external = [
     'bs58',
     'buffer',
     'jsbi',
+    'hash.js/lib/hash/sha/256',
     '@improbable-eng/grpc-web',
     '@improbable-eng/grpc-web-node-http-transport'
 ];
@@ -122,7 +123,9 @@ function genConfig (name) {
         [resolve('types/rpc_pb.js')]: 'Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name, PeersParams, VoteParams, NodeReq, KeyParams, BlockMetadata, PageParams, BlockBodyParams'.split(', '),
         [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, Block, Query, StateQuery, FilterInfo'.split(', '),
         [resolve('types/account_pb.js')]: 'Account'.split(', '),
-        [resolve('../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(',')
+        [resolve('../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(','),
+        [resolve('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
+        [resolve('../crypto/dist/herajs-crypto.umd.js')]: 'hash'.split(', '),
     };
 
     const config = {
