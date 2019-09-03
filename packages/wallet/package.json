@@ -1,6 +1,6 @@
 {
   "name": "@herajs/wallet",
-  "version": "0.10.5",
+  "version": "0.11.0",
   "description": "SDK for making Aergo wallet applications",
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -24,8 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "@elderapo/typed-event-emitter": "^1.4.1",
-    "@herajs/client": "^0.10.5",
-    "@herajs/crypto": "^0.10.5",
+    "@herajs/client": "^0.11.0",
+    "@herajs/crypto": "^0.11.0",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "@types/leveldown": "^4.0.0",
