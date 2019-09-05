@@ -1,13 +1,13 @@
 {
   "name": "@herajs/vue-plugin",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Add Aergo controller to your Vue.js project",
   "main": "plugin.js",
   "scripts": {},
   "author": "aergo team and contributors",
   "license": "MIT",
   "dependencies": {
-    "@herajs/client": "^0.11.0",
-    "@herajs/wallet": "^0.11.0"
+    "@herajs/client": "^0.11.1",
+    "@herajs/wallet": "^0.11.1"
   }
 }
