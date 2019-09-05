@@ -111,7 +111,7 @@ export class StateQuery {
         const q = new GrpcStateQuery();
         q.setContractaddress(this.contractInstance.address.asBytes());
         const storageKeys = this.storageKeys.map((key: string) => {
-            return Buffer.from(sha256().update(Buffer.from(key)).digest());
+            return Uint8Array.from(sha256().update(Buffer.from(key)).digest());
         });
 
         q.setStoragekeysList(storageKeys);
