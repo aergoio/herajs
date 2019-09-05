@@ -1,3 +1,6 @@
+## 0.11.1 (September 5, 2019)
+- StateQuery: Fix type returned by storageKeys hasher
+
 ## 0.11.0 (September 3, 2019)
 
 - Support for Aergo 1.2
