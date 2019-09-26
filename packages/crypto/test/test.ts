@@ -11,7 +11,8 @@ import {
     decryptPrivateKey, encryptPrivateKey,
     decodePrivateKey, encodePrivateKey,
     publicKeyFromAddress,
-    signMessage, verifySignature
+    signMessage, verifySignature,
+    generateMnemonic, privateKeyFromMnemonic,
 } from '../src';
 
 describe('createIdentity()', () => {
@@ -144,18 +145,34 @@ describe('verifySignatureWithAddress', () => {
 });
 
 describe('message signing', () => {
-    it('should verify tx signature using address', async () => {
+    it('should verify generated tx signature using address', async () => {
         const identity = createIdentity();
         const msg = Buffer.from('hello');
         const signature = await signMessage(msg, identity.keyPair);
         const pubkey = publicKeyFromAddress(identity.address);
         assert.isTrue(await verifySignature(msg, pubkey, signature));
     });
-    it('should verify tx signature using address', async () => {
+    it('should verify given tx signature using address', async () => {
         const address = 'AmPWVmZj7AS6Rm4dyF7Dp7cXeujyxWH1e1a6HY5KYw5pCfm5B8GK';
         const msg = Buffer.from('hello');
         const signature = '30450220624ba49c48add697b8ce76d09111fa9f5f5a7c182626449b35259031f292470f022100ab8d1059d9addf281cc7b10cfe95cbe6b9244f418a46fd130796836e8ea35c25';
         const pubkey = publicKeyFromAddress(address);
         assert.isTrue(await verifySignature(msg, pubkey, signature, 'hex'));
+    });
+});
+
+describe('seed', () => {
+    it('should generate a mnemonic and create identity from it', async () => {
+        const mnemonic = generateMnemonic();
+        const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const identity = identifyFromPrivateKey(privateKey);
+        assert.deepEqual(identity.privateKey, privateKey);
+        assert.equal(identity.address[0], 'A');
+    });
+    it('should re-create identity', async () => {
+        const mnemonic = 'raccoon agent nest round belt cloud first fancy awkward quantum valley scheme';
+        const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const identity = identifyFromPrivateKey(privateKey);
+        assert.equal(identity.address, 'AmPh2JQzWvQ5u8jCs4QTKGXvzkLE9uao1DfzxmTr71UczBsxHnqx');
     });
 });
