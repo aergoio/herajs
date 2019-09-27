@@ -1,10 +1,8 @@
-import { ec } from 'elliptic';
 import { fromNumber, fromBigInt, decodeAddress, encodeTxHash } from './encoding';
 import bs58 from 'bs58';
 import JSBI from 'jsbi';
 import { Buffer } from 'buffer';
-
-const ecdsa = new ec('secp256k1');
+import { ecdsa } from './ecdsa';
 
 function bufferOrB58(input?: Uint8Array | string): Uint8Array {
     if (typeof input === 'string') {

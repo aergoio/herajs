@@ -6,6 +6,8 @@ import globals from 'rollup-plugin-node-globals';
 import json from 'rollup-plugin-json';
 import ignore from 'rollup-plugin-ignore';
 import { terser } from 'rollup-plugin-terser';
+//import visualizer from 'rollup-plugin-visualizer';
+import { builtinModules } from 'module';
 import pkg from './package.json';
 
 import { resolve as _resolve } from 'path';
@@ -22,43 +24,53 @@ const namedExports = {
     [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
 };
 
-const builtinExternal = [
-    'crypto', 'buffer'
+// Ignore bip39 wordlists except english
+const ignored = [
+    '\0./wordlists/chinese_simplified.json?commonjs-proxy',
+    '\0./wordlists/chinese_traditional.json?commonjs-proxy',
+    '\0./wordlists/korean.json?commonjs-proxy',
+    '\0./wordlists/french.json?commonjs-proxy',
+    '\0./wordlists/italian.json?commonjs-proxy',
+    '\0./wordlists/spanish.json?commonjs-proxy',
+    '\0./wordlists/japanese.json?commonjs-proxy',
 ];
 
 function genConfig(browser = false, output) {
-    const external = browser ? [] : Object.keys(pkg.dependencies).concat(...builtinExternal);
+    const external = browser ? [] : Object.keys(pkg.dependencies).concat(...builtinModules);
+
     return {
         input: './src/index.ts',
         
         external,
         
         plugins: [
+            //visualizer(),
+            
             browser
                 ? resolve({ extensions, preferBuiltins: true, browser: true })
                 : resolve({ extensions, preferBuiltins: true }),
-            
+
+            browser ? ignore(ignored) : undefined,
+
             commonjs({ namedExports }),
-    
+
             json(),
             
             babel({ extensions, include: ['src/**/*'] }),
-    
+
             globals(),
             builtins(),
-            
+
             terser({
                 include: [/^.+\.min\.js$/], 
             }),
-
-            browser ? ignore(builtinExternal) : undefined,
         ],
         
         output,
     
         onwarn(warning, warn) {
             const ignoredCircular = [
-                'elliptic'
+                'elliptic', 'readable-stream',
             ];
             if (
                 warning.code === 'CIRCULAR_DEPENDENCY' &&
@@ -68,7 +80,7 @@ function genConfig(browser = false, output) {
             }
             warn(warning.message);
         },
-    }
+    };
 }
 
 export default [

@@ -25,3 +25,12 @@ export {
     hash,
     hashTransaction,
 } from './hashing';
+
+export {
+    generateMnemonic,
+    mnemonicToSeed,
+    privateKeyFromSeed,
+    privateKeysFromSeed,
+    privateKeyFromMnemonic,
+    privateKeysFromMnemonic,
+} from './seed';
