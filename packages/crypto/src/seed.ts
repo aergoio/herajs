@@ -1,5 +1,5 @@
 import { mnemonicToSeed } from 'bip39';
-import hdkey from 'hdkey';
+import hdkey from '@herajs/hdkey';
 import { WALLET_HDPATH } from './constants';
 
 // Re-export useful functions from bip39
