@@ -28,6 +28,9 @@ export {
 
 export {
     generateMnemonic,
+    mnemonicToSeed,
+    privateKeyFromSeed,
+    privateKeysFromSeed,
     privateKeyFromMnemonic,
     privateKeysFromMnemonic,
 } from './seed';
