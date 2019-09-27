@@ -6,6 +6,7 @@ import globals from 'rollup-plugin-node-globals';
 import json from 'rollup-plugin-json';
 import ignore from 'rollup-plugin-ignore';
 import { terser } from 'rollup-plugin-terser';
+//import visualizer from 'rollup-plugin-visualizer';
 import { builtinModules } from 'module';
 import pkg from './package.json';
 
@@ -43,6 +44,8 @@ function genConfig(browser = false, output) {
         external,
         
         plugins: [
+            //visualizer(),
+            
             browser
                 ? resolve({ extensions, preferBuiltins: true, browser: true })
                 : resolve({ extensions, preferBuiltins: true }),
