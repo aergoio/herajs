@@ -129,11 +129,13 @@ describe('Contracts', () => {
             // Setup address and ABI
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
-            // Query contract state
-            const result = await aergo.queryContractState(contract.queryState('_sv_Value'));
-            assert.equal(result, 12);
-
-            // TODO changed api!
+            // Query contract state by different types
+            const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
+            for (const variable of variables) {
+                // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+                const result = await aergo.queryContractState(contract.queryState(variable as any));
+                assert.equal(result, 12, `state of ${variable} is wrong`);
+            }
         });
 
         it('should get events from a deployed contract', async () => {

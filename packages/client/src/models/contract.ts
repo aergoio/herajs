@@ -8,6 +8,8 @@ import sha256 from 'hash.js/lib/hash/sha/256';
 type _PrimitiveType = string | number | boolean;
 export type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
 
+type BufferLike = number[] | Uint8Array | Buffer;
+
 /**
  * Data structure for contract function calls.
  * You should not need to build these yourself, they are returned from contract instance functions and
@@ -100,9 +102,9 @@ export class FunctionCall {
  */
 export class StateQuery {
     contractInstance: Contract;
-    storageKeys: string[];
+    storageKeys: string[] | BufferLike[];
 
-    constructor(contractInstance, storageKeys) {
+    constructor(contractInstance: Contract, storageKeys: string[] | BufferLike[]) {
         this.contractInstance = contractInstance;
         this.storageKeys = storageKeys;
     }
@@ -110,10 +112,10 @@ export class StateQuery {
     toGrpc() {
         const q = new GrpcStateQuery();
         q.setContractaddress(this.contractInstance.address.asBytes());
-        const storageKeys = this.storageKeys.map((key: string) => {
-            return Uint8Array.from(sha256().update(Buffer.from(key)).digest());
+        const storageKeys = (this.storageKeys as any[]).map((key: string | BufferLike) => {
+            let buf = typeof key === 'string' ? Buffer.from(key) : key;
+            return Uint8Array.from(sha256().update(buf).digest());
         });
-
         q.setStoragekeysList(storageKeys);
         return q;
     }
@@ -231,10 +233,9 @@ class Contract {
 
     /**
      * Create query object to query contract state.
-     * @param varname 
-     * @param varindex 
+     * @param args list of keys, either strings or Buffer-like byte arrays
      */
-    queryState(...args: string[]): StateQuery {
+    queryState(...args: string[] | BufferLike[]): StateQuery {
         return new StateQuery(this, args);
     }
 

@@ -126,7 +126,7 @@ describe('Amount', () => {
     it('should throw error for unrecognized unit', () => {
         assert.throws(() => new Amount('100 foo'), TypeError, 'unrecognized unit: foo');
     });
-    it('should format 0 nicelt', () => {
+    it('should format 0 nicely', () => {
         const a = new Amount('0 aer');
         assert.equal(a.toString(), '0 aer');
         assert.equal(a.toUnit('aergo').toString(), '0 aergo');

@@ -95,7 +95,7 @@ describe('Aergo.Accounts', () => {
                 chainIdHash: await aergo.getChainIdHash()
             };
             const txhash2 = await aergo.accounts.sendTransaction(testtx2);
-            console.log(txhash2);
+            //console.log(txhash2);
         });
         it('should error when sending to unregistered name', async () => {
             const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
