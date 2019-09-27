@@ -8,3 +8,6 @@ Contract
 
 .. js:autoclass:: FunctionCall
    :members:
+
+.. js:autoclass:: StateQuery
+   :members:
