@@ -39,5 +39,8 @@
     "grpc": "^1.13.1",
     "hash.js": "^1.1.7",
     "jsbi": "^3.0.0"
+  },
+  "devDependencies": {
+    "@improbable-eng/grpc-web-node-http-transport": "^0.9.1"
   }
 }
