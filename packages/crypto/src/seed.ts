@@ -16,7 +16,7 @@ export function generateMnemonic(strength?: number, rng?: (size: number) => Buff
 
 /**
  * Convert mnemonic string to seed
- * @param mnemonic in bits, default 128
+ * @param mnemonic
  * @param password optional
  */
 export function mnemonicToSeed(mnemonic: string, password?: string): Promise<Buffer> {
