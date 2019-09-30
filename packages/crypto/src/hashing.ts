@@ -14,13 +14,22 @@ function bufferOrB58(input?: Uint8Array | string): Uint8Array {
     return input;
 }
 
-function hash(data: Buffer): string {
+/**
+ * Calculate hash of transaction
+ * @param {object} tx Transaction
+ * @return {Buffer} transaction hash
+ */
+export function hash(data: Buffer): Buffer {
     const h = ecdsa.hash();
     h.update(data);
     return h.digest();
 }
 
-interface TxBody {
+/**
+ * Transaction body.
+ * All fields except nonce, from, and chainIdHash are optional and will assume sensible defaults.
+ */
+export interface TxBody {
     nonce: number;
     from: string | Record<string, any>;
     chainIdHash: Uint8Array | string;
@@ -36,14 +45,15 @@ interface TxBody {
 /**
  * Calculate hash of transaction
  * @param {object} tx Transaction
- * @return {string} transaction hash
+ * @param {string} encoding bytes (default), base58, base64
+ * @return {Buffer | string} transaction hash. If encoding is bytes, the result is a Buffer, otherwise a string.
  */
-async function hashTransaction(tx: TxBody): Promise<string>;
-async function hashTransaction(tx: TxBody, encoding: string, includeSign?: boolean): Promise<Buffer | string>;
-async function hashTransaction(tx: TxBody, encoding: 'base64', includeSign?: boolean): Promise<string>;
-async function hashTransaction(tx: TxBody, encoding: 'base58', includeSign?: boolean): Promise<string>;
-async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: boolean): Promise<Buffer>;
-async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
+export async function hashTransaction(tx: TxBody): Promise<string>;
+export async function hashTransaction(tx: TxBody, encoding: string, includeSign?: boolean): Promise<Buffer | string>;
+export async function hashTransaction(tx: TxBody, encoding: 'base64', includeSign?: boolean): Promise<string>;
+export async function hashTransaction(tx: TxBody, encoding: 'base58', includeSign?: boolean): Promise<string>;
+export async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: boolean): Promise<Buffer>;
+export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
     // Amount defaults to zero if tx.amount is falsy
     let amount = '0';
     if (tx.amount) {
@@ -91,8 +101,3 @@ async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = tr
         return result;
     }
 }
-
-export {
-    hash,
-    hashTransaction,
-};

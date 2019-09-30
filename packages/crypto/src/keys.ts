@@ -24,9 +24,19 @@ export function addressFromPublicKey(publicKey: any): string {
 }
 
 /**
+ * Retrieve public key from address
+ * @param {string} base58check encoded address
+ * @return {KeyPair} key pair (with missing private key)
+ */
+export function publicKeyFromAddress(address: string): ec.KeyPair {
+    const pubkey = decodeAddress(address) as Buffer;
+    return ecdsa.keyFromPublic(pubkey);
+}
+
+/**
  * Encodes a key pair into an identity object
  * @param {KeyPair} keyPair 
- * @return {object}
+ * @return {Identity} identity including address and keys
  */
 export function encodeIdentity(keyPair: ec.KeyPair): Identity {
     //@ts-ignore
@@ -44,6 +54,7 @@ export function encodeIdentity(keyPair: ec.KeyPair): Identity {
 /**
  * Shortcut function to create a new random private key and
  * return keys and address as encoded strings.
+ * @return {Identity} identity including address and keys
  */
 export function createIdentity(): Identity {
     const keyPair = ecdsa.genKeyPair();
@@ -52,21 +63,12 @@ export function createIdentity(): Identity {
 
 /**
  * Returns identity associated with private key
- * @param {Buffer} privKeyBytes 
+ * @param {Uint8Array} privKeyBytes 
+ * @returns {Identity} identity including address and keys 
  */
 export function identifyFromPrivateKey(privKeyBytes: Uint8Array): Identity {
     const keyPair = ecdsa.keyFromPrivate(Buffer.from(privKeyBytes));
     return encodeIdentity(keyPair);
-}
-
-/**
- * Retrieve public key from address
- * @param {ECPoint} publicKey
- * @return {string} base58check encoded address
- */
-export function publicKeyFromAddress(address: string): ec.KeyPair {
-    const pubkey = decodeAddress(address) as Buffer;
-    return ecdsa.keyFromPublic(pubkey);
 }
 
 const _keyAndNonceFromPassword = (password: string): [Buffer, Buffer] => {
@@ -82,11 +84,19 @@ const _keyAndNonceFromPassword = (password: string): [Buffer, Buffer] => {
     return [key, nonce];
 };
 
+/**
+ * Decrypt an AES_GCM encrypted private key
+ * @returns {Uint8Array} decrypted private key bytes
+ */
 export function decryptPrivateKey(encryptedBytes: Uint8Array, password: string): Uint8Array {
     const [key, nonce] = _keyAndNonceFromPassword(password);
     return AES_GCM.decrypt(Uint8Array.from(encryptedBytes), key, nonce);
 }
 
+/**
+ * Encrypt a private key using AES_GCM
+ * @returns {Uint8Array} encrypted private key bytes
+ */
 export function encryptPrivateKey(clearBytes: Uint8Array, password: string): Uint8Array {
     const [key, nonce] = _keyAndNonceFromPassword(password);
     return AES_GCM.encrypt(Uint8Array.from(clearBytes), key, nonce);
