@@ -20,3 +20,6 @@ Raw seed
 ========
 .. js:autofunction:: privateKeysFromSeed
 .. js:autofunction:: privateKeyFromSeed
+
+.. js:autoclass:: Options
+   :members:

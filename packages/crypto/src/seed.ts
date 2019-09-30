@@ -23,7 +23,10 @@ export function mnemonicToSeed(mnemonic: string, password?: string): Promise<Buf
     return _mnemonicToSeed(mnemonic, password);
 }
 
-interface Options {
+/**
+ * Key derivation options
+ */
+export interface Options {
     hdpath?: string;
     count?: number;
 }
@@ -35,6 +38,8 @@ const defaultOptions = {
 
 /**
  * Returns n private keys derived from seed
+ * @param {Buffer} seed
+ * @param {Options} options (optional) { count: number, hdpath: string }
  */
 export function privateKeysFromSeed(seed: Buffer, options: Options = {}): Buffer[] {
     const opts = { ...defaultOptions, ...options };
@@ -49,6 +54,8 @@ export function privateKeysFromSeed(seed: Buffer, options: Options = {}): Buffer
 
 /**
  * Returns the first private key derived from seed
+ * @param {Buffer} seed
+ * @param {Options} options (optional) { hdpath: string }
  */
 export async function privateKeyFromSeed(seed: Buffer, options: Options = {}): Promise<Buffer> {
     return privateKeysFromSeed(seed, options)[0];
@@ -56,6 +63,8 @@ export async function privateKeyFromSeed(seed: Buffer, options: Options = {}): P
 
 /**
  * Returns n private keys derived from mnemonic
+ * @param {string} mnemonic
+ * @param {Options} options (optional) { count: number, hdpath: string }
  */
 export async function privateKeysFromMnemonic(mnemonic: string, options: Options = {}): Promise<Buffer[]> {
     const seed = await mnemonicToSeed(mnemonic);
@@ -64,6 +73,8 @@ export async function privateKeysFromMnemonic(mnemonic: string, options: Options
 
 /**
  * Returns the first private key derived from mnemonic
+ * @param {string} mnemonic
+ * @param {Options} options (optional) { hdpath: string }
  */
 export async function privateKeyFromMnemonic(mnemonic: string, options: Options = {}): Promise<Buffer> {
     return (await privateKeysFromMnemonic(mnemonic, options))[0];
