@@ -9,9 +9,9 @@ Tested with aergo server version
 
 Javascript client SDK for the Aergo blockchain platform.
 
-- [@herajs/client](./packages/@herajs/client): API client, basic models/utils (contract, address, encoding, amounts)
-- [@herajs/crypto](./packages/@herajs/crypto): key generation, hashing, signing
-- [@herajs/wallet](./packages/@herajs/wallet): stateful key manager, account tracking, tx tracking, storage
+- [@herajs/client](./packages/client): API client, basic models/utils (contract, address, encoding, amounts)
+- [@herajs/crypto](./packages/crypto): key generation, hashing, signing
+- [@herajs/wallet](./packages/wallet): stateful key manager, account tracking, tx tracking, storage
 
 ## Contribute
 
