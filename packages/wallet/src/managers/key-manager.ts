@@ -26,6 +26,8 @@ interface ImportSpec {
     privateKey?: Buffer;
 }
 
+type Encoding = "ascii" | "utf8" | "utf-8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex";
+
 /**
  * KeyManager manages and tracks keys for accounts
  */
@@ -93,7 +95,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         return key.signTransaction(transaction);
     }
 
-    async signMessage(account: Account, message: Buffer, enc = 'hex'): Promise<string> {
+    async signMessage(account: Account, message: Buffer, enc: Encoding = 'hex'): Promise<string> {
         const key = await this.getUnlockedKey(account);
         return await key.signMessage(message, enc);
     }

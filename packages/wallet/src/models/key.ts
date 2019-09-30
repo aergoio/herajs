@@ -4,6 +4,8 @@ import { Record, Data } from './record';
 import { identifyFromPrivateKey, decryptPrivateKey, signTransaction, signMessage } from '@herajs/crypto';
 //import { Amount } from '@herajs/client';
 
+type Encoding = "ascii" | "utf8" | "utf-8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex";
+
 export interface KeyData extends Data {
     address: string;
     privateKey: number[] | null;
@@ -24,7 +26,7 @@ export class Key extends Record<KeyData> {
         return signedTx;
     }
 
-    async signMessage(message: Buffer, enc = 'hex'): Promise<string> {
+    async signMessage(message: Buffer, enc: Encoding = 'hex'): Promise<string> {
         return await signMessage(message, this.keyPair, enc);
     }
 
