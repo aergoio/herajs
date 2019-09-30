@@ -2,6 +2,8 @@
 
 [![npm](https://img.shields.io/npm/v/@herajs/crypto.svg)](https://www.npmjs.com/package/@herajs/crypto)
 
+[![readthedocs](https://readthedocs.org/projects/herajscrypto/badge/)](https://herajscrypto.readthedocs.io/)
+
 It is used by Aergo dapps to manage keys and sign transactions offline.
 
 Features:

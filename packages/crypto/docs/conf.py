@@ -14,9 +14,8 @@
 #
 import os
 
-#os.system("cd " + os.path.abspath('../../..') + " && npm install --ignore-scripts")
-#os.system("cd " + os.path.abspath('..') + " && npm install --ignore-scripts")
-
+os.system("cd " + os.path.abspath('../../..') + " && npm install --ignore-scripts")
+os.system("cd " + os.path.abspath('..') + " && npm install --ignore-scripts")
 
 # -- Project information -----------------------------------------------------
 
