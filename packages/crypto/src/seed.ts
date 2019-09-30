@@ -1,9 +1,27 @@
-import { mnemonicToSeed } from 'bip39';
 import hdkey from '@herajs/hdkey';
 import { WALLET_HDPATH } from './constants';
 
 // Re-export useful functions from bip39
-export { generateMnemonic, mnemonicToSeed } from 'bip39';
+import { generateMnemonic as _generateMnemonic, mnemonicToSeed as _mnemonicToSeed } from 'bip39';
+
+/**
+ * Generate random mnemonic
+ * @param strength in bits, default 128
+ * @param rng optional, function to generate random bots
+ * @param wordlist optional, custom wordlist
+ */
+export function generateMnemonic(strength?: number, rng?: (size: number) => Buffer, wordlist?: string[]): string {
+    return _generateMnemonic(strength, rng, wordlist);
+}
+
+/**
+ * Convert mnemonic string to seed
+ * @param mnemonic in bits, default 128
+ * @param password optional
+ */
+export function mnemonicToSeed(mnemonic: string, password?: string): Promise<Buffer> {
+    return _mnemonicToSeed(mnemonic, password);
+}
 
 interface Options {
     hdpath?: string;

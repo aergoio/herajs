@@ -31,7 +31,7 @@ describe('hashTransaction()', () => {
         const amounts = ['0 aer', ' ', '0', 0, '', false, null, undefined];
         for (const amount of amounts) {
             const tx = {
-                amount,
+                amount: amount as any,
                 nonce: 1,
                 from: '',
                 chainIdHash: ''

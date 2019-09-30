@@ -2,7 +2,7 @@ node_modules
 dist
 .DS_Store
 *.db/
-docs/_build
+**/docs/_build
 coverage
 .nyc_output
 .rpt2_cache
