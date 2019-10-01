@@ -1,8 +1,9 @@
 # @herajs/client
 
-[![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client) 
+[![npm](https://img.shields.io/npm/v/@herajs/client.svg)](https://www.npmjs.com/package/@herajs/client) [![readthedocs](https://readthedocs.org/projects/herajs/badge/)](https://herajs.readthedocs.io/)
 
-[![readthedocs](https://readthedocs.org/projects/herajs/badge/)](https://herajs.readthedocs.io/)
+- [Documentation](https://herajs.readthedocs.io/)
+- [Changelog](./CHANGELOG.md)
 
 This package includes the API client and common classes and utils.
 

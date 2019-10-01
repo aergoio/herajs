@@ -11,6 +11,7 @@ import contractAbi from './fixtures/contract-inc.abi.json';
 //import sqlContractAbi from './fixtures/contract-sql.abi.json';
 import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
+import Address from '../src/models/address';
 
 describe('Contracts', () => {
     const aergo = new AergoClient();
@@ -128,7 +129,6 @@ describe('Contracts', () => {
         it('should query a smart contract using state', async () => {
             // Setup address and ABI
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
-
             // Query contract state by different types
             const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
             for (const variable of variables) {
@@ -136,6 +136,37 @@ describe('Contracts', () => {
                 const result = await aergo.queryContractState(contract.queryState(variable as any));
                 assert.equal(result, 12, `state of ${variable} is wrong`);
             }
+        });
+
+        it('should query a smart contract using state and proof', async () => {
+            // Setup address and ABI
+            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+            // Query contract state by different types
+            const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
+            // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+            const result = await aergo.queryContractStateProof(contract.queryState(variables as any[]));
+            for (const proof of result.varProofs) {
+                assert.equal(proof.value, 12, `state of ${proof.key} is wrong`);
+                assert.equal(proof.inclusion, true, `key inclusion should be true`);
+            }
+            assert.equal(result.contractProof.inclusion, true, `contract inclusion should be true`);
+            assert.deepEqual(result.contractProof.key, (new Address(contractAddress)).asBytes(), `contract key should match decoded address`);
+        });
+
+        it('should throw when quering non existing state', async () => {
+            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+            await assert.isRejected(
+                aergo.queryContractState(contract.queryState('blahblah')),
+                Error,
+                `queried variable 0x${Buffer.from('blahblah').toString('hex')} does not exist in state at address ${contractAddress}`
+            );
+
+            const contract2 = Contract.fromAbi(contractAbi).setAddress('foo.bar');
+            return assert.isRejected(
+                aergo.queryContractState(contract2.queryState('blahblah')),
+                Error,
+                'contract does not exist at address foo.bar'
+            );
         });
 
         it('should get events from a deployed contract', async () => {

@@ -2,7 +2,7 @@ import Accounts from '../accounts';
 import rpcTypes from './types';
 import {
     TxInBlock, Tx as GrpcTx,
-    StateQueryProof,
+    StateQueryProof as GrpcStateQueryProof,
     ABI as GrpcABI,
     Block as GrpcBlock,
     Receipt as GrpcReceipt,
@@ -34,6 +34,7 @@ import Amount from '../models/amount';
 import ChainInfo from '../models/chaininfo';
 import Event from '../models/event';
 import { FunctionCall, StateQuery } from '../models/contract';
+import StateQueryProof from '../models/statequeryproof';
 import FilterInfo from '../models/filterinfo';
 import { TransactionError } from '../errors';
 import { Buffer } from 'buffer';
@@ -125,6 +126,11 @@ interface Stream<T> {
     on(eventName: string, callback: ((obj: T) => void)): void;
     cancel(): void;
     _stream: any;
+}
+
+export type BasicType = number | string | boolean | null;
+export interface JsonData {
+    [prop: string]: BasicType | BasicType[] | JsonData[] | JsonData;
 }
 
 /**
@@ -585,22 +591,25 @@ class AergoClient {
     }
 
     /**
-     * Query contract state
-     * This only works vor variables explicitly defines as state variables.
+     * Query contract state.
+     * This only works for variables explicitly defines as state variables.
+     * Throws when contract do not exist, or when variable does not exist when requesting single key.
      * @param {StateQuery} stateQuery query details obtained from contract.queryState()
-     * @returns {Promise<object>} result of query
+     * @returns {Promise<JsonData>} result of query: single value if requesting one key, list of values when requesting multiple keys.
      */
-    queryContractState (stateQuery: StateQuery) {
+    queryContractState (stateQuery: StateQuery): Promise<JsonData | BasicType> {
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
-            (grpcObject: StateQueryProof) => {
+            (grpcObject: GrpcStateQueryProof) => {
+                const addr = new Address(query.getContractaddress_asU8());
+                if (grpcObject.getContractproof().getInclusion() === false) {
+                    throw Error(`contract does not exist at address ${addr.toString()}`);
+                }
                 const list = grpcObject.getVarproofsList();
-                if (list.length === 0) return null;
                 if (list.length === 1) {
                     const varProof = list[0];
                     if (varProof.getInclusion() === false) {
-                        const addr = new Address(query.getContractaddress_asU8());
-                        throw Error(`queried variable ${query.getStoragekeysList()[0]} does not exist in state at address ${addr.toString()}`);
+                        throw Error(`queried variable 0x${Buffer.from(stateQuery.storageKeys[0] as any).toString('hex')} does not exist in state at address ${addr.toString()}`);
                     }
                     const value = varProof.getValue_asU8();
                     if (value.length > 0) {
@@ -615,6 +624,19 @@ class AergoClient {
                     return void 0;
                 });
             }
+        );
+    }
+
+    /**
+     * Query contract state, including proofs.
+     * This only works vor variables explicitly defines as state variables.
+     * @param {StateQuery} stateQuery query details obtained from contract.queryState()
+     * @returns {Promise<StateQueryProof>} result of query, including account and var proofs
+     */
+    queryContractStateProof (stateQuery: StateQuery): Promise<StateQueryProof> {
+        const query = stateQuery.toGrpc();
+        return promisify(this.client.client.queryContractState, this.client.client)(query).then(
+            (grpcObject: GrpcStateQueryProof) => StateQueryProof.fromGrpc(grpcObject)
         );
     }
 
