@@ -609,7 +609,7 @@ class AergoClient {
                 if (list.length === 1) {
                     const varProof = list[0];
                     if (varProof.getInclusion() === false) {
-                        throw Error(`queried variable ${query.getStoragekeysList()[0]} does not exist in state at address ${addr.toString()}`);
+                        throw Error(`queried variable 0x${Buffer.from(stateQuery.storageKeys[0] as any).toString('hex')} does not exist in state at address ${addr.toString()}`);
                     }
                     const value = varProof.getValue_asU8();
                     if (value.length > 0) {

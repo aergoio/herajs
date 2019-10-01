@@ -103,12 +103,14 @@ export class FunctionCall {
 export class StateQuery {
     contractInstance: Contract;
     storageKeys: string[] | BufferLike[];
-    root: Buffer | undefined;
+    root: Uint8Array | undefined;
     compressed: boolean;
 
-    constructor(contractInstance: Contract, storageKeys: string[] | BufferLike[]) {
+    constructor(contractInstance: Contract, storageKeys: string[] | BufferLike[], compressed?: boolean, root?: Uint8Array) {
         this.contractInstance = contractInstance;
         this.storageKeys = storageKeys;
+        this.compressed = compressed || false;
+        this.root = root;
     }
 
     toGrpc() {
@@ -239,10 +241,17 @@ class Contract {
 
     /**
      * Create query object to query contract state.
-     * @param args list of keys, either strings or Buffer-like byte arrays
+     * @param keys list of keys, either strings or Buffer-like byte arrays
+     * @param compressed return compressed proof (default: false)
+     * @param root root hash
      */
-    queryState(...args: string[] | BufferLike[]): StateQuery {
-        return new StateQuery(this, args);
+    queryState(keys: string | BufferLike | string[] | BufferLike[], compressed?: boolean, root?: Uint8Array): StateQuery {
+        function isBufferLike(arr: string[] | BufferLike | BufferLike[]): arr is BufferLike {
+            return keys instanceof Buffer || keys instanceof Uint8Array || arr.length && typeof arr[0] === 'number';
+        }
+        let keyArray = (typeof keys === 'string' || isBufferLike(keys)) ? [keys] : keys;
+        // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+        return new StateQuery(this, keyArray as any, compressed, root);
     }
 
     static encodeCode(byteArray: Buffer): string {
