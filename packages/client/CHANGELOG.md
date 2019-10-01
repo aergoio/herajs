@@ -1,3 +1,17 @@
+## 0.13.0 (October 1, 2019)
+- Client: add `queryContractStateProof` to return contract state including full proof.
+- Client: `queryContractState` now throws an error when querying a non-existent contract.
+- Client: contract.queryState()
+  - This method is no longer variadic. Please change calls like `contract.queryState(...keys)` to `contract.queryState(keys)`.
+    Single-value calls continue to be supported.
+  - Added optional parameters `compressed` and `root`.
+
+## 0.12.1 (September 27, 2019)
+- Client: allow passing buffer-like arguments to state query
+
+## 0.12.0 (September 27, 2019)
+- Crypto: add import/export of seed, mnemonic key phrases
+
 ## 0.11.1 (September 5, 2019)
 - StateQuery: Fix type returned by storageKeys hasher
 
