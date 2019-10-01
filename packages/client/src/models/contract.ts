@@ -103,6 +103,8 @@ export class FunctionCall {
 export class StateQuery {
     contractInstance: Contract;
     storageKeys: string[] | BufferLike[];
+    root: Buffer | undefined;
+    compressed: boolean;
 
     constructor(contractInstance: Contract, storageKeys: string[] | BufferLike[]) {
         this.contractInstance = contractInstance;
@@ -117,6 +119,10 @@ export class StateQuery {
             return Uint8Array.from(sha256().update(buf).digest());
         });
         q.setStoragekeysList(storageKeys);
+        q.setCompressed(this.compressed);
+        if (this.root) {
+            q.setRoot(Uint8Array.from(this.root));
+        }
         return q;
     }
 }
