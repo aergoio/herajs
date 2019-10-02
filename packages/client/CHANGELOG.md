@@ -1,3 +1,7 @@
+
+## 0.13.2 (October 2, 2019)
+- Export Tx.Type enum and enable setting type to Tx.Type.DEPLOY (2).
+
 ## 0.13.0 (October 1, 2019)
 - Client: add `queryContractStateProof` to return contract state including full proof.
 - Client: `queryContractState` now throws an error when querying a non-existent contract.
