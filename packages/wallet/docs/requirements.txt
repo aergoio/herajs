@@ -1,2 +1,2 @@
--e git+git://github.com/graup/sphinx-js@7db5f661245d34956e09e9df878c0cd242b4703d#egg=sphinx-js
+-e git+git://github.com/graup/sphinx-js@4def189dc364f9c5a24331ae4dc7a4181abb75d5#egg=sphinx-js
 sphinx-rtd-theme==0.4.3
