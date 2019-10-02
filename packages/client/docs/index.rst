@@ -17,18 +17,19 @@ Currently, there is herajs, heraj, and herapy. They all implement similar API bu
    contract-guide
    examples
 
-
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
-   client
-   accounts
-   providers
-   models/address
-   models/amount
-   models/contract
-   models/filterinfo
+   api/top-level-exports
+   api/client
+   api/accounts
+   api/providers
+   api/models/address
+   api/models/amount
+   api/models/contract
+   api/models/filterinfo
+   api/models/tx
 
 
 Indices and tables
