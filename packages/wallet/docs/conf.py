@@ -14,12 +14,12 @@
 #
 import os
 
-os.system("cd " + os.path.abspath('../../..') + " && npm install --ignore-scripts")
-os.system("cd " + os.path.abspath('..') + " && npm install --ignore-scripts")
+#os.system("cd " + os.path.abspath('../../..') + " && npm install --ignore-scripts")
+#os.system("cd " + os.path.abspath('..') + " && npm install --ignore-scripts")
 
 # -- Project information -----------------------------------------------------
 
-project = u'herajs/crypto'
+project = u'herajs/wallet'
 copyright = u'2019, aergo team and contributors'
 author = u'aergo team and contributors'
 
