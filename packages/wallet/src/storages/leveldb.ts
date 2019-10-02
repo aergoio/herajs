@@ -49,6 +49,9 @@ class LevelDbIndex extends Index {
     }
 }
 
+/**
+ * LevelDbStorage can be used to get an IndexedDb-like storage in Node.js
+ */
 export default class LevelDbStorage extends Storage {
     name: string;
     version: number;

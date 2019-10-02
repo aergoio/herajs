@@ -84,6 +84,9 @@ class IDBIndex extends Index {
     }
 }
 
+/**
+ * IndexedDbStorage uses the browser-native IndexedDb.
+ */
 export default class IndexedDbStorage extends Storage {
     name: string;
     version: number;

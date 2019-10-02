@@ -19,6 +19,9 @@ export interface Events {
     'lock': null;
 }
 
+/**
+ * Specification for importing private keys
+ */
 interface ImportSpec {
     account: Account;
     b58encrypted?: string;
@@ -29,18 +32,23 @@ interface ImportSpec {
 type Encoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'latin1' | 'binary' | 'hex';
 
 /**
- * KeyManager manages and tracks keys for accounts
+ * KeyManager manages keys for accounts.
  */
 export default class KeyManager extends TypedEventEmitter<Events> {
-    wallet: Wallet;
-    keys: HashMap<string, Key> = new HashMap();
-    masterPassphrase?: string;
+    public wallet: Wallet;
+    private keys: HashMap<string, Key> = new HashMap();
+    private masterPassphrase?: string;
 
     constructor(wallet: Wallet) {
         super();
         this.wallet = wallet;
     }
 
+    /**
+     * Adds a private key for an account to the keystore
+     * @param account 
+     * @param privateKey 
+     */
     addKey(account: Account, privateKey: Uint8Array | number[]): Key {
         const address = account.data.spec.address;
         
@@ -81,6 +89,10 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         return key;
     }
 
+    /**
+     * Removes key for address from keystore
+     * @param address 
+     */
     async removeKey(address: string): Promise<void> {
         if (this.keys.has(address)) {
             this.keys.delete(address);
@@ -90,16 +102,30 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         }
     }
 
+    /**
+     * Signs a transaction using key saved for account
+     * @param account 
+     * @param transaction 
+     */
     async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
         const key = await this.getUnlockedKey(account);
         return key.signTransaction(transaction);
     }
 
+    /**
+     * Signs a message using key saved for account
+     * @param account 
+     * @param transaction 
+     */
     async signMessage(account: Account, message: Buffer, enc: Encoding = 'hex'): Promise<string> {
         const key = await this.getUnlockedKey(account);
         return await key.signMessage(message, enc);
     }
 
+    /**
+     * Imports a raw or encrypted private key and add it to the keystore.
+     * @param importSpec 
+     */
     async importKey(importSpec: ImportSpec): Promise<Key> {
         let rawKey = new Uint8Array([]);
         if (typeof importSpec.b58encrypted === 'string' && typeof importSpec.password === 'string') {
@@ -114,15 +140,21 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     }
 
     /*
-    import
-
-    export
+    TODO
+    - export
     */
 
+    /**
+     * True if keystore is currently unlocked, i.e. a master passphrase is saved in memory.
+     */
     get unlocked(): boolean {
         return typeof this.masterPassphrase !== 'undefined'; 
     }
 
+    /**
+     * Unlocks keystore by saving passphrase in memory.
+     * @param passphrase 
+     */
     async unlock (passphrase: string): Promise<void> {
         if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
         const encryptedId = await this.wallet.datastore.getIndex('settings').get('encryptedId') as EncryptedIdSetting;
@@ -135,6 +167,11 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         this.emit('unlock', null);
     }
 
+    /**
+     * Sets up keystore passphrase for the first time.
+     * @param appId string to be saved encrypted with passphrase for later validity check
+     * @param passphrase 
+     */
     async setupAndUnlock (appId: string, passphrase: string): Promise<void> {
         if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
         // save extension id encrypted using password for a quick check if passphrase is correct later
@@ -145,6 +182,9 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         await this.unlock(passphrase);
     }
 
+    /**
+     * Removes all keys stored in keystore.
+     */
     async clearKeys(): Promise<void> {
         this.keys.clear();
         if (this.wallet.keystore) {
@@ -152,6 +192,9 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         }
     }
 
+    /**
+     * Locks keystore by removing master passphrase from memory.
+     */
     lock (): void {
         this.masterPassphrase = undefined;
         this.emit('lock', null);

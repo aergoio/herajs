@@ -23,16 +23,27 @@ interface WalletConfig {
     instanceId: string;
 }
 
+/**
+ * Wallet is the central object that keeps configuration and references to the different managers.
+ */
 export class Wallet extends MiddlewareConsumer {
-    defaultChainId: string = DEFAULT_CHAIN;
-    chainConfigs: HashMap<string, ChainConfig> = new HashMap();
-    keyManager: KeyManager;
-    transactionManager: TransactionManager;
-    accountManager: AccountManager;
-    config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1, instanceId: '' };
-    datastore?: Storage;
-    keystore?: Storage;
-
+    public defaultChainId: string = DEFAULT_CHAIN;
+    private chainConfigs: HashMap<string, ChainConfig> = new HashMap();
+    /**
+     * Used to access key manager instance
+     */
+    public keyManager: KeyManager;
+    /**
+     * Used to access transaction manager instance
+     */
+    public transactionManager: TransactionManager;
+    /**
+     * Used to access account manager instance
+     */
+    public accountManager: AccountManager;
+    private config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1, instanceId: '' };
+    public datastore?: Storage;
+    public keystore?: Storage;
     private clients: Map<string, AergoClient> = new Map();
 
     constructor(config?: Partial<WalletConfig>) {
@@ -43,6 +54,11 @@ export class Wallet extends MiddlewareConsumer {
         this.config = {...this.config, ...config};
     }
 
+    /**
+     * Sets a configuration value
+     * @param configKey
+     * @param value 
+     */
     set(configKey: keyof WalletConfig, value: WalletConfig[keyof WalletConfig]): void {
         this.config[configKey] = value;
     }
@@ -53,7 +69,6 @@ export class Wallet extends MiddlewareConsumer {
      * @param chainConfig 
      */
     useChain(chainConfig: ChainConfig): void {
-        
         if (typeof chainConfig.provider === 'undefined') {
             chainConfig.provider = AergoClient.defaultProviderClass;
         }
@@ -86,7 +101,7 @@ export class Wallet extends MiddlewareConsumer {
     /**
      * Get AergoClient for chainId.
      * If called the first time, create AergoClient instance.
-     * @param chainId optional chainId, use default chainId when undefined
+     * @param chainId optional, uses default chainId when undefined
      */
     getClient(chainId?: string): AergoClient {
         if (typeof chainId === 'undefined') {
@@ -112,8 +127,10 @@ export class Wallet extends MiddlewareConsumer {
 
     /**
      * Prepare a transaction from given account specified by simple TxBody.
-     * @param account 
-     * @param transaction 
+     * Completes missing information (chainIdHash, nonce) and signs tx using key of account.
+     * @param account account object or specification
+     * @param transaction
+     * @returns prepared and signed transaction
      */
     async prepareTransaction(account: Account | AccountSpec, transaction: Partial<TxBody>): Promise<SignedTransaction> {
         if (!(<Account>account).data) account = await this.accountManager.getOrAddAccount(<AccountSpec>account);
@@ -124,9 +141,9 @@ export class Wallet extends MiddlewareConsumer {
 
     /**
      * Send a transaction to the network using the specified account.
-     * Prepares TxBody if not already prepared.
+     * Calls prepareTransaction() if not already prepared.
      * @param account 
-     * @param transaction 
+     * @param transaction
      */
     async sendTransaction(account: Account | AccountSpec, transaction: Partial<TxBody> | SignedTransaction): Promise<TransactionTracker> {
         let signedTransaction: SignedTransaction;
@@ -138,6 +155,10 @@ export class Wallet extends MiddlewareConsumer {
         return this.transactionManager.sendTransaction(signedTransaction);
     }
 
+    /**
+     * Sets storage to use for both keystore and datastore
+     * @param classOrInstance
+     */
     useStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<[Storage, Storage]> {
         return Promise.all([
             this.useKeyStorage(classOrInstance),
@@ -145,6 +166,10 @@ export class Wallet extends MiddlewareConsumer {
         ]);
     }
 
+    /**
+     * Sets storage to use for keystore
+     * @param classOrInstance
+     */
     useKeyStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<Storage> {
         if (isConstructor<T>(classOrInstance)) {
             this.keystore = new classOrInstance('keystore', DB_VERSION);
@@ -154,6 +179,10 @@ export class Wallet extends MiddlewareConsumer {
         return this.keystore.open();
     }
 
+    /**
+     * Sets storage to use for datastore
+     * @param classOrInstance
+     */
     useDataStorage<T extends Storage>(classOrInstance: T | Constructor<T>): Promise<Storage> {
         if (isConstructor<T>(classOrInstance)) {
             this.datastore = new classOrInstance('datastore', DB_VERSION);
@@ -163,19 +192,33 @@ export class Wallet extends MiddlewareConsumer {
         return this.datastore.open();
     }
 
+    /**
+     * Closes storages.
+     */
     async close(): Promise<void> {
         this.datastore && await this.datastore.close();
         this.keystore && await this.keystore.close();
     }
 
+    /**
+     * Shortcut for keyManager.unlock()
+     * @param passphrase
+     */
     async unlock (passphrase: string): Promise<void> {
         return this.keyManager.unlock(passphrase);
     }
 
+    /**
+     * Shortcut for keyManager.setupAndUnlock()
+     * @param passphrase
+     */
     async setupAndUnlock (passphrase: string): Promise<void> {
         return this.keyManager.setupAndUnlock(`id-${this.config.instanceId}`, passphrase);
     }
 
+    /**
+     * Shortcut for keyManager.lock()
+     */
     lock () {
         this.keyManager.lock();
     }
@@ -184,6 +227,9 @@ export class Wallet extends MiddlewareConsumer {
         return this.keyManager.unlocked;
     }
 
+    /**
+     * Clears all storages
+     */
     async deleteAllData(): Promise<void> {
         await this.accountManager.clearAccounts();
         await this.keyManager.clearKeys();

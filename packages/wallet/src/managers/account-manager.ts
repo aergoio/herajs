@@ -60,9 +60,9 @@ class AccountTracker extends PausableTypedEventEmitter<TrackerEvents> {
  * AccountManager manages and tracks single accounts
  */
 export default class AccountManager extends PausableTypedEventEmitter<Events> {
-    wallet: Wallet;
-    accounts: HashMap<CompleteAccountSpec, Promise<Account>> = new HashMap();
-    trackers: HashMap<CompleteAccountSpec, AccountTracker> = new HashMap();
+    public wallet: Wallet;
+    private accounts: HashMap<CompleteAccountSpec, Promise<Account>> = new HashMap();
+    private trackers: HashMap<CompleteAccountSpec, AccountTracker> = new HashMap();
     private loadedFromStore: boolean = false;
 
     constructor(wallet: Wallet) {
@@ -70,6 +70,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         this.wallet = wallet;
     }
 
+    /**
+     * Resume all existing account trackers.
+     */
     resume(): void {
         if (!this.paused) return;
         this.paused = false;
@@ -78,6 +81,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         }
     }
 
+    /**
+     * Pause all existing account trackers.
+     */
     pause(): void {
         if (this.paused) return;
         this.paused = true;
@@ -86,6 +92,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         }
     }
 
+    /**
+     * Completes accountSpec with chainId in case chainId is undefined.
+     * @param accountSpec completed account spec
+     */
     getCompleteAccountSpec(accountSpec: AccountSpec): CompleteAccountSpec {
         const chainId = typeof accountSpec.chainId !== 'undefined' ? accountSpec.chainId : this.wallet.defaultChainId;
         return {
@@ -94,6 +104,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         };
     }
 
+    /**
+     * Adds account to manager and datastore.
+     */
     addAccount(accountSpec: AccountSpec): Promise<Account> {
         const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         if (this.accounts.has(completeAccountSpec)) {
@@ -109,6 +122,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return accountPromise;
     }
 
+    /**
+     * Removes account from manager and datastore.
+     * Also removes account's key from keystore if no other account uses it.
+     */
     async removeAccount(accountSpec: AccountSpec): Promise<void> {
         const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         if (this.accounts.has(completeAccountSpec)) {
@@ -130,6 +147,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         this.emit('remove', completeAccountSpec);
     }
 
+    /**
+     * Remove all accounts from manager and datastore.
+     * Does not delete keys, call keyManager.clearKeys() for that.
+     */
     async clearAccounts(): Promise<void> {
         this.accounts.clear();
         if (this.wallet.datastore) {
@@ -137,6 +158,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         }
     }
 
+    /**
+     * Generates a new account and private key.
+     * @param chainId optional, uses default chainId if undefined
+     */
     async createAccount(chainId?: string): Promise<Account> {
         const identity = createIdentity();
         const address = identity.address;
@@ -148,6 +173,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return account;
     }
 
+    /**
+     * Returns list of all accounts. Loads data persisted in datastore.
+     */
     async getAccounts(): Promise<Account[]> {
         if (!this.loadedFromStore && this.wallet.datastore) {
             const records = Array.from(await this.wallet.datastore.getIndex('accounts').getAll());
@@ -162,6 +190,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return Promise.all(promises);
     }
 
+    /**
+     * Gets an account and adds it to the manager if not existing.
+     * @param accountSpec 
+     */
     async getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec): Promise<Account> {
         const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         let account: Account;
@@ -173,6 +205,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return account;
     }
 
+    /**
+     * Returns an account tracker.
+     */
     async trackAccount(accountOrSpec: AccountSpec | Account): Promise<AccountTracker> {  
         let account: Account;
         if (!(accountOrSpec as Account).data) {
@@ -191,6 +226,9 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         return tracker;
     }
 
+    /**
+     * Initializes account from datastore or with initial values.
+     */
     async loadAccount(accountSpec: CompleteAccountSpec): Promise<Account> {
         if (this.wallet.datastore) {
             try {
@@ -216,13 +254,18 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
         );
     }
 
+    /**
+     * Returns next usable nonce for account.
+     * This uses the Aergo client to determine the nonce from the server.
+     * @param account 
+     */
     async getNonceForAccount(account: Account): Promise<number> {
         // TODO: smart caching of last used nonce
         const client = this.wallet.getClient(account.data.spec.chainId);
         return 1 + await client.getNonce(account.data.spec.address);
     }
 
-    async getChainIdHashForAccount(account: Account): Promise<string> {
+    private async getChainIdHashForAccount(account: Account): Promise<string> {
         return await this.wallet.getClient(account.data.spec.chainId).getChainIdHash('base58') as string;
     }
 

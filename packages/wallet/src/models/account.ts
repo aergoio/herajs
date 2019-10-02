@@ -2,6 +2,10 @@
 import { Address, Amount } from '@herajs/client';
 import { Record, Data } from './record';
 
+/**
+ * Unique identifier of an account.
+ * ChainId is optional. Managers use default chainId if undefined.
+ */
 export interface AccountSpec {
     address: string | Address;
     chainId?: string;

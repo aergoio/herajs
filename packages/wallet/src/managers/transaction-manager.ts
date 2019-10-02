@@ -45,10 +45,8 @@ interface GetReceiptResult {
     status: string;
 }
 
-
-
 export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents> {
-    transaction: SignedTransaction;
+    public transaction: SignedTransaction;
     private manager: TransactionManager;
     private timeoutId?: NodeJS.Timeout;
     private retryCount: number = 0;
@@ -63,6 +61,10 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         this.retryLoad();
     }
 
+    /**
+     * Repeatedly tries loading transaction status.
+     * This uses an exponential backoff in case the transaction is not confirmed yet.
+     */
     private retryLoad(): void {
         if (this.retryCount >= this.maxRetryCount) {
             this.transaction.data.status = Transaction.Status.Timeout;
@@ -107,6 +109,10 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         this.retryLoad();
     }
 
+    /**
+     * Returns a promise that resolves when the transaction is confirmed and the receipt is available  
+     * and rejects when an error or timeout occurs.
+     */
     async getReceipt(): Promise<GetReceiptResult> {
         return new Promise((resolve, reject) => {
             this.once('receipt', resolve);
@@ -115,6 +121,9 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         });
     }
 
+    /**
+     * Cancels transaction tracker. This does not cancel sending the transaction.
+     */
     cancel(): void {
         if (typeof this.timeoutId === 'undefined') return;
         clearTimeout(this.timeoutId);
@@ -181,8 +190,8 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
  * TransactionManager manages and tracks single transactions
  */
 export class TransactionManager extends PausableTypedEventEmitter<Events> {
-    wallet: Wallet;
-    accountTxTrackers: HashMap<CompleteAccountSpec, AccountTransactionTracker> = new HashMap();
+    public wallet: Wallet;
+    private accountTxTrackers: HashMap<CompleteAccountSpec, AccountTransactionTracker> = new HashMap();
 
     constructor(wallet: Wallet) {
         super();
@@ -283,7 +292,13 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
         return txs;
     }
 
-    async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> { // implicit send, add, and track
+    /**
+     * Sends prepared and signed transaction to the Aergo client.
+     * Adds transaction to the manager and starts a tracker.
+     * @param transaction 
+     * @returns transaction tracker
+     */
+    async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> {
         const client = this.wallet.getClient(transaction.data.chainId);
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
         // eslint-disable-next-line require-atomic-updates

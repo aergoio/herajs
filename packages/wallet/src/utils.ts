@@ -4,19 +4,30 @@ import { TypedEventEmitter } from '@elderapo/typed-event-emitter';
 /**
  * Returns the next interval to use for exponential backoff.
  * This curve yields every value 4 times before doubling in the next step.
- * The intervals reach ca. 1 minute (total time elapsed ca. 4 minutes) after step 24,
+ * The function is :code:`multiplier * 2**Math.floor(n/4)`.
+ * By default (multiplier = 1s), the intervals reach ca. 1 minute (total time elapsed ca. 4 minutes) after step 24,
  * so it is advised to declare a timeout after a certain number of steps.
  * @param n step on the interval curve
+ * @param multiplier multiplier, default 1000 (1s)
  */
 export function backoffIntervalStep(n: number, multiplier = 1000): number {
     return multiplier * 2**Math.floor(n/4);
 }
 
+/**
+ * Serializes accountSpec, e.g. { chainId: 'foo', address: 'bar' } => foo/bar
+ * @param accountSpec 
+ */
 export function serializeAccountSpec(accountSpec: AccountSpec): string {
     const chainId = typeof accountSpec.chainId === 'undefined' ? '' : accountSpec.chainId;
     return `${chainId}/${accountSpec.address}`;
 }
 
+/**
+ * Deserializes accountSpec, e.g. foo/bar => { chainId: 'foo', address: 'bar' }.
+ * If string has no /, uses whole string as address with empty chainId.
+ * @param accountSpec 
+ */
 export function deserializeAccountSpec(serialized: string): AccountSpec {
     const parts = serialized.split('/');
     if (parts.length === 1) {

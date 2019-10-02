@@ -12,6 +12,10 @@ export class Record<T = Data> {
     key: string;
     data: T;
 
+    /**
+     * @param key database key of record
+     * @param data data of record
+     */
     constructor(key: string, data: T) {
         this.key = key;
         this.data = data;
