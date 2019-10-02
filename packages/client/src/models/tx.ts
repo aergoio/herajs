@@ -1,12 +1,23 @@
-import { TxBody, Tx as GrpcTx } from '../../types/blockchain_pb';
+import { TxBody, Tx as GrpcTx, TxType, TxTypeMap } from '../../types/blockchain_pb';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils';
 import Address from './address';
 import Amount from './amount';
 import Block from './block';
 import { Buffer } from 'buffer';
-import bs58 from 'bs58';
 
+type TxTypeValue = TxTypeMap[keyof TxTypeMap];
+
+/**
+ * Class for converting transaction data to and from network representation.
+ * You usually don't need to interact with this class manually. It is used when
+ * passing transaction data to client methods.
+ */
 export default class Tx {
+    /**
+     * Map of tx types. Use as Tx.Type.NORMAL, Tx.Type.GOVERNANCE, Tx.Type.REDEPLOY.
+     */
+    static readonly Type = TxType;
+
     hash: string /*bytes*/;
     nonce: number /*uint64*/;
     from: Address /*bytes*/;
@@ -14,7 +25,7 @@ export default class Tx {
     amount: Amount /*bytes*/;
     payload: Uint8Array /*bytes*/;
     sign: string /*bytes*/;
-    type: number /*uint32*/;
+    type: TxTypeValue /*uint32*/;
     limit: number /*uint64*/;
     price: Amount /*uint64*/;
     chainIdHash: string /*bytes*/;
@@ -60,7 +71,7 @@ export default class Tx {
             msgtxbody.setSign(this.sign);
         }
         
-        msgtxbody.setType(this.type === 1 ? 1 : 0);
+        msgtxbody.setType(this.type ? this.type : 0);
 
         if (typeof this.limit !== 'undefined') {
             msgtxbody.setGaslimit(this.limit);
