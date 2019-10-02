@@ -1,6 +1,8 @@
 # Herajs Wallet SDK
 
-[![npm](https://img.shields.io/npm/v/@herajs/wallet.svg)](https://www.npmjs.com/package/@herajs/wallet)
+[![npm](https://img.shields.io/npm/v/@herajs/wallet.svg)](https://www.npmjs.com/package/@herajs/wallet) [![readthedocs](https://readthedocs.org/projects/herajswallet/badge/)](https://herajswallet.readthedocs.io/)
+
+- [Documentation](https://herajswallet.readthedocs.io/)
 
 This package includes everything you need to build a wallet application on Aergo.
 It is useful for other kinds of dapps, too.
