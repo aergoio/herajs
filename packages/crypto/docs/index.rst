@@ -11,6 +11,11 @@
    api/signing
    api/encoding
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Recipes
+
+   recipes/react-native
 
 Indices and tables
 ==================
