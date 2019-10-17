@@ -646,7 +646,7 @@ class AergoClient {
      * @param {FilterInfo} filter :class:`FilterInfo`
      * @returns {Event[]} list of events
      */
-    getEvents (filter: Partial<FilterInfo>): Event[] {
+    getEvents (filter: Partial<FilterInfo>): Promise<Event[]> {
         const fi = new FilterInfo(filter);
         const query = fi.toGrpc();
         return promisify(this.client.client.listEvents, this.client.client)(query).then(
