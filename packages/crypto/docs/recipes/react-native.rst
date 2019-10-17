@@ -12,7 +12,7 @@ The following guide uses `rn-nodeify <https://github.com/tradle/rn-nodeify>`_.
 
 *When using Yarn:*
 
-.. code-block:: 
+.. code-block:: bash
 
     // Install dependencies
     yarn add react-native-crypto react-native-randombytes
@@ -24,7 +24,7 @@ The following guide uses `rn-nodeify <https://github.com/tradle/rn-nodeify>`_.
 
 *When using NPM:*
 
-.. code-block:: 
+.. code-block:: bash
 
     // Install dependencies
     npm install --save react-native-crypto react-native-randombytes
@@ -39,7 +39,7 @@ The following guide uses `rn-nodeify <https://github.com/tradle/rn-nodeify>`_.
     You have to run the final command every time you add packages.
     It is a good idea to add it as a post-install script to your package.json:
 
-    .. code-block::
+    .. code-block:: text
 
         "scripts": {
             "postinstall": "rn-nodeify --install --hack"
