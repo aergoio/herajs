@@ -6,6 +6,7 @@ import globals from 'rollup-plugin-node-globals';
 import json from 'rollup-plugin-json';
 import ignore from 'rollup-plugin-ignore';
 import { terser } from 'rollup-plugin-terser';
+import replace from 'rollup-plugin-re'
 //import visualizer from 'rollup-plugin-visualizer';
 import { builtinModules } from 'module';
 import pkg from './package.json';
@@ -61,10 +62,17 @@ function genConfig(browser = false, output) {
             globals(),
             builtins(),
 
+            // For some reason, neither ignore nor externals gets rid of this import
+            browser ? replace({
+                replaces: {
+                    'require(\'crypto\')': '{}',
+                },
+            }) : undefined,
+
             terser({
                 include: [/^.+\.min\.js$/], 
             }),
-        ],
+        ].filter(plugin => typeof plugin !== 'undefined'),
         
         output,
     

@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "rollup-plugin-ignore": "^1.0.5",
+    "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^5.1.1"
   }
 }
