@@ -574,6 +574,7 @@ class AergoClient {
                 cumulativefee: new Amount(grpcObject.getCumulativefeeused_asU8()),
                 blockno: obj.blockno,
                 blockhash: Block.encodeHash(grpcObject.getBlockhash_asU8()),
+                feeDelegation: obj.feedelegation,
             };
         });
     }
@@ -675,7 +676,8 @@ class AergoClient {
                         name: item.name,
                         arguments: item.argumentsList,
                         view: item.view,
-                        payable: item.payable
+                        payable: item.payable,
+                        feeDelegation: item.feeDelegation,
                     })),
                     state_variables: obj.stateVariablesList
                 };
