@@ -87,6 +87,11 @@ export class BlockHeader extends jspb.Message {
   getSign_asB64(): string;
   setSign(value: Uint8Array | string): void;
 
+  getConsensus(): Uint8Array | string;
+  getConsensus_asU8(): Uint8Array;
+  getConsensus_asB64(): string;
+  setConsensus(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockHeader.AsObject;
   static toObject(includeInstance: boolean, msg: BlockHeader): BlockHeader.AsObject;
@@ -110,6 +115,7 @@ export namespace BlockHeader {
     pubkey: Uint8Array | string,
     coinbaseaccount: Uint8Array | string,
     sign: Uint8Array | string,
+    consensus: Uint8Array | string,
   }
 }
 
@@ -561,6 +567,9 @@ export class Receipt extends jspb.Message {
   getTo_asB64(): string;
   setTo(value: Uint8Array | string): void;
 
+  getFeedelegation(): boolean;
+  setFeedelegation(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Receipt.AsObject;
   static toObject(includeInstance: boolean, msg: Receipt): Receipt.AsObject;
@@ -586,6 +595,7 @@ export namespace Receipt {
     txindex: number,
     from: Uint8Array | string,
     to: Uint8Array | string,
+    feedelegation: boolean,
   }
 }
 
@@ -678,6 +688,9 @@ export class Function extends jspb.Message {
   getView(): boolean;
   setView(value: boolean): void;
 
+  getFeeDelegation(): boolean;
+  setFeeDelegation(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Function.AsObject;
   static toObject(includeInstance: boolean, msg: Function): Function.AsObject;
@@ -694,6 +707,7 @@ export namespace Function {
     argumentsList: Array<FnArgument.AsObject>,
     payable: boolean,
     view: boolean,
+    feeDelegation: boolean,
   }
 }
 
@@ -877,10 +891,39 @@ export namespace FilterInfo {
   }
 }
 
+export class Proposal extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  getDescription(): string;
+  setDescription(value: string): void;
+
+  getMultiplechoice(): number;
+  setMultiplechoice(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Proposal.AsObject;
+  static toObject(includeInstance: boolean, msg: Proposal): Proposal.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Proposal, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Proposal;
+  static deserializeBinaryFromReader(message: Proposal, reader: jspb.BinaryReader): Proposal;
+}
+
+export namespace Proposal {
+  export type AsObject = {
+    id: string,
+    description: string,
+    multiplechoice: number,
+  }
+}
+
 export interface TxTypeMap {
   NORMAL: 0;
   GOVERNANCE: 1;
   REDEPLOY: 2;
+  FEEDELEGATION: 3;
 }
 
 export const TxType: TxTypeMap;

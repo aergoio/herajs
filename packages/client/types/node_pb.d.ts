@@ -15,6 +15,24 @@ export class PeerAddress extends jspb.Message {
   getPeerid_asB64(): string;
   setPeerid(value: Uint8Array | string): void;
 
+  getRole(): number;
+  setRole(value: number): void;
+
+  getVersion(): string;
+  setVersion(value: string): void;
+
+  clearAddressesList(): void;
+  getAddressesList(): Array<string>;
+  setAddressesList(value: Array<string>): void;
+  addAddresses(value: string, index?: number): string;
+
+  clearProduceridsList(): void;
+  getProduceridsList(): Array<Uint8Array | string>;
+  getProduceridsList_asU8(): Array<Uint8Array>;
+  getProduceridsList_asB64(): Array<string>;
+  setProduceridsList(value: Array<Uint8Array | string>): void;
+  addProducerids(value: Uint8Array | string, index?: number): Uint8Array | string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PeerAddress.AsObject;
   static toObject(includeInstance: boolean, msg: PeerAddress): PeerAddress.AsObject;
@@ -30,6 +48,19 @@ export namespace PeerAddress {
     address: string,
     port: number,
     peerid: Uint8Array | string,
+    role: number,
+    version: string,
+    addressesList: Array<string>,
+    produceridsList: Array<Uint8Array | string>,
   }
 }
+
+export interface PeerRoleMap {
+  LEGACYVERSION: 0;
+  PRODUCER: 1;
+  WATCHER: 2;
+  AGENT: 3;
+}
+
+export const PeerRole: PeerRoleMap;
 

@@ -281,6 +281,26 @@ export namespace SingleBytes {
   }
 }
 
+export class SingleString extends jspb.Message {
+  getValue(): string;
+  setValue(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SingleString.AsObject;
+  static toObject(includeInstance: boolean, msg: SingleString): SingleString.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SingleString, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SingleString;
+  static deserializeBinaryFromReader(message: SingleString, reader: jspb.BinaryReader): SingleString;
+}
+
+export namespace SingleString {
+  export type AsObject = {
+    value: string,
+  }
+}
+
 export class AccountAddress extends jspb.Message {
   getValue(): Uint8Array | string;
   getValue_asU8(): Uint8Array;
@@ -858,6 +878,9 @@ export class VoteInfo extends jspb.Message {
   setCandidatesList(value: Array<string>): void;
   addCandidates(value: string, index?: number): string;
 
+  getAmount(): string;
+  setAmount(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VoteInfo.AsObject;
   static toObject(includeInstance: boolean, msg: VoteInfo): VoteInfo.AsObject;
@@ -872,6 +895,7 @@ export namespace VoteInfo {
   export type AsObject = {
     id: string,
     candidatesList: Array<string>,
+    amount: string,
   }
 }
 
