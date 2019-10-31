@@ -538,6 +538,15 @@ class AergoClient {
             }))
         );
     }
+    /**
+     * Return the top voted-for block producer or system parameter
+     * @param address string
+     */
+    getAccountVotes(address): Promise<any> {
+        const accountAddress = new rpcTypes.__moduleExports.AccountAddress();
+        accountAddress.setValue(Uint8Array.from((new Address(address)).asBytes()));
+        return promisify(this.client.client.getAccountVotes, this.client.client)(accountAddress);
+    }
 
     /**
      * Return information for account name
