@@ -45,6 +45,7 @@ export class Wallet extends MiddlewareConsumer {
     public datastore?: Storage;
     public keystore?: Storage;
     private clients: Map<string, AergoClient> = new Map();
+    public defaultLimit?: number;
 
     constructor(config?: Partial<WalletConfig>) {
         super();
@@ -99,6 +100,14 @@ export class Wallet extends MiddlewareConsumer {
     }
 
     /**
+     * Set the default gas limit for subsequent transactions.
+     * @param limit 
+     */
+    setDefaultLimit(limit: number): void {
+        this.defaultLimit = limit;
+    }
+
+    /**
      * Get AergoClient for chainId.
      * If called the first time, create AergoClient instance.
      * @param chainId optional, uses default chainId when undefined
@@ -111,18 +120,22 @@ export class Wallet extends MiddlewareConsumer {
             throw new Error(`trying to use not configured chainId ${chainId}`);
         }
         const chainConfig = this.chainConfigs.get(chainId) as ChainConfig;
+        let client: AergoClient;
 
         if (!this.clients.has(chainId)) {
             let provider = chainConfig.provider;
             if (typeof provider === 'function') {
                 provider = new provider({url: chainConfig.nodeUrl});
             }
-            const client = new AergoClient({}, provider);
+            client = new AergoClient({}, provider);
             this.clients.set(chainId, client);
-            return client;
+        } else {
+            client = this.clients.get(chainId) as AergoClient;
         }
-
-        return this.clients.get(chainId) as AergoClient;
+        if (this.defaultLimit) {
+            client.setDefaultLimit(this.defaultLimit);
+        }
+        return client;
     }
 
     /**
