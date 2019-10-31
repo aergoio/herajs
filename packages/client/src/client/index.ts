@@ -27,7 +27,7 @@ import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import Tx from '../models/tx';
 import Block from '../models/block';
 import BlockMetadata from '../models/blockmetadata';
-import Address from '../models/address';
+import { AddressInput, default as Address } from '../models/address';
 import Peer from '../models/peer';
 import State from '../models/state';
 import Amount from '../models/amount';
@@ -184,7 +184,7 @@ class AergoClient {
     }
 
     isConnected () {
-        // FIXME
+        // Legacy code for backwards compatability
         return false;
     }
 
@@ -229,7 +229,7 @@ class AergoClient {
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
      */
-    blockchain (): Promise<GrpcBlockchainStatus.AsObject> {
+    blockchain(): Promise<GrpcBlockchainStatus.AsObject> {
         const _this = this;
         return waterfall([
             marshalEmpty,
@@ -252,7 +252,7 @@ class AergoClient {
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
      */
-    getChainInfo (): Promise<ChainInfo> {
+    getChainInfo(): Promise<ChainInfo> {
         return waterfall([
             marshalEmpty,
             this.grpcMethod<Empty, GrpcChainInfo>(this.client.client.getChainInfo),
@@ -266,7 +266,7 @@ class AergoClient {
      * Request current status of node.
      * @returns {Promise<any>} an object detailing the state of various node components
      */
-    getNodeState (component?: string, timeout = 5): Promise<any> {
+    getNodeState(component?: string, timeout = 5): Promise<any> {
         return waterfall([
             async function marshal(component?: string): Promise<NodeReq> {
                 const params = new NodeReq();
@@ -289,7 +289,7 @@ class AergoClient {
      * @param {string} txhash transaction hash
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
-    getTransaction (txhash): Promise<GetTxResult> {
+    getTransaction(txhash: string): Promise<GetTxResult> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
@@ -305,7 +305,7 @@ class AergoClient {
                         }
                     });
                 } else {
-                    const res = <any>{};
+                    const res = <GetTxResult>{};
                     res.block = {
                         hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
                         idx: result.getTxidx().getIdx()
@@ -323,7 +323,7 @@ class AergoClient {
      * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @returns block details
      */
-    getBlock (hashOrNumber: string | number): Promise<Block> {
+    getBlock(hashOrNumber: string | number): Promise<Block> {
         return waterfall([
             marshalHashOrNumberToSingleBytes,
             this.grpcMethod<SingleBytes, GrpcBlock>(this.client.client.getBlock),
@@ -339,7 +339,7 @@ class AergoClient {
      * @param hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @returns block metadata
      */
-    getBlockMetadata (hashOrNumber: string | number): Promise<BlockMetadata> {
+    getBlockMetadata(hashOrNumber: string | number): Promise<BlockMetadata> {
         return waterfall([
             marshalHashOrNumberToSingleBytes,
             this.grpcMethod<SingleBytes, GrpcBlockMetadata>(this.client.client.getBlockMetadata),
@@ -350,20 +350,22 @@ class AergoClient {
     }
 
     /**
-     * Retrieve the last n blocks, beginning from given block .
+     * Retrieve the last n blocks, beginning from given block
      * 
      * @param {string|number} hashOrNumber either 32-byte block hash encoded as a bs58 string or block height as a number.
      * @param {number} size number of blocks to return
+     * @param {number} offset number of blocks to skip
+     * @param {boolean} desc order of blocks
      * @returns {Promise<Block[]>} list of block headers (blocks without body)
      */
-    getBlockHeaders (hashOrNumber, size = 10, offset = 0, desc = true) {
+    getBlockHeaders(hashOrNumber: string | number, size = 10, offset = 0, desc = true): Promise<Block[]> {
         const params = new rpcTypes.ListParams();
         if (typeof hashOrNumber === 'string') {
-            hashOrNumber = Block.decodeHash(hashOrNumber);
-            if (hashOrNumber.length != 32) {
+            const decodedHash = Block.decodeHash(hashOrNumber)
+            if (decodedHash.length != 32) {
                 throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
-            params.setHash(Uint8Array.from(hashOrNumber));
+            params.setHash(Uint8Array.from(decodedHash));
         } else
         if (typeof hashOrNumber === 'number') {
             params.setHeight(hashOrNumber);
@@ -378,7 +380,7 @@ class AergoClient {
         });
     }
 
-    getBlockStream () {
+    getBlockStream(): Stream<Block> {
         const empty = new rpcTypes.Empty();
         const stream = this.client.client.listBlockStream(empty);
         try {
@@ -397,7 +399,10 @@ class AergoClient {
         } as Stream<Block>;
     }
 
-    getBlockMetadataStream () {
+    /**
+     * Returns a stream of block metadata
+     */
+    getBlockMetadataStream(): Stream<BlockMetadata> {
         const empty = new rpcTypes.Empty();
         const stream = this.client.client.listBlockMetadataStream(empty);
         try {
@@ -413,7 +418,7 @@ class AergoClient {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(BlockMetadata.fromGrpc(data))),
             cancel: () => stream.cancel()
-        };
+        } as Stream<BlockMetadata>;
     }
 
     /**
@@ -422,7 +427,7 @@ class AergoClient {
      * @param offset 
      * @param size 
      */
-    async getBlockBody (hashOrNumber: string|number, offset = 0, size = 10): Promise<BlockBodyPaged> {
+    async getBlockBody(hashOrNumber: string|number, offset = 0, size = 10): Promise<BlockBodyPaged> {
         const paging = new PageParams();
         paging.setOffset(offset);
         paging.setSize(size);
@@ -454,7 +459,7 @@ class AergoClient {
      * @param {FilterInfo} filter :class:`FilterInfo`
      * @returns {Stream<Event>} event stream
      */
-    getEventStream (filter: Partial<FilterInfo>): Stream<Event> {
+    getEventStream(filter: Partial<FilterInfo>): Stream<Event> {
         const fi = new FilterInfo(filter);
         const query = fi.toGrpc();
         const stream = this.client.client.listEventStream(query);
@@ -480,21 +485,22 @@ class AergoClient {
      * @param {string} address Account address encoded in Base58check
      * @returns {Promise<object>} account state
      */
-    getState (address): Promise<State> {
+    getState(address: AddressInput): Promise<State> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
     }
     
-    getNonce(address): Promise<number> {
+    /**
+     * Retrieve account's most recenlty used nonce.
+     * This is a shortcut function as the same information is also returned by getState.
+     * @param {string} address Account address encoded in Base58check
+     * @returns {Promise<object>} account state
+     */
+    getNonce(address: AddressInput): Promise<number> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
-    }
-
-    verifyTransaction (/*tx*/) {
-        // Untested
-        return promisify(this.client.client.verifyTX, this.client.client)()(grpcObject => Tx.fromGrpc(grpcObject));
     }
 
     /**
@@ -502,7 +508,7 @@ class AergoClient {
      * @param {Tx} tx signed transaction
      * @returns {Promise<string>} transaction hash
      */
-    sendSignedTransaction (tx): Promise<string> {
+    sendSignedTransaction(tx): Promise<string> {
         return new Promise((resolve, reject) => {
             const txs = new rpcTypes.TxList();
             if (!(tx instanceof Tx)) {
@@ -542,7 +548,7 @@ class AergoClient {
      * Return the top voted-for block producer or system parameter
      * @param address string
      */
-    getAccountVotes(address): Promise<any> {
+    getAccountVotes(address: AddressInput): Promise<any> {
         const accountAddress = new rpcTypes.__moduleExports.AccountAddress();
         accountAddress.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getAccountVotes, this.client.client)(accountAddress);
@@ -552,7 +558,7 @@ class AergoClient {
      * Return information for account name
      * @param {string} address Account address encoded in Base58check
      */
-    getStaking (address) {
+    getStaking(address: AddressInput) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(
@@ -570,7 +576,7 @@ class AergoClient {
      * @param {string} txhash transaction hash
      * @return {Promise<object>} transaction receipt
      */
-    getTransactionReceipt (txhash): Promise<GetReceiptResult> {
+    getTransactionReceipt(txhash: string): Promise<GetReceiptResult> {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then((grpcObject: GrpcReceipt) => {
@@ -593,7 +599,7 @@ class AergoClient {
      * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
      */
-    queryContract (functionCall: FunctionCall) {
+    queryContract(functionCall: FunctionCall) {
         const query = functionCall.toGrpc();
         return promisify(this.client.client.queryContract, this.client.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
@@ -607,7 +613,7 @@ class AergoClient {
      * @param {StateQuery} stateQuery query details obtained from contract.queryState()
      * @returns {Promise<JsonData>} result of query: single value if requesting one key, list of values when requesting multiple keys.
      */
-    queryContractState (stateQuery: StateQuery): Promise<JsonData | BasicType> {
+    queryContractState(stateQuery: StateQuery): Promise<JsonData | BasicType> {
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: GrpcStateQueryProof) => {
@@ -643,7 +649,7 @@ class AergoClient {
      * @param {StateQuery} stateQuery query details obtained from contract.queryState()
      * @returns {Promise<StateQueryProof>} result of query, including account and var proofs
      */
-    queryContractStateProof (stateQuery: StateQuery): Promise<StateQueryProof> {
+    queryContractStateProof(stateQuery: StateQuery): Promise<StateQueryProof> {
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: GrpcStateQueryProof) => StateQueryProof.fromGrpc(grpcObject)
@@ -656,7 +662,7 @@ class AergoClient {
      * @param {FilterInfo} filter :class:`FilterInfo`
      * @returns {Event[]} list of events
      */
-    getEvents (filter: Partial<FilterInfo>): Promise<Event[]> {
+    getEvents(filter: Partial<FilterInfo>): Promise<Event[]> {
         const fi = new FilterInfo(filter);
         const query = fi.toGrpc();
         return promisify(this.client.client.listEvents, this.client.client)(query).then(
@@ -672,7 +678,7 @@ class AergoClient {
      * @param {string} address of contract
      * @returns {Promise<object>} abi
      */
-    getABI (address) {
+    getABI(address: AddressInput) {
         const singleBytes = new rpcTypes.SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(
@@ -697,7 +703,7 @@ class AergoClient {
     /**
      * Get list of peers of connected node
      */
-    getPeers (showself = true, showhidden = true) {
+    getPeers(showself = true, showhidden = true) {
         const query = new PeersParams();
         query.setNohidden(!showhidden);
         query.setShowself(showself);
@@ -712,7 +718,7 @@ class AergoClient {
      * Return information for account name
      * @param name 
      */
-    getNameInfo (name): Promise<NameInfoResult> {
+    getNameInfo(name: string): Promise<NameInfoResult> {
         const nameObj = new Name();
         nameObj.setName(name);
         return promisify(this.client.client.getNameInfo, this.client.client)(nameObj).then(
@@ -730,7 +736,7 @@ class AergoClient {
     /**
      * Return consensus info. The included fields can differ by consensus type.
      */
-    getConsensusInfo (): Promise<ConsensusInfoResult> {
+    getConsensusInfo(): Promise<ConsensusInfoResult> {
         return waterfall([
             marshalEmpty,
             this.grpcMethod<Empty, ConsensusInfo>(this.client.client.getConsensusInfo),
@@ -749,7 +755,7 @@ class AergoClient {
     /**
      * Return server info
      */
-    getServerInfo (keys?: string[]): Promise<ServerInfoResult> {
+    getServerInfo(keys?: string[]): Promise<ServerInfoResult> {
         return waterfall([
             async function marshal(keys?: string[]): Promise<KeyParams> {
                 const params = new KeyParams();

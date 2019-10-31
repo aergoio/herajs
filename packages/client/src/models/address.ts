@@ -4,6 +4,8 @@ import { Buffer } from 'buffer';
 
 let systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise'];
 
+export type AddressInput = Address | string | Buffer | Uint8Array;
+
 /**
  * A wrapper around addresses. Internally addresses are stored and sent as raw bytes,
  * but client-side they are displayed as base58-check encoded strings.
@@ -14,13 +16,14 @@ export default class Address {
     encoded: string;
     isName: boolean;
 
-    constructor(address: Address|string|Buffer|Uint8Array) {
+    constructor(address: AddressInput) {
         this.isName = false;
 
         if (address instanceof Address) {
-            // Copy buffer
+            // Just copy buffer
             this.value = Buffer.from(address.value);
         } else if (typeof address === 'string') {
+            // Parse string
             if (address.length <= ACCOUNT_NAME_LENGTH || Address.isSystemName(address)) {
                 this.value = Buffer.from(address);
                 this.isName = true;
@@ -44,12 +47,14 @@ export default class Address {
         // Check for name encoded as bytes
         if (!this.isName) {
             let arrValue = Array.from(this.value);
-            while(arrValue[arrValue.length-1] === 0) {
-                arrValue.pop(); // remove trailing 0
+            // Remove trailing 0s
+            while (arrValue[arrValue.length-1] === 0) {
+                arrValue.pop();
             }
-            if (arrValue.length <= ACCOUNT_NAME_LENGTH || Address.isSystemName(this.value.toString())) {
+            const buf = Buffer.from(arrValue);
+            if (buf.length <= ACCOUNT_NAME_LENGTH || Address.isSystemName(buf.toString())) {
                 this.isName = true;
-                this.value = Buffer.from(arrValue);
+                this.value = buf;
             }
         }
     }
@@ -74,7 +79,7 @@ export default class Address {
         this.encoded = Address.encode(this.value);
         return this.encoded;
     }
-    static decode(bs58string): Buffer {
+    static decode(bs58string: string): Buffer {
         const decoded = bs58check.decode(bs58string);
         if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error(`invalid address prefix (${decoded[0]})`);
         if (decoded.length !== 33 + 1) throw new Error(`invalid address length (${decoded.length-1})`);
@@ -98,11 +103,11 @@ export default class Address {
         systemAddresses = addresses;
     }
 
-    private static valueEqual(a: Buffer, b: Buffer) {
+    private static valueEqual(a: Buffer, b: Buffer): boolean {
         return a.length == b.length && a.every((a_i, i) => a_i === b[i]);
     }
 
-    equal(_otherAddress: string | Address) {
+    equal(_otherAddress: AddressInput): boolean {
         const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
         return Address.valueEqual(this.value, otherAddress.value);
     }
