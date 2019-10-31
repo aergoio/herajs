@@ -142,6 +142,7 @@ class AergoClient {
     accounts: Accounts;
     target: string;
     private chainIdHash?: Uint8Array;
+    private defaultLimit: number;
     static defaultProviderClass?: {new (...args : any[]): any;};
     static platform: string = '';
 
@@ -202,6 +203,13 @@ class AergoClient {
         } else {
             this.chainIdHash = hash;
         }
+    }
+
+    /**
+     * Set the default gas limit to use for transactions that do not define their own.
+     */
+    setDefaultLimit(limit: number): void {
+        this.defaultLimit = limit;
     }
 
     /**
