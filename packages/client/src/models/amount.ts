@@ -14,7 +14,7 @@ const DEFAULT_NETWORK_UNIT = 'aer';
  * Whenever you pass amounts to other functions, they will try to coerce them using this class.
  */
 export default class Amount {
-    value: JSBI; // value in base unit
+    value: Readonly<JSBI>; // value in base unit
     unit: string; // unit for displaying
 
     private static _valueFromString(value: string, unit: string = ''): JSBI {
@@ -65,6 +65,9 @@ export default class Amount {
         if (typeof newUnit !== 'undefined') {
             this.unit = newUnit;
         }
+
+        // Freeze value. Otherwise some libraries mess this up since it is actually an Array subclass with a custom propery
+        this.value = Object.freeze(this.value);
     }
     /**
      * Returns value as byte buffer
@@ -129,12 +132,12 @@ export default class Amount {
      * @param unit string (aer, gaer, aergo)
      */
     toUnit(unit: string): Amount {
-        return new Amount(this.value, '', unit);
+        return new Amount(this.value as JSBI, '', unit);
     }
 
     compare(otherAmount: Amount | number | JSBI ): number {
         if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
-        const [a, b] = [this.toUnit('aer').value, otherAmount.toUnit('aer').value];
+        const [a, b] = [this.toUnit('aer').value, otherAmount.toUnit('aer').value] as JSBI[];
         return JSBI.lessThan(a, b) ? -1 : (JSBI.equal(a, b) ? 0 : 1);
     }
 
@@ -144,13 +147,13 @@ export default class Amount {
 
     add(otherAmount: Amount | number | JSBI): Amount {
         const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
-        const sum = JSBI.add(this.value, otherValue);
+        const sum = JSBI.add(this.value as JSBI, otherValue);
         return new Amount(sum, this.unit);
     }
 
     sub(otherAmount: Amount | number | JSBI): Amount {
         const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
-        const sum = JSBI.subtract(this.value, otherValue);
+        const sum = JSBI.subtract(this.value as JSBI, otherValue);
         return new Amount(sum, this.unit);
     }
 }

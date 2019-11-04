@@ -293,6 +293,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             // eslint-disable-next-line require-atomic-updates
             tx.chainIdHash = await this.getChainIdHashForAccount(account);
         }
+        if (typeof tx.limit === 'undefined' && this.wallet.defaultLimit) {
+            // eslint-disable-next-line require-atomic-updates
+            tx.limit = this.wallet.defaultLimit;
+        }
         return new Transaction('', {
             chainId: account.data.spec.chainId,
             from: tx.from.toString(),

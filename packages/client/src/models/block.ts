@@ -33,8 +33,9 @@ export default class Block {
 
     static fromGrpc(grpcObject: GrpcBlock) {
         const obj = grpcObject.toObject();
+        let txsList: Tx[] = [];
         if (obj.body) {
-            obj.body.txsList = grpcObject.getBody().getTxsList().map(tx => Tx.fromGrpc(tx));
+            txsList = grpcObject.getBody().getTxsList().map(tx => Tx.fromGrpc(tx)) ;
         }
         return new Block(<Partial<Block>>{
             hash: Block.encodeHash(grpcObject.getHash_asU8()),
@@ -45,7 +46,9 @@ export default class Block {
                 coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
                 pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8()),
             },
-            body: obj.body
+            body: {
+                txsList,
+            },
         });
     }
     toGrpc() {

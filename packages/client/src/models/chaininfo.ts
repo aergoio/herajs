@@ -15,6 +15,8 @@ export default class ChainInfo {
     maxtokens: Amount;
     stakingminimum: Amount;
     stakingtotal: Amount;
+    gasprice: Amount;
+    nameprice: Amount;
 
     constructor(data: Partial<ChainInfo>) {
         Object.assign(this, data);
@@ -34,6 +36,8 @@ export default class ChainInfo {
             maxtokens: new Amount(grpcObject.getMaxtokens_asU8()),
             stakingminimum: new Amount(grpcObject.getStakingminimum_asU8()),
             stakingtotal: new Amount(grpcObject.getTotalstaking_asU8()),
+            gasprice: new Amount(grpcObject.getGasprice_asU8()),
+            nameprice: new Amount(grpcObject.getNameprice_asU8()),
         });
     }
 

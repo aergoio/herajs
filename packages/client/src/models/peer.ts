@@ -13,8 +13,7 @@ export default class Peer {
             obj.bestblock.blockhash = Block.encodeHash(bestblock.getBlockhash_asU8());
         }
         obj.address = {
-            address: obj.address.address,
-            port: obj.address.port,
+            ...obj.address,
             peerid: bs58.encode(Buffer.from(grpcObject.getAddress().getPeerid_asU8())),
         };
         return new Peer(<Partial<Peer>>obj);

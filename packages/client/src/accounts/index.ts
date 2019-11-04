@@ -12,9 +12,11 @@ import { errorMessageForCode } from '../utils';
  */
 class Accounts {
     client: any;
+    aergo: any;
 
     constructor (aergo) {
         this.client = aergo.client;
+        this.aergo = aergo;
     }
     
     /**
@@ -134,6 +136,9 @@ class Accounts {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
+        if (typeof tx.limit === 'undefined' && this.aergo.defaultLimit) {
+            tx.limit = this.aergo.defaultLimit;
+        }
         return promisify(this.client.client.sendTX, this.client.client)(tx.toGrpc()).then((result: CommitResult) => {
             const obj = result.toObject();
             if (obj.error && obj.detail) {
@@ -155,6 +160,9 @@ class Accounts {
             tx = new Tx(_tx);
         } else {
             tx = _tx;
+        }
+        if (typeof tx.limit === 'undefined' && this.aergo.defaultLimit) {
+            tx.limit = this.aergo.defaultLimit;
         }
         return promisify(this.client.client.signTX, this.client.client)(tx.toGrpc()).then((signedtx: GrpcTx) => Tx.fromGrpc(signedtx));
     }

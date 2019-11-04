@@ -160,6 +160,7 @@ describe('Wallet scenarios', async () => {
     it('deploys and calls contract resulting in success', async () => {
         // Config
         const wallet = new Wallet();
+        wallet.setDefaultLimit(10000);
         wallet.useChain({
             chainId: 'testnet.localhost',
             nodeUrl: '127.0.0.1:7845'
@@ -185,7 +186,7 @@ describe('Wallet scenarios', async () => {
         const txTracker = await wallet.sendTransaction(account, testtx);
         const receipt = await txTracker.getReceipt();
         console.log('contract deployed at', receipt.contractaddress.toString());
-        assert.equal(receipt.status, 'CREATED');
+        assert.equal(receipt.status, 'CREATED', `failed with error: ${receipt.result}`);
         contract.setAddress(receipt.contractaddress);
 
         // Call contract
@@ -195,13 +196,14 @@ describe('Wallet scenarios', async () => {
         });
         const callTxTracker = await wallet.sendTransaction(account, callTx);
         const callTxReceipt = await callTxTracker.getReceipt();
-        assert.equal(callTxReceipt.status, 'SUCCESS');
+        assert.equal(callTxReceipt.status, 'SUCCESS', `failed with error: ${callTxReceipt.result}`);
         assert.equal(JSON.parse(callTxReceipt.result), 10);
     }).timeout(5000);
 
     it('deploys and calls contract resulting in failure', async () => {
         // Config
         const wallet = new Wallet();
+        wallet.setDefaultLimit(10000);
         wallet.useChain({
             chainId: 'testnet.localhost',
             nodeUrl: '127.0.0.1:7845'
@@ -228,7 +230,7 @@ describe('Wallet scenarios', async () => {
         const receipt = await txTracker.getReceipt();
         
         console.log('contract deployed at', receipt.contractaddress.toString());
-        assert.equal(receipt.status, 'CREATED');
+        assert.equal(receipt.status, 'CREATED', `failed with error: ${receipt.result}`);
         contract.setAddress(receipt.contractaddress);
         const contractId = receipt.contractaddress.value.toString('hex');
         

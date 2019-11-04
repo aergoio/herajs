@@ -9,12 +9,13 @@ type TxTypeValue = TxTypeMap[keyof TxTypeMap];
 
 /**
  * Class for converting transaction data to and from network representation.
- * You usually don't need to interact with this class manually. It is used when
- * passing transaction data to client methods.
+ * You usually don't need to interact with this class manually, you can pass simple JSON objects.
+ * This class is used when passing transaction data to client methods.
  */
 export default class Tx {
     /**
-     * Map of tx types. Use as Tx.Type.NORMAL, Tx.Type.GOVERNANCE, Tx.Type.REDEPLOY.
+     * Map of tx types.
+     * Use as Tx.Type.NORMAL, Tx.Type.GOVERNANCE, Tx.Type.REDEPLOY, Tx.Type.FEEDELEGATION
      */
     static readonly Type = TxType;
 

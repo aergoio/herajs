@@ -21,6 +21,7 @@ goog.exportSymbol('proto.types.Event', null, global);
 goog.exportSymbol('proto.types.FilterInfo', null, global);
 goog.exportSymbol('proto.types.FnArgument', null, global);
 goog.exportSymbol('proto.types.Function', null, global);
+goog.exportSymbol('proto.types.Proposal', null, global);
 goog.exportSymbol('proto.types.Query', null, global);
 goog.exportSymbol('proto.types.Receipt', null, global);
 goog.exportSymbol('proto.types.State', null, global);
@@ -344,7 +345,8 @@ proto.types.BlockHeader.toObject = function(includeInstance, msg) {
     confirms: jspb.Message.getFieldWithDefault(msg, 8, 0),
     pubkey: msg.getPubkey_asB64(),
     coinbaseaccount: msg.getCoinbaseaccount_asB64(),
-    sign: msg.getSign_asB64()
+    sign: msg.getSign_asB64(),
+    consensus: msg.getConsensus_asB64()
   };
 
   if (includeInstance) {
@@ -424,6 +426,10 @@ proto.types.BlockHeader.deserializeBinaryFromReader = function(msg, reader) {
     case 11:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSign(value);
+      break;
+    case 12:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setConsensus(value);
       break;
     default:
       reader.skipField();
@@ -528,6 +534,13 @@ proto.types.BlockHeader.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       11,
+      f
+    );
+  }
+  f = message.getConsensus_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      12,
       f
     );
   }
@@ -888,6 +901,45 @@ proto.types.BlockHeader.prototype.getSign_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.BlockHeader.prototype.setSign = function(value) {
   jspb.Message.setProto3BytesField(this, 11, value);
+};
+
+
+/**
+ * optional bytes consensus = 12;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.BlockHeader.prototype.getConsensus = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/**
+ * optional bytes consensus = 12;
+ * This is a type-conversion wrapper around `getConsensus()`
+ * @return {string}
+ */
+proto.types.BlockHeader.prototype.getConsensus_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getConsensus()));
+};
+
+
+/**
+ * optional bytes consensus = 12;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getConsensus()`
+ * @return {!Uint8Array}
+ */
+proto.types.BlockHeader.prototype.getConsensus_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getConsensus()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.BlockHeader.prototype.setConsensus = function(value) {
+  jspb.Message.setProto3BytesField(this, 12, value);
 };
 
 
@@ -3976,7 +4028,8 @@ proto.types.Receipt.toObject = function(includeInstance, msg) {
     blockhash: msg.getBlockhash_asB64(),
     txindex: jspb.Message.getFieldWithDefault(msg, 11, 0),
     from: msg.getFrom_asB64(),
-    to: msg.getTo_asB64()
+    to: msg.getTo_asB64(),
+    feedelegation: jspb.Message.getFieldWithDefault(msg, 14, false)
   };
 
   if (includeInstance) {
@@ -4065,6 +4118,10 @@ proto.types.Receipt.deserializeBinaryFromReader = function(msg, reader) {
     case 13:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setTo(value);
+      break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setFeedelegation(value);
       break;
     default:
       reader.skipField();
@@ -4184,6 +4241,13 @@ proto.types.Receipt.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       13,
+      f
+    );
+  }
+  f = message.getFeedelegation();
+  if (f) {
+    writer.writeBool(
+      14,
       f
     );
   }
@@ -4590,6 +4654,23 @@ proto.types.Receipt.prototype.getTo_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.Receipt.prototype.setTo = function(value) {
   jspb.Message.setProto3BytesField(this, 13, value);
+};
+
+
+/**
+ * optional bool feeDelegation = 14;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Receipt.prototype.getFeedelegation = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 14, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Receipt.prototype.setFeedelegation = function(value) {
+  jspb.Message.setProto3BooleanField(this, 14, value);
 };
 
 
@@ -5196,7 +5277,8 @@ proto.types.Function.toObject = function(includeInstance, msg) {
     argumentsList: jspb.Message.toObjectList(msg.getArgumentsList(),
     proto.types.FnArgument.toObject, includeInstance),
     payable: jspb.Message.getFieldWithDefault(msg, 3, false),
-    view: jspb.Message.getFieldWithDefault(msg, 4, false)
+    view: jspb.Message.getFieldWithDefault(msg, 4, false),
+    feeDelegation: jspb.Message.getFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -5249,6 +5331,10 @@ proto.types.Function.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setView(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setFeeDelegation(value);
       break;
     default:
       reader.skipField();
@@ -5305,6 +5391,13 @@ proto.types.Function.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       4,
+      f
+    );
+  }
+  f = message.getFeeDelegation();
+  if (f) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -5388,6 +5481,23 @@ proto.types.Function.prototype.getView = function() {
 /** @param {boolean} value */
 proto.types.Function.prototype.setView = function(value) {
   jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional bool fee_delegation = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Function.prototype.getFeeDelegation = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Function.prototype.setFeeDelegation = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -6744,13 +6854,210 @@ proto.types.FilterInfo.prototype.setRecentblockcnt = function(value) {
 };
 
 
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.Proposal = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.Proposal, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.Proposal.displayName = 'proto.types.Proposal';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.Proposal.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.Proposal.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.Proposal} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Proposal.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    description: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    multiplechoice: jspb.Message.getFieldWithDefault(msg, 6, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.Proposal}
+ */
+proto.types.Proposal.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.Proposal;
+  return proto.types.Proposal.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.Proposal} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.Proposal}
+ */
+proto.types.Proposal.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDescription(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setMultiplechoice(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.Proposal.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.Proposal.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.Proposal} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.Proposal.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getDescription();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getMultiplechoice();
+  if (f !== 0) {
+    writer.writeUint32(
+      6,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string id = 1;
+ * @return {string}
+ */
+proto.types.Proposal.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.types.Proposal.prototype.setId = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string description = 3;
+ * @return {string}
+ */
+proto.types.Proposal.prototype.getDescription = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.types.Proposal.prototype.setDescription = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional uint32 multipleChoice = 6;
+ * @return {number}
+ */
+proto.types.Proposal.prototype.getMultiplechoice = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {number} value */
+proto.types.Proposal.prototype.setMultiplechoice = function(value) {
+  jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
 /**
  * @enum {number}
  */
 proto.types.TxType = {
   NORMAL: 0,
   GOVERNANCE: 1,
-  REDEPLOY: 2
+  REDEPLOY: 2,
+  FEEDELEGATION: 3
 };
 
 goog.object.extend(exports, proto.types);

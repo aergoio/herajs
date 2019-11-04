@@ -15,6 +15,7 @@ import Address from '../src/models/address';
 
 describe('Contracts', () => {
     const aergo = new AergoClient();
+    aergo.setDefaultLimit(10000);
 
     describe('deploy, call, query a simple contract', () => {
         const contractCode = 'RT4ybGApGoUrNWoisFAAnc1K8gGGd8VCdbbnXBYgpRyd87CWuj3krKobcV7B8vyY15XbHobWEZBX1drFDTU62ufapcP9u1PmibQiXt1FY3YS3v5ZYuH1vuekEWBES4yoWzhJoPFLDCZWdmxYM2manPHLJwefSb6WnYrcmT3Cbpf9266E3eQjsEhbKrZ3CX5FuU8v4MQbsmFhhBfB5S57T3EnzfHTcbSLFwLgvH5DSxEBYoDh2hLcs7e5As6qHvbL8yAQMp7Tz9KH8METfb63ywvGbBPLYQfgdg2kC2DbKdtNroX8seVzznC5SCFPLU6aZAcQnuLuApfcBntEQwsvf5HpEFyJjqEZAhwDSHo3EP8hG1LuKANe5mqCEW9nEVsyV9mGnpAz1Y9eXcQbAgvyVfyvZETpb78h5hZuwNXi2UQh53SKBRyTnc5JS33dTZNR1SRitfX9rZHcowF6pK4a6iptdBwZTu4LcrRC64rqxB928pxYC7Ejh6pLgd7H1GP9v3FmD64Zhy2fEYKMS2jkFCFESYX4gP17Sm4xMw7H8fUDCwcGovTDSd4kkwq8p5HhMpVt9AZMzR7e5vpGJTa9XAve8LjxRbJH4y683Nt1NbEPQWnR9QuJUyQv5SUKi9t9R3rpNvAzmeLNXnmH8qifrZwmpuHhKvG6E7CZ4fe59aBLwabUAEZ8woJ1RXupqDAm69Y7pqZST6Fk5tT4PTspnWir15MiZAgDFKb59vAdUrJso6FLvDTmBWzZBp9MHaQ8DP5E11aEBLzvyas75pYT8ZBiLYbnYcSHfVwmavDGHPx7bp8xtt2vgw7pN';
@@ -32,7 +33,7 @@ describe('Contracts', () => {
                 from: testAddress,
                 to: null,
                 payload: contract.asPayload([10]),
-                chainIdHash: await aergo.getChainIdHash()
+                chainIdHash: await aergo.getChainIdHash(),
             };
             deployTxhash = await aergo.accounts.sendTransaction(testtx);
             assert.typeOf(deployTxhash, 'string');
@@ -41,7 +42,7 @@ describe('Contracts', () => {
             const receipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(deployTxhash)
                 , result => result.hasOwnProperty('contractaddress'), 2000);
-            assert.equal(receipt.status, 'CREATED');
+            assert.equal(receipt.status, 'CREATED', `Deployment failed with error: ${receipt.result}`);
             contractAddress = receipt.contractaddress;
         }).timeout(2100);
 
@@ -77,14 +78,14 @@ describe('Contracts', () => {
             // @ts-ignore
             const callTx = contract.inc().asTransaction({
                 from: testAddress,
-                chainIdHash: await aergo.getChainIdHash()
+                chainIdHash: await aergo.getChainIdHash(),
             });
             assert.equal(callTx.from, testAddress);
             const calltxhash = await aergo.accounts.sendTransaction(callTx);
             const calltxreceipt = await longPolling(async () => 
                 await aergo.getTransactionReceipt(calltxhash)
             );
-            assert.equal(calltxreceipt.status, 'SUCCESS');
+            assert.equal(calltxreceipt.status, 'SUCCESS', `Call failed with error: ${calltxreceipt.result}`);
 
             // Test missing from address
             assert.throws(() => {

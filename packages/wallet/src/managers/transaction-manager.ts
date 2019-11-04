@@ -86,14 +86,14 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
         //console.log('[transactionManager] load', this.transaction.data.chainId, this.transaction.data.hash);
         const client = this.manager.wallet.getClient(this.transaction.data.chainId);
         try {
-            const result = await client.getTransaction(this.transaction.data.hash) as GetTxResult;
+            const result = await client.getTransaction(this.transaction.data.hash as string) as GetTxResult;
             if (typeof result.block !== 'undefined') {
                 this.transaction.data.status = Transaction.Status.Confirmed;
                 this.transaction.data.blockhash = result.block.hash;
                 this.manager.addTransaction(this.transaction);
                 this.emit('block', this.transaction);
                 if (this.listeners('receipt').length) {
-                    client.getTransactionReceipt(this.transaction.data.hash).then((receipt: GetReceiptResult) => {
+                    client.getTransactionReceipt(this.transaction.data.hash as string).then((receipt: GetReceiptResult) => {
                         this.emit('receipt', receipt);
                     });
                 }
