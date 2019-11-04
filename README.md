@@ -2,8 +2,7 @@
 
 [![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs) [![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs.svg)](https://greenkeeper.io/)
 
-Tested with aergo server version
-[1.2.2](https://github.com/aergoio/aergo/releases/tag/v1.2.2)
+Tested with aergo server version 1.3 - 2.0.
 
 [Documentation](https://herajs.readthedocs.io/)
 
