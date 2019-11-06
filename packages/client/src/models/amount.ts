@@ -73,7 +73,7 @@ export default class Amount {
      * Returns value as byte buffer
      */
     asBytes(): Buffer {
-        return fromHexString(this.value.toString(16));
+        return Buffer.from(fromHexString(this.value.toString(16)));
     }
     toJSON(): string {
         return this.value.toString();

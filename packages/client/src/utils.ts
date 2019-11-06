@@ -1,20 +1,19 @@
-import rpcTypes from './client/types.js';
+import { CommitStatus } from '../types/rpc_pb';
 import JSBI from 'jsbi';
-const CommitStatus = rpcTypes.CommitStatus;
 
-const fromHexString = function(hexString) {
+export const fromHexString = function(hexString) {
     if (hexString.length % 2 === 1) hexString = '0' + hexString;
     return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 };
 
-const toHexString = function(bytes, format=false) {
+export const toHexString = function(bytes, format=false) {
     const result = bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
     if (!format) return result;
     if (result === '00' || result === '') return '0x0';
     return '0x' + result;
 };
 
-const fromNumber = (d, length = 8) => {
+export const fromNumber = (d, length = 8) => {
     if (d >= Math.pow(2, length*8)) {
         throw new Error('Number exeeds range');
     }
@@ -25,19 +24,19 @@ const fromNumber = (d, length = 8) => {
     return arr;
 };
 
-const toBytesUint32 = (num) => {
+export const toBytesUint32 = (num) => {
     const arr = new ArrayBuffer(8);
     const view = new DataView(arr);
     view.setUint32(0, num, true);
     return arr;
 };
 
-const bigIntToUint8Array = (value) => {
+export const bigIntToUint8Array = (value) => {
     const bigint = JSBI.BigInt(value);
     return fromHexString(bigint.toString(16));
 };
 
-const errorMessageForCode = (code) => {
+export const errorMessageForCode = (code) => {
     let errorMessage = 'UNDEFINED_ERROR';
     if (code && code < Object.values(CommitStatus).length) {
         errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
@@ -45,13 +44,13 @@ const errorMessageForCode = (code) => {
     return errorMessage;
 };
 
-const waitFor = (ms) => {
+export const waitFor = (ms: number): Promise<void> => {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
     });
 };
 const basicCheck = (result) => result instanceof Error === false;
-const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
+export const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
     // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
     const started = + new Date();
     let lastError = '';
@@ -70,7 +69,7 @@ const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250
     } catch(e) {
         lastError = e;
     }
-    const timePassed = new Date() - started;
+    const timePassed = + new Date() - started;
     timeout -= timePassed;
     if (timeout < 0) {
         throw new Error('Long polling timed out. ' + lastError);
@@ -79,12 +78,19 @@ const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250
     return await longPolling(func, check, timeout - wait, wait); 
 };
 
-export {
-    fromHexString,
-    toHexString,
-    fromNumber,
-    toBytesUint32,
-    bigIntToUint8Array,
-    errorMessageForCode,
-    longPolling,
-};
+type PromiseFunction<I = any, O = any> = (n: I) => Promise<O>;
+type WaterfallFunction<FirstI, LastO> = (input: FirstI) => Promise<LastO>;
+export function waterfall<I extends any, O1 extends any, O2 extends any, O3 extends any, O4 extends any, O5 extends any>(fns: [PromiseFunction<I, O1>, PromiseFunction<O1, O2>, PromiseFunction<O2, O3>, PromiseFunction<O3, O4>, PromiseFunction<O4, O5>]): WaterfallFunction<I, O5>;
+export function waterfall<I extends any, O1 extends any, O2 extends any, O3 extends any, O4 extends any>(fns: [PromiseFunction<I, O1>, PromiseFunction<O1, O2>, PromiseFunction<O2, O3>, PromiseFunction<O3, O4>]): WaterfallFunction<I, O4>;
+export function waterfall<I extends any, O1 extends any, O2 extends any, O3 extends any>(fns: [PromiseFunction<I, O1>, PromiseFunction<O1, O2>, PromiseFunction<O2, O3>]): WaterfallFunction<I, O3>;
+export function waterfall<I extends any, O1 extends any, O2 extends any>(fns: [PromiseFunction<I, O1>, PromiseFunction<O1, O2>]): WaterfallFunction<I, O2>;
+export function waterfall<I extends any, O1 extends any>(fns: [PromiseFunction<I, O1>]): WaterfallFunction<I, O1>;
+export function waterfall(fns: PromiseFunction[]): WaterfallFunction<any, any> {
+    return async function(input: any): Promise<any> {
+        let result = input;
+        for (const fn of fns) {
+            result = await fn(result);
+        }
+        return result;
+    }
+}

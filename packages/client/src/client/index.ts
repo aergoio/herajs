@@ -1,7 +1,13 @@
+import { Buffer } from 'buffer';
+import bs58 from 'bs58';
+import promisify from '../promisify';
+import { fromNumber, errorMessageForCode, waterfall } from '../utils';
+import { decodeTxHash, encodeTxHash } from '../transactions/utils';
+import { TransactionError } from '../errors';
 import Accounts from '../accounts';
-import rpcTypes from './types';
 import {
     TxInBlock, Tx as GrpcTx,
+    TxList,
     StateQueryProof as GrpcStateQueryProof,
     ABI as GrpcABI,
     Block as GrpcBlock,
@@ -12,6 +18,7 @@ import {
     BlockchainStatus as GrpcBlockchainStatus, CommitResultList,
     Name, NameInfo, Staking, ChainInfo as GrpcChainInfo,
     SingleBytes,
+    ListParams,
     EventList,
     PeersParams,
     ConsensusInfo,
@@ -19,41 +26,23 @@ import {
     VoteParams, Vote,
     NodeReq,
     BlockMetadata as GrpcBlockMetadata,
-    BlockBodyParams, PageParams, BlockBodyPaged as GrpcBlockBodyPaged
+    BlockBodyParams, PageParams, BlockBodyPaged as GrpcBlockBodyPaged,
+    CommitStatus,
+    AccountAddress,
 } from '../../types/rpc_pb';
-import { fromNumber, errorMessageForCode } from '../utils';
-import promisify from '../promisify';
-import { decodeTxHash, encodeTxHash } from '../transactions/utils';
-import Tx from '../models/tx';
-import Block from '../models/block';
-import BlockMetadata from '../models/blockmetadata';
-import { AddressInput, default as Address } from '../models/address';
-import Peer from '../models/peer';
-import State from '../models/state';
-import Amount from '../models/amount';
-import ChainInfo from '../models/chaininfo';
-import Event from '../models/event';
+import {
+    Tx, Block, BlockMetadata, Address,
+    Peer, State, Amount, ChainInfo, Event, StateQueryProof, FilterInfo
+} from '../models';
+import { AddressInput } from '../models/address';
 import { FunctionCall, StateQuery } from '../models/contract';
-import StateQueryProof from '../models/statequeryproof';
-import FilterInfo from '../models/filterinfo';
-import { TransactionError } from '../errors';
-import { Buffer } from 'buffer';
+import {
+    GetTxResult, GetReceiptResult, NameInfoResult, ConsensusInfoResult,
+    ServerInfoResult, BlockBodyPaged, Stream, BasicType, JsonData
+} from './types';
 
-import bs58 from 'bs58';
-
-const CommitStatus = rpcTypes.CommitStatus;
 export { CommitStatus };
 
-type PromiseFunction = (n: any) => Promise<any>;
-function waterfall(fns: PromiseFunction[]) {
-    return async function(input: any): Promise<any> {
-        let result = input;
-        for (const fn of fns) {
-            result = await fn(result);
-        }
-        return result;
-    }
-}
 async function marshalEmpty(): Promise<Empty> {
     return new Empty();
 }
@@ -75,62 +64,6 @@ async function marshalHashOrNumberToSingleBytes(hashOrNumber: string | number): 
     const singleBytes = new SingleBytes();
     singleBytes.setValue(Uint8Array.from(input));
     return singleBytes;
-}
-
-export interface GetTxResult {
-    block?: {
-        hash: string;
-        idx: number;
-    }
-    tx: Tx
-}
-
-interface GetReceiptResult {
-    contractaddress: Address;
-    result: string;
-    status: string;
-    fee: Amount;
-    cumulativefee: Amount;
-    blockno: number;
-    blockhash: string;
-}
-
-interface NameInfoResult {
-    name: string;
-    owner: Address;
-    destination: Address;
-}
-
-interface ConsensusInfoResult {
-    type: string;
-    info: object;
-    bpsList: object[];
-}
-
-interface ServerInfoResult {
-    configMap: Map<string, Map<string, string>>;
-    statusMap: Map<string, string>;
-}
-
-interface BlockBodyPaged {
-    total: number;
-    size: number;
-    offset: number;
-    body: {
-        txsList: Tx[]
-    }
-}
-
-
-interface Stream<T> {
-    on(eventName: string, callback: ((obj: T) => void)): void;
-    cancel(): void;
-    _stream: any;
-}
-
-export type BasicType = number | string | boolean | null;
-export interface JsonData {
-    [prop: string]: BasicType | BasicType[] | JsonData[] | JsonData;
 }
 
 /**
@@ -180,11 +113,11 @@ class AergoClient {
         this.chainIdHash = undefined;
     }
 
-    getConfig () {
+    getConfig() {
         return this.config;
     }
 
-    isConnected () {
+    isConnected() {
         // Legacy code for backwards compatability
         return false;
     }
@@ -298,7 +231,7 @@ class AergoClient {
      * @returns {Promise<object>} transaction details, object of tx: <Tx> and block: { hash, idx }
      */
     getTransaction(txhash: string): Promise<GetTxResult> {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return new Promise((resolve, reject) => {
             this.client.client.getBlockTX(singleBytes, (err, result: TxInBlock) => {
@@ -367,7 +300,7 @@ class AergoClient {
      * @returns {Promise<Block[]>} list of block headers (blocks without body)
      */
     getBlockHeaders(hashOrNumber: string | number, size = 10, offset = 0, desc = true): Promise<Block[]> {
-        const params = new rpcTypes.ListParams();
+        const params = new ListParams();
         if (typeof hashOrNumber === 'string') {
             const decodedHash = Block.decodeHash(hashOrNumber)
             if (decodedHash.length != 32) {
@@ -389,7 +322,7 @@ class AergoClient {
     }
 
     getBlockStream(): Stream<Block> {
-        const empty = new rpcTypes.Empty();
+        const empty = new Empty();
         const stream = this.client.client.listBlockStream(empty);
         try {
             stream.on('error', (error) => {
@@ -411,7 +344,7 @@ class AergoClient {
      * Returns a stream of block metadata
      */
     getBlockMetadataStream(): Stream<BlockMetadata> {
-        const empty = new rpcTypes.Empty();
+        const empty = new Empty();
         const stream = this.client.client.listBlockMetadataStream(empty);
         try {
             stream.on('error', (error) => {
@@ -494,7 +427,7 @@ class AergoClient {
      * @returns {Promise<object>} account state
      */
     getState(address: AddressInput): Promise<State> {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => State.fromGrpc(grpcObject));
     }
@@ -506,7 +439,7 @@ class AergoClient {
      * @returns {Promise<object>} account state
      */
     getNonce(address: AddressInput): Promise<number> {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getState, this.client.client)(singleBytes).then(grpcObject => grpcObject.getNonce());
     }
@@ -518,7 +451,7 @@ class AergoClient {
      */
     sendSignedTransaction(tx): Promise<string> {
         return new Promise((resolve, reject) => {
-            const txs = new rpcTypes.TxList();
+            const txs = new TxList();
             if (!(tx instanceof Tx)) {
                 tx = new Tx(tx);
             }
@@ -538,8 +471,9 @@ class AergoClient {
     }
 
     /**
-     * Return the top voted-for block producer
+     * Return the top {count} result for a vote
      * @param count number
+     * @param id vote identifier, default: voteBP
      */
     getTopVotes(count: number, id: string = "voteBP"): Promise<any> {
         const params = new VoteParams();
@@ -557,7 +491,7 @@ class AergoClient {
      * @param address string
      */
     getAccountVotes(address: AddressInput): Promise<any> {
-        const accountAddress = new rpcTypes.__moduleExports.AccountAddress();
+        const accountAddress = new AccountAddress();
         accountAddress.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getAccountVotes, this.client.client)(accountAddress);
     }
@@ -567,7 +501,7 @@ class AergoClient {
      * @param {string} address Account address encoded in Base58check
      */
     getStaking(address: AddressInput) {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(
             (grpcObject: Staking) => {
@@ -585,7 +519,7 @@ class AergoClient {
      * @return {Promise<object>} transaction receipt
      */
     getTransactionReceipt(txhash: string): Promise<GetReceiptResult> {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then((grpcObject: GrpcReceipt) => {
             const obj = grpcObject.toObject();
@@ -687,7 +621,7 @@ class AergoClient {
      * @returns {Promise<object>} abi
      */
     getABI(address: AddressInput) {
-        const singleBytes = new rpcTypes.SingleBytes();
+        const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(
             (grpcObject: GrpcABI) => {

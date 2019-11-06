@@ -1,6 +1,6 @@
 import { ADDRESS_PREFIXES } from '../constants';
 import bs58check from 'bs58check';
-import { fromNumber } from '../utils.js';
+import { fromNumber } from '../utils';
 import Address from './address';
 import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
