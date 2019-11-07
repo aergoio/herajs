@@ -1,3 +1,6 @@
+## 0.15.1 (November 7, 2019)
+- Client
+  - Fix encoding of amount as bytes (regression introduced in 0.15.0)
 
 ## 0.15.0 (November 7, 2019)
 - Crypto
