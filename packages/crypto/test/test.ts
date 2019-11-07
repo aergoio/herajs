@@ -169,15 +169,18 @@ describe('seed', () => {
         assert.deepEqual(identity.privateKey, privateKey);
         assert.equal(identity.address[0], 'A');
     });
+
+    // The following tests use a custom (old) BIP44 id
+    const opts = { hdpath: 'm/44\'/442\'/0\'/0/' };
     it('should re-create identity from mnemonic', async () => {
         const mnemonic = 'raccoon agent nest round belt cloud first fancy awkward quantum valley scheme';
-        const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const privateKey = await privateKeyFromMnemonic(mnemonic, opts);
         const identity = identifyFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmPh2JQzWvQ5u8jCs4QTKGXvzkLE9uao1DfzxmTr71UczBsxHnqx');
     });
     it('should re-create identity from empty seed', async () => {
         const seed = Buffer.from([]);
-        const privateKey = await privateKeyFromSeed(seed);
+        const privateKey = await privateKeyFromSeed(seed, opts);
         const identity = identifyFromPrivateKey(privateKey);
         // This is the address corresponding to key generated from empty seed
         assert.equal(identity.address, 'AmQCPe9eoAkF1i1pcrpVmxKLNACXhGnuShZazySVVVfABz78e7XT');
@@ -186,8 +189,16 @@ describe('seed', () => {
         const seed = await mnemonicToSeed('raccoon agent nest round belt cloud first fancy awkward quantum valley scheme');
         const seedExpected = Buffer.from('uxGJFRDao8WIWUkGCsJl4jo6f4SFlhjfJlVbuhVsCsuW3W+ViznXQCkIAoiPxkIkq5ctxf2X5kyN/FdX0V6MWg==', 'base64');
         assert.deepEqual(seed, seedExpected);
-        const privateKey = await privateKeyFromSeed(seed);
+        const privateKey = await privateKeyFromSeed(seed, opts);
         const identity = identifyFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmPh2JQzWvQ5u8jCs4QTKGXvzkLE9uao1DfzxmTr71UczBsxHnqx');
+    });
+    
+    // Test using default BIP44 id
+    it('should re-create identity from mnemonic', async () => {
+        const mnemonic = 'dust sister misery any capital scrap country various quantum ocean pill around';
+        const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const identity = identifyFromPrivateKey(privateKey);
+        assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
     });
 });

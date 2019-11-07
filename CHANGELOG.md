@@ -1,4 +1,10 @@
 
+## 0.15.0 (November 7, 2019)
+- Crypto
+  - Change BIP44 identifier to 441.
+    If you already used the previous version, manually supply an hdpath like 
+    `{ hdpath: "m/44'/442'/0'/0/" }` as an option to seed functions.
+
 ## 0.14.0 (November 4, 2019)
 - Client
   - Support for Aergo 2.0
