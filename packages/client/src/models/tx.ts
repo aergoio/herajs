@@ -62,7 +62,7 @@ export default class Tx {
         if (typeof this.to !== 'undefined' && this.to !== null) {
             msgtxbody.setRecipient((new Address(this.to)).asBytes());
         }
-        msgtxbody.setAmount(this.amount.asBytes());
+        msgtxbody.setAmount(Uint8Array.from(this.amount.asBytes()));
         if (this.payload != null) {
             msgtxbody.setPayload(Buffer.from(this.payload));
         }
@@ -79,7 +79,7 @@ export default class Tx {
         }
 
         if (typeof this.price !== 'undefined') {
-            msgtxbody.setGasprice(this.price.asBytes());
+            msgtxbody.setGasprice(Uint8Array.from(this.price.asBytes()));
         }
 
         if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
