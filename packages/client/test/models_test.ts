@@ -116,6 +116,8 @@ describe('Amount', () => {
 
         const b = new Amount(0.1);
         assert.equal(b.toUnit('aer').toString(), '100000000000000000 aer');
+
+        assert.throws(() => new Amount(0.1, 'aer'), SyntaxError, 'Cannot convert 0.1 to a BigInt');
     });
     it('should parse amounts from buffers', () => {
         const a = new Amount(Buffer.from([ 5, 107, 199, 94, 45, 99, 16, 0, 0 ]));
@@ -132,5 +134,67 @@ describe('Amount', () => {
         assert.equal(a.toUnit('aergo').toString(), '0 aergo');
         assert.equal(a.toUnit('gaer').toString(), '0 gaer');
         assert.equal(a.toUnit('aer').toString(), '0 aer');
+    });
+    it('compares amounts', () => {
+        const a = new Amount('10 aer');
+        // 10 aer == 10
+        assert.equal(a.compare(10), 0);
+        // 10 aer == 10 aer
+        assert.equal(a.compare('10 aer'), 0);
+        // 10 aer < 10 aergo
+        assert.equal(a.compare('10 aergo'), -1);
+        // 10 aer > 1
+        assert.equal(a.compare(1), 1);
+    });
+    it('adds amounts', () => {
+        const a = new Amount('10 aer');
+        // 10 aer + 10 = 20 aer
+        assert.equal(a.add(10).toString(), '20 aer');
+        // 10 aer + 10 aergo = 10000000000000000010 aer
+        assert.equal(a.add('10 aergo').toString(), '10000000000000000010 aer');
+        // 10 aer + 10 aergo, as aergo = 10.00000000000000001 aergo
+        assert.equal(a.add('10 aergo').toUnit('aergo').toString(), '10.00000000000000001 aergo');
+
+        const b = new Amount('10 aergo');
+        // 10 aergo + 10 = 20 aergo
+        assert.equal(b.add(10).toString(), '20 aergo');
+        // 10 aergo + 10 aer = 10.00000000000000001 aergo
+        assert.equal(b.add('10 aer').toString(), '10.00000000000000001 aergo');
+        // 10 aergo + 10 aer, as aer = 10000000000000000010 aer
+        assert.equal(b.add('10 aer').toUnit('aer').toString(), '10000000000000000010 aer');
+    });
+    it('substracts amounts', () => {
+        const a = new Amount('10 aergo');
+        // 10 aergo - 5 = 5 aergo
+        assert.equal(a.sub(5).toString(), '5 aergo');
+        // 10 aergo - 100 aer = 9.9999999999999999 aergo
+        const b = a.sub('100 aer');
+        assert.equal(b.toString(), '9.9999999999999999 aergo');
+        // 9.9999999999999999 aergo + 100 aer = 10 aergo
+        assert.equal(b.add('100 aer').toString(), '10 aergo');
+        // 1 aer - 1 aergo = -999999999999999999 aer
+        assert.equal(new Amount('1 aer').sub('1 aergo').toString(), '-999999999999999999 aer');
+    });
+    it('multiplies amounts', () => {
+        const a = new Amount('10 aergo');
+        // 10 aergo * 10 = 100 aergo
+        assert.equal(a.mul(10).toString(), '100 aergo');
+        // 10 aergo * 10000, as aer = 100000 aergo
+        assert.equal(a.mul(10000).toUnit('aer').toString(), '100000000000000000000000 aer');
+        // 10 aergo * 10 aergo, as aergo = 100000000000000000000 aergo
+        assert.equal(a.mul('10 aergo').toString(), '100000000000000000000 aergo');
+    });
+    it('divides amounts', () => {
+        const a = new Amount('10 aergo');
+        // 10 aergo / 10 = 1 aergo
+        assert.equal(a.div(10).toString(), '1 aergo');
+        // 10 aergo / 20 = 0.5 aergo
+        assert.equal(a.div(20).toString(), '0.5 aergo');
+        // 10 aergo / 5 aergo = 2
+        assert.equal(a.div('5 aergo').toString(), '2');
+        // 1 aer / 2 aer = 0
+        assert.equal(new Amount('1 aer').div('2 aer').toString(), '0');
+        // 100000000000 aer / 0.00000001 aergo = 10
+        assert.equal(new Amount('100000000000 aer').div('0.00000001 aergo').toString(), '10');
     });
 });

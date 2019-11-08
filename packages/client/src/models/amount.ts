@@ -5,13 +5,15 @@ import { fromHexString, toHexString } from '../utils';
 const DEFAULT_USER_UNIT = 'aergo';
 const DEFAULT_NETWORK_UNIT = 'aer';
 
+type AmountArg = Amount | JSBI | number | string;
+
 /**
  * A wrapper around amounts with units.
  * Over the network, amounts are sent as raw bytes.
  * In the client, they are exposed as BigInts, but also compatible with plain strings or numbers (if smaller than 2^31-1)
  * Uses 'aergo' as default unit when passing strings or numbers.
  * Uses 'aer' as default unit when passing BigInts, buffers or byte arrays.
- * Whenever you pass amounts to other functions, they will try to coerce them using this class.
+ * Whenever you pass amounts to other functions, they will try to coerce them to BigInt using this class.
  */
 export default class Amount {
     value: Readonly<JSBI>; // value in base unit
@@ -31,7 +33,7 @@ export default class Amount {
         return JSBI.BigInt(value);
     }
 
-    constructor(value: Amount|JSBI|number|string|Buffer|Uint8Array, unit = '', newUnit?: string) {
+    constructor(value: AmountArg|Buffer|Uint8Array, unit = '', newUnit?: string) {
         if (value instanceof Amount) {
             return value;
         }
@@ -82,7 +84,10 @@ export default class Amount {
      * Returns formatted string including unit
      */
     toString(): string {
-        return `${this.formatNumber()} ${this.unit}`;
+        if (this.unit) {
+            return `${this.formatNumber()} ${this.unit}`;
+        }
+        return `${this.formatNumber()}`;
     }
     /**
      * Move decimal point in string by digits, positive to the right, negative to the left.
@@ -119,8 +124,9 @@ export default class Amount {
         str = str.replace(/^\./, '0.');
         return str;
     }
-    formatNumber(unit: string = '') {
+    formatNumber(unit: string = ''): string {
         if (unit === '') unit = this.unit;
+        if (unit === '') return this.value.toString();
         if (!UNITS.NATIVE_TOKEN.unitSize.hasOwnProperty(unit)) {
             throw new TypeError(`unrecognized unit: ${unit}`);
         }
@@ -135,25 +141,103 @@ export default class Amount {
         return new Amount(this.value as JSBI, '', unit);
     }
 
-    compare(otherAmount: Amount | number | JSBI ): number {
-        if (!(otherAmount instanceof Amount)) otherAmount = new Amount(otherAmount);
-        const [a, b] = [this.toUnit('aer').value, otherAmount.toUnit('aer').value] as JSBI[];
-        return JSBI.lessThan(a, b) ? -1 : (JSBI.equal(a, b) ? 0 : 1);
+    /**
+     * Convert arg into JSBI value
+     * Can optionally provide a defaultUnit that is used if arg does not contain a unit.
+     */
+    static toJSBI(arg: AmountArg, defaultUnit = ''): JSBI {
+        if (!(arg instanceof Amount)) {
+            let [amount, _unit] = `${arg}`.split(' ', 2);
+            const unit = _unit || defaultUnit;
+            arg = new Amount(amount, unit);
+        }
+        return JSBI.BigInt(arg.value);
     }
 
-    equal(otherAmount: Amount | number | JSBI ): boolean {
+    /**
+     * Compare this amount with other amount.
+     * If otherAmount has no unit, assumes unit of this amount.
+     * this >  other -> +1
+     * this  < other -> -1
+     * this == other -> 0
+     * @param otherAmount 
+     */
+    compare(otherAmount: AmountArg): number {
+        const a = this.value as JSBI;
+        const b = Amount.toJSBI(otherAmount, this.unit);
+        return JSBI.equal(a, b) ? 0 : JSBI.lessThan(a, b) ? -1 : 1;
+    }
+
+    /**
+     * Return true if otherAmount is equal to this amount.
+     * @param otherAmount 
+     */
+    equal(otherAmount: AmountArg): boolean {
         return this.compare(otherAmount) === 0;
     }
 
-    add(otherAmount: Amount | number | JSBI): Amount {
-        const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
-        const sum = JSBI.add(this.value as JSBI, otherValue);
+    /**
+     * Add another amount to amount.
+     * If otherAmount has no unit, assumes unit of this amount.
+     * 10 aergo + 10 = 20 aergo
+     * 10 aer + 10 = 20 aer
+     * 10 aergo + 10 aer = 10.00000000000000001 aergo
+     * @param otherAmount 
+     */
+    add(otherAmount: AmountArg): Amount {
+        const sum = JSBI.add(this.value as JSBI, Amount.toJSBI(otherAmount, this.unit));
         return new Amount(sum, this.unit);
     }
 
-    sub(otherAmount: Amount | number | JSBI): Amount {
-        const otherValue = (otherAmount instanceof Amount ? JSBI.BigInt(otherAmount.value) : JSBI.BigInt(otherAmount));
-        const sum = JSBI.subtract(this.value as JSBI, otherValue);
+    /**
+     * Subtract another amount from amount.
+     * If otherAmount has no unit, assumes unit of this amount.
+     * 10 aergo - 5 = 5 aergo
+     * 10 aer - 5 = 5 aer
+     * 1 aer - 1 aergo = -999999999999999999 aer
+     * @param otherAmount 
+     */
+    sub(otherAmount: AmountArg): Amount {
+        const sum = JSBI.subtract(this.value as JSBI, Amount.toJSBI(otherAmount, this.unit));
+        return new Amount(sum, this.unit);
+    }
+
+    /**
+     * Divide amount by another amount.
+     * Warning: double check your units. The division is based on the aer value, so
+     * if your otherAmount has a unit, it will be converted to aer.
+     * This function tries to do the right thing in regards to dividing units:
+     * 10 aergo / 10 = 1 aergo  (keep unit)
+     * 10 aergo / 10 aergo = 1  (unit-less)
+     * 1 aer / 2 aer = 0  (truncation of sub 1 aer amount)
+     * @param otherAmount 
+     */
+    div(otherAmount: AmountArg): Amount {
+        let newUnit;
+        const sum = JSBI.divide(this.value as JSBI, Amount.toJSBI(otherAmount, 'aer'));
+        // if both amounts had units, the result should be unit-less
+        let otherHasUnit = (otherAmount instanceof Amount) && Boolean(otherAmount.unit);
+        if (!otherHasUnit && typeof otherAmount === 'string') {
+            let [, _unit] = `${otherAmount}`.split(' ', 2);
+            otherHasUnit = Boolean(_unit);
+        }
+        if (otherHasUnit) {
+            newUnit = '';
+        }
+        return new Amount(sum, this.unit, newUnit);
+    }
+
+    /**
+     * Multiply amount by another amount.
+     * Warning: double check your units. The multiplication is based on the aer value, so
+     * if your otherAmount has a unit, it will be converted to aer.
+     * However, while the value is correct, there's no way to display unit^2.
+     * 10 aergo * 10 aergo = 10 * 10^18 aer * 10 * 10^18 aer = 100 * 10^36 aer = 100 * 10^18 aergo
+     * 10 aergo * 10 = 10 * 10^18 aer * 10 = 100 * 10^18 aer = 100 aergo
+     * @param otherAmount 
+     */
+    mul(otherAmount: AmountArg): Amount {
+        const sum = JSBI.multiply(this.value as JSBI, Amount.toJSBI(otherAmount, 'aer'));
         return new Amount(sum, this.unit);
     }
 }
