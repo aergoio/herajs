@@ -28,7 +28,7 @@
     "@types/node": "^12.12.5",
     "@types/rollup-plugin-json": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
-    "@typescript-eslint/parser": "^1.11.0",
+    "@typescript-eslint/parser": "^2.7.0",
     "async-sema": "^3.0.0",
     "babel-register-ts": "^7.0.0",
     "chai": "^4.1.2",
