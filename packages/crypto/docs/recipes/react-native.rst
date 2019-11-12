@@ -47,10 +47,18 @@ The following guide uses `rn-nodeify <https://github.com/tradle/rn-nodeify>`_.
 
 **2. Add shim to index.js**
 
+Import these at the top of the file.
+
 .. code-block:: javascript
 
     import './shim.js'
     import crypto from 'crypto'
+
+If you are using a simulator, you may also need to add this line to shim.js: 
+
+.. code-block:: javascript
+
+    self = undefined
 
 **3. Use normally**
 
