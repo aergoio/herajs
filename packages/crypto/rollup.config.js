@@ -52,7 +52,7 @@ function genConfig(browser = false, output) {
 
             browser ? ignore(ignored) : undefined,
 
-            commonjs({ namedExports }),
+            commonjs({ namedExports, ignore: ['crypto'] }),
 
             json(),
             
