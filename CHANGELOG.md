@@ -1,3 +1,10 @@
+## 0.16.0 (November 12, 2019)
+- Crypto
+  - Fix a dependency issue of the 'crypto' module. This should now work properly with React Native
+
+- Client
+  - Add more math methods to Amount class
+
 ## 0.15.1 (November 7, 2019)
 - Client
   - Fix encoding of amount as bytes (regression introduced in 0.15.0)
