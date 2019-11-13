@@ -432,7 +432,8 @@ proto.types.ChainId.toObject = function(includeInstance, msg) {
     magic: jspb.Message.getFieldWithDefault(msg, 1, ""),
     pb_public: jspb.Message.getFieldWithDefault(msg, 2, false),
     mainnet: jspb.Message.getFieldWithDefault(msg, 3, false),
-    consensus: jspb.Message.getFieldWithDefault(msg, 4, "")
+    consensus: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    version: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -484,6 +485,10 @@ proto.types.ChainId.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setConsensus(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setVersion(value);
       break;
     default:
       reader.skipField();
@@ -539,6 +544,13 @@ proto.types.ChainId.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getVersion();
+  if (f !== 0) {
+    writer.writeInt32(
+      5,
       f
     );
   }
@@ -606,6 +618,21 @@ proto.types.ChainId.prototype.getConsensus = function() {
 /** @param {string} value */
 proto.types.ChainId.prototype.setConsensus = function(value) {
   jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional int32 version = 5;
+ * @return {number}
+ */
+proto.types.ChainId.prototype.getVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.types.ChainId.prototype.setVersion = function(value) {
+  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 

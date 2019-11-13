@@ -64,6 +64,9 @@ export class ChainId extends jspb.Message {
   getConsensus(): string;
   setConsensus(value: string): void;
 
+  getVersion(): number;
+  setVersion(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ChainId.AsObject;
   static toObject(includeInstance: boolean, msg: ChainId): ChainId.AsObject;
@@ -80,6 +83,7 @@ export namespace ChainId {
     pb_public: boolean,
     mainnet: boolean,
     consensus: string,
+    version: number,
   }
 }
 

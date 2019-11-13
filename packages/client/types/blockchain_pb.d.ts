@@ -924,6 +924,9 @@ export interface TxTypeMap {
   GOVERNANCE: 1;
   REDEPLOY: 2;
   FEEDELEGATION: 3;
+  TRANSFER: 4;
+  CALL: 5;
+  DEPLOY: 6;
 }
 
 export const TxType: TxTypeMap;
