@@ -4,7 +4,7 @@ Keys from seed
 
 Key generation from seeds follows BIP39/BIP44.
 
-The derivation path used here is :code:`m/44'/442'/0'/0/n`.
+The derivation path used here by default is :code:`m/44'/441'/0'/0/n`, but you can supply a custom one.
 
 Mnemonic seed
 =============
