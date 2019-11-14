@@ -50,7 +50,7 @@
     "rollup-plugin-progress": "^1.0.0",
     "rollup-plugin-terser": "^5.0.0",
     "rollup-plugin-typescript2": "^0.21.0",
-    "rollup-plugin-visualizer": "^2.6.0",
+    "rollup-plugin-visualizer": "^3.0.0",
     "ts-protoc-gen": "^0.10.0",
     "typescript": "3.4.5",
     "uglify-js": "^3.4.5"
