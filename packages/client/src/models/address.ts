@@ -2,7 +2,7 @@ import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from '../constants';
 import bs58check from 'bs58check';
 import { Buffer } from 'buffer';
 
-let systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise'];
+let systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise', 'aergo.vault'];
 
 export type AddressInput = Address | string | Buffer | Uint8Array;
 
@@ -57,6 +57,9 @@ export default class Address {
                 this.value = buf;
             }
         }
+    }
+    isEmpty(): boolean {
+        return this.value.length === 0;
     }
     asBytes(): Uint8Array {
         return new Uint8Array(this.value);
