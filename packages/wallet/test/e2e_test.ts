@@ -160,7 +160,6 @@ describe('Wallet scenarios', async () => {
     it('deploys and calls contract resulting in success', async () => {
         // Config
         const wallet = new Wallet();
-        wallet.setDefaultLimit(10000);
         wallet.useChain({
             chainId: 'testnet.localhost',
             nodeUrl: '127.0.0.1:7845'
@@ -203,7 +202,6 @@ describe('Wallet scenarios', async () => {
     it('deploys and calls contract resulting in failure', async () => {
         // Config
         const wallet = new Wallet();
-        wallet.setDefaultLimit(10000);
         wallet.useChain({
             chainId: 'testnet.localhost',
             nodeUrl: '127.0.0.1:7845'
