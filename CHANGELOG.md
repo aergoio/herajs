@@ -1,3 +1,13 @@
+## 0.16.2 (November 18, 2019)
+- Client
+  - Add TxReceipt.gasused (supported in aergosvr 2.0)
+  - Add Block.rewardaccount and Block.voteReward (supported in aergosvr 2.0)
+  - Add Address.isEmpty method
+
+## 0.16.1 (November 13, 2019)
+- Client
+  - Add new tx types to `Tx.Type` (supported in aergosvr 2.0)
+
 ## 0.16.0 (November 12, 2019)
 - Crypto
   - Fix a dependency issue of the 'crypto' module. This should now work properly with React Native
@@ -11,7 +21,7 @@
 
 ## 0.15.0 (November 7, 2019)
 - Crypto
-  - Change default BIP44 identifier to 441.
+  - Change default BIP44 identifier to `441`.
     If you already used the previous version, manually supply an hdpath as an option to seed functions, e.g.
     `privateKeyFromMnemonic(mnemonic, { hdpath: "m/44'/442'/0'/0/" })`.
 
