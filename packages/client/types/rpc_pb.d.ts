@@ -385,6 +385,14 @@ export class Peer extends jspb.Message {
   getVersion(): string;
   setVersion(value: string): void;
 
+  clearCertificatesList(): void;
+  getCertificatesList(): Array<node_pb.AgentCertificate>;
+  setCertificatesList(value: Array<node_pb.AgentCertificate>): void;
+  addCertificates(value?: node_pb.AgentCertificate, index?: number): node_pb.AgentCertificate;
+
+  getAcceptedrole(): node_pb.PeerRoleMap[keyof node_pb.PeerRoleMap];
+  setAcceptedrole(value: node_pb.PeerRoleMap[keyof node_pb.PeerRoleMap]): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Peer.AsObject;
   static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
@@ -404,6 +412,8 @@ export namespace Peer {
     lashcheck: number,
     selfpeer: boolean,
     version: string,
+    certificatesList: Array<node_pb.AgentCertificate.AsObject>,
+    acceptedrole: node_pb.PeerRoleMap[keyof node_pb.PeerRoleMap],
   }
 }
 

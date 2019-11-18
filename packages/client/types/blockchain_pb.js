@@ -4029,7 +4029,8 @@ proto.types.Receipt.toObject = function(includeInstance, msg) {
     txindex: jspb.Message.getFieldWithDefault(msg, 11, 0),
     from: msg.getFrom_asB64(),
     to: msg.getTo_asB64(),
-    feedelegation: jspb.Message.getFieldWithDefault(msg, 14, false)
+    feedelegation: jspb.Message.getFieldWithDefault(msg, 14, false),
+    gasused: jspb.Message.getFieldWithDefault(msg, 15, 0)
   };
 
   if (includeInstance) {
@@ -4122,6 +4123,10 @@ proto.types.Receipt.deserializeBinaryFromReader = function(msg, reader) {
     case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setFeedelegation(value);
+      break;
+    case 15:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setGasused(value);
       break;
     default:
       reader.skipField();
@@ -4248,6 +4253,13 @@ proto.types.Receipt.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       14,
+      f
+    );
+  }
+  f = message.getGasused();
+  if (f !== 0) {
+    writer.writeUint64(
+      15,
       f
     );
   }
@@ -4671,6 +4683,21 @@ proto.types.Receipt.prototype.getFeedelegation = function() {
 /** @param {boolean} value */
 proto.types.Receipt.prototype.setFeedelegation = function(value) {
   jspb.Message.setProto3BooleanField(this, 14, value);
+};
+
+
+/**
+ * optional uint64 gasUsed = 15;
+ * @return {number}
+ */
+proto.types.Receipt.prototype.getGasused = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+};
+
+
+/** @param {number} value */
+proto.types.Receipt.prototype.setGasused = function(value) {
+  jspb.Message.setProto3IntField(this, 15, value);
 };
 
 

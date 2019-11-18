@@ -173,6 +173,14 @@ export class Status extends jspb.Message {
   getGenesis_asB64(): string;
   setGenesis(value: Uint8Array | string): void;
 
+  clearCertificatesList(): void;
+  getCertificatesList(): Array<node_pb.AgentCertificate>;
+  setCertificatesList(value: Array<node_pb.AgentCertificate>): void;
+  addCertificates(value?: node_pb.AgentCertificate, index?: number): node_pb.AgentCertificate;
+
+  getIssuecertificate(): boolean;
+  setIssuecertificate(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Status.AsObject;
   static toObject(includeInstance: boolean, msg: Status): Status.AsObject;
@@ -192,6 +200,8 @@ export namespace Status {
     noexpose: boolean,
     version: string,
     genesis: Uint8Array | string,
+    certificatesList: Array<node_pb.AgentCertificate.AsObject>,
+    issuecertificate: boolean,
   }
 }
 
@@ -730,6 +740,70 @@ export namespace GetHashesResponse {
     status: ResultStatusMap[keyof ResultStatusMap],
     hashesList: Array<Uint8Array | string>,
     hasnext: boolean,
+  }
+}
+
+export class IssueCertificateRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IssueCertificateRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: IssueCertificateRequest): IssueCertificateRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: IssueCertificateRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IssueCertificateRequest;
+  static deserializeBinaryFromReader(message: IssueCertificateRequest, reader: jspb.BinaryReader): IssueCertificateRequest;
+}
+
+export namespace IssueCertificateRequest {
+  export type AsObject = {
+  }
+}
+
+export class IssueCertificateResponse extends jspb.Message {
+  getStatus(): ResultStatusMap[keyof ResultStatusMap];
+  setStatus(value: ResultStatusMap[keyof ResultStatusMap]): void;
+
+  hasCertificate(): boolean;
+  clearCertificate(): void;
+  getCertificate(): node_pb.AgentCertificate | undefined;
+  setCertificate(value?: node_pb.AgentCertificate): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IssueCertificateResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: IssueCertificateResponse): IssueCertificateResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: IssueCertificateResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IssueCertificateResponse;
+  static deserializeBinaryFromReader(message: IssueCertificateResponse, reader: jspb.BinaryReader): IssueCertificateResponse;
+}
+
+export namespace IssueCertificateResponse {
+  export type AsObject = {
+    status: ResultStatusMap[keyof ResultStatusMap],
+    certificate?: node_pb.AgentCertificate.AsObject,
+  }
+}
+
+export class CertificateRenewedNotice extends jspb.Message {
+  hasCertificate(): boolean;
+  clearCertificate(): void;
+  getCertificate(): node_pb.AgentCertificate | undefined;
+  setCertificate(value?: node_pb.AgentCertificate): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CertificateRenewedNotice.AsObject;
+  static toObject(includeInstance: boolean, msg: CertificateRenewedNotice): CertificateRenewedNotice.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CertificateRenewedNotice, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CertificateRenewedNotice;
+  static deserializeBinaryFromReader(message: CertificateRenewedNotice, reader: jspb.BinaryReader): CertificateRenewedNotice;
+}
+
+export namespace CertificateRenewedNotice {
+  export type AsObject = {
+    certificate?: node_pb.AgentCertificate.AsObject,
   }
 }
 

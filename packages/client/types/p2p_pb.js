@@ -18,6 +18,7 @@ goog.object.extend(proto, node_pb);
 goog.exportSymbol('proto.types.AddressesRequest', null, global);
 goog.exportSymbol('proto.types.AddressesResponse', null, global);
 goog.exportSymbol('proto.types.BlockProducedNotice', null, global);
+goog.exportSymbol('proto.types.CertificateRenewedNotice', null, global);
 goog.exportSymbol('proto.types.GetAncestorRequest', null, global);
 goog.exportSymbol('proto.types.GetAncestorResponse', null, global);
 goog.exportSymbol('proto.types.GetBlockHeadersRequest', null, global);
@@ -32,6 +33,8 @@ goog.exportSymbol('proto.types.GetMissingRequest', null, global);
 goog.exportSymbol('proto.types.GetTransactionsRequest', null, global);
 goog.exportSymbol('proto.types.GetTransactionsResponse', null, global);
 goog.exportSymbol('proto.types.GoAwayNotice', null, global);
+goog.exportSymbol('proto.types.IssueCertificateRequest', null, global);
+goog.exportSymbol('proto.types.IssueCertificateResponse', null, global);
 goog.exportSymbol('proto.types.MsgHeader', null, global);
 goog.exportSymbol('proto.types.NewBlockNotice', null, global);
 goog.exportSymbol('proto.types.NewTransactionsNotice', null, global);
@@ -1080,12 +1083,19 @@ proto.types.Pong.prototype.setBestheight = function(value) {
  * @constructor
  */
 proto.types.Status = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Status.repeatedFields_, null);
 };
 goog.inherits(proto.types.Status, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.types.Status.displayName = 'proto.types.Status';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.Status.repeatedFields_ = [8];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1121,7 +1131,10 @@ proto.types.Status.toObject = function(includeInstance, msg) {
     chainid: msg.getChainid_asB64(),
     noexpose: jspb.Message.getFieldWithDefault(msg, 5, false),
     version: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    genesis: msg.getGenesis_asB64()
+    genesis: msg.getGenesis_asB64(),
+    certificatesList: jspb.Message.toObjectList(msg.getCertificatesList(),
+    node_pb.AgentCertificate.toObject, includeInstance),
+    issuecertificate: jspb.Message.getFieldWithDefault(msg, 9, false)
   };
 
   if (includeInstance) {
@@ -1186,6 +1199,15 @@ proto.types.Status.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setGenesis(value);
+      break;
+    case 8:
+      var value = new node_pb.AgentCertificate;
+      reader.readMessage(value,node_pb.AgentCertificate.deserializeBinaryFromReader);
+      msg.addCertificates(value);
+      break;
+    case 9:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIssuecertificate(value);
       break;
     default:
       reader.skipField();
@@ -1263,6 +1285,21 @@ proto.types.Status.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       7,
+      f
+    );
+  }
+  f = message.getCertificatesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      8,
+      f,
+      node_pb.AgentCertificate.serializeBinaryToWriter
+    );
+  }
+  f = message.getIssuecertificate();
+  if (f) {
+    writer.writeBool(
+      9,
       f
     );
   }
@@ -1460,6 +1497,54 @@ proto.types.Status.prototype.getGenesis_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.Status.prototype.setGenesis = function(value) {
   jspb.Message.setProto3BytesField(this, 7, value);
+};
+
+
+/**
+ * repeated AgentCertificate certificates = 8;
+ * @return {!Array<!proto.types.AgentCertificate>}
+ */
+proto.types.Status.prototype.getCertificatesList = function() {
+  return /** @type{!Array<!proto.types.AgentCertificate>} */ (
+    jspb.Message.getRepeatedWrapperField(this, node_pb.AgentCertificate, 8));
+};
+
+
+/** @param {!Array<!proto.types.AgentCertificate>} value */
+proto.types.Status.prototype.setCertificatesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 8, value);
+};
+
+
+/**
+ * @param {!proto.types.AgentCertificate=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.types.AgentCertificate}
+ */
+proto.types.Status.prototype.addCertificates = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.types.AgentCertificate, opt_index);
+};
+
+
+proto.types.Status.prototype.clearCertificatesList = function() {
+  this.setCertificatesList([]);
+};
+
+
+/**
+ * optional bool issueCertificate = 9;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.types.Status.prototype.getIssuecertificate = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 9, false));
+};
+
+
+/** @param {boolean} value */
+proto.types.Status.prototype.setIssuecertificate = function(value) {
+  jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
 
@@ -5495,6 +5580,467 @@ proto.types.GetHashesResponse.prototype.getHasnext = function() {
 /** @param {boolean} value */
 proto.types.GetHashesResponse.prototype.setHasnext = function(value) {
   jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.IssueCertificateRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.IssueCertificateRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.IssueCertificateRequest.displayName = 'proto.types.IssueCertificateRequest';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.IssueCertificateRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.IssueCertificateRequest.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.IssueCertificateRequest} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.IssueCertificateRequest.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.IssueCertificateRequest}
+ */
+proto.types.IssueCertificateRequest.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.IssueCertificateRequest;
+  return proto.types.IssueCertificateRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.IssueCertificateRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.IssueCertificateRequest}
+ */
+proto.types.IssueCertificateRequest.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.IssueCertificateRequest.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.IssueCertificateRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.IssueCertificateRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.IssueCertificateRequest.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.IssueCertificateResponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.IssueCertificateResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.IssueCertificateResponse.displayName = 'proto.types.IssueCertificateResponse';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.IssueCertificateResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.IssueCertificateResponse.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.IssueCertificateResponse} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.IssueCertificateResponse.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    certificate: (f = msg.getCertificate()) && node_pb.AgentCertificate.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.IssueCertificateResponse}
+ */
+proto.types.IssueCertificateResponse.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.IssueCertificateResponse;
+  return proto.types.IssueCertificateResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.IssueCertificateResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.IssueCertificateResponse}
+ */
+proto.types.IssueCertificateResponse.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.types.ResultStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 2:
+      var value = new node_pb.AgentCertificate;
+      reader.readMessage(value,node_pb.AgentCertificate.deserializeBinaryFromReader);
+      msg.setCertificate(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.IssueCertificateResponse.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.IssueCertificateResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.IssueCertificateResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.IssueCertificateResponse.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getCertificate();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      node_pb.AgentCertificate.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional ResultStatus status = 1;
+ * @return {!proto.types.ResultStatus}
+ */
+proto.types.IssueCertificateResponse.prototype.getStatus = function() {
+  return /** @type {!proto.types.ResultStatus} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.types.ResultStatus} value */
+proto.types.IssueCertificateResponse.prototype.setStatus = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional AgentCertificate certificate = 2;
+ * @return {?proto.types.AgentCertificate}
+ */
+proto.types.IssueCertificateResponse.prototype.getCertificate = function() {
+  return /** @type{?proto.types.AgentCertificate} */ (
+    jspb.Message.getWrapperField(this, node_pb.AgentCertificate, 2));
+};
+
+
+/** @param {?proto.types.AgentCertificate|undefined} value */
+proto.types.IssueCertificateResponse.prototype.setCertificate = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.types.IssueCertificateResponse.prototype.clearCertificate = function() {
+  this.setCertificate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.types.IssueCertificateResponse.prototype.hasCertificate = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.types.CertificateRenewedNotice = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.types.CertificateRenewedNotice, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.types.CertificateRenewedNotice.displayName = 'proto.types.CertificateRenewedNotice';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.types.CertificateRenewedNotice.prototype.toObject = function(opt_includeInstance) {
+  return proto.types.CertificateRenewedNotice.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.types.CertificateRenewedNotice} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.CertificateRenewedNotice.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    certificate: (f = msg.getCertificate()) && node_pb.AgentCertificate.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.types.CertificateRenewedNotice}
+ */
+proto.types.CertificateRenewedNotice.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.types.CertificateRenewedNotice;
+  return proto.types.CertificateRenewedNotice.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.types.CertificateRenewedNotice} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.types.CertificateRenewedNotice}
+ */
+proto.types.CertificateRenewedNotice.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 2:
+      var value = new node_pb.AgentCertificate;
+      reader.readMessage(value,node_pb.AgentCertificate.deserializeBinaryFromReader);
+      msg.setCertificate(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.types.CertificateRenewedNotice.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.types.CertificateRenewedNotice.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.types.CertificateRenewedNotice} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.types.CertificateRenewedNotice.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getCertificate();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      node_pb.AgentCertificate.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional AgentCertificate certificate = 2;
+ * @return {?proto.types.AgentCertificate}
+ */
+proto.types.CertificateRenewedNotice.prototype.getCertificate = function() {
+  return /** @type{?proto.types.AgentCertificate} */ (
+    jspb.Message.getWrapperField(this, node_pb.AgentCertificate, 2));
+};
+
+
+/** @param {?proto.types.AgentCertificate|undefined} value */
+proto.types.CertificateRenewedNotice.prototype.setCertificate = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.types.CertificateRenewedNotice.prototype.clearCertificate = function() {
+  this.setCertificate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.types.CertificateRenewedNotice.prototype.hasCertificate = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

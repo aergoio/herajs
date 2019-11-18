@@ -2729,12 +2729,19 @@ proto.types.AccountAndRoot.prototype.setCompressed = function(value) {
  * @constructor
  */
 proto.types.Peer = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.types.Peer.repeatedFields_, null);
 };
 goog.inherits(proto.types.Peer, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.types.Peer.displayName = 'proto.types.Peer';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.types.Peer.repeatedFields_ = [8];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -2770,7 +2777,10 @@ proto.types.Peer.toObject = function(includeInstance, msg) {
     hidden: jspb.Message.getFieldWithDefault(msg, 4, false),
     lashcheck: jspb.Message.getFieldWithDefault(msg, 5, 0),
     selfpeer: jspb.Message.getFieldWithDefault(msg, 6, false),
-    version: jspb.Message.getFieldWithDefault(msg, 7, "")
+    version: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    certificatesList: jspb.Message.toObjectList(msg.getCertificatesList(),
+    node_pb.AgentCertificate.toObject, includeInstance),
+    acceptedrole: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -2836,6 +2846,15 @@ proto.types.Peer.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setVersion(value);
+      break;
+    case 8:
+      var value = new node_pb.AgentCertificate;
+      reader.readMessage(value,node_pb.AgentCertificate.deserializeBinaryFromReader);
+      msg.addCertificates(value);
+      break;
+    case 9:
+      var value = /** @type {!proto.types.PeerRole} */ (reader.readEnum());
+      msg.setAcceptedrole(value);
       break;
     default:
       reader.skipField();
@@ -2914,6 +2933,21 @@ proto.types.Peer.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = message.getCertificatesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      8,
+      f,
+      node_pb.AgentCertificate.serializeBinaryToWriter
+    );
+  }
+  f = message.getAcceptedrole();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      9,
       f
     );
   }
@@ -3056,6 +3090,52 @@ proto.types.Peer.prototype.getVersion = function() {
 /** @param {string} value */
 proto.types.Peer.prototype.setVersion = function(value) {
   jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * repeated AgentCertificate certificates = 8;
+ * @return {!Array<!proto.types.AgentCertificate>}
+ */
+proto.types.Peer.prototype.getCertificatesList = function() {
+  return /** @type{!Array<!proto.types.AgentCertificate>} */ (
+    jspb.Message.getRepeatedWrapperField(this, node_pb.AgentCertificate, 8));
+};
+
+
+/** @param {!Array<!proto.types.AgentCertificate>} value */
+proto.types.Peer.prototype.setCertificatesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 8, value);
+};
+
+
+/**
+ * @param {!proto.types.AgentCertificate=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.types.AgentCertificate}
+ */
+proto.types.Peer.prototype.addCertificates = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.types.AgentCertificate, opt_index);
+};
+
+
+proto.types.Peer.prototype.clearCertificatesList = function() {
+  this.setCertificatesList([]);
+};
+
+
+/**
+ * optional PeerRole acceptedRole = 9;
+ * @return {!proto.types.PeerRole}
+ */
+proto.types.Peer.prototype.getAcceptedrole = function() {
+  return /** @type {!proto.types.PeerRole} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/** @param {!proto.types.PeerRole} value */
+proto.types.Peer.prototype.setAcceptedrole = function(value) {
+  jspb.Message.setProto3EnumField(this, 9, value);
 };
 
 

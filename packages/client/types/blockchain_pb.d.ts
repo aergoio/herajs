@@ -570,6 +570,9 @@ export class Receipt extends jspb.Message {
   getFeedelegation(): boolean;
   setFeedelegation(value: boolean): void;
 
+  getGasused(): number;
+  setGasused(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Receipt.AsObject;
   static toObject(includeInstance: boolean, msg: Receipt): Receipt.AsObject;
@@ -596,6 +599,7 @@ export namespace Receipt {
     from: Uint8Array | string,
     to: Uint8Array | string,
     feedelegation: boolean,
+    gasused: number,
   }
 }
 
