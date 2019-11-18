@@ -2,10 +2,17 @@ import { TxBody, Tx as GrpcTx, TxType, TxTypeMap } from '../../types/blockchain_
 import { encodeTxHash, decodeTxHash } from '../transactions/utils';
 import Address from './address';
 import Amount from './amount';
-import Block from './block';
 import { Buffer } from 'buffer';
 
 type TxTypeValue = TxTypeMap[keyof TxTypeMap];
+
+function bufferOrB58(input: string | Buffer | Uint8Array): Uint8Array {
+    if (typeof input === 'string') {
+        return Uint8Array.from(decodeTxHash(input));
+    } else {
+        return Uint8Array.from(Buffer.from(input));
+    }
+}
 
 /**
  * Class for converting transaction data to and from network representation.
@@ -49,11 +56,12 @@ export default class Tx {
             type: grpcObject.getBody().getType(),
             limit: grpcObject.getBody().getGaslimit(),
             price: new Amount(grpcObject.getBody().getGasprice_asU8()),
-            chainIdHash: Block.encodeHash(grpcObject.getBody().getChainidhash_asU8())
+            chainIdHash: encodeTxHash(grpcObject.getBody().getChainidhash_asU8())
         });
     }
     toGrpc() {
         const msgtxbody = new TxBody();
+        msgtxbody.setType(this.type ? this.type : 0);
         msgtxbody.setNonce(this.nonce);
         if (typeof this.from === 'undefined' || !this.from) {
             throw new Error('Missing required transaction parameter \'from\'');
@@ -63,6 +71,10 @@ export default class Tx {
             msgtxbody.setRecipient((new Address(this.to)).asBytes());
         }
         msgtxbody.setAmount(Uint8Array.from(this.amount.asBytes()));
+        if (typeof this.price !== 'undefined') {
+            msgtxbody.setGasprice(Uint8Array.from(this.price.asBytes()));
+        }
+        msgtxbody.setGaslimit(this.limit || 0);
         if (this.payload != null) {
             msgtxbody.setPayload(Buffer.from(this.payload));
         }
@@ -71,42 +83,17 @@ export default class Tx {
         } else {
             msgtxbody.setSign(this.sign);
         }
-        
-        msgtxbody.setType(this.type ? this.type : 0);
-
-        if (typeof this.limit !== 'undefined') {
-            msgtxbody.setGaslimit(this.limit);
-        }
-
-        if (typeof this.price !== 'undefined') {
-            msgtxbody.setGasprice(Uint8Array.from(this.price.asBytes()));
-        }
-
         if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
             const msg = 'Missing required transaction parameter \'chainIdHash\'. ' +
                         'Use aergoClient.getChainIdHash() to retrieve from connected node, ' +
                         'or hard-code for increased security and performance.';
             throw new Error(msg);
         }
-        let hashBuffer: Uint8Array;
-        if (typeof this.chainIdHash === 'string') {
-            hashBuffer = new Uint8Array(Block.decodeHash(this.chainIdHash));
-        } else {
-            hashBuffer = new Uint8Array(Buffer.from(this.chainIdHash));
-        }
-        msgtxbody.setChainidhash(hashBuffer);
+        msgtxbody.setChainidhash(bufferOrB58(this.chainIdHash));
 
         const msgtx = new GrpcTx();
-
         if (this.hash != null) {
-            let hash = this.hash;
-            let hashBuffer;
-            if (typeof hash === 'string') {
-                hashBuffer = new Uint8Array(Buffer.from(decodeTxHash(hash)));
-            } else {
-                hashBuffer = new Uint8Array(Buffer.from(hash));
-            }
-            msgtx.setHash(hashBuffer);
+            msgtx.setHash(bufferOrB58(this.hash));
         }
         msgtx.setBody(msgtxbody);
 
