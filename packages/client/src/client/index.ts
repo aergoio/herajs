@@ -532,7 +532,8 @@ class AergoClient {
                 blockno: obj.blockno,
                 blockhash: Block.encodeHash(grpcObject.getBlockhash_asU8()),
                 feeDelegation: obj.feedelegation,
-            };
+                gasused: obj.gasused,
+            } as GetReceiptResult;
         });
     }
 

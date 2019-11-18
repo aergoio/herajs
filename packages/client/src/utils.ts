@@ -50,8 +50,14 @@ export const waitFor = (ms: number): Promise<void> => {
     });
 };
 const basicCheck = (result) => result instanceof Error === false;
+/**
+ * Keep calling a function until it does not throw and also satifies check(result), or until timeout is reached
+ * @param func function to be called. Can return a promise.
+ * @param check function that is called on func's result
+ * @param timeout duration after which polling times out
+ * @param wait duration between calls
+ */
 export const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
-    // keep calling func until it does not throw and also satifies check(result) or until timeout is reached
     const started = + new Date();
     let lastError = '';
     try {

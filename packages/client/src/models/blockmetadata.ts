@@ -23,6 +23,7 @@ export default class BlockMetadata {
                 prevblockhash: Block.encodeHash(grpcObject.getHeader().getPrevblockhash_asU8()),
                 coinbaseaccount: new Address(grpcObject.getHeader().getCoinbaseaccount_asU8()),
                 pubkey: Block.encodeHash(grpcObject.getHeader().getPubkey_asU8()),
+                rewardaccount: new Address(grpcObject.getHeader().getConsensus_asU8()),
             },
             txcount: obj.txcount,
             size: obj.size,
@@ -30,5 +31,8 @@ export default class BlockMetadata {
     }
     toGrpc() {
         throw new Error('Not implemented');
+    }
+    get voteReward() {
+        return Block.getVoteReward(this);
     }
 }

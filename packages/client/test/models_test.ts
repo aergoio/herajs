@@ -72,6 +72,13 @@ describe('Address', () => {
         assert.isTrue(new Address('foo.bar').isSystemAddress());
         assert.isFalse(new Address('aergo.system').isSystemAddress());
     });
+    it('should return isEmpty', () => {
+        assert.isTrue(new Address('').isEmpty());
+        assert.isTrue(new Address(Buffer.from([])).isEmpty());
+        assert.isFalse(new Address('foo.bar').isEmpty());
+        assert.isFalse(new Address('AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX').isEmpty());
+        assert.isFalse(new Address(Buffer.from([97, 101, 114, 103, 111, 46, 101, 110, 116, 101, 114, 112, 114, 105, 115, 101])).isEmpty());
+    });
 });
 
 describe('Amount', () => {

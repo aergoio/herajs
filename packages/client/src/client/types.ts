@@ -21,6 +21,7 @@ export interface GetReceiptResult {
     blockno: number;
     blockhash: string;
     feeDelegation: boolean;
+    gasused: number;
 }
 
 export interface NameInfoResult {

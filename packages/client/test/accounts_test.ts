@@ -152,12 +152,12 @@ describe('Aergo.Accounts', () => {
                 return await aergo.getTransaction(txhash);
             }, result => 'block' in result, 5000);
             assert.equal(tx2.tx.hash, tx.hash);
-            assert.isTrue(JSBI.equal(tx2.tx.amount.value, tx.amount.value));
+            assert.isTrue(tx2.tx.amount.equal(tx.amount.value));
 
             // Tx has receipt
             const txReceipt = await aergo.getTransactionReceipt(tx.hash);
-            assert.isTrue(txReceipt.fee.equal(new Amount('2000000000000000 aer')));
-            assert.isTrue(txReceipt.cumulativefee.equal(0));
+            assert.isTrue(txReceipt.fee.equal(new Amount('100000 aer')), `Wrong fee: ${txReceipt.fee}`);
+            assert.isTrue(txReceipt.cumulativefee.equal(0), `Wrong cumulativefee: ${txReceipt.cumulativefee}`);
             assert.equal(txReceipt.blockhash, tx2.block.hash);
 
             // Submitting same tx again should error

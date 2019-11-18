@@ -27,5 +27,5 @@ export const UNITS = {
 export default {
     ADDRESS_PREFIXES,
     UNITS,
-    ACCOUNT_NAME_LENGTH
+    ACCOUNT_NAME_LENGTH,
 };
