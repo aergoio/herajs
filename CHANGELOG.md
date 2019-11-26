@@ -1,3 +1,7 @@
+## 0.16.3 (November 26, 2019)
+- Client
+  - Amount.toJSON(): return a string with unit aer, e.g. "11234 aer", instead of useless array representation of JSBI
+  
 ## 0.16.2 (November 18, 2019)
 - Client
   - Add TxReceipt.gasused (supported in aergosvr 2.0)
