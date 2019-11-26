@@ -204,4 +204,12 @@ describe('Amount', () => {
         // 100000000000 aer / 0.00000001 aergo = 10
         assert.equal(new Amount('100000000000 aer').div('0.00000001 aergo').toString(), '10');
     });
+    it('should jsonify to a string with unit aer', () => {
+        const amount = new Amount('1234 aergo');
+        const json = JSON.stringify({ amount });
+        assert.equal(json, '{"amount":"1234000000000000000000 aer"}');
+        // Parse it back to check it's the same value
+        const amount2 = new Amount(JSON.parse(json).amount);
+        assert.isTrue(amount.equal(amount2));
+    });
 });

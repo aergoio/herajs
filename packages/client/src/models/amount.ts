@@ -77,8 +77,11 @@ export default class Amount {
     asBytes(): Buffer {
         return Buffer.from(fromHexString(this.value.toString(16)));
     }
+    /**
+     * JSON.stringifes to string with unit aer, which can be easily deserialized by new Amount(x)
+     */
     toJSON(): string {
-        return this.value.toString();
+        return this.toUnit('aer').toString();
     }
     /**
      * Returns formatted string including unit
