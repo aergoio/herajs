@@ -156,7 +156,7 @@ describe('Aergo.Accounts', () => {
 
             // Tx has receipt
             const txReceipt = await aergo.getTransactionReceipt(tx.hash);
-            assert.isTrue(txReceipt.fee.equal(new Amount('100000 aer')), `Wrong fee: ${txReceipt.fee}`);
+            assert.isTrue(txReceipt.fee.equal(new Amount('5000000000000000 aer')), `Wrong fee: ${txReceipt.fee}`);
             assert.isTrue(txReceipt.cumulativefee.equal(0), `Wrong cumulativefee: ${txReceipt.cumulativefee}`);
             assert.equal(txReceipt.blockhash, tx2.block.hash);
 
