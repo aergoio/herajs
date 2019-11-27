@@ -17,6 +17,8 @@ export default class ChainInfo {
     stakingtotal: Amount;
     gasprice: Amount;
     nameprice: Amount;
+    totalvotingpower: Amount;
+    votingreward: Amount;
 
     constructor(data: Partial<ChainInfo>) {
         Object.assign(this, data);
@@ -38,6 +40,8 @@ export default class ChainInfo {
             stakingtotal: new Amount(grpcObject.getTotalstaking_asU8()),
             gasprice: new Amount(grpcObject.getGasprice_asU8()),
             nameprice: new Amount(grpcObject.getNameprice_asU8()),
+            totalvotingpower: new Amount(grpcObject.getTotalvotingpower_asU8()),
+            votingreward: new Amount(grpcObject.getVotingreward_asU8()),
         });
     }
 
