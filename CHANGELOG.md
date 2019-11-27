@@ -1,3 +1,7 @@
+## 0.16.4 (November 27, 2019)
+- Client
+  - ChainInfo: add new fields totalvotingpower and votingreward (available since aergosvr 2.0.2)
+  
 ## 0.16.3 (November 26, 2019)
 - Client
   - Amount.toJSON(): return a string with unit aer, e.g. "11234 aer", instead of useless array representation of JSBI
