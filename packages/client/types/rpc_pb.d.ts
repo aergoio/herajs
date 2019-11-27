@@ -124,6 +124,16 @@ export class ChainInfo extends jspb.Message {
   getNameprice_asB64(): string;
   setNameprice(value: Uint8Array | string): void;
 
+  getTotalvotingpower(): Uint8Array | string;
+  getTotalvotingpower_asU8(): Uint8Array;
+  getTotalvotingpower_asB64(): string;
+  setTotalvotingpower(value: Uint8Array | string): void;
+
+  getVotingreward(): Uint8Array | string;
+  getVotingreward_asU8(): Uint8Array;
+  getVotingreward_asB64(): string;
+  setVotingreward(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ChainInfo.AsObject;
   static toObject(includeInstance: boolean, msg: ChainInfo): ChainInfo.AsObject;
@@ -144,6 +154,8 @@ export namespace ChainInfo {
     totalstaking: Uint8Array | string,
     gasprice: Uint8Array | string,
     nameprice: Uint8Array | string,
+    totalvotingpower: Uint8Array | string,
+    votingreward: Uint8Array | string,
   }
 }
 

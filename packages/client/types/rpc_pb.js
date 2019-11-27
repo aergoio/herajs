@@ -690,7 +690,9 @@ proto.types.ChainInfo.toObject = function(includeInstance, msg) {
     stakingminimum: msg.getStakingminimum_asB64(),
     totalstaking: msg.getTotalstaking_asB64(),
     gasprice: msg.getGasprice_asB64(),
-    nameprice: msg.getNameprice_asB64()
+    nameprice: msg.getNameprice_asB64(),
+    totalvotingpower: msg.getTotalvotingpower_asB64(),
+    votingreward: msg.getVotingreward_asB64()
   };
 
   if (includeInstance) {
@@ -759,6 +761,14 @@ proto.types.ChainInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setNameprice(value);
+      break;
+    case 9:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setTotalvotingpower(value);
+      break;
+    case 10:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setVotingreward(value);
       break;
     default:
       reader.skipField();
@@ -843,6 +853,20 @@ proto.types.ChainInfo.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       8,
+      f
+    );
+  }
+  f = message.getTotalvotingpower_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      9,
+      f
+    );
+  }
+  f = message.getVotingreward_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      10,
       f
     );
   }
@@ -1101,6 +1125,84 @@ proto.types.ChainInfo.prototype.getNameprice_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.types.ChainInfo.prototype.setNameprice = function(value) {
   jspb.Message.setProto3BytesField(this, 8, value);
+};
+
+
+/**
+ * optional bytes totalvotingpower = 9;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ChainInfo.prototype.getTotalvotingpower = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * optional bytes totalvotingpower = 9;
+ * This is a type-conversion wrapper around `getTotalvotingpower()`
+ * @return {string}
+ */
+proto.types.ChainInfo.prototype.getTotalvotingpower_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getTotalvotingpower()));
+};
+
+
+/**
+ * optional bytes totalvotingpower = 9;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getTotalvotingpower()`
+ * @return {!Uint8Array}
+ */
+proto.types.ChainInfo.prototype.getTotalvotingpower_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getTotalvotingpower()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.ChainInfo.prototype.setTotalvotingpower = function(value) {
+  jspb.Message.setProto3BytesField(this, 9, value);
+};
+
+
+/**
+ * optional bytes votingreward = 10;
+ * @return {!(string|Uint8Array)}
+ */
+proto.types.ChainInfo.prototype.getVotingreward = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * optional bytes votingreward = 10;
+ * This is a type-conversion wrapper around `getVotingreward()`
+ * @return {string}
+ */
+proto.types.ChainInfo.prototype.getVotingreward_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getVotingreward()));
+};
+
+
+/**
+ * optional bytes votingreward = 10;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getVotingreward()`
+ * @return {!Uint8Array}
+ */
+proto.types.ChainInfo.prototype.getVotingreward_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getVotingreward()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.types.ChainInfo.prototype.setVotingreward = function(value) {
+  jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
