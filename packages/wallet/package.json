@@ -29,7 +29,7 @@
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "@types/leveldown": "^4.0.0",
-    "@types/levelup": "^3.1.0",
+    "@types/levelup": "^4.3.0",
     "hashmap": "^2.3.0",
     "idb": "^4.0.0",
     "level": "^6.0.0"
