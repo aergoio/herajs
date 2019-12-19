@@ -646,12 +646,12 @@ class AergoClient {
     /**
      * Get list of peers of connected node
      */
-    getPeers(showself = true, showhidden = true) {
+    getPeers(showself = true, showhidden = true): Promise<Peer[]> {
         const query = new PeersParams();
         query.setNohidden(!showhidden);
         query.setShowself(showself);
         return promisify(this.client.client.getPeers, this.client.client)(query).then(
-            (grpcObject: GrpcPeerList): Array<Peer> => grpcObject.getPeersList().map(
+            (grpcObject: GrpcPeerList): Peer[] => grpcObject.getPeersList().map(
                 (peer: GrpcPeer): Peer => Peer.fromGrpc(peer)
             )
         );

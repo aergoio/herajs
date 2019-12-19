@@ -1,12 +1,19 @@
 import bs58 from 'bs58';
-import { Peer as GrpcPeer} from '../../types/rpc_pb';
+import { Peer as GrpcPeer } from '../../types/rpc_pb';
+import { PeerRole, PeerRoleMap } from '../../types/node_pb';
 import Block from './block';
 
+type RoleValue = PeerRoleMap[keyof PeerRoleMap];
+
 export default class Peer {
+    static readonly Role = PeerRole;
+
+    acceptedrole: RoleValue;
+
     constructor(data: Partial<Peer>) {
         Object.assign(this, data);
     }
-    static fromGrpc(grpcObject: GrpcPeer) {
+    static fromGrpc(grpcObject: GrpcPeer): Peer {
         const obj: GrpcPeer.AsObject = grpcObject.toObject();
         const bestblock = grpcObject.getBestblock();
         if (bestblock) {
@@ -16,9 +23,13 @@ export default class Peer {
             ...obj.address,
             peerid: bs58.encode(Buffer.from(grpcObject.getAddress().getPeerid_asU8())),
         };
-        return new Peer(<Partial<Peer>>obj);
+        return new Peer(obj as Partial<Peer>);
     }
-    toGrpc() {
+    get acceptedroleLabel(): string {
+        const key = Object.keys(Peer.Role).find(key => PeerRole[key] === this.acceptedrole);
+        return key || '';
+    }
+    toGrpc(): never {
         throw new Error('Not implemented');
     }
 }

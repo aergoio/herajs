@@ -110,6 +110,8 @@ describe('Aergo', () => {
         it('should get a list of peers', async () => {
             const peers = await aergo.getPeers();
             assert.instanceOf(peers, Array);
+            assert.equal(peers[0].acceptedrole, 1);
+            assert.equal(peers[0].acceptedroleLabel, 'PRODUCER');
         });
     });
 
