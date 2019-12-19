@@ -1,3 +1,7 @@
+## 0.16.5 (December 19, 2019)
+- Client
+  - Peer: add static enum Peer.Role and method peer.acceptedroleLabel() to get human-readable role
+
 ## 0.16.4 (November 27, 2019)
 - Client
   - ChainInfo: add new fields totalvotingpower and votingreward (available since aergosvr 2.0.2)
