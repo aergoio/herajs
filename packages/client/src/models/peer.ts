@@ -26,7 +26,8 @@ export default class Peer {
         return new Peer(obj as Partial<Peer>);
     }
     get acceptedroleLabel(): string {
-        const key = Object.keys(Peer.Role).find(key => PeerRole[key] === this.acceptedrole);
+        const roles = Peer.Role;
+        const key = Object.keys(roles).find(key => roles[key] === this.acceptedrole);
         return key || '';
     }
     toGrpc(): never {
