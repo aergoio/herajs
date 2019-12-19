@@ -121,6 +121,7 @@ function genConfig (name) {
 
     const namedExports = {
         [resolve('types/rpc_pb.js')]: 'AccountAddress, Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name, PeersParams, VoteParams, NodeReq, KeyParams, BlockMetadata, PageParams, BlockBodyParams'.split(', '),
+        [resolve('types/node_pb.js')]: 'PeerRole'.split(', '),
         [resolve('types/blockchain_pb.js')]: 'TxList, TxBody, Tx, TxType, Block, Query, StateQuery, FilterInfo'.split(', '),
         [resolve('types/account_pb.js')]: 'Account'.split(', '),
         [resolve('../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(','),
