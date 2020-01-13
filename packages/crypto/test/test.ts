@@ -76,6 +76,14 @@ describe('hashTransaction()', () => {
     });
 });
 
+describe('encodeAddress()', () => {
+    it('should encode an address of bytes to a string', async () => {
+        assert.equal(encodeAddress(Buffer.from('aergo.system')), 'aergo.system');
+        const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);
+        assert.equal(encodeAddress(bytes), 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX');
+    });
+});
+
 describe('signTransaction()', () => {
     it('should sign a tx and verify a signature', async () => {
         const identity = createIdentity();
