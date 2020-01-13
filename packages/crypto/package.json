@@ -14,7 +14,7 @@
     "build": "yarn run lint && yarn run build:types && yarn run build:js",
     "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
-    "test": "yarn run lint && yarn run type-check && mocha -r babel-register-ts test/*.ts"
+    "test": "yarn run lint && yarn run type-check && nyc mocha -r babel-register-ts test/*.ts"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "@herajs/hdkey": "^11.1.2",
     "@types/bs58": "^4.0.0",
     "@types/elliptic": "^6.4.0",
+    "@web3-js/scrypt-shim": "^0.1.0",
     "aes-js": "^3.1.1",
     "asmcrypto.js": "^2.3.2",
     "bip39": "^3.0.2",

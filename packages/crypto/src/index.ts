@@ -34,3 +34,8 @@ export {
     privateKeyFromMnemonic,
     privateKeysFromMnemonic,
 } from './seed';
+
+export {
+    identityFromKeystore,
+    keystoreFromPrivateKey,
+} from './keystore';

@@ -3,6 +3,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
+import { readFileSync } from 'fs';
+import path from 'path';
+
 import {
     createIdentity,
     signTransaction, hashTransaction,
@@ -13,6 +16,8 @@ import {
     publicKeyFromAddress,
     signMessage, verifySignature,
     generateMnemonic, privateKeyFromMnemonic, privateKeyFromSeed, mnemonicToSeed,
+    identityFromKeystore, keystoreFromPrivateKey,
+    encodeAddress,
 } from '../src';
 
 describe('createIdentity()', () => {
@@ -200,5 +205,75 @@ describe('seed', () => {
         const privateKey = await privateKeyFromMnemonic(mnemonic);
         const identity = identifyFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
+    });
+});
+
+describe('keystore', () => {
+    const fileContents = readFileSync(path.resolve(__dirname, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6__keystore.txt')).toString();
+    const keystoreFile = JSON.parse(fileContents);
+    it('should parse a keystore file', () => {        
+        // Decrypt
+        const identity = identityFromKeystore(keystoreFile, 'password');
+        assert.equal(identity.address, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6');
+    });
+    it('should generate a keystore file', async () => {
+        const seed = Buffer.from([0, 1, 2, 3, 4]);
+        const address = 'AmMaAqWeHAosWh2CPy2HAE3mWRjvYWjE6wKL7jgfb1yUQYyJXtWi';
+        const privateKey = await privateKeyFromSeed(seed);
+
+        // Encrypt
+        const keystore = keystoreFromPrivateKey(privateKey, 'password', { n: 1 << 10 });
+        assert.equal(keystore.aergo_address, address);
+
+        // Decrypt
+        const identity = identityFromKeystore(keystore, 'password');
+        assert.equal(identity.address, address);
+    });
+    it('should throw with empty salt', async () => {
+        const seed = Buffer.from([0, 1, 2, 3, 4]);
+        const privateKey = await privateKeyFromSeed(seed);
+
+        assert.throws(() => {
+            keystoreFromPrivateKey(privateKey, 'password', {
+                salt: '',
+            });
+        }, 'missing salt');
+    });
+    it('should throw with invalid mac', async () => {
+        assert.throws(() => {
+            identityFromKeystore({
+                ...keystoreFile,
+                kdf: {
+                    ...keystoreFile.kdf,
+                    mac: '1111',
+                },
+            } as any, '');
+        }, 'invalid mac value');
+    });
+    it('should throw with unsupported algorithm', async () => {
+        assert.throws(() => {
+            identityFromKeystore({
+                ...keystoreFile,
+                'ks_version': '0',
+            } as any, '');
+        }, 'unsupported keystore version: 0');
+        assert.throws(() => {
+            identityFromKeystore({
+                ...keystoreFile,
+                kdf: {
+                    ...keystoreFile.kdf,
+                    algorithm: 'KDF',
+                },
+            } as any, '');
+        }, 'unsupported cipher key derivation scheme: KDF');
+        assert.throws(() => {
+            identityFromKeystore({
+                ...keystoreFile,
+                cipher: {
+                    ...keystoreFile.cipher,
+                    algorithm: 'CIPHER',
+                },
+            } as any, '');
+        }, 'unsupported encryption algorithm: CIPHER');
     });
 });

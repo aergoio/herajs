@@ -22,7 +22,7 @@ function bufferOrB58(input?: Uint8Array | string): Uint8Array {
 export function hash(data: Buffer): Buffer {
     const h = ecdsa.hash();
     h.update(data);
-    return h.digest();
+    return Buffer.from(h.digest());
 }
 
 /**

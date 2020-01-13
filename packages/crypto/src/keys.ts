@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 import { ec } from 'elliptic';
 import { ecdsa } from './ecdsa';
 
-interface Identity {
+export interface Identity {
     address: string;
     publicKey: any; //?
     privateKey: Buffer;

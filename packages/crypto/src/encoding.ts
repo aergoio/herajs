@@ -1,7 +1,6 @@
 import bs58check from 'bs58check';
 import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from './constants';
 import JSBI from 'jsbi';
-import { padStart } from './utils';
 import bs58 from 'bs58';
 import { Buffer } from 'buffer';
 
@@ -20,15 +19,6 @@ export function fromHexString(hexString: string): Uint8Array {
     const m = hexString.match(/.{1,2}/g);
     if (!m) return new Uint8Array([]);
     return new Uint8Array(m.map(byte => parseInt(byte, 16)));
-}
-
-/**
- * Converts Uint8 array to hex string.
- * @param {Uint8Array} bytes
- * @return {string}
- */
-export function toHexString(bytes: Uint8Array): string {
-    return bytes.reduce((str, byte) => str + padStart(byte.toString(16), 2, '0'), '');
 }
 
 /**
