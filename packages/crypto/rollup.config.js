@@ -21,7 +21,7 @@ const extensions = [
 const name = 'HerajsCrypto';
 
 const namedExports = {
-    [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
+    [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec, rand'.split(', '),
 };
 
 // Ignore bip39 wordlists except english
