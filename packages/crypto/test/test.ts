@@ -16,6 +16,7 @@ import {
     publicKeyFromAddress,
     signMessage, verifySignature,
     generateMnemonic, privateKeyFromMnemonic, privateKeyFromSeed, mnemonicToSeed,
+    privateKeysFromSeed, privateKeysFromMnemonic,
     identityFromKeystore, keystoreFromPrivateKey,
     encodeAddress,
 } from '../src';
@@ -73,6 +74,38 @@ describe('hashTransaction()', () => {
             };
             await assert.isRejected(hashTransaction(tx), Error, `Could not parse numeric value from amount '${amount}'.`);
         }
+    });
+    it('should work with and without signature', async () => {
+        const tx1 = {
+            amount: '0 aer',
+            nonce: 1,
+            from: '',
+            chainIdHash: ''
+        };
+        const tx2 = {
+            ...tx1,
+        };
+        const tx3 = {
+            ...tx1,
+            sign: 'abc',
+        };
+        const hash1 = await hashTransaction(tx1);
+        const hash2 = await hashTransaction(tx2);
+        const hash3 = await hashTransaction(tx3);
+        assert.equal(hash1, hash2);
+        assert.notEqual(hash1, hash3);
+    });
+    it('should work with output encodings', async () => {
+        const tx1 = {
+            amount: '0 aer',
+            nonce: 1,
+            from: '',
+            chainIdHash: ''
+        };
+        const hash = await hashTransaction(tx1, 'base58');
+        assert.equal(hash, 'AB1Y87LaQnYiFFbGYWoZhJiCdb12HMcphYFBakABzJvf');
+        const hash2 = await hashTransaction(tx1, 'base64');
+        assert.equal(hash2, 'iEmY32qR8n60KEYk/4xcNbxoiN3gs7uqAdK2MSQLjPQ=');
     });
 });
 
@@ -194,9 +227,16 @@ describe('seed', () => {
     it('should re-create identity from empty seed', async () => {
         const seed = Buffer.from([]);
         const privateKey = await privateKeyFromSeed(seed, opts);
+        const [privateKey2] = await privateKeysFromSeed(seed, opts);
+        assert.equal(privateKey.toString(), privateKey2.toString());
         const identity = identifyFromPrivateKey(privateKey);
         // This is the address corresponding to key generated from empty seed
         assert.equal(identity.address, 'AmQCPe9eoAkF1i1pcrpVmxKLNACXhGnuShZazySVVVfABz78e7XT');
+
+        // check with default config
+        const [privateKeyB1] = await privateKeysFromSeed(seed);
+        const [privateKeyB2] = await privateKeysFromSeed(seed, { count: 1 });
+        assert.equal(privateKeyB1.toString(), privateKeyB2.toString());
     });
     it('should re-create identity from seed', async () => {
         const seed = await mnemonicToSeed('raccoon agent nest round belt cloud first fancy awkward quantum valley scheme');
@@ -211,6 +251,8 @@ describe('seed', () => {
     it('should re-create identity from mnemonic', async () => {
         const mnemonic = 'dust sister misery any capital scrap country various quantum ocean pill around';
         const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const [privateKey2] = await privateKeysFromMnemonic(mnemonic);
+        assert.equal(privateKey.toString(), privateKey2.toString());
         const identity = identifyFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
     });
