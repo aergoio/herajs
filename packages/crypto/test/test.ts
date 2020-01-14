@@ -3,6 +3,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
+import { readFileSync } from 'fs';
+import path from 'path';
+
 import {
     createIdentity,
     signTransaction, hashTransaction,
@@ -13,6 +16,9 @@ import {
     publicKeyFromAddress,
     signMessage, verifySignature,
     generateMnemonic, privateKeyFromMnemonic, privateKeyFromSeed, mnemonicToSeed,
+    privateKeysFromSeed, privateKeysFromMnemonic,
+    identityFromKeystore, keystoreFromPrivateKey,
+    encodeAddress,
 } from '../src';
 
 describe('createIdentity()', () => {
@@ -68,6 +74,46 @@ describe('hashTransaction()', () => {
             };
             await assert.isRejected(hashTransaction(tx), Error, `Could not parse numeric value from amount '${amount}'.`);
         }
+    });
+    it('should work with and without signature', async () => {
+        const tx1 = {
+            amount: '0 aer',
+            nonce: 1,
+            from: '',
+            chainIdHash: ''
+        };
+        const tx2 = {
+            ...tx1,
+        };
+        const tx3 = {
+            ...tx1,
+            sign: 'abc',
+        };
+        const hash1 = await hashTransaction(tx1);
+        const hash2 = await hashTransaction(tx2);
+        const hash3 = await hashTransaction(tx3);
+        assert.equal(hash1, hash2);
+        assert.notEqual(hash1, hash3);
+    });
+    it('should work with output encodings', async () => {
+        const tx1 = {
+            amount: '0 aer',
+            nonce: 1,
+            from: '',
+            chainIdHash: ''
+        };
+        const hash = await hashTransaction(tx1, 'base58');
+        assert.equal(hash, 'AB1Y87LaQnYiFFbGYWoZhJiCdb12HMcphYFBakABzJvf');
+        const hash2 = await hashTransaction(tx1, 'base64');
+        assert.equal(hash2, 'iEmY32qR8n60KEYk/4xcNbxoiN3gs7uqAdK2MSQLjPQ=');
+    });
+});
+
+describe('encodeAddress()', () => {
+    it('should encode an address of bytes to a string', async () => {
+        assert.equal(encodeAddress(Buffer.from('aergo.system')), 'aergo.system');
+        const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);
+        assert.equal(encodeAddress(bytes), 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX');
     });
 });
 
@@ -181,9 +227,16 @@ describe('seed', () => {
     it('should re-create identity from empty seed', async () => {
         const seed = Buffer.from([]);
         const privateKey = await privateKeyFromSeed(seed, opts);
+        const [privateKey2] = await privateKeysFromSeed(seed, opts);
+        assert.equal(privateKey.toString(), privateKey2.toString());
         const identity = identifyFromPrivateKey(privateKey);
         // This is the address corresponding to key generated from empty seed
         assert.equal(identity.address, 'AmQCPe9eoAkF1i1pcrpVmxKLNACXhGnuShZazySVVVfABz78e7XT');
+
+        // check with default config
+        const [privateKeyB1] = await privateKeysFromSeed(seed);
+        const [privateKeyB2] = await privateKeysFromSeed(seed, { count: 1 });
+        assert.equal(privateKeyB1.toString(), privateKeyB2.toString());
     });
     it('should re-create identity from seed', async () => {
         const seed = await mnemonicToSeed('raccoon agent nest round belt cloud first fancy awkward quantum valley scheme');
@@ -198,7 +251,78 @@ describe('seed', () => {
     it('should re-create identity from mnemonic', async () => {
         const mnemonic = 'dust sister misery any capital scrap country various quantum ocean pill around';
         const privateKey = await privateKeyFromMnemonic(mnemonic);
+        const [privateKey2] = await privateKeysFromMnemonic(mnemonic);
+        assert.equal(privateKey.toString(), privateKey2.toString());
         const identity = identifyFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
+    });
+});
+
+describe('keystore', () => {
+    const fileContents = readFileSync(path.resolve(__dirname, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6__keystore.txt')).toString();
+    const keystoreFile = JSON.parse(fileContents);
+    it('should parse a keystore file', async () => {
+        // Decrypt
+        const identity = await identityFromKeystore(keystoreFile, 'password');
+        assert.equal(identity.address, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6');
+    });
+    it('should generate a keystore file', async () => {
+        const seed = Buffer.from([0, 1, 2, 3, 4]);
+        const address = 'AmMaAqWeHAosWh2CPy2HAE3mWRjvYWjE6wKL7jgfb1yUQYyJXtWi';
+        const privateKey = await privateKeyFromSeed(seed);
+
+        // Encrypt
+        const keystore = await keystoreFromPrivateKey(privateKey, 'password', { n: 1 << 10 });
+        assert.equal(keystore.aergo_address, address);
+
+        // Decrypt
+        const identity = await identityFromKeystore(keystore, 'password');
+        assert.equal(identity.address, address);
+    });
+    it('should throw with empty salt', async () => {
+        const seed = Buffer.from([0, 1, 2, 3, 4]);
+        const privateKey = await privateKeyFromSeed(seed);
+
+        await assert.isRejected(
+            keystoreFromPrivateKey(privateKey, 'password', {
+                salt: '',
+            }), 'missing required kdf parameter: salt');
+    });
+    it('should throw with missing or empty password', async () => {
+        await assert.isRejected(identityFromKeystore(keystoreFile, undefined), 'missing required parameter: password');
+        await assert.isRejected(identityFromKeystore(keystoreFile, ''), 'missing required parameter: password');
+    });
+    it('should throw with invalid mac', async () => {
+        assert.isRejected(
+            identityFromKeystore({
+                ...keystoreFile,
+                kdf: {
+                    ...keystoreFile.kdf,
+                    mac: '1111',
+                },
+            } as any, 'pw'), 'invalid mac value');
+    });
+    it('should throw with unsupported algorithm', async () => {
+        await assert.isRejected(
+            identityFromKeystore({
+                ...keystoreFile,
+                'ks_version': '0',
+            } as any, 'pw'), 'unsupported keystore version: 0');
+        await assert.isRejected(
+            identityFromKeystore({
+                ...keystoreFile,
+                kdf: {
+                    ...keystoreFile.kdf,
+                    algorithm: 'KDF',
+                },
+            } as any, 'pw'), 'unsupported kdf algorithm: KDF');
+        await assert.isRejected(
+            identityFromKeystore({
+                ...keystoreFile,
+                cipher: {
+                    ...keystoreFile.cipher,
+                    algorithm: 'CIPHER',
+                },
+            } as any, 'pw'), 'unsupported encryption algorithm: CIPHER');
     });
 });

@@ -1,9 +1,9 @@
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 import ignore from 'rollup-plugin-ignore';
 import { terser } from 'rollup-plugin-terser';
 //import visualizer from 'rollup-plugin-visualizer';
@@ -21,7 +21,7 @@ const extensions = [
 const name = 'HerajsCrypto';
 
 const namedExports = {
-    [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
+    [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec, rand'.split(', '),
 };
 
 // Ignore bip39 wordlists except english

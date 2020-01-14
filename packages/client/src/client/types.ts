@@ -1,15 +1,14 @@
 import Tx from '../models/tx';
-import Block from '../models/block';
-import BlockMetadata from '../models/blockmetadata';
-import { AddressInput, default as Address } from '../models/address';
+import { default as Address } from '../models/address';
 import Amount from '../models/amount';
+import ChainInfo from '../models/chaininfo';
 
 export interface GetTxResult {
     block?: {
         hash: string;
         idx: number;
-    }
-    tx: Tx
+    };
+    tx: Tx;
 }
 
 export interface GetReceiptResult {
@@ -41,13 +40,21 @@ export interface ServerInfoResult {
     statusMap: Map<string, string>;
 }
 
+export interface BlockchainResult {
+    bestBlockHash: string;
+    bestHeight: number;
+    consensusInfo: any;
+    bestChainIdHash: string;
+    chainInfo: ChainInfo;
+}
+
 export interface BlockBodyPaged {
     total: number;
     size: number;
     offset: number;
     body: {
-        txsList: Tx[]
-    }
+        txsList: Tx[];
+    };
 }
 
 export interface Stream<T> {
