@@ -783,10 +783,10 @@
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
-"@improbable-eng/grpc-web-node-http-transport@^0.9.1":
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.9.5.tgz#b727c65841d6b8406f08012d73cfb1ffce733f51"
-  integrity sha512-bKU/qa5gbghSeP5VMxXU9O2DBPbhw7+MwoWSQpuRfbfpvRJ17geUUGNK72HSDnBMWMI89e5f/ZGqZ1vvn3WUlg==
+"@improbable-eng/grpc-web-node-http-transport@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.12.0.tgz#827138160d2f945620e103473042025529c00c8e"
+  integrity sha512-+Kjz+Dktfz5LKTZA9ZW/Vlww6HF9KaKz4x2mVe1O8CJdOP2WfzC+KY8L6EWMqVLrV4MvdBuQdSgDmvSJz+OGuA==
 
 "@improbable-eng/grpc-web@^0.9.1":
   version "0.9.6"
