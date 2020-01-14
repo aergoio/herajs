@@ -1,9 +1,9 @@
 /* eslint-disable */
 import { resolve as _resolve } from 'path';
-import node_resolve from 'rollup-plugin-node-resolve';
+import node_resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import builtins from 'rollup-plugin-node-builtins';
 import { terser } from 'rollup-plugin-terser';
 import progress from 'rollup-plugin-progress';
