@@ -98,6 +98,16 @@ async function encrypt(kdf: KeystoreKdf, key: Buffer, nonce: Buffer, password: s
     return [ciphertext, mac];
 }
 
+/**
+ * Decrypt keystore and return identity information.
+ * 
+ * .. code-block:: javascript
+ * 
+ *     import { identityFromKeystore } from '@herajs/crypto';
+ *     const keystore = JSON.parse('keystore file contents');
+ *     const identity = await identityFromKeystore(keystore, 'password');
+ *     console.log(identity);
+ */
 export async function identityFromKeystore(keystore: Keystore, password: string): Promise<Identity> {
     if (keystore.ks_version !== '1') {
         throw new Error(`unsupported keystore version: ${keystore.ks_version}`);
@@ -110,6 +120,16 @@ export async function identityFromKeystore(keystore: Keystore, password: string)
     return identifyFromPrivateKey(privateKey);
 }
 
+/**
+ * Encrypt private key and return keystore data.
+ * 
+ * .. code-block:: javascript
+ * 
+ *     import { keystoreFromPrivateKey, createIdentity } from '@herajs/crypto';
+ *     const identity = createIdentity();
+ *     const keystore = await keystoreFromPrivateKey(identity.privateKey, 'password');
+ *     console.log(JSON.stringify(keystore, null, 2));
+ */
 export async function keystoreFromPrivateKey(key: Buffer, password: string, kdfParams?: Partial<ScryptParams>): Promise<Keystore> {
     const identity = identifyFromPrivateKey(key);
     const nonce = Buffer.from(rand(16));

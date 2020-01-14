@@ -10,6 +10,7 @@
    api/hashing
    api/signing
    api/encoding
+   api/keystore
 
 .. toctree::
    :maxdepth: 3

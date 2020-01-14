@@ -6,7 +6,6 @@ Hexadecimal strings
 ===================
 
 .. js:autofunction:: fromHexString
-.. js:autofunction:: toHexString
 
 Uint8Arrays
 ===========
