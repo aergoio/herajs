@@ -1,9 +1,11 @@
-import { Identity, identifyFromPrivateKey } from './keys';
+import { Buffer } from 'buffer';
 
-import scrypt from '@web3-js/scrypt-shim';
+import scrypt from 'scrypt-async-modern';
 import { AES_CTR } from 'asmcrypto.js';
-import { hash } from './hashing';
 import { rand } from 'elliptic';
+
+import { Identity, identifyFromPrivateKey } from './keys';
+import { hash } from './hashing';
 
 type HexString = string;
 
@@ -58,19 +60,27 @@ function generateMac(derivedKey: Buffer, cipherText: Buffer): Buffer {
     return hash(rawMac);
 }
 
-function deriveCipherKey(kdf: KeystoreKdf, password: string): Buffer {
+async function deriveCipherKey(kdf: KeystoreKdf, password: string): Promise<Buffer> {
     if (kdf.algorithm !== 'scrypt') {
-        throw new Error(`unsupported cipher key derivation scheme: ${kdf.algorithm}`);
+        throw new Error(`unsupported kdf algorithm: ${kdf.algorithm}`);
     }
-    const kdfparams = kdf.params;
-    if (!kdfparams.salt) {
-        throw new Error('kdf parameters are missing salt');
+    if (!kdf.params.salt) {
+        throw new Error('missing required kdf parameter: salt');
     }
-    return scrypt(Buffer.from(password), Buffer.from(kdfparams.salt, 'hex'), kdfparams.n, kdfparams.r, kdfparams.p, kdfparams.dklen);
+    if (!password) {
+        throw new Error('missing required parameter: password');
+    }
+    return Buffer.from(await scrypt(Buffer.from(password), Buffer.from(kdf.params.salt, 'hex'), {
+        N: kdf.params.n,
+        r: kdf.params.r,
+        p: kdf.params.p,
+        dkLen: kdf.params.dklen,
+        encoding: 'binary',
+    }));
 }
 
-function decrypt(kdf: KeystoreKdf, cipher: KeystoreCipher, password: string): [Buffer, Buffer] {
-    const decryptKey = deriveCipherKey(kdf, password);
+async function decrypt(kdf: KeystoreKdf, cipher: KeystoreCipher, password: string): Promise<[Buffer, Buffer]> {
+    const decryptKey = await deriveCipherKey(kdf, password);
     const nonce = Buffer.from(cipher.params.iv, 'hex');
     const ciphertext = Buffer.from(cipher.ciphertext, 'hex');
     const mac = generateMac(decryptKey, ciphertext);
@@ -81,18 +91,18 @@ function decrypt(kdf: KeystoreKdf, cipher: KeystoreCipher, password: string): [B
     return [key, mac];
 }
 
-function encrypt(kdf: KeystoreKdf, key: Buffer, nonce: Buffer, password: string): [Buffer, Buffer] {
-    const decryptKey = deriveCipherKey(kdf, password);
+async function encrypt(kdf: KeystoreKdf, key: Buffer, nonce: Buffer, password: string): Promise<[Buffer, Buffer]> {
+    const decryptKey = await deriveCipherKey(kdf, password);
     const ciphertext = Buffer.from(AES_CTR.encrypt(key, decryptKey.slice(0, 16), nonce));
     const mac = generateMac(decryptKey, ciphertext);
     return [ciphertext, mac];
 }
 
-export function identityFromKeystore(keystore: Keystore, password: string): Identity {
+export async function identityFromKeystore(keystore: Keystore, password: string): Promise<Identity> {
     if (keystore.ks_version !== '1') {
         throw new Error(`unsupported keystore version: ${keystore.ks_version}`);
     }
-    const [privateKey, expectedMac] = decrypt(keystore.kdf, keystore.cipher, password);
+    const [privateKey, expectedMac] = await decrypt(keystore.kdf, keystore.cipher, password);
     const mac = Buffer.from(keystore.kdf.mac, 'hex');
     if (!expectedMac.equals(Buffer.from(mac))) {
         throw new Error('invalid mac value');
@@ -100,19 +110,19 @@ export function identityFromKeystore(keystore: Keystore, password: string): Iden
     return identifyFromPrivateKey(privateKey);
 }
 
-export function keystoreFromPrivateKey(key: Buffer, password: string, kdfParams?: Partial<ScryptParams>): Keystore {
+export async function keystoreFromPrivateKey(key: Buffer, password: string, kdfParams?: Partial<ScryptParams>): Promise<Keystore> {
     const identity = identifyFromPrivateKey(key);
-    const nonce = rand(16);
+    const nonce = Buffer.from(rand(16));
     const kdf: KeystoreKdf = {
         algorithm: DEFAULTS.kdfAlgorithm,
         mac: '',
         params: {
             ...DEFAULTS.kdfParams,
             ...kdfParams,
-            salt: kdfParams && typeof kdfParams.salt !== 'undefined' ? kdfParams.salt : rand(32).toString('hex'),
+            salt: kdfParams && typeof kdfParams.salt !== 'undefined' ? kdfParams.salt : Buffer.from(rand(32)).toString('hex'),
         },
     };
-    const [ciphertext, mac] = encrypt(kdf, key, nonce, password);
+    const [ciphertext, mac] = await encrypt(kdf, key, nonce, password);
     const keystore: Keystore = {
         kdf: {
             ...kdf,

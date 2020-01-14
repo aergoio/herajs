@@ -219,9 +219,9 @@ describe('seed', () => {
 describe('keystore', () => {
     const fileContents = readFileSync(path.resolve(__dirname, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6__keystore.txt')).toString();
     const keystoreFile = JSON.parse(fileContents);
-    it('should parse a keystore file', () => {        
+    it('should parse a keystore file', async () => {
         // Decrypt
-        const identity = identityFromKeystore(keystoreFile, 'password');
+        const identity = await identityFromKeystore(keystoreFile, 'password');
         assert.equal(identity.address, 'AmM8Bspua3d1bACSzCaLUdstjooRLy1YqZ61Kk2nP4VfGTWJzDd6');
     });
     it('should generate a keystore file', async () => {
@@ -230,58 +230,57 @@ describe('keystore', () => {
         const privateKey = await privateKeyFromSeed(seed);
 
         // Encrypt
-        const keystore = keystoreFromPrivateKey(privateKey, 'password', { n: 1 << 10 });
+        const keystore = await keystoreFromPrivateKey(privateKey, 'password', { n: 1 << 10 });
         assert.equal(keystore.aergo_address, address);
 
         // Decrypt
-        const identity = identityFromKeystore(keystore, 'password');
+        const identity = await identityFromKeystore(keystore, 'password');
         assert.equal(identity.address, address);
     });
     it('should throw with empty salt', async () => {
         const seed = Buffer.from([0, 1, 2, 3, 4]);
         const privateKey = await privateKeyFromSeed(seed);
 
-        assert.throws(() => {
+        await assert.isRejected(
             keystoreFromPrivateKey(privateKey, 'password', {
                 salt: '',
-            });
-        }, 'missing salt');
+            }), 'missing required kdf parameter: salt');
+    });
+    it('should throw with missing or empty password', async () => {
+        await assert.isRejected(identityFromKeystore(keystoreFile, undefined), 'missing required parameter: password');
+        await assert.isRejected(identityFromKeystore(keystoreFile, ''), 'missing required parameter: password');
     });
     it('should throw with invalid mac', async () => {
-        assert.throws(() => {
+        assert.isRejected(
             identityFromKeystore({
                 ...keystoreFile,
                 kdf: {
                     ...keystoreFile.kdf,
                     mac: '1111',
                 },
-            } as any, '');
-        }, 'invalid mac value');
+            } as any, 'pw'), 'invalid mac value');
     });
     it('should throw with unsupported algorithm', async () => {
-        assert.throws(() => {
+        await assert.isRejected(
             identityFromKeystore({
                 ...keystoreFile,
                 'ks_version': '0',
-            } as any, '');
-        }, 'unsupported keystore version: 0');
-        assert.throws(() => {
+            } as any, 'pw'), 'unsupported keystore version: 0');
+        await assert.isRejected(
             identityFromKeystore({
                 ...keystoreFile,
                 kdf: {
                     ...keystoreFile.kdf,
                     algorithm: 'KDF',
                 },
-            } as any, '');
-        }, 'unsupported cipher key derivation scheme: KDF');
-        assert.throws(() => {
+            } as any, 'pw'), 'unsupported kdf algorithm: KDF');
+        await assert.isRejected(
             identityFromKeystore({
                 ...keystoreFile,
                 cipher: {
                     ...keystoreFile.cipher,
                     algorithm: 'CIPHER',
                 },
-            } as any, '');
-        }, 'unsupported encryption algorithm: CIPHER');
+            } as any, 'pw'), 'unsupported encryption algorithm: CIPHER');
     });
 });
