@@ -1,6 +1,7 @@
 import { UNITS } from '../constants';
 import JSBI from 'jsbi';
 import { fromHexString, toHexString } from '../utils';
+import { Buffer } from 'buffer';
 
 const DEFAULT_USER_UNIT = 'aergo';
 const DEFAULT_NETWORK_UNIT = 'aer';
@@ -23,7 +24,7 @@ export default class Amount {
         if (unit === '') {
             unit = DEFAULT_USER_UNIT;
         }
-        if (!UNITS.NATIVE_TOKEN.unitSize.hasOwnProperty(unit)) {
+        if (!Object.prototype.hasOwnProperty.call(UNITS.NATIVE_TOKEN.unitSize, unit)) {
             throw new TypeError(`unrecognized unit: ${unit}`);
         }
         const prec = UNITS.NATIVE_TOKEN.unitSize[unit];
@@ -38,7 +39,7 @@ export default class Amount {
             return value;
         }
         if (typeof value === 'string') {
-            let [amount, _unit] = value.split(' ', 2);
+            const [amount, _unit] = value.split(' ', 2);
             unit = unit || _unit;
             this.value = Amount._valueFromString(amount, unit);
         } else if (typeof value === 'number') {
@@ -99,7 +100,7 @@ export default class Amount {
      * @param str 
      * @param digits 
      */
-    static moveDecimalPoint(str: string, digits: number) {
+    static moveDecimalPoint(str: string, digits: number): string {
         if (digits === 0 || str === '0') return str;
         if (str.indexOf('.') === -1) {
             str = str + '.';
@@ -130,7 +131,7 @@ export default class Amount {
     formatNumber(unit: string = ''): string {
         if (unit === '') unit = this.unit;
         if (unit === '') return this.value.toString();
-        if (!UNITS.NATIVE_TOKEN.unitSize.hasOwnProperty(unit)) {
+        if (!Object.prototype.hasOwnProperty.call(UNITS.NATIVE_TOKEN.unitSize, unit)) {
             throw new TypeError(`unrecognized unit: ${unit}`);
         }
         const prec = UNITS.NATIVE_TOKEN.unitSize[this.unit];
@@ -150,7 +151,7 @@ export default class Amount {
      */
     static toJSBI(arg: AmountArg, defaultUnit = ''): JSBI {
         if (!(arg instanceof Amount)) {
-            let [amount, _unit] = `${arg}`.split(' ', 2);
+            const [amount, _unit] = `${arg}`.split(' ', 2);
             const unit = _unit || defaultUnit;
             arg = new Amount(amount, unit);
         }
@@ -221,7 +222,7 @@ export default class Amount {
         // if both amounts had units, the result should be unit-less
         let otherHasUnit = (otherAmount instanceof Amount) && Boolean(otherAmount.unit);
         if (!otherHasUnit && typeof otherAmount === 'string') {
-            let [, _unit] = `${otherAmount}`.split(' ', 2);
+            const [, _unit] = `${otherAmount}`.split(' ', 2);
             otherHasUnit = Boolean(_unit);
         }
         if (otherHasUnit) {
