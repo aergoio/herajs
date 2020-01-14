@@ -1,3 +1,10 @@
+## 0.17.0 (January 14, 2019)
+- Crypto
+  - Support for parsing and generating keystore files
+
+- Client
+  - blockchain: fix encoding of return value, incl. properly decoded ChainInfo
+
 ## 0.16.5 (December 19, 2019)
 - Client
   - Peer: add static enum Peer.Role and method peer.acceptedroleLabel() to get human-readable role
