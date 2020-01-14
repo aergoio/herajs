@@ -1,6 +1,6 @@
 {
   "presets": [
-    ["@babel/env", {"targets": { "node": true }}],
+    ["@babel/env", {"exclude": ["transform-regenerator"]}],
     "@babel/typescript"
   ],
   "plugins": [
