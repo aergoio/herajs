@@ -38,7 +38,7 @@ import { AddressInput } from '../models/address';
 import { FunctionCall, StateQuery } from '../models/contract';
 import {
     GetTxResult, GetReceiptResult, NameInfoResult, ConsensusInfoResult,
-    ServerInfoResult, BlockBodyPaged, Stream, BasicType, JsonData
+    ServerInfoResult, BlockBodyPaged, Stream, BasicType, JsonData, BlockchainResult,
 } from './types';
 
 export { CommitStatus };
@@ -98,7 +98,7 @@ class AergoClient {
         this.accounts = new Accounts(this);
     }
 
-    defaultProvider() {
+    defaultProvider(): any {
         // returns a new instance of defaultProviderClass
         // which will be overriden during build according to platform
         return new AergoClient.defaultProviderClass();
@@ -108,16 +108,16 @@ class AergoClient {
      * Set a new provider
      * @param {Provider} provider
      */
-    setProvider(provider) {
+    setProvider(provider): void {
         this.client = provider;
         this.chainIdHash = undefined;
     }
 
-    getConfig() {
+    getConfig(): any {
         return this.config;
     }
 
-    isConnected() {
+    isConnected(): boolean {
         // Legacy code for backwards compatability
         return false;
     }
@@ -130,7 +130,7 @@ class AergoClient {
      * Set the chain id hash to use for subsequent transactions.
      * @param hash string (base58 encoded) or byte array
      */
-    setChainIdHash(hash: string | Uint8Array) {
+    setChainIdHash(hash: string | Uint8Array): void {
         if (typeof hash === 'string') {
             this.chainIdHash = bs58.decode(hash);
         } else {
@@ -154,12 +154,11 @@ class AergoClient {
     //async getChainIdHash(enc?: 'base58'): Promise<string>;
     //async getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
     async getChainIdHash(enc?: string): Promise<Uint8Array | string> {
-        let hash: Uint8Array;
         if (typeof this.chainIdHash === 'undefined') {
             // Fetch blockchain data to set chainIdHash
             await this.blockchain();
         }
-        hash = this.chainIdHash;
+        const hash: Uint8Array = this.chainIdHash;
         if (enc === 'base58') {
             return bs58.encode(Buffer.from(hash));
         }
@@ -170,20 +169,22 @@ class AergoClient {
      * Request current status of blockchain.
      * @returns {Promise<object>} an object detailing the current status
      */
-    blockchain(): Promise<GrpcBlockchainStatus.AsObject> {
+    blockchain(): Promise<BlockchainResult> {
         const _this = this;
         return waterfall([
             marshalEmpty,
             this.grpcMethod<Empty, GrpcBlockchainStatus>(this.client.client.blockchain),
-            async function unmarshal(response: GrpcBlockchainStatus): Promise<GrpcBlockchainStatus.AsObject> {
+            async function unmarshal(response: GrpcBlockchainStatus): Promise<BlockchainResult> {
                 if (typeof _this.chainIdHash === 'undefined') {
                     // set chainIdHash automatically
                     _this.setChainIdHash(Buffer.from(response.getBestChainIdHash_asU8()));
                 }
                 return {
-                    ...response.toObject(),
+                    bestHeight: response.getBestHeight(),
                     bestBlockHash: Block.encodeHash(response.getBestBlockHash_asU8()),
-                    bestChainIdHash: Block.encodeHash(response.getBestChainIdHash_asU8())
+                    bestChainIdHash: Block.encodeHash(response.getBestChainIdHash_asU8()),
+                    chainInfo: ChainInfo.fromGrpc(response.getChainInfo()),
+                    consensusInfo: JSON.parse(response.getConsensusInfo()),
                 };
             },
         ])(null);
@@ -240,18 +241,20 @@ class AergoClient {
                         if (err) {
                             reject(err);
                         } else {
-                            const res = <any>{};
-                            res.tx = Tx.fromGrpc(result);
+                            const res: GetTxResult = {
+                                tx: Tx.fromGrpc(result),
+                            };
                             resolve(res);
                         }
                     });
                 } else {
-                    const res = <GetTxResult>{};
-                    res.block = {
-                        hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
-                        idx: result.getTxidx().getIdx()
+                    const res: GetTxResult = {
+                        block: {
+                            hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
+                            idx: result.getTxidx().getIdx(),
+                        },
+                        tx: Tx.fromGrpc(result.getTx()),
                     };
-                    res.tx = Tx.fromGrpc(result.getTx());
                     resolve(res);
                 }
             });
@@ -333,11 +336,12 @@ class AergoClient {
         } catch (e) {
             // ignore. 'error' does not work on grpc-web implementation
         }
-        return {
+        const ret: Stream<Block> = {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(Block.fromGrpc(data))),
             cancel: () => stream.cancel()
-        } as Stream<Block>;
+        };
+        return ret;
     }
 
     /**
@@ -355,11 +359,12 @@ class AergoClient {
         } catch (e) {
             // ignore. 'error' does not work on grpc-web implementation
         }
-        return {
+        const ret: Stream<BlockMetadata> = {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(BlockMetadata.fromGrpc(data))),
             cancel: () => stream.cancel()
-        } as Stream<BlockMetadata>;
+        };
+        return ret;
     }
 
     /**
@@ -413,11 +418,12 @@ class AergoClient {
         } catch (e) {
             // ignore. 'error' does not work on grpc-web implementation
         }
-        return {
+        const ret: Stream<Event> = {
             _stream: stream,
             on: (ev, callback) => stream.on(ev, data => callback(Event.fromGrpc(data))),
             cancel: () => stream.cancel()
-        } as Stream<Event>;
+        };
+        return ret;
     }
     
     
@@ -475,14 +481,14 @@ class AergoClient {
      * @param count number
      * @param id vote identifier, default: voteBP
      */
-    getTopVotes(count: number, id: string = "voteBP"): Promise<any> {
+    getTopVotes(count: number, id: string = 'voteBP'): Promise<any> {
         const params = new VoteParams();
         params.setCount(count);
         params.setId(id);
         return promisify(this.client.client.getVotes, this.client.client)(params).then(
             state => state.getVotesList().map((item: Vote) => ({
                 amount: new Amount(item.getAmount_asU8()),
-                candidate: id === "voteBP" ? bs58.encode(Buffer.from(item.getCandidate_asU8())) : Buffer.from(item.getCandidate_asU8()).toString(),
+                candidate: id === 'voteBP' ? bs58.encode(Buffer.from(item.getCandidate_asU8())) : Buffer.from(item.getCandidate_asU8()).toString(),
             }))
         );
     }
@@ -500,7 +506,7 @@ class AergoClient {
      * Return information for account name
      * @param {string} address Account address encoded in Base58check
      */
-    getStaking(address: AddressInput) {
+    getStaking(address: AddressInput): Promise<Staking.AsObject> {
         const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(
@@ -523,7 +529,7 @@ class AergoClient {
         singleBytes.setValue(Uint8Array.from(decodeTxHash(txhash)));
         return promisify(this.client.client.getReceipt, this.client.client)(singleBytes).then((grpcObject: GrpcReceipt) => {
             const obj = grpcObject.toObject();
-            return {
+            const ret: GetReceiptResult = {
                 contractaddress: new Address(grpcObject.getContractaddress_asU8()),
                 result: obj.ret,
                 status: obj.status,
@@ -533,7 +539,8 @@ class AergoClient {
                 blockhash: Block.encodeHash(grpcObject.getBlockhash_asU8()),
                 feeDelegation: obj.feedelegation,
                 gasused: obj.gasused,
-            } as GetReceiptResult;
+            };
+            return ret;
         });
     }
 
@@ -542,7 +549,7 @@ class AergoClient {
      * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
      */
-    queryContract(functionCall: FunctionCall) {
+    queryContract(functionCall: FunctionCall): Promise<any> {
         const query = functionCall.toGrpc();
         return promisify(this.client.client.queryContract, this.client.client)(query).then(
             grpcObject => JSON.parse(Buffer.from(grpcObject.getValue()).toString())
@@ -621,7 +628,7 @@ class AergoClient {
      * @param {string} address of contract
      * @returns {Promise<object>} abi
      */
-    getABI(address: AddressInput) {
+    getABI(address: AddressInput): Promise<GrpcABI.AsObject> {
         const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(
@@ -637,7 +644,7 @@ class AergoClient {
                         payable: item.payable,
                         feeDelegation: item.feeDelegation,
                     })),
-                    state_variables: obj.stateVariablesList
+                    'state_variables': obj.stateVariablesList
                 };
             }
         );
