@@ -66,7 +66,7 @@ export function createIdentity(): Identity {
  * @param {Uint8Array} privKeyBytes 
  * @returns {Identity} identity including address and keys 
  */
-export function identifyFromPrivateKey(privKeyBytes: Uint8Array): Identity {
+export function identityFromPrivateKey(privKeyBytes: Uint8Array): Identity {
     const keyPair = ecdsa.keyFromPrivate(Buffer.from(privKeyBytes));
     return encodeIdentity(keyPair);
 }

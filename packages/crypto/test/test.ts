@@ -10,7 +10,7 @@ import {
     createIdentity,
     signTransaction, hashTransaction,
     verifyTxSignature,
-    identifyFromPrivateKey,
+    identityFromPrivateKey,
     decryptPrivateKey, encryptPrivateKey,
     decodePrivateKey, encodePrivateKey,
     publicKeyFromAddress,
@@ -140,7 +140,7 @@ describe('identifyFromPrivateKey', () => {
     it('should import a cleartext private key', () => {
         const address = 'AmMap16gd6dAkChr5yiDCLJ5vCqPvx1n6SqwFtkBhrBfUo3v4pnF';
         const privKey = Buffer.from([8,2,18,32,181,50,7,214,107,164,248,113,106,185,37,184,128,246,154,14,30,242,56,174,161,62,156,169,90,82,212,188,170,47,67,95]);
-        const identity = identifyFromPrivateKey(privKey);
+        const identity = identityFromPrivateKey(privKey);
         assert.equal(address, identity.address);
     });
     it('should import an encrypted, base58 encoded private key', async () => {
@@ -150,7 +150,7 @@ describe('identifyFromPrivateKey', () => {
         const encryptedBytes = decodePrivateKey(encrypted);
 
         const decryptedBytes = await decryptPrivateKey(encryptedBytes, password);
-        const identity = identifyFromPrivateKey(decryptedBytes);
+        const identity = identityFromPrivateKey(decryptedBytes);
         assert.equal(address, identity.address);
     });
     it('should export a private key', async () => {
@@ -168,7 +168,7 @@ describe('identifyFromPrivateKey', () => {
         const encKey = await encryptPrivateKey(identity.privateKey, 'pass');
         const privkey = encodePrivateKey(Buffer.from(encKey));
         const decryptedBytes = await decryptPrivateKey(decodePrivateKey(privkey), 'pass');
-        const identityCheck = identifyFromPrivateKey(decryptedBytes);
+        const identityCheck = identityFromPrivateKey(decryptedBytes);
         assert.equal(identity.address, identityCheck.address);
     });
 });
@@ -211,7 +211,7 @@ describe('seed', () => {
     it('should generate a mnemonic and create identity from it', async () => {
         const mnemonic = generateMnemonic();
         const privateKey = await privateKeyFromMnemonic(mnemonic);
-        const identity = identifyFromPrivateKey(privateKey);
+        const identity = identityFromPrivateKey(privateKey);
         assert.deepEqual(identity.privateKey, privateKey);
         assert.equal(identity.address[0], 'A');
     });
@@ -221,7 +221,7 @@ describe('seed', () => {
     it('should re-create identity from mnemonic', async () => {
         const mnemonic = 'raccoon agent nest round belt cloud first fancy awkward quantum valley scheme';
         const privateKey = await privateKeyFromMnemonic(mnemonic, opts);
-        const identity = identifyFromPrivateKey(privateKey);
+        const identity = identityFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmPh2JQzWvQ5u8jCs4QTKGXvzkLE9uao1DfzxmTr71UczBsxHnqx');
     });
     it('should re-create identity from empty seed', async () => {
@@ -229,7 +229,7 @@ describe('seed', () => {
         const privateKey = await privateKeyFromSeed(seed, opts);
         const [privateKey2] = await privateKeysFromSeed(seed, opts);
         assert.equal(privateKey.toString(), privateKey2.toString());
-        const identity = identifyFromPrivateKey(privateKey);
+        const identity = identityFromPrivateKey(privateKey);
         // This is the address corresponding to key generated from empty seed
         assert.equal(identity.address, 'AmQCPe9eoAkF1i1pcrpVmxKLNACXhGnuShZazySVVVfABz78e7XT');
 
@@ -243,7 +243,7 @@ describe('seed', () => {
         const seedExpected = Buffer.from('uxGJFRDao8WIWUkGCsJl4jo6f4SFlhjfJlVbuhVsCsuW3W+ViznXQCkIAoiPxkIkq5ctxf2X5kyN/FdX0V6MWg==', 'base64');
         assert.deepEqual(seed, seedExpected);
         const privateKey = await privateKeyFromSeed(seed, opts);
-        const identity = identifyFromPrivateKey(privateKey);
+        const identity = identityFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmPh2JQzWvQ5u8jCs4QTKGXvzkLE9uao1DfzxmTr71UczBsxHnqx');
     });
     
@@ -253,7 +253,7 @@ describe('seed', () => {
         const privateKey = await privateKeyFromMnemonic(mnemonic);
         const [privateKey2] = await privateKeysFromMnemonic(mnemonic);
         assert.equal(privateKey.toString(), privateKey2.toString());
-        const identity = identifyFromPrivateKey(privateKey);
+        const identity = identityFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
     });
 });

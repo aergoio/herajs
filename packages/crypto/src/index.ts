@@ -7,7 +7,8 @@ export {
 
 export {
     createIdentity,
-    identifyFromPrivateKey,
+    identityFromPrivateKey as identifyFromPrivateKey, // DEPRECATED (legacy typo)
+    identityFromPrivateKey,
     addressFromPublicKey,
     publicKeyFromAddress,
     decryptPrivateKey,

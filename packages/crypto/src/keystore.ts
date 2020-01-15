@@ -4,7 +4,7 @@ import scrypt from 'scrypt-async-modern';
 import { AES_CTR } from 'asmcrypto.js';
 import { rand } from 'elliptic';
 
-import { Identity, identifyFromPrivateKey } from './keys';
+import { Identity, identityFromPrivateKey } from './keys';
 import { hash } from './hashing';
 
 type HexString = string;
@@ -117,7 +117,7 @@ export async function identityFromKeystore(keystore: Keystore, password: string)
     if (!expectedMac.equals(Buffer.from(mac))) {
         throw new Error('invalid mac value');
     }
-    return identifyFromPrivateKey(privateKey);
+    return identityFromPrivateKey(privateKey);
 }
 
 /**
@@ -131,7 +131,7 @@ export async function identityFromKeystore(keystore: Keystore, password: string)
  *     console.log(JSON.stringify(keystore, null, 2));
  */
 export async function keystoreFromPrivateKey(key: Buffer, password: string, kdfParams?: Partial<ScryptParams>): Promise<Keystore> {
-    const identity = identifyFromPrivateKey(key);
+    const identity = identityFromPrivateKey(key);
     const nonce = Buffer.from(rand(16));
     const kdf: KeystoreKdf = {
         algorithm: DEFAULTS.kdfAlgorithm,

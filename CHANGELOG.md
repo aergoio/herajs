@@ -1,4 +1,9 @@
-## 0.17.0 (January 14, 2019)
+## Unreleased
+- Crypto
+  - Rename function identifyFromPrivateKey to identityFromPrivateKey.
+    The old name with the typo will continue to be exported but is deprecated.
+  
+## 0.17.0 (January 14, 2020)
 - Crypto
   - Support for parsing and generating keystore files
 

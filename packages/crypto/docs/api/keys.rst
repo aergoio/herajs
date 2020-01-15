@@ -8,7 +8,7 @@ Generating random private key
 
 Importing private key
 =====================
-.. js:autofunction:: identifyFromPrivateKey
+.. js:autofunction:: identityFromPrivateKey
 
 Encryption
 ==========
