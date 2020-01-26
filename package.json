@@ -42,7 +42,7 @@
     "eslint": "^6.0.0",
     "grpc-tools": "^1.6.6",
     "lerna": "^3.13.4",
-    "mocha": "^6.1.4",
+    "mocha": "^7.0.1",
     "nyc": "^15.0.0",
     "regenerator-runtime": "^0.13.1",
     "rollup": "^1.29.0",
