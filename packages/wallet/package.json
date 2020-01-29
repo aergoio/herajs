@@ -31,7 +31,7 @@
     "@types/leveldown": "^4.0.0",
     "@types/levelup": "^3.1.0",
     "hashmap": "^2.3.0",
-    "idb": "^4.0.0",
+    "idb": "^5.0.1",
     "level": "^6.0.0"
   }
 }
