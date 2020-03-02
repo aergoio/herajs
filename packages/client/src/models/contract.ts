@@ -113,11 +113,11 @@ export class StateQuery {
         this.root = root;
     }
 
-    toGrpc() {
+    toGrpc(): GrpcStateQuery {
         const q = new GrpcStateQuery();
         q.setContractaddress(this.contractInstance.address.asBytes());
         const storageKeys = (this.storageKeys as any[]).map((key: string | BufferLike) => {
-            let buf = typeof key === 'string' ? Buffer.from(key) : key;
+            const buf = typeof key === 'string' ? Buffer.from(key) : key;
             return Uint8Array.from(sha256().update(buf).digest());
         });
         q.setStoragekeysList(storageKeys);
