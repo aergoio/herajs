@@ -1,4 +1,4 @@
-## Unreleased
+## 0.17.1 (March 2, 2020)
 - Crypto
   - Rename function identifyFromPrivateKey to identityFromPrivateKey.
     The old name with the typo will continue to be exported but is deprecated.
