@@ -40,11 +40,11 @@ export default class Tx {
 
     constructor(data: Partial<Tx>) {
         Object.assign(this, data);
-        this.amount = new Amount(<any>this.amount || 0);
-        this.price = new Amount(<any>this.price || 0);
+        this.amount = new Amount(this.amount as any || 0);
+        this.price = new Amount(this.price as any || 0);
     }
 
-    static fromGrpc(grpcObject: GrpcTx) {
+    static fromGrpc(grpcObject: GrpcTx): Tx {
         return new Tx({
             hash: encodeTxHash(grpcObject.getHash_asU8()),
             nonce: grpcObject.getBody().getNonce(),
@@ -59,7 +59,7 @@ export default class Tx {
             chainIdHash: encodeTxHash(grpcObject.getBody().getChainidhash_asU8())
         });
     }
-    toGrpc() {
+    toGrpc(): GrpcTx {
         const msgtxbody = new TxBody();
         msgtxbody.setType(this.type ? this.type : 0);
         msgtxbody.setNonce(this.nonce);
