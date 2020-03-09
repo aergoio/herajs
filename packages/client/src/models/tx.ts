@@ -26,17 +26,17 @@ export default class Tx {
      */
     static readonly Type = TxType;
 
-    hash: string /*bytes*/;
-    nonce: number /*uint64*/;
-    from: Address /*bytes*/;
-    to: Address /*bytes*/;
-    amount: Amount /*bytes*/;
-    payload: Uint8Array /*bytes*/;
-    sign: string /*bytes*/;
-    type: TxTypeValue /*uint32*/;
-    limit: number /*uint64*/;
-    price: Amount /*uint64*/;
-    chainIdHash: string /*bytes*/;
+    hash?: string /*bytes*/;
+    nonce!: number /*uint64*/;
+    from!: Address | string /*bytes*/;
+    to!: Address | string /*bytes*/;
+    amount!: Amount /*bytes*/;
+    payload?: Uint8Array | string /*bytes*/;
+    sign?: string /*bytes*/;
+    type?: TxTypeValue /*uint32*/;
+    limit?: number /*uint64*/;
+    price!: Amount /*uint64*/;
+    chainIdHash!: string /*bytes*/;
 
     constructor(data: Partial<Tx>) {
         Object.assign(this, data);
@@ -49,18 +49,23 @@ export default class Tx {
     }
 
     static fromGrpc(grpcObject: GrpcTx): Tx {
+        const body = grpcObject.getBody();
+        const hash = Tx.encodeHash(grpcObject.getHash_asU8()); 
+        if (!body) {
+            return new Tx({ hash });
+        }
         return new Tx({
-            hash: Tx.encodeHash(grpcObject.getHash_asU8()),
-            nonce: grpcObject.getBody().getNonce(),
-            from: new Address(grpcObject.getBody().getAccount_asU8()),
-            to: new Address(grpcObject.getBody().getRecipient_asU8()),
-            amount: new Amount(grpcObject.getBody().getAmount_asU8()),
-            payload: grpcObject.getBody().getPayload_asU8(),
-            sign: grpcObject.getBody().getSign_asB64(),
-            type: grpcObject.getBody().getType(),
-            limit: grpcObject.getBody().getGaslimit(),
-            price: new Amount(grpcObject.getBody().getGasprice_asU8()),
-            chainIdHash: Tx.encodeHash(grpcObject.getBody().getChainidhash_asU8())
+            hash,
+            nonce: body.getNonce(),
+            from: new Address(body.getAccount_asU8()),
+            to: new Address(body.getRecipient_asU8()),
+            amount: new Amount(body.getAmount_asU8()),
+            payload: body.getPayload_asU8(),
+            sign: body.getSign_asB64(),
+            type: body.getType(),
+            limit: body.getGaslimit(),
+            price: new Amount(body.getGasprice_asU8()),
+            chainIdHash: Tx.encodeHash(body.getChainidhash_asU8())
         });
     }
     toGrpc(): GrpcTx {
@@ -80,11 +85,11 @@ export default class Tx {
         }
         msgtxbody.setGaslimit(this.limit || 0);
         if (this.payload != null) {
-            msgtxbody.setPayload(Buffer.from(this.payload));
+            msgtxbody.setPayload(Buffer.from(this.payload as any));
         }
         if (typeof this.sign === 'string') {
             msgtxbody.setSign(Buffer.from(this.sign, 'base64'));
-        } else {
+        } else if (this.sign) {
             msgtxbody.setSign(this.sign);
         }
         if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {

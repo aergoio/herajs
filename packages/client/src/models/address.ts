@@ -13,7 +13,7 @@ export type AddressInput = Address | string | Buffer | Uint8Array;
  */
 export default class Address {
     value: Buffer;
-    encoded: string;
+    encoded?: string;
     isName: boolean;
 
     constructor(address: AddressInput) {
@@ -91,14 +91,14 @@ export default class Address {
         if (decoded.length !== 33 + 1) throw new Error(`invalid address length (${decoded.length-1})`);
         return Buffer.from(decoded.slice(1));
     }
-    static encode(byteArray): string {
+    static encode(byteArray: Buffer): string {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);
     }
 
     isSystemAddress(): boolean {
-        return this.isName && Address.isSystemName(this.encoded);
+        return this.isName && Address.isSystemName(this.toString());
     }
 
     static isSystemName(name: string): boolean {
@@ -110,11 +110,15 @@ export default class Address {
     }
 
     private static valueEqual(a: Buffer, b: Buffer): boolean {
-        return a.length == b.length && a.every((a_i, i) => a_i === b[i]);
+        return a.length == b.length && a.every((aElem, i) => aElem === b[i]);
     }
 
     equal(_otherAddress: AddressInput): boolean {
         const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
         return Address.valueEqual(this.value, otherAddress.value);
+    }
+
+    get length(): number {
+        return this.value.length;
     }
 }

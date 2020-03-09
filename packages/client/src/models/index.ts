@@ -1,4 +1,3 @@
-export { default as Account } from './account';
 export { default as Address } from './address';
 export { default as Amount } from './amount';
 export { default as Block } from './block';

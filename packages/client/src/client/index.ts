@@ -76,7 +76,7 @@ class AergoClient {
     target: string;
     private chainIdHash?: Uint8Array;
     private defaultLimit: number;
-    static defaultProviderClass?: {new (...args : any[]): any;};
+    static defaultProviderClass?: { new (...args: any[]): any };
     static platform: string = '';
 
     /**
@@ -305,7 +305,7 @@ class AergoClient {
     getBlockHeaders(hashOrNumber: string | number, size = 10, offset = 0, desc = true): Promise<Block[]> {
         const params = new ListParams();
         if (typeof hashOrNumber === 'string') {
-            const decodedHash = Block.decodeHash(hashOrNumber)
+            const decodedHash = Block.decodeHash(hashOrNumber);
             if (decodedHash.length != 32) {
                 throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
@@ -383,6 +383,7 @@ class AergoClient {
         return await promisify(this.client.client.getBlockBody, this.client.client)(params).then((grpcObject: GrpcBlockBodyPaged) => {
             const obj = grpcObject.toObject();
             if (obj.body && obj.body.txsList) {
+                // @ts-ignore
                 obj.body.txsList = grpcObject.getBody().getTxsList().map(tx => Tx.fromGrpc(tx));
             }
             return obj as BlockBodyPaged;

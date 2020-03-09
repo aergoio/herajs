@@ -1,19 +1,21 @@
 import { CommitStatus } from '../types/rpc_pb';
 import JSBI from 'jsbi';
 
-export const fromHexString = function(hexString) {
+export const fromHexString = function(hexString: string): Uint8Array {
     if (hexString.length % 2 === 1) hexString = '0' + hexString;
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    const match = hexString.match(/.{1,2}/g);
+    if (!match) throw new Error('cannot parse string as hex');
+    return new Uint8Array(match.map(byte => parseInt(byte, 16)));
 };
 
-export const toHexString = function(bytes, format=false) {
+export const toHexString = function(bytes: Uint8Array, format=false): string {
     const result = bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
     if (!format) return result;
     if (result === '00' || result === '') return '0x0';
     return '0x' + result;
 };
 
-export const fromNumber = (d, length = 8) => {
+export const fromNumber = (d: number, length = 8): Uint8Array => {
     if (d >= Math.pow(2, length*8)) {
         throw new Error('Number exeeds range');
     }
@@ -24,19 +26,19 @@ export const fromNumber = (d, length = 8) => {
     return arr;
 };
 
-export const toBytesUint32 = (num) => {
+export const toBytesUint32 = (num: number): ArrayBuffer => {
     const arr = new ArrayBuffer(8);
     const view = new DataView(arr);
     view.setUint32(0, num, true);
     return arr;
 };
 
-export const bigIntToUint8Array = (value) => {
+export const bigIntToUint8Array = (value: string|JSBI): Uint8Array => {
     const bigint = JSBI.BigInt(value);
     return fromHexString(bigint.toString(16));
 };
 
-export const errorMessageForCode = (code) => {
+export const errorMessageForCode = (code: number): string => {
     let errorMessage = 'UNDEFINED_ERROR';
     if (code && code < Object.values(CommitStatus).length) {
         errorMessage = Object.keys(CommitStatus)[Object.values(CommitStatus).indexOf(code)];
@@ -49,7 +51,7 @@ export const waitFor = (ms: number): Promise<void> => {
         setTimeout(resolve, ms);
     });
 };
-const basicCheck = (result) => result instanceof Error === false;
+const basicCheck = <T>(result: T): boolean => result instanceof Error === false;
 /**
  * Keep calling a function until it does not throw and also satifies check(result), or until timeout is reached
  * @param func function to be called. Can return a promise.
@@ -57,7 +59,7 @@ const basicCheck = (result) => result instanceof Error === false;
  * @param timeout duration after which polling times out
  * @param wait duration between calls
  */
-export const longPolling = async (func, check = basicCheck, timeout = 10000, wait = 250) => {
+export const longPolling = async <T>(func: () => Promise<T>, check = basicCheck, timeout = 10000, wait = 250): Promise<T> => {
     const started = + new Date();
     let lastError = '';
     try {
@@ -78,7 +80,7 @@ export const longPolling = async (func, check = basicCheck, timeout = 10000, wai
     const timePassed = + new Date() - started;
     timeout -= timePassed;
     if (timeout < 0) {
-        throw new Error('Long polling timed out. ' + lastError);
+        throw new Error('long polling timed out: ' + lastError);
     }
     await waitFor(wait); // give some breathing time
     return await longPolling(func, check, timeout - wait, wait); 
@@ -98,5 +100,5 @@ export function waterfall(fns: PromiseFunction[]): WaterfallFunction<any, any> {
             result = await fn(result);
         }
         return result;
-    }
+    };
 }
