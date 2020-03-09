@@ -1,7 +1,6 @@
 import Transport from '@ledgerhq/hw-transport';
 import { chunkBy, pathToBuffer } from './utils';
-import { encodeAddress } from '@herajs/crypto';
-import { Tx } from '@herajs/client';
+import { Tx, Address } from '@herajs/client';
 
 const CLA = 0xAE;
 
@@ -19,7 +18,9 @@ export const ErrorCodes = {
     ERR_REJECTED_BY_USER: 0x6e09,
     ERR_REJECTED_BY_POLICY: 0x6e10,
     ERR_DEVICE_LOCKED: 0x6e11,
-    ERR_CLA_NOT_SUPPORTED: 0x6e00
+    ERR_CLA_NOT_SUPPORTED: 0x6e00,
+
+    ERR_TX_PARSE_INVALID: 0x6720,
 };
 
 function isTxParseError(e: any): boolean {
@@ -37,6 +38,7 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
         if (isTxParseError(e)) {
             e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6720} (0x${e.statusCode.toString(16)})`;
         }
+        // TODO: add after 0x6740: on_new_transaction_part
         throw e;
     }
 }
@@ -46,9 +48,9 @@ interface GetVersionResponse {
     minor: number;
 }
 
-interface SendTxResponse {
-    hash: Buffer;
-    signature: Buffer;
+interface SignTxResponse {
+    hash: string;
+    signature: string;
 }
 
 export default class LedgerAppAergo {
@@ -81,32 +83,39 @@ export default class LedgerAppAergo {
      * Get an Aergo address from Ledger given a BIP44 path
      * @param path BIP44 path, e.g. "m/44'/441'/0'/0/0"
      */
-    async getWalletAddress(path: string): Promise<string> {
+    async getWalletAddress(path: string): Promise<Address> {
         const data = pathToBuffer(path);
         const response = await wrapRetryStillInCall(() =>
             this.transport.send(CLA, INS.GET_PUBLIC_KEY, 0x00, 0x00, data)
         );
         const [pubkey] = chunkBy(response, [33]);
-        return encodeAddress(pubkey);
+        return new Address(pubkey);
     }
 
-    async signTransaction(tx: any): Promise<SendTxResponse> {
+    /**
+     * Sign a transaction. Uses account from last getWalletAddress call.
+     */
+    async signTransaction(tx: any): Promise<SignTxResponse> {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
         }
-        console.log(tx.amount, tx.amount.asBytes());
         const txGrpc = tx.toGrpc().getBody();
         const data = Buffer.from(txGrpc.serializeBinary());
-        const mode = 0x03; // data fits into one transfer.
-        // TODO: 0x01 for first, 0x02 for last, 0x00 for in-between
-        console.log(data.length, data.toString('hex'));
+        if (data.length > 250) {
+            throw new Error('currently only transactions with less than 250 bytes in size are supported');
+            /*
+            TODO:
+            mode 0x01 for first, 0x02 for last, 0x00 for in-between
+            */
+        }
+        const mode = 0x03; // data fits into one transfer
         const response = await wrapRetryStillInCall(() =>
             this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, data)
         );
-        const [hash, signature] = chunkBy(response, [32]);
-        return { hash, signature };
-        // TODO error handling:
-        // after 0x6700: parse_first_part 
-        // after 0x6740: on_new_transaction_part
+        const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
+        return {
+            hash: Tx.encodeHash(hash),
+            signature: signature.toString('base64'),
+        };
     }
 }

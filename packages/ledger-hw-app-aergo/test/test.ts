@@ -1,3 +1,6 @@
+/**
+ * These tests need a Ledger Nano S with the Aergo app connected on USB.
+ */
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
@@ -6,7 +9,8 @@ const assert = chai.assert;
 const BIP44_ID = 441;
 const WALLET_HDPATH = `m/44'/${BIP44_ID}'/0'/0/`;
 
-import { hash } from '@herajs/crypto';
+import { hash, verifyTxSignature, publicKeyFromAddress } from '@herajs/crypto';
+import { Tx } from '@herajs/client';
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerAppAergo from '../src';
@@ -34,24 +38,50 @@ describe('getWalletAddress()', () => {
         for (let i = 0; i < 2; i++) {
             const path = WALLET_HDPATH + i;
             const address = await app.getWalletAddress(path);
-            console.log(path, address);
+            // eslint-disable-next-line no-console
+            console.log(path, address.toString());
         }
     }).timeout(10000);
 });
 
+async function signAndVerifyTx(app: LedgerAppAergo, txBody: any): Promise<boolean> {
+    // eslint-disable-next-line no-console
+    console.log('Accept transaction on device!');
+    // Send request to Ledger
+    const result = await app.signTransaction(txBody);
+    // Check if it's valid
+    const pubkey = publicKeyFromAddress(txBody.from);
+    return await verifyTxSignature(txBody, pubkey, result.signature);
+}
+
 describe('signTransaction()', () => {
-    it('should sign a transaction', async () => {
+    it('should produce a valid transaction signature (type = TRANSFER)', async () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
-        const result = await app.signTransaction({
+        assert.isTrue(await signAndVerifyTx(app, {
             from: address,
             to: address,
-            amount: 1337,
+            amount: '1337 aer',
             chainIdHash: hash(Buffer.from('test')),
-            type: 4,
+            type: Tx.Type.TRANSFER,
             nonce: 1,
             limit: 555,
-        });
-        console.log(result);
-    }).timeout(10000);
+        }));
+    }).timeout(30000);
+    it('should produce a valid transaction signature (type = CALL)', async () => {
+        const app = await getApp();
+        const address = await app.getWalletAddress(WALLET_HDPATH + '0');
+        assert.isTrue(await signAndVerifyTx(app, {
+            from: address,
+            to: address,
+            chainIdHash: hash(Buffer.from('test')),
+            type: Tx.Type.CALL,
+            nonce: 1,
+            limit: 555,
+            payload: JSON.stringify({
+                Name: 'FunctionName',
+                Args: [1, 2, 3],
+            }),
+        }));
+    }).timeout(30000);
 });

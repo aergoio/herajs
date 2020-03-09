@@ -27,23 +27,12 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
-    "@herajs/hdkey": "^11.1.2",
-    "@types/bs58": "^4.0.0",
-    "@types/elliptic": "^6.4.0",
-    "aes-js": "^3.1.1",
-    "asmcrypto.js": "^2.3.2",
-    "bip39": "^3.0.2",
-    "bs58": "^4.0.1",
-    "bs58check": "^2.1.2",
-    "elliptic": "^6.4.1",
-    "jsbi": "^3.0.0",
-    "scrypt-async-modern": "^3.0.12"
+    "@herajs/client": "^0.17.1",
+    "@herajs/crypto": "^0.17.1"
   },
   "devDependencies": {
     "@ledgerhq/hw-transport": "^5.9.0",
     "@ledgerhq/hw-transport-node-hid": "^5.10.0",
-    "@types/ledgerhq__hw-transport-node-hid": "^4.22.1",
-    "rollup-plugin-ignore": "^1.0.5",
-    "rollup-plugin-terser": "^5.1.1"
+    "@types/ledgerhq__hw-transport-node-hid": "^4.22.1"
   }
 }
