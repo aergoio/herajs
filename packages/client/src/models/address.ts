@@ -46,7 +46,7 @@ export default class Address {
 
         // Check for name encoded as bytes
         if (!this.isName) {
-            let arrValue = Array.from(this.value);
+            const arrValue = Array.from(this.value);
             // Remove trailing 0s
             while (arrValue[arrValue.length-1] === 0) {
                 arrValue.pop();
@@ -64,6 +64,9 @@ export default class Address {
     asBytes(): Uint8Array {
         return new Uint8Array(this.value);
     }
+    get publicKey(): Uint8Array {
+        return this.asBytes();
+    }
     toJSON(): string {
         return this.toString();
     }
@@ -74,7 +77,7 @@ export default class Address {
     
         // Account name
         if (this.isName) {
-            this.encoded = Buffer.from(this.value).toString()
+            this.encoded = Buffer.from(this.value).toString();
             return this.encoded;
         }
 

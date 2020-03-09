@@ -44,9 +44,13 @@ export default class Tx {
         this.price = new Amount(this.price as any || 0);
     }
 
+    static encodeHash(buf: Uint8Array): string {
+        return encodeTxHash(buf);
+    }
+
     static fromGrpc(grpcObject: GrpcTx): Tx {
         return new Tx({
-            hash: encodeTxHash(grpcObject.getHash_asU8()),
+            hash: Tx.encodeHash(grpcObject.getHash_asU8()),
             nonce: grpcObject.getBody().getNonce(),
             from: new Address(grpcObject.getBody().getAccount_asU8()),
             to: new Address(grpcObject.getBody().getRecipient_asU8()),
@@ -56,7 +60,7 @@ export default class Tx {
             type: grpcObject.getBody().getType(),
             limit: grpcObject.getBody().getGaslimit(),
             price: new Amount(grpcObject.getBody().getGasprice_asU8()),
-            chainIdHash: encodeTxHash(grpcObject.getBody().getChainidhash_asU8())
+            chainIdHash: Tx.encodeHash(grpcObject.getBody().getChainidhash_asU8())
         });
     }
     toGrpc(): GrpcTx {
