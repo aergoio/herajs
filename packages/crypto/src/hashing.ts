@@ -14,6 +14,10 @@ function bufferOrB58(input?: Uint8Array | string): Uint8Array {
     return input;
 }
 
+interface StringCovertible {
+    toString(): string;
+}
+
 /**
  * Calculate hash of transaction
  * @param {object} tx Transaction
@@ -31,13 +35,13 @@ export function hash(data: Buffer): Buffer {
  */
 export interface TxBody {
     nonce: number;
-    from: string | Record<string, any>;
+    from: string | StringCovertible;
     chainIdHash: Uint8Array | string;
-    amount?: string | number | JSBI | Record<string, any>;
-    to?: null | string | Record<string, any>;
+    amount?: string | number | JSBI | StringCovertible;
+    to?: null | string | StringCovertible;
     payload?: null | Uint8Array;
     limit?: number;
-    price?: string | number | JSBI | Record<string, any>;
+    price?: string | number | JSBI | StringCovertible;
     type?: number;
     sign?: string;
 }

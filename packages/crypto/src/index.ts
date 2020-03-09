@@ -3,6 +3,8 @@ export {
     decodeAddress,
     encodePrivateKey,
     decodePrivateKey,
+    encodeTxHash,
+    decodeTxHash,
 } from './encoding';
 
 export {
@@ -20,6 +22,7 @@ export {
     signTransaction,
     verifySignature,
     verifyTxSignature,
+    encodeSignature,
 } from './signing';
 
 export {

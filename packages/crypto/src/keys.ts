@@ -11,6 +11,10 @@ export interface Identity {
     keyPair: ec.KeyPair;
 }
 
+interface StringCovertible {
+    toString(): string;
+}
+
 /**
  * Encode public key as address
  * @param {ECPoint} publicKey
@@ -28,8 +32,8 @@ export function addressFromPublicKey(publicKey: any): string {
  * @param {string} base58check encoded address
  * @return {KeyPair} key pair (with missing private key)
  */
-export function publicKeyFromAddress(address: string): ec.KeyPair {
-    const pubkey = decodeAddress(address) as Buffer;
+export function publicKeyFromAddress(address: string | StringCovertible): ec.KeyPair {
+    const pubkey = decodeAddress(`${address}`) as Buffer;
     return ecdsa.keyFromPublic(pubkey);
 }
 
