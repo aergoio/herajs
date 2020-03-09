@@ -7,8 +7,11 @@ import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import { builtinModules } from 'module';
 import pkg from './package.json';
+import visualizer from 'rollup-plugin-visualizer';
 
 import { resolve as _resolve } from 'path';
+
+import { include as tsInclude } from './tsconfig.json';
 
 const resolvePath = p => _resolve(__dirname, p);
 
@@ -16,14 +19,14 @@ const extensions = [
     '.js', '.jsx', '.ts', '.tsx',
 ];
 
-const name = 'HerajsCrypto';
+const name = 'LedgerHwAppAergo';
 
 const namedExports = {
     [resolvePath('../../node_modules/elliptic/lib/elliptic.js')]: 'ec, rand'.split(', '),
 };
 
 function genConfig(browser = false, output) {
-    const external = browser ? [] : Object.keys(pkg.dependencies).concat(...builtinModules);
+    const external = browser ? ['@herajs/client'] : Object.keys(pkg.dependencies).concat(...builtinModules);
 
     return {
         input: './src/index.ts',
@@ -31,17 +34,15 @@ function genConfig(browser = false, output) {
         external,
         
         plugins: [
-            //visualizer(),
+            visualizer(),
             
-            browser
-                ? resolve({ extensions, preferBuiltins: true, browser: true })
-                : resolve({ extensions, preferBuiltins: true }),
+            resolve({ extensions, preferBuiltins: true, }),
 
             commonjs({ namedExports }),
 
             json(),
             
-            babel({ extensions, include: ['src/**/*'] }),
+            babel({ extensions, include: tsInclude }),
 
             globals(),
             builtins(),
@@ -54,25 +55,28 @@ function genConfig(browser = false, output) {
         output,
     
         onwarn(warning, warn) {
-            const ignoredCircular = [
-                'elliptic', 'readable-stream',
-            ];
+            const ignoredCircular = ['elliptic', 'readable-stream', 'rimraf',];
             if (
                 warning.code === 'CIRCULAR_DEPENDENCY' &&
                 ignoredCircular.some(d => warning.importer.includes(d))
             ) {
                 return;
             }
-            warn(warning.message);
+            warn(warning);
         },
     };
 }
+
+const outputGlobals = {
+    '@herajs/client': 'herajs',
+};
 
 export default [
     // CJS and ES builds with external dependencies
     genConfig(false, [{
         file: pkg.main,
         format: 'cjs',
+        exports: 'named',
     }, {
         file: pkg.module,
         format: 'es',
@@ -82,9 +86,13 @@ export default [
         file: pkg.browser,
         format: 'umd',
         name,
+        exports: 'named',
+        globals: outputGlobals,
     }, {
         file: pkg.browser.replace(/\.js$/, '.min.js'),
         format: 'umd',
         name,
+        exports: 'named',
+        globals: outputGlobals,
     }])
 ];

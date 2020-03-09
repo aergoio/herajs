@@ -55,6 +55,19 @@ async function signAndVerifyTx(app: LedgerAppAergo, txBody: any): Promise<boolea
 }
 
 describe('signTransaction()', () => {
+    it('should reject too big transactions', async () => {
+        const app = await getApp();
+        const address = await app.getWalletAddress(WALLET_HDPATH + '0');
+        await assert.isRejected(signAndVerifyTx(app, {
+            from: address,
+            to: address,
+            chainIdHash: hash(Buffer.from('test')),
+            type: Tx.Type.CALL,
+            nonce: 1,
+            limit: 555,
+            payload: Buffer.alloc(250).fill(1),
+        }));
+    });
     it('should produce a valid transaction signature (type = TRANSFER)', async () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');

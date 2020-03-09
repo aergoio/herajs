@@ -78,7 +78,7 @@ function genConfig(browser = false, output) {
             ) {
                 return;
             }
-            warn(warning.message);
+            warn(warning);
         },
     };
 }

@@ -39,7 +39,7 @@ export interface TxBody {
     chainIdHash: Uint8Array | string;
     amount?: string | number | JSBI | StringCovertible;
     to?: null | string | StringCovertible;
-    payload?: null | Uint8Array;
+    payload?: null | string | Uint8Array;
     limit?: number;
     price?: string | number | JSBI | StringCovertible;
     type?: number;
@@ -82,7 +82,7 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
         decodeAddress(tx.from.toString()),
         tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]),
         fromBigInt(amount!= '' ? amount : 0),
-        tx.payload ? Buffer.from(tx.payload) : Buffer.from([]),
+        tx.payload ? Buffer.from(tx.payload as any) : Buffer.from([]),
         fromNumber(tx.limit || 0, 64),
         fromBigInt(tx.price ? tx.price.toString() : 0),
         fromNumber(tx.type || 0, 32),
