@@ -35,9 +35,6 @@ export default class Amount {
         if (unit === '') {
             unit = DEFAULT_USER_UNIT;
         }
-        if (!Object.prototype.hasOwnProperty.call(UNITS.NATIVE_TOKEN.unitSize, unit)) {
-            throw new TypeError(`unrecognized unit: ${unit}`);
-        }
         const prec = getUnitPrecision(unit);
         if (prec > 0) {
             value = Amount.moveDecimalPoint(value, prec);

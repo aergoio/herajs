@@ -2,55 +2,31 @@
 
 [![npm](https://img.shields.io/npm/v/@herajs/ledger-hw-app-aergo.svg)](https://www.npmjs.com/package/@herajs/ledger-hw-app-aergo)
 
-- [Documentation](https://herajscrypto.readthedocs.io/)
-
-It is used by Aergo dapps to manage keys and sign transactions offline.
-
-Features:
-
-- Key generation and importing
-- Hashing
-- Signing
-- Simple AES-GCM encryption
-
-
 ## How to use
 
 ```shell
-npm install --save @herajs/crypto
+npm install --save @herajs/ledger-hw-app-aergo
 ```
 
-### Transaction signing
+### Getting address and signing transaction
 
 ```js
-import { createIdentity, signTransaction, hashTransaction } from '@herajs/crypto';
+import LedgerAppAergo from '@herajs/ledger-hw-app-aergo';
+// Pick a transport. See https://github.com/LedgerHQ/ledgerjs
+import Transport from '@ledgerhq/hw-transport-node-hid';
 
 async () => {
-    const identity = createIdentity();
-    const tx = {
+    const transport = await Transport.create(3000, 1500);
+    const app = new LedgerAppAergo(transport);
+    const path = "m/44'/441'/0'/0/" + i;
+    const address = await app.getWalletAddress(path);
+    const result = await app.signTransaction({
+        from: address,
+        to: address,
+        chainIdHash: hash(Buffer.from('test')), // TODO: insert real hash
+        type: Tx.Type.CALL,
         nonce: 1,
-        from: identity.address,
-        to: identity.address,
-        amount: '100 aer',
-        payload: '',
-    };
-    tx.sign = await signTransaction(tx, identity.keyPair);
-    tx.hash = await hashTransaction(tx);
-    console.log(JSON.stringify(tx));
-}()
-```
-
-### Arbitrary message signing
-
-```js
-import { createIdentity, signMessage, verifySignature, publicKeyFromAddress } from '@herajs/crypto';
-
-async () => {
-    const identity = createIdentity();
-    const msg = Buffer.from('hello');
-    const signature = await signMessage(msg, identity.keyPair);
-    const pubkey = publicKeyFromAddress(identity.address);
-    const check = await verifySignature(msg, pubkey, signature);
-    console.log(check);
+    }); // { hash, signature }
+    // TODO Send to network
 }()
 ```
