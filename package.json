@@ -30,7 +30,7 @@
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^7.0.0",
-    "@types/node": "^12.12.5",
+    "@types/node": "^13.9.0",
     "@types/rollup-plugin-json": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
