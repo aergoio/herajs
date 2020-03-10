@@ -3,6 +3,7 @@ import bs58check from 'bs58check';
 import { fromNumber } from '../utils';
 import Address from './address';
 import Tx from './tx';
+import Amount from './amount';
 import { Function, StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
 
@@ -51,7 +52,7 @@ export class FunctionCall {
      * @param {string} extraArgs.from set from address for the transaction
      * @return {obj} transaction data
      */
-    asTransaction(extraArgs: Partial<Tx> & Pick<Tx, 'from' | 'nonce'>): Partial<Tx> {
+    asTransaction(extraArgs: Partial<Tx> & Pick<Tx, 'from'>): Partial<Tx> {
         const payload = JSON.stringify({
             Name: this.definition.name,
             Args: this.args,
@@ -63,6 +64,8 @@ export class FunctionCall {
         return {
             to: this.contractInstance.address,
             payload,
+            amount: new Amount(0),
+            type: Tx.Type.CALL,
             ...extraArgs
         };
     }

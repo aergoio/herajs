@@ -47,6 +47,19 @@ export interface TxBody {
 }
 
 /**
+ * Infer a tx type based on body. Can be overriden by exlicitly passing type.
+ */
+function inferType(tx: TxBody): number {
+    if (!tx.to) {
+        return 6;
+    }
+    if (`${tx.to}` === 'aergo.system' || `${tx.to}` === 'aergo.enterprise') {
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * Calculate hash of transaction
  * @param {object} tx Transaction
  * @param {string} encoding bytes (default), base58, base64
@@ -76,6 +89,7 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
             }
         }
     }
+    const type = tx.type || inferType(tx);
 
     const items = [
         fromNumber(tx.nonce, 64),
@@ -85,7 +99,7 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
         tx.payload ? Buffer.from(tx.payload as any) : Buffer.from([]),
         fromNumber(tx.limit || 0, 64),
         fromBigInt(tx.price ? tx.price.toString() : 0),
-        fromNumber(tx.type || 0, 32),
+        fromNumber(type, 32),
         Buffer.from(bufferOrB58(tx.chainIdHash))
     ];
 

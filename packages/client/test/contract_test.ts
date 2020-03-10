@@ -39,8 +39,7 @@ describe('Contracts', () => {
             
             // Wait for deployment receipt
             const receipt = await longPolling(async () => 
-                await aergo.getTransactionReceipt(deployTxhash)
-                , result => result.hasOwnProperty('contractaddress'), 2000);
+                await aergo.getTransactionReceipt(deployTxhash), result => Object.prototype.hasOwnProperty.call(result, 'contractaddress'), 2000);
             assert.equal(receipt.status, 'CREATED', `Deployment failed with error: ${receipt.result}`);
             assert.isAbove(receipt.gasused, 0);
             contractAddress = receipt.contractaddress;

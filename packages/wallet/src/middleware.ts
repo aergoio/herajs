@@ -6,24 +6,24 @@ type MiddlewareMainFunc<I, O> = (next?: MiddlewareNextFunc<I, O>) => MiddlewareN
 export type MiddlewareMethod<I, O, ConsumerT = MiddlewareConsumer> = (consumer: ConsumerT) => MiddlewareFunc<I, O>;
 
 export interface MiddlewareInterface<ConsumerT = MiddlewareConsumer> {
-    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>
+    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>;
 }
 export class Middleware<ConsumerT = MiddlewareConsumer> implements MiddlewareInterface<ConsumerT> {
-    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>
+    readonly [key: string]: MiddlewareMethod<any, any, ConsumerT>;
 }
 interface MiddlewareConstructor<ConsumerT = MiddlewareConsumer> {
     new (): MiddlewareInterface<ConsumerT>;
 }
 function isMiddlewareConstructor<ConsumerT = MiddlewareConsumer>(
     arg: Middleware<ConsumerT> | MiddlewareInterface<ConsumerT> | MiddlewareConstructor<ConsumerT>
-    ): arg is MiddlewareConstructor<ConsumerT> {
+): arg is MiddlewareConstructor<ConsumerT> {
     return (typeof arg === 'function');
 }
 
 export class MiddlewareConsumer {
     middlewares: MiddlewareInterface<this>[] = [];
 
-    use(middleware: Middleware<this> | MiddlewareInterface<this> | MiddlewareConstructor<this>) {
+    use(middleware: Middleware<this> | MiddlewareInterface<this> | MiddlewareConstructor<this>): void {
         if (isMiddlewareConstructor<this>(middleware)) {
             middleware = new middleware();
         }
