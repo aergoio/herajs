@@ -58,43 +58,61 @@ export default class Address {
             }
         }
     }
-    isEmpty(): boolean {
-        return this.value.length === 0;
-    }
+    
     asBytes(): Uint8Array {
         return new Uint8Array(this.value);
     }
-    get publicKey(): Uint8Array {
-        return this.asBytes();
-    }
+
     toJSON(): string {
         return this.toString();
     }
+
     toString(): string {
         if (typeof this.encoded !== 'undefined' && this.encoded !== null) {
             return this.encoded;
         }
     
-        // Account name
         if (this.isName) {
             this.encoded = Buffer.from(this.value).toString();
-            return this.encoded;
+        } else {
+            this.encoded = Address.encode(this.value);
         }
-
-        // Account address
-        this.encoded = Address.encode(this.value);
         return this.encoded;
     }
+
+    /**
+     * Decode bs58check string into bytes
+     */
     static decode(bs58string: string): Buffer {
         const decoded = bs58check.decode(bs58string);
         if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error(`invalid address prefix (${decoded[0]})`);
         if (decoded.length !== 33 + 1) throw new Error(`invalid address length (${decoded.length-1})`);
         return Buffer.from(decoded.slice(1));
     }
+
+    /**
+     * Encode bytes into bs58check string
+     */
     static encode(byteArray: Buffer): string {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);
+    }
+
+    equal(_otherAddress: AddressInput): boolean {
+        const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+        return Address.valueEqual(this.value, otherAddress.value);
+    }
+
+    /**
+     * Returns true if the address is empty, i.e. '' or empty buffer
+     */
+    isEmpty(): boolean {
+        return this.value.length === 0;
+    }
+
+    get length(): number {
+        return this.value.length;
     }
 
     isSystemAddress(): boolean {
@@ -111,14 +129,5 @@ export default class Address {
 
     private static valueEqual(a: Buffer, b: Buffer): boolean {
         return a.length == b.length && a.every((aElem, i) => aElem === b[i]);
-    }
-
-    equal(_otherAddress: AddressInput): boolean {
-        const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
-        return Address.valueEqual(this.value, otherAddress.value);
-    }
-
-    get length(): number {
-        return this.value.length;
-    }
+    } 
 }
