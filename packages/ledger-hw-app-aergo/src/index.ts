@@ -6,7 +6,6 @@ const CLA = 0xAE;
 
 const INS = {
     GET_VERSION: 0x01,
-
     GET_PUBLIC_KEY: 0x02,
     SIGN_TX: 0x04,
 };
@@ -19,12 +18,13 @@ export const ErrorCodes = {
     ERR_REJECTED_BY_POLICY: 0x6e10,
     ERR_DEVICE_LOCKED: 0x6e11,
     ERR_CLA_NOT_SUPPORTED: 0x6e00,
-
     ERR_TX_PARSE_INVALID: 0x6720,
+    ERR_TX_INVALID: 0x6740,
+    ERR_TX_PARSE_SIZE: 0x6700,
 };
 
-function isTxParseError(e: any): boolean {
-    return e && e.statusCode && (e.statusCode & 0x6720) === 0x6720;
+function isErrorRange(e: any, rangeFrom: number): boolean {
+    return e && e.statusCode && (e.statusCode & rangeFrom) === rangeFrom;
 }
 
 async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
@@ -32,13 +32,14 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
         return await fn();
     } catch (e) {
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_STILL_IN_CALL) {
-            // Retry
+            // Retry once
             return await fn();
         }
-        if (isTxParseError(e)) {
-            e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6720} (0x${e.statusCode.toString(16)})`;
+        if (isErrorRange(e, ErrorCodes.ERR_TX_PARSE_INVALID)) {
+            e.message = `Ledger device: failed to parse transaction data at field ${e.statusCode - 0x6720} (0x${e.statusCode.toString(16)})`;
+        } else if (isErrorRange(e, ErrorCodes.ERR_TX_INVALID)) {
+            e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6700} (0x${e.statusCode.toString(16)})`;
         }
-        // TODO: add after 0x6740: on_new_transaction_part
         throw e;
     }
 }
@@ -53,17 +54,23 @@ interface SignTxResponse {
     signature: string;
 }
 
+enum Mode {
+    Part = 0x00,
+    Begin = 0x01,
+    Finish = 0x02,
+    Single = 0x03,
+}
+
 export default class LedgerAppAergo {
     transport: Transport;
+    lastAddress?: Address;
 
     constructor(transport: Transport, scrambleKey: string = 'AERGO') {
         this.transport = transport;
         const methods = [
             'getVersion',
             'getWalletPublicKey',
-            /*'signTransaction',
-            'deriveAddress',
-            'showAddress'*/
+            'signTransaction',
         ];
         this.transport.decorateAppAPIMethods(this, methods, scrambleKey);
     }
@@ -89,7 +96,8 @@ export default class LedgerAppAergo {
             this.transport.send(CLA, INS.GET_PUBLIC_KEY, 0x00, 0x00, data)
         );
         const [pubkey] = chunkBy(response, [33]);
-        return new Address(pubkey);
+        this.lastAddress = new Address(pubkey);
+        return this.lastAddress;
     }
 
     /**
@@ -103,12 +111,9 @@ export default class LedgerAppAergo {
         const data = Buffer.from(txGrpc.serializeBinary());
         if (data.length > 250) {
             throw new Error('currently only transactions with less than 250 bytes in size are supported');
-            /*
-            TODO:
-            mode 0x01 for first, 0x02 for last, 0x00 for in-between
-            */
+            // TODO: Split tx into Mode.Begin -> Mode.Part -> Mode.Finish
         }
-        const mode = 0x03; // data fits into one transfer
+        const mode = Mode.Single;
         const response = await wrapRetryStillInCall(() =>
             this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, data)
         );

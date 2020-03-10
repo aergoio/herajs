@@ -184,6 +184,7 @@ describe('Wallet scenarios', async () => {
         };
         const txTracker = await wallet.sendTransaction(account, testtx);
         const receipt = await txTracker.getReceipt();
+        // eslint-disable-next-line no-console
         console.log('contract deployed at', receipt.contractaddress.toString());
         assert.equal(receipt.status, 'CREATED', `failed with error: ${receipt.result}`);
         contract.setAddress(receipt.contractaddress);

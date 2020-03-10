@@ -100,7 +100,8 @@ describe('hashTransaction()', () => {
             amount: '0 aer',
             nonce: 1,
             from: '',
-            chainIdHash: ''
+            chainIdHash: '',
+            type: 0,
         };
         const hash = await hashTransaction(tx1, 'base58');
         assert.equal(hash, 'AB1Y87LaQnYiFFbGYWoZhJiCdb12HMcphYFBakABzJvf');

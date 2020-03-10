@@ -89,7 +89,7 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
             }
         }
     }
-    const type = tx.type || inferType(tx);
+    const type = typeof tx.type !== 'undefined' ? tx.type : inferType(tx);
 
     const items = [
         fromNumber(tx.nonce, 64),
