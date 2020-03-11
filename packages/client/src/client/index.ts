@@ -1,7 +1,8 @@
 import { Buffer } from 'buffer';
 import bs58 from 'bs58';
 import promisify from '../promisify';
-import { fromNumber, errorMessageForCode, waterfall, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding } from '../utils';
+import { errorMessageForCode, waterfall } from '../utils';
+import { fromNumber, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding, Amount } from '@herajs/common';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import { TransactionError } from '../errors';
 import Accounts from '../accounts';
@@ -32,7 +33,7 @@ import {
 } from '../../types/rpc_pb';
 import {
     Tx, Block, BlockMetadata, Address,
-    Peer, State, Amount, ChainInfo, Event, StateQueryProof, FilterInfo
+    Peer, State, ChainInfo, Event, StateQueryProof, FilterInfo
 } from '../models';
 import { Abi } from '../models/contract';
 import { AddressInput } from '../models/address';

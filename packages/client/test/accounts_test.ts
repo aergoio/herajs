@@ -9,7 +9,7 @@ import Address from '../src/models/address';
 import { longPolling } from '../src/utils';
 
 import JSBI from 'jsbi';
-import Amount from '../src/models/amount';
+import { Amount } from '@herajs/common';
 
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845

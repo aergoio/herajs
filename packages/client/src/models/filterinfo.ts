@@ -1,12 +1,11 @@
 import Address from './address';
-import { FilterInfo as GrpcFilterInfo} from '../../types/blockchain_pb';
+import { FilterInfo as GrpcFilterInfo } from '../../types/blockchain_pb';
 import { PrimitiveType } from './contract';
 import { Buffer } from 'buffer';
 
 function isArgMap(obj: any): obj is Map<number | string, PrimitiveType> {
     return obj instanceof Map;
 }
-  
 
 export default class FilterInfo {
     address!: Address;

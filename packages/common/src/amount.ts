@@ -1,6 +1,6 @@
-import { UNITS } from '../constants';
+import { UNITS } from './constants';
 import JSBI from 'jsbi';
-import { fromHexString, toHexString } from '../utils';
+import { fromHexString, toHexString } from './encoding';
 import { Buffer } from 'buffer';
 
 const DEFAULT_USER_UNIT = 'aergo';
@@ -78,18 +78,21 @@ export default class Amount {
         // Freeze value. Otherwise some libraries mess this up since it is actually an Array subclass with a custom propery
         this.value = Object.freeze(this.value);
     }
+    
     /**
      * Returns value as byte buffer
      */
     asBytes(): Buffer {
         return Buffer.from(fromHexString(this.value.toString(16)));
     }
+
     /**
      * JSON.stringifes to string with unit aer, which can be easily deserialized by new Amount(x)
      */
     toJSON(): string {
         return this.toUnit('aer').toString();
     }
+
     /**
      * Returns formatted string including unit
      */
@@ -99,6 +102,7 @@ export default class Amount {
         }
         return `${this.formatNumber()}`;
     }
+
     /**
      * Move decimal point in string by digits, positive to the right, negative to the left.
      * This extends the string if necessary.
@@ -134,12 +138,14 @@ export default class Amount {
         str = str.replace(/^\./, '0.');
         return str;
     }
+
     formatNumber(unit: string = ''): string {
         if (unit === '') unit = this.unit;
         if (unit === '') return this.value.toString();
         const prec = getUnitPrecision(unit);
         return Amount.moveDecimalPoint(this.value.toString(), -prec);
     }
+
     /**
      * Convert to another unit
      * @param unit string (aer, gaer, aergo)

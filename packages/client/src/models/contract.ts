@@ -1,9 +1,9 @@
 import { ADDRESS_PREFIXES } from '../constants';
 import bs58check from 'bs58check';
-import { fromNumber } from '../utils';
+import { fromNumber } from '@herajs/common';
 import Address from './address';
 import Tx from './tx';
-import Amount from './amount';
+import { Amount } from '@herajs/common';
 import { Function, StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
 

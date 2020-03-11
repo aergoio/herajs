@@ -1,6 +1,6 @@
 import Tx from '../models/tx';
 import { default as Address } from '../models/address';
-import Amount from '../models/amount';
+import { Amount } from '@herajs/common';
 import ChainInfo from '../models/chaininfo';
 
 export interface GetTxResult {

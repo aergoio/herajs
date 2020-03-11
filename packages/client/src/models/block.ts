@@ -2,7 +2,7 @@ import Tx from './tx';
 import bs58 from 'bs58';
 import { Block as GrpcBlock } from '../../types/blockchain_pb';
 import Address from './address';
-import Amount from './amount';
+import { Amount } from '@herajs/common';
 import { Buffer } from 'buffer';
 
 export interface BlockHeader {

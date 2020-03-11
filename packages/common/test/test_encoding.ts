@@ -1,7 +1,7 @@
 import chai from 'chai';
 const assert = chai.assert;
 
-import { toHexString, fromHexString, encodeByteArray, decodeToBytes } from '../src/utils';
+import { toHexString, fromHexString, encodeByteArray, decodeToBytes } from '../src/encoding';
 
 describe('toHexString', () => {
     it('should convert byte arrays to plain hex string', () => {
@@ -31,6 +31,7 @@ describe('encodeByteArray', () => {
         assert.equal(encodeByteArray(Uint8Array.from([0, 0]), 'hex'), '0000');
         assert.equal(encodeByteArray(Uint8Array.from([0, 0]), 'base64'), 'AAA=');
         assert.equal(encodeByteArray(Buffer.from([0, 0]), 'base64'), 'AAA=');
+        assert.deepEqual(encodeByteArray(Buffer.from([0, 0]), 'bytes'), Buffer.from([0, 0]));
     });
 });
 describe('decodeToBytes', () => {
@@ -38,5 +39,9 @@ describe('decodeToBytes', () => {
         assert.isTrue(decodeToBytes('11').equals(Buffer.from([0, 0])));
         assert.isTrue(decodeToBytes('0000', 'hex').equals(Buffer.from([0, 0])));
         assert.isTrue(decodeToBytes('AAA=', 'base64').equals(Buffer.from([0, 0])));
+        assert.isTrue(decodeToBytes(Buffer.from([0])).equals(Buffer.from([0])));
+        assert.throws(() => {
+            decodeToBytes('AAA=', 'bytes');
+        }, 'cannot decode string with encoding bytes');
     });
 });

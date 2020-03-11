@@ -38,7 +38,8 @@
     "google-protobuf": "^3.6.0",
     "grpc": "^1.13.1",
     "hash.js": "^1.1.7",
-    "jsbi": "^3.0.0"
+    "jsbi": "^3.0.0",
+    "@herajs/common": "0.17.1"
   },
   "devDependencies": {
     "@improbable-eng/grpc-web-node-http-transport": "^0.9.1"

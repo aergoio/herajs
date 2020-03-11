@@ -1,0 +1,33 @@
+{
+  "name": "@herajs/common",
+  "version": "0.17.1",
+  "description": "Herajs common library",
+  "main": "dist/herajs-common.cjs.js",
+  "module": "dist/herajs-common.esm.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "yarn run type-check -- --watch",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "yarn run lint && yarn run build:types && yarn run build:js",
+    "release": "bash release.sh",
+    "lint": "eslint --fix src/**/*.ts test/**/*.ts",
+    "test": "yarn run lint && yarn run type-check && nyc mocha -r babel-register-ts test/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aergoio/herajs.git"
+  },
+  "author": "AERGO team and contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aergoio/herajs/issues"
+  },
+  "homepage": "https://github.com/aergoio/herajs#readme",
+  "dependencies": {
+    "jsbi": "^3.0.0"
+  },
+  "devDependencies": {
+  }
+}

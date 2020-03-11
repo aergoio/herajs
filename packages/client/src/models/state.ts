@@ -1,6 +1,5 @@
 import { State as GrpcState } from '../../types/blockchain_pb';
-import Amount from '../models/amount';
-
+import { Amount } from '@herajs/common';
 
 export default class State {
     nonce!: number;

@@ -126,7 +126,8 @@ function genConfig (name) {
         [resolve('types/account_pb.js')]: 'Account'.split(', '),
         [resolve('../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(','),
         [resolve('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
-        [resolve('../crypto/dist/herajs-crypto.umd.js')]: 'hash'.split(', '),
+        [resolve('../common/dist/herajs-common.umd.js')]: 'Amount'.split(', '),
+        [resolve('../common/dist/herajs-common.umd.js')]: 'hash'.split(', '),
     };
 
     const config = {

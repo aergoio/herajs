@@ -1,7 +1,7 @@
 import { TxBody, Tx as GrpcTx, TxType, TxTypeMap } from '../../types/blockchain_pb';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils';
 import Address from './address';
-import Amount from './amount';
+import { Amount } from '@herajs/common';
 import { Buffer } from 'buffer';
 
 type TxTypeValue = TxTypeMap[keyof TxTypeMap];

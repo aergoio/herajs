@@ -1,86 +1,7 @@
 import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
 const assert = chai.assert;
 
-import AergoClient from '../src';
-import Address from '../src/models/address';
-import { Amount } from '@herajs/common';
-//import AergoClient, { Address } from '../dist/herajs.esm';
-
-describe('Address', () => {
-    const aergo = new AergoClient();
-
-    it('should return created base58 encoded address', async () => {
-        const addr = await aergo.accounts.create('testpass');
-        assert(addr instanceof Address, 'address should be instance of Address');
-        assert.equal(addr.length, 33);
-    });
-    it('should encode raw bytes to string', () => {
-        const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);
-        const addr = new Address(bytes);
-        assert.equal(addr.toString(), 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX');
-        assert.equal(''+addr, 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX');
-    });
-    it('should decode string to raw bytes', () => {
-        const encoded = 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX';
-        const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);
-        const addr = new Address(encoded);
-        assert.deepEqual(addr.asBytes(), bytes);
-    });
-    it('should encode a null address to an empty string', () => {
-        const bytes = Buffer.from([]);
-        const addr = new Address(bytes);
-        assert.equal(addr.toString(), '');
-    });
-    it('should throw with invalid address', () => {
-        assert.throws(() => new Address('InvalidInvalidInvalidInvalid'), Error, 'Non-base58 character');
-        assert.throws(() => new Address('abcabcabcabcabcabc'), Error, 'Invalid checksum');
-        assert.throws(() => new Address('2DEMLvmHGwDgSSjYAgDS57YLM6YnrSbjswrnzXXXQD6Wa9nuUT63AcY1MV3DqyANrd2T4CEGF'), Error, 'invalid address length (48)');
-    });
-    it('should encode account names from bytes', () => {
-        const a1 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109]));
-        assert.equal(a1.toString(), 'aergo.system');
-        const a2 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 115, 121, 115, 116, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
-        assert.equal(a2.toString(), 'aergo.system');
-        const a3 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 110, 97, 109, 101]));
-        assert.equal(a3.toString(), 'aergo.name');
-        const a4 = new Address(Buffer.from([97, 101, 114, 103, 111, 46, 101, 110, 116, 101, 114, 112, 114, 105, 115, 101]));
-        assert.equal(a4.toString(), 'aergo.enterprise');
-    });
-    it('should recognize system addresses', () => {
-        const systemAddresses = ['aergo.system', 'aergo.enterprise', 'aergo.name'];
-        const nonSystemAddresses = ['aergosystem', 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX'];
-        const invalidAddresses = ['aergo.something', 'AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HXABC'];
-        for (const addr of systemAddresses) {
-            const obj = new Address(addr);
-            assert.equal(obj.toString(), addr);
-            assert.isTrue(obj.isSystemAddress(), `Expected ${addr} to be parsed as system address`);
-        }
-        for (const addr of nonSystemAddresses) {
-            const obj = new Address(addr);
-            assert.equal(obj.toString(), addr);
-            assert.isFalse(obj.isSystemAddress(), `Expected ${addr} to not be parsed as system address`);
-        }
-        for (const addr of invalidAddresses) {
-            assert.throws(() => {
-                new Address(addr);
-            });
-        }
-    });
-    it('should be able to set custom system addresses', () => {
-        Address.setSystemAddresses(['foo.bar']);
-        assert.isTrue(new Address('foo.bar').isSystemAddress());
-        assert.isFalse(new Address('aergo.system').isSystemAddress());
-    });
-    it('should return isEmpty', () => {
-        assert.isTrue(new Address('').isEmpty());
-        assert.isTrue(new Address(Buffer.from([])).isEmpty());
-        assert.isFalse(new Address('foo.bar').isEmpty());
-        assert.isFalse(new Address('AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX').isEmpty());
-        assert.isFalse(new Address(Buffer.from([97, 101, 114, 103, 111, 46, 101, 110, 116, 101, 114, 112, 114, 105, 115, 101])).isEmpty());
-    });
-});
+import Amount from '../src/amount';
 
 describe('Amount', () => {
     it('should move decimal point', () => {
@@ -95,6 +16,21 @@ describe('Amount', () => {
         const a = new Amount(100);
         assert.equal(a.toString(), '100 aergo');
         assert.equal(a.value.toString(), '100000000000000000000');
+    });
+    it('should be idempotent', () => {
+        const a = new Amount(100);
+        assert.equal(new Amount(a), a);
+    });
+    it('should throw with invalid argument', () => {
+        class Invalid {
+            toString(): string {
+                return 'Foo';
+            }
+        }
+        const invalidInput = new Invalid();
+        assert.throws(() => {
+            new Amount(invalidInput as any);
+        }, 'Instantiate Amount with JSBI|number|string|Buffer|Uint8Array, not Foo (object)');
     });
     it('should parse amounts from string with unit', () => {
         const a = new Amount('100 aer');
@@ -117,6 +53,7 @@ describe('Amount', () => {
         assert.equal(a.toUnit('aergo').toString(), '0.00001 aergo');
         assert.equal(a.toUnit('gaer').toString(), '10000 gaer');
         assert.equal(a.toUnit('aer').toString(), '10000000000000 aer');
+        assert.equal(a.formatNumber('gaer'), '10000');
     });
     it('should handle floating point numbers', () => {
         const a = new Amount('0.1 aergo');
@@ -132,6 +69,8 @@ describe('Amount', () => {
         assert.equal(a.value.toString(), '100000000000000000000');
         assert.equal(a.toString(), '100000000000000000000 aer');
         assert.equal(a.toUnit('aergo').toString(), '100 aergo');
+        const b = new Amount(Buffer.from([ 5, 107, 199, 94, 45, 99, 16, 0, 0 ]), 'aergo');
+        assert.equal(b.toString(), '100 aergo');
     });
     it('should throw error for unrecognized unit', () => {
         assert.throws(() => new Amount('100 foo'), TypeError, 'unrecognized unit: foo');
@@ -143,6 +82,13 @@ describe('Amount', () => {
         assert.equal(a.toUnit('gaer').toString(), '0 gaer');
         assert.equal(a.toUnit('aer').toString(), '0 aer');
     });
+    it('toJSBI', () => {
+        // Use default unit
+        assert.equal(Amount.toJSBI(new Amount('10 aer')).toString(), '10');
+        // Set explicit unit
+        assert.equal(Amount.toJSBI('10 aergo').toString(), '10000000000000000000');
+        assert.equal(Amount.toJSBI('10', 'aergo').toString(), '10000000000000000000');
+    });
     it('compares amounts', () => {
         const a = new Amount('10 aer');
         // 10 aer == 10
@@ -153,6 +99,11 @@ describe('Amount', () => {
         assert.equal(a.compare('10 aergo'), -1);
         // 10 aer > 1
         assert.equal(a.compare(1), 1);
+        // 10 aer < 1 aergo (since b is unit-less, the other value will be parsed in the default unit)
+        const b = new Amount('10 aer', '', '');
+        assert.equal(b.compare(1), -1);
+        // 10 aer > 1 aer (b is unit-less, but the other amount has an explicit unit)
+        assert.equal(b.compare('1 aer'), 1);
     });
     it('adds amounts', () => {
         const a = new Amount('10 aer');
@@ -196,6 +147,7 @@ describe('Amount', () => {
         const a = new Amount('10 aergo');
         // 10 aergo / 10 = 1 aergo
         assert.equal(a.div(10).toString(), '1 aergo');
+        assert.equal(a.div(new Amount(10, 'aer', '')).toString(), '1 aergo');
         // 10 aergo / 20 = 0.5 aergo
         assert.equal(a.div(20).toString(), '0.5 aergo');
         // 10 aergo / 5 aergo = 2
