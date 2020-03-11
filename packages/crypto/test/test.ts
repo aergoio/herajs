@@ -100,7 +100,8 @@ describe('hashTransaction()', () => {
             amount: '0 aer',
             nonce: 1,
             from: '',
-            chainIdHash: ''
+            chainIdHash: '',
+            type: 0,
         };
         const hash = await hashTransaction(tx1, 'base58');
         assert.equal(hash, 'AB1Y87LaQnYiFFbGYWoZhJiCdb12HMcphYFBakABzJvf');
@@ -289,7 +290,7 @@ describe('keystore', () => {
             }), 'missing required kdf parameter: salt');
     });
     it('should throw with missing or empty password', async () => {
-        await assert.isRejected(identityFromKeystore(keystoreFile, undefined), 'missing required parameter: password');
+        await assert.isRejected(identityFromKeystore(keystoreFile, undefined as any), 'missing required parameter: password');
         await assert.isRejected(identityFromKeystore(keystoreFile, ''), 'missing required parameter: password');
     });
     it('should throw with invalid mac', async () => {

@@ -2,13 +2,22 @@ import { ADDRESS_PREFIXES } from '../constants';
 import bs58check from 'bs58check';
 import { fromNumber } from '../utils';
 import Address from './address';
-import { Function, StateQuery as GrpcStateQuery, Query } from '../../types/blockchain_pb';
+import Tx from './tx';
+import Amount from './amount';
+import { Function, StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
 
 type _PrimitiveType = string | number | boolean;
-export type PrimitiveType = _PrimitiveType | Array<_PrimitiveType>;
+export type PrimitiveType = _PrimitiveType | _PrimitiveType[];
 
 type BufferLike = number[] | Uint8Array | Buffer;
+
+interface QueryInfo {
+    Name: string;
+    Args: PrimitiveType[];
+}
+
+export type Abi = Partial<ABI.AsObject> & { functions: any; state_variables: any };
 
 /**
  * Data structure for contract function calls.
@@ -17,14 +26,15 @@ type BufferLike = number[] | Uint8Array | Buffer;
  */
 export class FunctionCall {
     definition: Function.AsObject;
-    args: Array<PrimitiveType>;
+    args: PrimitiveType[];
     contractInstance: Contract;
 
-    constructor(contractInstance, definition, args) {
+    constructor(contractInstance: Contract, definition: Function.AsObject, args: PrimitiveType[]) {
         this.definition = definition;
         this.args = args;
         this.contractInstance = contractInstance;
     }
+
     /**
      * Generate transaction object that can be passed to :meth:`aergoClient.accounts.sendTrasaction`
      * 
@@ -42,10 +52,10 @@ export class FunctionCall {
      * @param {string} extraArgs.from set from address for the transaction
      * @return {obj} transaction data
      */
-    asTransaction(extraArgs) {
+    asTransaction(extraArgs: Partial<Tx> & Pick<Tx, 'from'>): Partial<Tx> {
         const payload = JSON.stringify({
             Name: this.definition.name,
-            Args: this.args
+            Args: this.args,
         });
         if (!this.contractInstance.address) throw new Error('Set address of contract before creating transactions');
         if (typeof extraArgs === 'undefined' || !extraArgs.from || extraArgs.from.length === 0) {
@@ -53,8 +63,9 @@ export class FunctionCall {
         }
         return {
             to: this.contractInstance.address,
-            amount: 0,
             payload,
+            amount: new Amount(0),
+            type: Tx.Type.CALL,
             ...extraArgs
         };
     }
@@ -73,7 +84,7 @@ export class FunctionCall {
      * 
      * @return {obj} queryInfo data
      */
-    asQueryInfo() {
+    asQueryInfo(): QueryInfo {
         return {
             Name: this.definition.name,
             Args: this.args
@@ -82,6 +93,9 @@ export class FunctionCall {
 
     toGrpc(): Query {
         const q = new Query();
+        if (!this.contractInstance.address) {
+            throw new Error('set contract address before creating state query');
+        }
         q.setContractaddress(Uint8Array.from((new Address(this.contractInstance.address)).asBytes()));
         q.setQueryinfo(Uint8Array.from(Buffer.from(JSON.stringify(this.asQueryInfo()))));
         return q;
@@ -115,6 +129,9 @@ export class StateQuery {
 
     toGrpc(): GrpcStateQuery {
         const q = new GrpcStateQuery();
+        if (!this.contractInstance.address) {
+            throw new Error('set contract address before creating state query');
+        }
         q.setContractaddress(this.contractInstance.address.asBytes());
         const storageKeys = (this.storageKeys as any[]).map((key: string | BufferLike) => {
             const buf = typeof key === 'string' ? Buffer.from(key) : key;
@@ -146,19 +163,23 @@ export class StateQuery {
  * 
  */
 class Contract {
-    code: Buffer;
-    address: Address;
-    functions: any;
+    code?: Buffer;
+    address?: Address;
+    functions: Record<string, (...args: PrimitiveType[]) => FunctionCall>;
 
     constructor(data: Partial<Contract>) {
         Object.assign(this, data);
 
         this.functions = {};
 
+        function isNotProxied(obj: Contract, field: string): field is keyof Contract {
+            return field in obj;
+        }
+
         // This class acts as a proxy that passes ABI method calls
         return new Proxy(this, {
-            get(obj, field) {
-                if (field in obj) return obj[field];
+            get(obj, field: keyof Contract | string) {
+                if (isNotProxied(obj, field)) return obj[field];
                 if (field in obj.functions) return obj.functions[field];
                 return undefined;
             }
@@ -170,7 +191,7 @@ class Contract {
      * @param {string} bs58checkCode base58-check encoded code
      * @return {Contract} contract instance
      */
-    static fromCode(bs58checkCode) {
+    static fromCode(bs58checkCode: string): Contract {
         const decoded = Contract.decodeCode(bs58checkCode);
         return new Contract({
             code: decoded
@@ -193,7 +214,7 @@ class Contract {
      * @param {obj} abi parsed JSON ABI
      * @return {Contract} contract instance
      */
-    static fromAbi(abi): Contract {
+    static fromAbi(abi: Abi): Contract {
         const contract = new Contract({});
         contract.loadAbi(abi);
         return contract;
@@ -214,9 +235,9 @@ class Contract {
      * @param {obj} abi parsed JSON ABI
      * @return {Contract} contract instance
      */
-    loadAbi(abi): Contract {
+    loadAbi(abi: Abi): Contract {
         for (const definition of abi.functions) {
-            this.functions[definition.name] = (...args) => new FunctionCall(this, definition, args);
+            this.functions[definition.name] = (...args: PrimitiveType[]) => new FunctionCall(this, definition, args);
         }
         return this;
     }
@@ -226,7 +247,7 @@ class Contract {
      * @param {args}
      * @return {Buffer} a byte buffer
      */
-    asPayload(args?: Array<PrimitiveType>): Buffer {
+    asPayload(args?: PrimitiveType[]): Buffer {
         if (!this.code || !this.code.length) {
             throw new Error('Code is required to generate payload');
         }
@@ -247,9 +268,9 @@ class Contract {
      */
     queryState(keys: string | BufferLike | string[] | BufferLike[], compressed?: boolean, root?: Uint8Array): StateQuery {
         function isBufferLike(arr: string[] | BufferLike | BufferLike[]): arr is BufferLike {
-            return keys instanceof Buffer || keys instanceof Uint8Array || arr.length && typeof arr[0] === 'number';
+            return keys instanceof Buffer || keys instanceof Uint8Array || arr.length > 0 && typeof arr[0] === 'number';
         }
-        let keyArray = (typeof keys === 'string' || isBufferLike(keys)) ? [keys] : keys;
+        const keyArray = (typeof keys === 'string' || isBufferLike(keys)) ? [keys] : keys;
         // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
         return new StateQuery(this, keyArray as any, compressed, root);
     }

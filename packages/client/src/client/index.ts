@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import bs58 from 'bs58';
 import promisify from '../promisify';
-import { fromNumber, errorMessageForCode, waterfall } from '../utils';
+import { fromNumber, errorMessageForCode, waterfall, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding } from '../utils';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import { TransactionError } from '../errors';
 import Accounts from '../accounts';
@@ -34,6 +34,7 @@ import {
     Tx, Block, BlockMetadata, Address,
     Peer, State, Amount, ChainInfo, Event, StateQueryProof, FilterInfo
 } from '../models';
+import { Abi } from '../models/contract';
 import { AddressInput } from '../models/address';
 import { FunctionCall, StateQuery } from '../models/contract';
 import {
@@ -76,7 +77,7 @@ class AergoClient {
     target: string;
     private chainIdHash?: Uint8Array;
     private defaultLimit: number;
-    static defaultProviderClass?: {new (...args : any[]): any;};
+    static defaultProviderClass?: { new (...args: any[]): any };
     static platform: string = '';
 
     /**
@@ -90,7 +91,7 @@ class AergoClient {
      * @param [object] configuration. Unused at the moment.
      * @param [Provider] custom configured provider. By default a provider is configured automatically depending on the environment.
      */
-    constructor (config = {}, provider = null) {
+    constructor (config = {}, provider: any = null) {
         this.config = {
             ...config
         };
@@ -153,16 +154,12 @@ class AergoClient {
      */
     //async getChainIdHash(enc?: 'base58'): Promise<string>;
     //async getChainIdHash(enc?: '' | undefined): Promise<Uint8Array>;
-    async getChainIdHash(enc?: string): Promise<Uint8Array | string> {
+    async getChainIdHash(enc?: ByteEncoding): Promise<Uint8Array | string> {
         if (typeof this.chainIdHash === 'undefined') {
             // Fetch blockchain data to set chainIdHash
             await this.blockchain();
         }
-        const hash: Uint8Array = this.chainIdHash;
-        if (enc === 'base58') {
-            return bs58.encode(Buffer.from(hash));
-        }
-        return hash;
+        return encodeByteArray(this.chainIdHash, enc);
     }
 
     /**
@@ -305,7 +302,7 @@ class AergoClient {
     getBlockHeaders(hashOrNumber: string | number, size = 10, offset = 0, desc = true): Promise<Block[]> {
         const params = new ListParams();
         if (typeof hashOrNumber === 'string') {
-            const decodedHash = Block.decodeHash(hashOrNumber)
+            const decodedHash = Block.decodeHash(hashOrNumber);
             if (decodedHash.length != 32) {
                 throw new Error('Invalid block hash. Must be 32 byte encoded in bs58. Did you mean to pass a block number?');
             }
@@ -383,6 +380,7 @@ class AergoClient {
         return await promisify(this.client.client.getBlockBody, this.client.client)(params).then((grpcObject: GrpcBlockBodyPaged) => {
             const obj = grpcObject.toObject();
             if (obj.body && obj.body.txsList) {
+                // @ts-ignore
                 obj.body.txsList = grpcObject.getBody().getTxsList().map(tx => Tx.fromGrpc(tx));
             }
             return obj as BlockBodyPaged;
@@ -545,6 +543,40 @@ class AergoClient {
     }
 
     /**
+     * Retrieve the transaction receipt for a transaction, but keep retrying if not available yet.
+     * Uses expoinential backoff and a final timeout.
+     * @param {string} txhash transaction hash
+     * @param {number} timeout throws error when timeout is reached
+     * @param {number} baseBackoffInterval base time for exponentail backoff
+     * @return {Promise<object>} transaction receipt
+     */
+    waitForTransactionReceipt(txhash: string, timeout: number = 0, baseBackoffInterval = 500): Promise<GetReceiptResult> {
+        const started = new Date();
+        let retryCount = 0;
+        const retryLoad = async (): Promise<GetReceiptResult> => {
+            try {
+                return await this.getTransactionReceipt(txhash);
+            } catch(e) {
+                if (!(e.details as string).match(/tx not found/)) {
+                    throw e;
+                }
+                const interval = backoffIntervalStep(retryCount++, baseBackoffInterval);
+                if (timeout) {
+                    const elapsed = +new Date() - (+started);
+                    if (elapsed + interval >= timeout) {
+                        const unit = elapsed < 1000 ? 'ms' : 's';
+                        const elapsedFormat = elapsed < 1000 ? elapsed : Math.round(elapsed / 100) / 10;
+                        throw new Error(`timeout after ${elapsedFormat}${unit}: tx not found`);
+                    }
+                }
+                await waitFor(interval);
+                return await retryLoad();
+            }
+        };
+        return retryLoad();
+    }
+
+    /**
      * Query contract ABI
      * @param {FunctionCall} functionCall call details
      * @returns {Promise<object>} result of query
@@ -628,7 +660,7 @@ class AergoClient {
      * @param {string} address of contract
      * @returns {Promise<object>} abi
      */
-    getABI(address: AddressInput): Promise<GrpcABI.AsObject> {
+    getABI(address: AddressInput): Promise<Abi> {
         const singleBytes = new SingleBytes();
         singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
         return promisify(this.client.client.getABI, this.client.client)(singleBytes).then(

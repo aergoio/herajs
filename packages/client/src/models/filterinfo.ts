@@ -9,8 +9,8 @@ function isArgMap(obj: any): obj is Map<number | string, PrimitiveType> {
   
 
 export default class FilterInfo {
-    address?: Address;
-    args?: Array<PrimitiveType> | Map<number | string, PrimitiveType>;
+    address!: Address;
+    args?: PrimitiveType[] | Map<number | string, PrimitiveType>;
     eventName?: string;
     blockfrom?: number = 0;
     blockto?: number = 0;
@@ -18,9 +18,9 @@ export default class FilterInfo {
 
     constructor(data: Partial<FilterInfo>) {
         Object.assign(this, data);
-        this.address = new Address(<any>this.address);
+        this.address = new Address(this.address as any);
     }
-    static fromGrpc(grpcObject: GrpcFilterInfo) {
+    static fromGrpc(grpcObject: GrpcFilterInfo): FilterInfo {
         return new FilterInfo({
             args: JSON.parse(Buffer.from(grpcObject.getArgfilter_asU8()).toString()),
             address: new Address(grpcObject.getContractaddress_asU8()),
@@ -30,24 +30,25 @@ export default class FilterInfo {
             desc: grpcObject.getDesc()
         });
     }
-    toGrpc() {
+    toGrpc(): GrpcFilterInfo {
         const fi = new GrpcFilterInfo();
         fi.setContractaddress(this.address.asBytes());
         if (this.args) {
             // The RPC handler only understands maps, not simple arrays
             // The advantage of this is that you can query positional arguments directly
-            // Herajs supports both, so pass args either as a Map([[idx, value]]) or 0-indexes array [value]
+            // Herajs supports both, so pass args either as a Map([[idx, value]]) or 0-indexed array [value]
             let argsAsObj;
+            const argsObj: Record<string, any> = {};
             if (isArgMap(this.args)) {
                 argsAsObj = Array.from(this.args).reduce((obj, [idx, value]) => {
                     obj[''+idx] = value;
                     return obj;
-                }, {});
+                }, argsObj);
             } else {
                 argsAsObj = this.args.reduce((obj, value, idx) => {
                     obj[''+idx] = value;
                     return obj;
-                }, {});
+                }, argsObj);
             }
             const argsAsJson = JSON.stringify(argsAsObj);
             fi.setArgfilter(Buffer.from(argsAsJson));
@@ -55,9 +56,15 @@ export default class FilterInfo {
         if (this.eventName) {
             fi.setEventname(this.eventName);
         }
-        fi.setBlockfrom(this.blockfrom);
-        fi.setBlockto(this.blockto);
-        fi.setDesc(this.desc);
+        if (this.blockfrom) {
+            fi.setBlockfrom(this.blockfrom);
+        }
+        if (this.blockto) {
+            fi.setBlockto(this.blockto);
+        }
+        if (this.desc) {
+            fi.setDesc(this.desc);
+        }
         return fi;
     }
 }

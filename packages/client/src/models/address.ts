@@ -13,7 +13,7 @@ export type AddressInput = Address | string | Buffer | Uint8Array;
  */
 export default class Address {
     value: Buffer;
-    encoded: string;
+    encoded?: string;
     isName: boolean;
 
     constructor(address: AddressInput) {
@@ -46,7 +46,7 @@ export default class Address {
 
         // Check for name encoded as bytes
         if (!this.isName) {
-            let arrValue = Array.from(this.value);
+            const arrValue = Array.from(this.value);
             // Remove trailing 0s
             while (arrValue[arrValue.length-1] === 0) {
                 arrValue.pop();
@@ -58,44 +58,69 @@ export default class Address {
             }
         }
     }
-    isEmpty(): boolean {
-        return this.value.length === 0;
-    }
+
     asBytes(): Uint8Array {
         return new Uint8Array(this.value);
     }
+
+    get bytes(): Uint8Array {
+        return this.asBytes();
+    }
+
     toJSON(): string {
         return this.toString();
     }
+
     toString(): string {
         if (typeof this.encoded !== 'undefined' && this.encoded !== null) {
             return this.encoded;
         }
     
-        // Account name
         if (this.isName) {
-            this.encoded = Buffer.from(this.value).toString()
-            return this.encoded;
+            this.encoded = Buffer.from(this.value).toString();
+        } else {
+            this.encoded = Address.encode(this.value);
         }
-
-        // Account address
-        this.encoded = Address.encode(this.value);
         return this.encoded;
     }
+
+    /**
+     * Decode bs58check string into bytes
+     */
     static decode(bs58string: string): Buffer {
         const decoded = bs58check.decode(bs58string);
         if (decoded[0] !== ADDRESS_PREFIXES.ACCOUNT) throw new Error(`invalid address prefix (${decoded[0]})`);
         if (decoded.length !== 33 + 1) throw new Error(`invalid address length (${decoded.length-1})`);
         return Buffer.from(decoded.slice(1));
     }
-    static encode(byteArray): string {
+
+    /**
+     * Encode bytes into bs58check string
+     */
+    static encode(byteArray: Buffer): string {
         if (!byteArray || byteArray.length === 0) return ''; // return empty string for null address
         const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
         return bs58check.encode(buf);
     }
 
+    equal(_otherAddress: AddressInput): boolean {
+        const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
+        return Address.valueEqual(this.value, otherAddress.value);
+    }
+
+    /**
+     * Returns true if the address is empty, i.e. '' or empty buffer
+     */
+    isEmpty(): boolean {
+        return this.value.length === 0;
+    }
+
+    get length(): number {
+        return this.value.length;
+    }
+
     isSystemAddress(): boolean {
-        return this.isName && Address.isSystemName(this.encoded);
+        return this.isName && Address.isSystemName(this.toString());
     }
 
     static isSystemName(name: string): boolean {
@@ -107,11 +132,6 @@ export default class Address {
     }
 
     private static valueEqual(a: Buffer, b: Buffer): boolean {
-        return a.length == b.length && a.every((a_i, i) => a_i === b[i]);
-    }
-
-    equal(_otherAddress: AddressInput): boolean {
-        const otherAddress = _otherAddress instanceof Address ? _otherAddress : new Address(_otherAddress);
-        return Address.valueEqual(this.value, otherAddress.value);
-    }
+        return a.length == b.length && a.every((aElem, i) => aElem === b[i]);
+    } 
 }

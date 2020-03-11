@@ -1,37 +1,39 @@
 import { ChainInfo as GrpcChainInfo } from '../../types/rpc_pb';
 import Amount from './amount';
 
-export type ChainId = {
+export interface ChainId {
     magic: string;
-    public: Boolean;
-    mainnet: Boolean;
+    public: boolean;
+    mainnet: boolean;
     consensus: string;
 }
 
 export default class ChainInfo {
-    chainid: ChainId;
-    bpnumber: number;
-    maxblocksize: number;
-    maxtokens: Amount;
-    stakingminimum: Amount;
-    stakingtotal: Amount;
-    gasprice: Amount;
-    nameprice: Amount;
-    totalvotingpower: Amount;
-    votingreward: Amount;
+    chainid!: ChainId;
+    bpnumber!: number;
+    maxblocksize!: number;
+    maxtokens!: Amount;
+    stakingminimum!: Amount;
+    stakingtotal!: Amount;
+    gasprice!: Amount;
+    nameprice!: Amount;
+    totalvotingpower!: Amount;
+    votingreward!: Amount;
 
     constructor(data: Partial<ChainInfo>) {
         Object.assign(this, data);
     }
 
-    static fromGrpc(grpcObject: GrpcChainInfo) {
+    static fromGrpc(grpcObject: GrpcChainInfo): ChainInfo {
         const chainid = grpcObject.getId();
-        return new ChainInfo(<Partial<ChainInfo>>{
-            chainid: {
+        return new ChainInfo({
+            chainid: chainid ? {
                 magic: chainid.getMagic(),
                 public: chainid.getPublic(),
                 mainnet: chainid.getMainnet(),
                 consensus: chainid.getConsensus()
+            } : {
+                magic: 'unknown', public: false, mainnet: false, consensus: 'unknown',
             },
             bpnumber: grpcObject.getBpnumber(),
             maxblocksize: grpcObject.getMaxblocksize(),
@@ -45,7 +47,7 @@ export default class ChainInfo {
         });
     }
 
-    toGrpc() {
+    toGrpc(): never {
         throw new Error('Not implemented');
     }
 }

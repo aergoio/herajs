@@ -14,6 +14,10 @@ function bufferOrB58(input?: Uint8Array | string): Uint8Array {
     return input;
 }
 
+interface StringCovertible {
+    toString(): string;
+}
+
 /**
  * Calculate hash of transaction
  * @param {object} tx Transaction
@@ -31,15 +35,28 @@ export function hash(data: Buffer): Buffer {
  */
 export interface TxBody {
     nonce: number;
-    from: string | Record<string, any>;
+    from: string | StringCovertible;
     chainIdHash: Uint8Array | string;
-    amount?: string | number | JSBI | Record<string, any>;
-    to?: null | string | Record<string, any>;
-    payload?: null | Uint8Array;
+    amount?: string | number | JSBI | StringCovertible;
+    to?: null | string | StringCovertible;
+    payload?: null | string | Uint8Array;
     limit?: number;
-    price?: string | number | JSBI | Record<string, any>;
+    price?: string | number | JSBI | StringCovertible;
     type?: number;
     sign?: string;
+}
+
+/**
+ * Infer a tx type based on body. Can be overriden by exlicitly passing type.
+ */
+function inferType(tx: TxBody): number {
+    if (!tx.to) {
+        return 6;
+    }
+    if (`${tx.to}` === 'aergo.system' || `${tx.to}` === 'aergo.enterprise') {
+        return 1;
+    }
+    return 0;
 }
 
 /**
@@ -72,16 +89,17 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
             }
         }
     }
+    const type = typeof tx.type !== 'undefined' ? tx.type : inferType(tx);
 
     const items = [
         fromNumber(tx.nonce, 64),
         decodeAddress(tx.from.toString()),
         tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]),
         fromBigInt(amount!= '' ? amount : 0),
-        tx.payload ? Buffer.from(tx.payload) : Buffer.from([]),
+        tx.payload ? Buffer.from(tx.payload as any) : Buffer.from([]),
         fromNumber(tx.limit || 0, 64),
         fromBigInt(tx.price ? tx.price.toString() : 0),
-        fromNumber(tx.type || 0, 32),
+        fromNumber(type, 32),
         Buffer.from(bufferOrB58(tx.chainIdHash))
     ];
 

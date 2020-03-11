@@ -31,7 +31,7 @@ export interface TxBody {
     from: string | Address;
     to: string | Address | null;
     amount: string | number | Amount;
-    payload: Uint8Array | null;
+    payload?: string | Uint8Array | null;
     chainIdHash: string | Uint8Array;
     type?: number;
     limit?: number;

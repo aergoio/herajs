@@ -4,19 +4,15 @@ chai.use(chaiAsPromised);
 const assert = chai.assert;
 
 import AergoClient from '../src';
+import Address from '../src/models/address';
 import GrpcProvider from '../src/providers/grpc';
 
 import { createIdentity, signTransaction, hashTransaction } from '@herajs/crypto';
-import { longPolling } from '../src/utils';
 import { commitTestTransaction } from './utils';
-
-const waitFor = (ms) => new Promise(resolve => {
-    setTimeout(resolve, ms);
-});
 
 describe('Aergo invalid config', () => {
     const invalidUrl = 'invalid';
-    const invalidAergo = new AergoClient({}, new GrpcProvider({url: invalidUrl}));
+    const invalidAergo = new AergoClient({}, new GrpcProvider({ url: invalidUrl }));
     describe('isConnected()', () => {
         it('should return false when disconnected', () => {
             assert.equal(invalidAergo.isConnected(), false);
@@ -38,10 +34,10 @@ describe('Aergo invalid config', () => {
     describe('GrpcProvider', () => {
         it('should throw error when protocol is included', () => {
             assert.throws(() => {
-                new GrpcProvider({url: 'http://foo.bar'});
+                new GrpcProvider({ url: 'http://foo.bar' });
             }, Error, 'URL for GrpcProvider should be provided without scheme (not http)');
             assert.throws(() => {
-                new GrpcProvider({url: 'https://foo.bar'});
+                new GrpcProvider({ url: 'https://foo.bar' });
             }, Error, 'URL for GrpcProvider should be provided without scheme (not https)');
         });
     });
@@ -49,8 +45,8 @@ describe('Aergo invalid config', () => {
 
 describe('Aergo', () => {
     const aergo = new AergoClient();
-    let bestBlockHash;
-    let bestBlockNumber;
+    let bestBlockHash: string;
+    let bestBlockNumber: number;
 
     describe('getDefaultConfig()', () => {
         it('should return default config', () => {
@@ -80,8 +76,11 @@ describe('Aergo', () => {
     describe('getServerInfo()', () => {
         it('should return server information', async () => {
             const info = await aergo.getServerInfo();
+            // @ts-ignore
             assert.equal(info.configMap.get('base').get('personal'), 'true');
+            // @ts-ignore
             assert.equal(info.configMap.get('account').get('unlocktimeout'), '60');
+            // @ts-ignore
             assert.equal(info.statusMap.get('addr'), '127.0.0.1');
         });
     });
@@ -182,7 +181,7 @@ describe('Aergo', () => {
                 let countBlocks = 3;
                 stream.on('data', (blockHeader) => {
                     countBlocks -= 1;
-                    assert.isTrue(blockHeader.hasOwnProperty('hash'));
+                    assert.isTrue(Object.prototype.hasOwnProperty.call(blockHeader, 'hash'));
                     if (countBlocks == 0) {
                         stream.cancel();
                         done();
@@ -202,8 +201,8 @@ describe('Aergo', () => {
                 let countBlocks = 3;
                 stream.on('data', (blockMetadata) => {
                     countBlocks -= 1;
-                    assert.isTrue(blockMetadata.hasOwnProperty('hash'));
-                    assert.isTrue(blockMetadata.header.hasOwnProperty('blockno'));
+                    assert.isTrue(Object.prototype.hasOwnProperty.call(blockMetadata, 'hash'));
+                    assert.isTrue(Object.prototype.hasOwnProperty.call(blockMetadata.header, 'blockno'));
                     assert.typeOf(blockMetadata.txcount, 'number');
                     assert.typeOf(blockMetadata.size, 'number');
                     if (countBlocks == 0) {
@@ -236,7 +235,7 @@ describe('Aergo', () => {
     });
 
     describe('getState()', () => {
-        let testaddress;
+        let testaddress: Address;
         beforeEach(async ()=>{
             testaddress = await aergo.accounts.create('testpass');
         });
@@ -262,9 +261,9 @@ describe('Aergo', () => {
     });
     
     describe('getNonce()', () => {
-        let testaddress;
-        let txhash;
-        let blockhash;
+        let testaddress: Address;
+        let txhash: string;
+        let blockhash: string;
 
         it('should return nonce of account address', async () => {
             testaddress = await aergo.accounts.create('testpass');
@@ -281,12 +280,8 @@ describe('Aergo', () => {
                 chainIdHash: await aergo.getChainIdHash()
             };
             txhash = await aergo.accounts.sendTransaction(tx);
-            await waitFor(500);
-            const txInBlock = await longPolling(async () => {
-                return await aergo.getTransaction(txhash);
-            }, result => 'block' in result, 5000);
-            assert.equal(txInBlock.tx.hash, txhash);
-            blockhash = txInBlock.block.hash;
+            const receipt = await aergo.waitForTransactionReceipt(txhash);
+            blockhash = receipt.blockhash;
             return aergo.getNonce(testaddress).then((nonce) => {
                 assert.equal(nonce, 1);
             });
@@ -301,7 +296,7 @@ describe('Aergo', () => {
     });
 
     describe('getTransaction()', () => {
-        let testtx;
+        let testtx: any;
         beforeEach(async ()=>{
             const created = await aergo.accounts.create('testpass');
             const unlocked = await aergo.accounts.unlock(created, 'testpass');
@@ -335,8 +330,8 @@ describe('Aergo', () => {
                 amount: '100 aer',
                 chainIdHash: await aergo.getChainIdHash(),
                 sign: null,
-                hash: null
-            };
+                hash: null,
+            } as any;
             tx.sign = await signTransaction(tx, identity.keyPair);
             tx.hash = await hashTransaction(tx, 'bytes');
 
@@ -359,6 +354,7 @@ describe('Aergo', () => {
             assert.equal(metadata.txcount, body.total);
             assert.equal(metadata.hash, commitedTx.block.hash);
             const tx = body.body.txsList.find(tx => tx.hash === commitedTx.tx.hash);
+            if (!tx) throw new Error('could not find tx');
             assert.equal(tx.from.toString(), commitedTx.tx.from.toString());
         });
         it('should page getBlockBody', async () => {

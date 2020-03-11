@@ -14,6 +14,7 @@ describe('Address', () => {
     it('should return created base58 encoded address', async () => {
         const addr = await aergo.accounts.create('testpass');
         assert(addr instanceof Address, 'address should be instance of Address');
+        assert.equal(addr.length, 33);
     });
     it('should encode raw bytes to string', () => {
         const bytes = Buffer.from([3,64,29,129,69,88,16,141,82,148,3,236,147,113,52,102,159,118,142,46,225,55,161,16,172,231,54,159,208,19,69,22,73]);

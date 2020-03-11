@@ -1,3 +1,18 @@
+## 0.18.0 (unreleased)
+- Ledger HW App
+  - New package `@herajs/ledger-hw-app-aergo` with support for [Aergo Ledger App](https://github.com/aergoio/ledger-app-aergo)
+
+- Client
+  - Try to infer correct tx type for contract calls and governance transactions
+  - Improve type safety
+  - Address class has a new property `length` which returns the number of (decoded) bytes
+  - Properly encode all hashes in block header (blocksroothash, txsroothash, receiptsroothash)
+
+- Crypto
+  - Try to infer correct tx type for contract calls and governance transactions
+  - Export `encodeTxHash`, `decodeTxHash`, `encodeSignature`
+  - `publicKeyFromAddress` can now accept an object of class client.Address
+
 ## 0.17.1 (March 2, 2020)
 - Crypto
   - Rename function identifyFromPrivateKey to identityFromPrivateKey.

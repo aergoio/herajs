@@ -8,6 +8,17 @@ const DEFAULT_NETWORK_UNIT = 'aer';
 
 type AmountArg = Amount | JSBI | number | string;
 
+function getUnitPrecision(unit: string): number {
+    const units = UNITS.NATIVE_TOKEN.unitSize;
+    function isValidUnit(unit: string): unit is keyof typeof units {
+        return unit in units;
+    }
+    if (!isValidUnit(unit)) {
+        throw new TypeError(`unrecognized unit: ${unit}`);
+    }
+    return units[unit];
+}
+
 /**
  * A wrapper around amounts with units.
  * Over the network, amounts are sent as raw bytes.
@@ -17,17 +28,14 @@ type AmountArg = Amount | JSBI | number | string;
  * Whenever you pass amounts to other functions, they will try to coerce them to BigInt using this class.
  */
 export default class Amount {
-    value: Readonly<JSBI>; // value in base unit
-    unit: string; // unit for displaying
+    value!: Readonly<JSBI>; // value in base unit
+    unit!: string; // unit for displaying
 
     private static _valueFromString(value: string, unit: string = ''): JSBI {
         if (unit === '') {
             unit = DEFAULT_USER_UNIT;
         }
-        if (!Object.prototype.hasOwnProperty.call(UNITS.NATIVE_TOKEN.unitSize, unit)) {
-            throw new TypeError(`unrecognized unit: ${unit}`);
-        }
-        const prec = UNITS.NATIVE_TOKEN.unitSize[unit];
+        const prec = getUnitPrecision(unit);
         if (prec > 0) {
             value = Amount.moveDecimalPoint(value, prec);
         }
@@ -48,7 +56,7 @@ export default class Amount {
             if (typeof unit === 'undefined' || unit === '') {
                 unit = DEFAULT_NETWORK_UNIT;
             }
-            this.value = JSBI.BigInt(value)
+            this.value = JSBI.BigInt(value);
         } else if (value instanceof Buffer || value instanceof Uint8Array) {
             if (typeof unit === 'undefined' || unit === '') {
                 unit = DEFAULT_NETWORK_UNIT;
@@ -57,9 +65,7 @@ export default class Amount {
         } else {
             throw new Error(`Instantiate Amount with JSBI|number|string|Buffer|Uint8Array, not ${value} (${typeof value})`);
         }
-        if (typeof this.unit === 'undefined') {
-            this.unit = unit;
-        }
+        this.unit = unit;
         if (typeof this.unit === 'undefined' || this.unit === '') {
             this.unit = DEFAULT_USER_UNIT;
         }
@@ -117,7 +123,7 @@ export default class Amount {
 
         // remove decimal point and reinsert at new location
         idx = str.indexOf('.');
-        str = str.replace('.', '')
+        str = str.replace('.', '');
         str = str.substr(0, idx + digits) + '.' + str.substr(idx + digits);
 
         // remove trailing 0 and .
@@ -131,10 +137,7 @@ export default class Amount {
     formatNumber(unit: string = ''): string {
         if (unit === '') unit = this.unit;
         if (unit === '') return this.value.toString();
-        if (!Object.prototype.hasOwnProperty.call(UNITS.NATIVE_TOKEN.unitSize, unit)) {
-            throw new TypeError(`unrecognized unit: ${unit}`);
-        }
-        const prec = UNITS.NATIVE_TOKEN.unitSize[this.unit];
+        const prec = getUnitPrecision(unit);
         return Amount.moveDecimalPoint(this.value.toString(), -prec);
     }
     /**

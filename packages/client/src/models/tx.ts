@@ -26,63 +26,98 @@ export default class Tx {
      */
     static readonly Type = TxType;
 
-    hash: string /*bytes*/;
-    nonce: number /*uint64*/;
-    from: Address /*bytes*/;
-    to: Address /*bytes*/;
-    amount: Amount /*bytes*/;
-    payload: Uint8Array /*bytes*/;
-    sign: string /*bytes*/;
-    type: TxTypeValue /*uint32*/;
-    limit: number /*uint64*/;
-    price: Amount /*uint64*/;
-    chainIdHash: string /*bytes*/;
+    hash?: string /*bytes*/;
+    nonce!: number /*uint64*/;
+    from!: Address | string /*bytes*/;
+    to!: Address | string /*bytes*/;
+    amount!: Amount /*bytes*/;
+    payload?: Uint8Array | string /*bytes*/;
+    sign?: string /*bytes*/;
+    type?: TxTypeValue /*uint32*/;
+    limit?: number /*uint64*/;
+    price!: Amount /*uint64*/;
+    chainIdHash!: string /*bytes*/;
 
     constructor(data: Partial<Tx>) {
         Object.assign(this, data);
-        this.amount = new Amount(<any>this.amount || 0);
-        this.price = new Amount(<any>this.price || 0);
+        this.amount = new Amount(this.amount as any || 0);
+        this.price = new Amount(this.price as any || 0);
+        if (!this.type) {
+            this.type = this.inferType();
+        }
     }
 
-    static fromGrpc(grpcObject: GrpcTx) {
+    static encodeHash(buf: Uint8Array): string {
+        return encodeTxHash(buf);
+    }
+
+    static fromGrpc(grpcObject: GrpcTx): Tx {
+        const body = grpcObject.getBody();
+        const hash = Tx.encodeHash(grpcObject.getHash_asU8()); 
+        if (!body) {
+            return new Tx({ hash });
+        }
         return new Tx({
-            hash: encodeTxHash(grpcObject.getHash_asU8()),
-            nonce: grpcObject.getBody().getNonce(),
-            from: new Address(grpcObject.getBody().getAccount_asU8()),
-            to: new Address(grpcObject.getBody().getRecipient_asU8()),
-            amount: new Amount(grpcObject.getBody().getAmount_asU8()),
-            payload: grpcObject.getBody().getPayload_asU8(),
-            sign: grpcObject.getBody().getSign_asB64(),
-            type: grpcObject.getBody().getType(),
-            limit: grpcObject.getBody().getGaslimit(),
-            price: new Amount(grpcObject.getBody().getGasprice_asU8()),
-            chainIdHash: encodeTxHash(grpcObject.getBody().getChainidhash_asU8())
+            hash,
+            nonce: body.getNonce(),
+            from: new Address(body.getAccount_asU8()),
+            to: new Address(body.getRecipient_asU8()),
+            amount: new Amount(body.getAmount_asU8()),
+            payload: body.getPayload_asU8(),
+            sign: body.getSign_asB64(),
+            type: body.getType(),
+            limit: body.getGaslimit(),
+            price: new Amount(body.getGasprice_asU8()),
+            chainIdHash: Tx.encodeHash(body.getChainidhash_asU8())
         });
     }
-    toGrpc() {
+
+    /**
+     * Infer a tx type based on body. Can be overriden by exlicitly passing type.
+     */
+    private inferType(): TxTypeValue {
+        if (!this.to) {
+            return Tx.Type.DEPLOY;
+        }
+        if (`${this.to}` === 'aergo.system' || `${this.to}` === 'aergo.enterprise') {
+            return Tx.Type.GOVERNANCE;
+        }
+        return Tx.Type.NORMAL;
+    }
+
+    toGrpc(): GrpcTx {
         const msgtxbody = new TxBody();
+
         msgtxbody.setType(this.type ? this.type : 0);
         msgtxbody.setNonce(this.nonce);
+
         if (typeof this.from === 'undefined' || !this.from) {
             throw new Error('Missing required transaction parameter \'from\'');
         }
         msgtxbody.setAccount((new Address(this.from)).asBytes());
+
         if (typeof this.to !== 'undefined' && this.to !== null) {
             msgtxbody.setRecipient((new Address(this.to)).asBytes());
         }
+
         msgtxbody.setAmount(Uint8Array.from(this.amount.asBytes()));
+
         if (typeof this.price !== 'undefined') {
             msgtxbody.setGasprice(Uint8Array.from(this.price.asBytes()));
         }
+
         msgtxbody.setGaslimit(this.limit || 0);
+
         if (this.payload != null) {
-            msgtxbody.setPayload(Buffer.from(this.payload));
+            msgtxbody.setPayload(Buffer.from(this.payload as any));
         }
+
         if (typeof this.sign === 'string') {
             msgtxbody.setSign(Buffer.from(this.sign, 'base64'));
-        } else {
+        } else if (this.sign) {
             msgtxbody.setSign(this.sign);
         }
+
         if (typeof this.chainIdHash === 'undefined' || !this.chainIdHash) {
             const msg = 'Missing required transaction parameter \'chainIdHash\'. ' +
                         'Use aergoClient.getChainIdHash() to retrieve from connected node, ' +
@@ -95,8 +130,8 @@ export default class Tx {
         if (this.hash != null) {
             msgtx.setHash(bufferOrB58(this.hash));
         }
-        msgtx.setBody(msgtxbody);
 
+        msgtx.setBody(msgtxbody);
         return msgtx;
     }
 }
