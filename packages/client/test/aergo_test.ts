@@ -34,10 +34,10 @@ describe('Aergo invalid config', () => {
     describe('GrpcProvider', () => {
         it('should throw error when protocol is included', () => {
             assert.throws(() => {
-                new GrpcProvider({url: 'http://foo.bar'});
+                new GrpcProvider({ url: 'http://foo.bar' });
             }, Error, 'URL for GrpcProvider should be provided without scheme (not http)');
             assert.throws(() => {
-                new GrpcProvider({url: 'https://foo.bar'});
+                new GrpcProvider({ url: 'https://foo.bar' });
             }, Error, 'URL for GrpcProvider should be provided without scheme (not https)');
         });
     });
