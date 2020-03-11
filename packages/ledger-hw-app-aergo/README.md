@@ -14,19 +14,27 @@ npm install --save @herajs/ledger-hw-app-aergo
 import LedgerAppAergo from '@herajs/ledger-hw-app-aergo';
 // Pick a transport. See https://github.com/LedgerHQ/ledgerjs
 import Transport from '@ledgerhq/hw-transport-node-hid';
+import AergoClient, { Tx } from '@herajs/client';
 
 async () => {
+    const aergo = new AergoClient();
     const transport = await Transport.create(3000, 1500);
     const app = new LedgerAppAergo(transport);
     const path = "m/44'/441'/0'/0/" + i;
     const address = await app.getWalletAddress(path);
-    const result = await app.signTransaction({
+    const tx = {
         from: address,
         to: address,
-        chainIdHash: hash(Buffer.from('test')), // TODO: insert real hash
-        type: Tx.Type.CALL,
+        chainIdHash: await aergo.getChainIdHash(),
+        type: Tx.Type.TRANSFER,
+        nonce: await aergo.getNonce(address) + 1,
+        limit: 100000,
         nonce: 1,
-    }); // { hash, signature }
-    // TODO Send to network
+    };
+    const result = await app.signTransaction(tx); // { hash, signature }
+    tx.sign = result.signature;
+    tx.hash = await hashTransaction(tx, 'bytes');
+    const txHash = await aergo.sendSignedTransaction(tx);
+    const txReceipt = await aergo.waitForTransactionReceipt(txHash); // { status: 'SUCCESS', blockno: number, ... }
 }()
 ```
