@@ -16,6 +16,17 @@ interface StringCovertible {
 }
 
 /**
+ * An object that's convertible to bytes, e.g. client.Address.
+ * Used in this indirect way so we don't have to import @herajs/client here.
+ */
+interface BytesConvertible {
+    bytes: Uint8Array;
+}
+function isBytesConvertible(obj: any): obj is BytesConvertible {
+    return Object.prototype.hasOwnProperty.call(obj, 'bytes');
+}
+
+/**
  * Encode public key as address
  * @param {ECPoint} publicKey
  * @return {string} base58check encoded address
@@ -29,10 +40,13 @@ export function addressFromPublicKey(publicKey: any): string {
 
 /**
  * Retrieve public key from address
- * @param {string} base58check encoded address
+ * @param {string} base58check encoded address or Address object
  * @return {KeyPair} key pair (with missing private key)
  */
-export function publicKeyFromAddress(address: string | StringCovertible): ec.KeyPair {
+export function publicKeyFromAddress(address: string | BytesConvertible | StringCovertible): ec.KeyPair {
+    if (isBytesConvertible(address)) {
+        return ecdsa.keyFromPublic(address.bytes);
+    }
     const pubkey = decodeAddress(`${address}`) as Buffer;
     return ecdsa.keyFromPublic(pubkey);
 }

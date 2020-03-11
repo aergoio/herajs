@@ -84,7 +84,7 @@ class AccountProof {
 }
 
 export default class StateQueryProof {
-    contractProof?: ContractVarProof;
+    contractProof!: ContractVarProof;
     varProofs!: ContractVarProof[];
     
     constructor(data: Partial<StateQueryProof>) {

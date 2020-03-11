@@ -26,8 +26,8 @@ export interface BlockBody {
 
 export default class Block {
     hash!: string;
-    header?: BlockHeader;
-    body?: BlockBody;
+    header!: BlockHeader;
+    body!: BlockBody;
 
     constructor(data: Partial<Block>) {
         Object.assign(this, data);

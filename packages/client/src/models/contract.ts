@@ -17,7 +17,7 @@ interface QueryInfo {
     Args: PrimitiveType[];
 }
 
-type Abi = Partial<ABI.AsObject> & { functions: any };
+export type Abi = Partial<ABI.AsObject> & { functions: any; state_variables: any };
 
 /**
  * Data structure for contract function calls.

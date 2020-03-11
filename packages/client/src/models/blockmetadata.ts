@@ -6,7 +6,7 @@ import Amount from './amount';
 
 export default class BlockMetadata {
     hash!: string;
-    header?: BlockHeader;
+    header!: BlockHeader;
     txcount!: number;
     size!: number;
 

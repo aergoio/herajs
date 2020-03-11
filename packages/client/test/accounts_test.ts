@@ -11,10 +11,6 @@ import { longPolling } from '../src/utils';
 import JSBI from 'jsbi';
 import Amount from '../src/models/amount';
 
-const waitFor = (ms) => new Promise(resolve => {
-    setTimeout(resolve, ms);
-});
-
 describe('Aergo.Accounts', () => {
     const aergo = new AergoClient(); //default connect to 127.0.0.1:7845
     let testAddress: string | Address = 'INVALIDADDRESS';
@@ -68,10 +64,8 @@ describe('Aergo.Accounts', () => {
                 amount: '123 aer',
                 chainIdHash: await aergo.getChainIdHash()
             };
-            return aergo.accounts.sendTransaction(testtx)
-                .then((txhash) => {
-                    assert.typeOf(txhash, 'string');
-                });
+            const txhash = await aergo.accounts.sendTransaction(testtx);
+            assert.typeOf(txhash, 'string');
         });
         it('should send to a name', async () => {
             const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
@@ -82,12 +76,10 @@ describe('Aergo.Accounts', () => {
                 amount: '1 aergo',
                 payload: `{"Name":"v1createName","Args":["${name}"]}`,
                 type: 1,
-                chainIdHash: await aergo.getChainIdHash()
+                chainIdHash: await aergo.getChainIdHash(),
             };
             const txhash = await aergo.accounts.sendTransaction(testtx);
-            await longPolling(async () => {
-                return await aergo.getTransaction(txhash);
-            }, result => 'block' in result, 2000);
+            await aergo.waitForTransactionReceipt(txhash, 2000);
 
             const testtx2 = {
                 from: testAddress,
@@ -96,7 +88,7 @@ describe('Aergo.Accounts', () => {
             };
             const txhash2 = await aergo.accounts.sendTransaction(testtx2);
             //console.log(txhash2);
-        });
+        }).timeout(3000);
         it('should error when sending to unregistered name', async () => {
             const name = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
             await aergo.accounts.unlock(testAddress, 'testpass');
@@ -146,18 +138,16 @@ describe('Aergo.Accounts', () => {
             const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
 
-            // Tx can be retrieved again from mempool
-            await waitFor(500);
-            const tx2 = await longPolling(async () => {
-                return await aergo.getTransaction(txhash);
-            }, result => 'block' in result, 5000);
-            assert.equal(tx2.tx.hash, tx.hash);
-            assert.isTrue(tx2.tx.amount.equal(tx.amount.value));
-
             // Tx has receipt
-            const txReceipt = await aergo.getTransactionReceipt(tx.hash);
+            const txReceipt = await aergo.waitForTransactionReceipt(txhash);
             assert.isTrue(txReceipt.fee.equal(new Amount('5000000000000000 aer')), `Wrong fee: ${txReceipt.fee}`);
             assert.isTrue(txReceipt.cumulativefee.equal(0), `Wrong cumulativefee: ${txReceipt.cumulativefee}`);
+            
+            // Tx can be retrieved again
+            const tx2 = await aergo.getTransaction(txhash);
+            assert.equal(tx2.tx.hash, tx.hash);
+            assert.isTrue(tx2.tx.amount.equal(tx.amount.value as JSBI));
+            // @ts-ignore
             assert.equal(txReceipt.blockhash, tx2.block.hash);
 
             // Submitting same tx again should error

@@ -145,7 +145,7 @@ class Accounts {
                 throw new Error(errorMessageForCode(obj.error) + ': ' + obj.detail);
             }
     
-            return encodeTxHash(result.getHash_asU8())
+            return encodeTxHash(result.getHash_asU8());
         });
     }
 

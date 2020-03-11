@@ -58,9 +58,13 @@ export default class Address {
             }
         }
     }
-    
+
     asBytes(): Uint8Array {
         return new Uint8Array(this.value);
+    }
+
+    get bytes(): Uint8Array {
+        return this.asBytes();
     }
 
     toJSON(): string {
