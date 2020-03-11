@@ -9,11 +9,12 @@ const assert = chai.assert;
 const BIP44_ID = 441;
 const WALLET_HDPATH = `m/44'/${BIP44_ID}'/0'/0/`;
 
-import { hash, verifyTxSignature, publicKeyFromAddress } from '@herajs/crypto';
-import { Tx } from '@herajs/client';
+import { hash, verifyTxSignature, publicKeyFromAddress, hashTransaction } from '@herajs/crypto';
+import AergoClient, { Tx } from '@herajs/client';
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerAppAergo from '../src';
+import { Buffer } from 'buffer';
 
 let transport: Promise<Transport>;
 
@@ -54,7 +55,7 @@ async function signAndVerifyTx(app: LedgerAppAergo, txBody: any): Promise<boolea
     return await verifyTxSignature(txBody, pubkey, result.signature);
 }
 
-describe('signTransaction()', () => {
+describe.skip('signTransaction()', () => {
     it('should reject too big transactions', async () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
@@ -96,5 +97,28 @@ describe('signTransaction()', () => {
                 Args: [1, 2, 3],
             }),
         }));
+    }).timeout(30000);
+});
+
+describe('sign and send', () => {
+    const aergo = new AergoClient();
+    it('should sign transaction and send to network', async () => {
+        const app = await getApp();
+        const address = await app.getWalletAddress(WALLET_HDPATH + '0');
+        const tx = {
+            from: address,
+            to: address,
+            amount: '1337 aer',
+            chainIdHash: await aergo.getChainIdHash(),
+            type: Tx.Type.TRANSFER,
+            nonce: await aergo.getNonce(address) + 1,
+            limit: 100000,
+        } as any;
+        const result = await app.signTransaction(tx);
+        tx.sign = result.signature;
+        tx.hash = await hashTransaction(tx, 'bytes');
+        const txHash = await aergo.sendSignedTransaction(tx);
+        const txReceipt = await aergo.waitForTransactionReceipt(txHash);
+        assert.equal(txReceipt.status, 'SUCCESS');
     }).timeout(30000);
 });
