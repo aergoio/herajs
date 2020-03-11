@@ -172,9 +172,10 @@ describe('Contracts', () => {
 
         it('should get events from a deployed contract', async () => {
             const height = (await aergo.blockchain()).bestHeight;
+            const blockfrom = Math.max(1, height - 1000);
             const result = await aergo.getEvents({
                 address: contractAddress,
-                blockfrom: height - 1000,
+                blockfrom,
             });
             assert.equal(result[0].eventName, 'incremented');
             assert.equal(result[0].address.toString(), contractAddress.toString());
@@ -187,7 +188,7 @@ describe('Contracts', () => {
             const result2 = await aergo.getEvents({
                 address: contractAddress,
                 args: [10], // == new Map([[0, 10]])
-                blockfrom: height - 1000,
+                blockfrom,
             });
             assert.equal(result2.length, 1);
             assert.equal(result2[0].eventName, 'incremented');
@@ -198,7 +199,7 @@ describe('Contracts', () => {
             const result3 = await aergo.getEvents({
                 address: contractAddress,
                 args: new Map([[1, 11]]),
-                blockfrom: height - 1000,
+                blockfrom,
             });
             assert.equal(result3.length, 1);
             assert.equal(result3[0].args[0], 10);
