@@ -23,8 +23,7 @@ describe('retryIfErrorMatch()', () => {
                 return 1;
             },
             (e: Error) => e.message.match(/not yet/) !== null,
-            500,
-            250,
+            // test timeout = 0 (default branch)
         );
         assert.equal(result, 1);
     });

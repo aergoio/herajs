@@ -45,7 +45,6 @@ export function retryIfErrorMatch<T>(
                 throw e;
             }
             const interval = backoffIntervalStep(retryCount++, baseBackoffInterval);
-            /* istanbul ignore else: can't test without timeout */
             if (timeout) {
                 const elapsed = +new Date() - (+started);
                 if (elapsed + interval >= timeout) {
