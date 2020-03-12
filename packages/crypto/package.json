@@ -28,7 +28,7 @@
   "homepage": "https://github.com/aergoio/herajs-crypto#readme",
   "dependencies": {
     "@herajs/common": "0.17.1",
-    "@herajs/hdkey": "^11.1.2",
+    "@herajs/hdkey": "^11.2.0",
     "@types/elliptic": "^6.4.0",
     "aes-js": "^3.1.1",
     "asmcrypto.js": "^2.3.2",
