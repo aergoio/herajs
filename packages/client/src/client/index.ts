@@ -1,8 +1,7 @@
 import { Buffer } from 'buffer';
-import bs58 from 'bs58';
 import promisify from '../promisify';
 import { errorMessageForCode, waterfall } from '../utils';
-import { fromNumber, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding, Amount } from '@herajs/common';
+import { fromNumber, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding, Amount, base58 } from '@herajs/common';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import { TransactionError } from '../errors';
 import Accounts from '../accounts';
@@ -134,7 +133,7 @@ class AergoClient {
      */
     setChainIdHash(hash: string | Uint8Array): void {
         if (typeof hash === 'string') {
-            this.chainIdHash = bs58.decode(hash);
+            this.chainIdHash = base58.decode(hash);
         } else {
             this.chainIdHash = hash;
         }
@@ -487,7 +486,7 @@ class AergoClient {
         return promisify(this.client.client.getVotes, this.client.client)(params).then(
             state => state.getVotesList().map((item: Vote) => ({
                 amount: new Amount(item.getAmount_asU8()),
-                candidate: id === 'voteBP' ? bs58.encode(Buffer.from(item.getCandidate_asU8())) : Buffer.from(item.getCandidate_asU8()).toString(),
+                candidate: id === 'voteBP' ? base58.encode(Buffer.from(item.getCandidate_asU8())) : Buffer.from(item.getCandidate_asU8()).toString(),
             }))
         );
     }

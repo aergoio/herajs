@@ -1,9 +1,5 @@
-import { constants } from '@herajs/common';
-import bs58check from 'bs58check';
-import { fromNumber } from '@herajs/common';
-import Address from './address';
+import { Address, Amount, constants, fromNumber, base58check } from '@herajs/common';
 import Tx from './tx';
-import { Amount } from '@herajs/common';
 import { Function, StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
 
@@ -277,12 +273,11 @@ class Contract {
 
     static encodeCode(byteArray: Buffer): string {
         const buf = Buffer.from([constants.ADDRESS_PREFIXES.CONTRACT, ...byteArray]);
-        return bs58check.encode(buf);
+        return base58check.encode(buf);
     }
 
     static decodeCode(bs58checkCode: string): Buffer {
-        return bs58check.decode(bs58checkCode).slice(1);
-        //return bs58.decode(bs58checkCode);
+        return base58check.decode(bs58checkCode).slice(1);
     }
 }
 
