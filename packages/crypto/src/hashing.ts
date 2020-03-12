@@ -1,12 +1,12 @@
-import { fromNumber, fromBigInt, decodeAddress, encodeTxHash } from './encoding';
-import bs58 from 'bs58';
+import { fromNumber, fromBigInt, decodeAddress } from './encoding';
+import { encodeByteArray, decodeToBytes, ByteEncoding } from '@herajs/common';
 import JSBI from 'jsbi';
 import { Buffer } from 'buffer';
 import { ecdsa } from './ecdsa';
 
 function bufferOrB58(input?: Uint8Array | string): Uint8Array {
     if (typeof input === 'string') {
-        return bs58.decode(input);
+        return decodeToBytes(input, 'base58');
     }
     if (typeof input === 'undefined') {
         return new Uint8Array([]);
@@ -62,15 +62,13 @@ function inferType(tx: TxBody): number {
 /**
  * Calculate hash of transaction
  * @param {object} tx Transaction
- * @param {string} encoding bytes (default), base58, base64
+ * @param {ByteEncoding} encoding bytes (default), base58, base64
  * @return {Buffer | string} transaction hash. If encoding is bytes, the result is a Buffer, otherwise a string.
  */
 export async function hashTransaction(tx: TxBody): Promise<string>;
-export async function hashTransaction(tx: TxBody, encoding: string, includeSign?: boolean): Promise<Buffer | string>;
-export async function hashTransaction(tx: TxBody, encoding: 'base64', includeSign?: boolean): Promise<string>;
-export async function hashTransaction(tx: TxBody, encoding: 'base58', includeSign?: boolean): Promise<string>;
+export async function hashTransaction(tx: TxBody, encoding: ByteEncoding, includeSign?: boolean): Promise<string>;
 export async function hashTransaction(tx: TxBody, encoding: 'bytes', includeSign?: boolean): Promise<Buffer>;
-export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSign = true): Promise<Buffer | string> {
+export async function hashTransaction(tx: TxBody, encoding: ByteEncoding | 'bytes' = 'base64', includeSign = true): Promise<Buffer | string> {
     // Amount defaults to zero if tx.amount is falsy
     let amount = '0';
     if (tx.amount) {
@@ -92,30 +90,26 @@ export async function hashTransaction(tx: TxBody, encoding = 'base64', includeSi
     const type = typeof tx.type !== 'undefined' ? tx.type : inferType(tx);
 
     const items = [
-        fromNumber(tx.nonce, 64),
+        fromNumber(tx.nonce, 64/8),
         decodeAddress(tx.from.toString()),
         tx.to ? decodeAddress(tx.to.toString()) : Buffer.from([]),
         fromBigInt(amount!= '' ? amount : 0),
         tx.payload ? Buffer.from(tx.payload as any) : Buffer.from([]),
-        fromNumber(tx.limit || 0, 64),
+        fromNumber(tx.limit || 0, 64/8),
         fromBigInt(tx.price ? tx.price.toString() : 0),
-        fromNumber(type, 32),
-        Buffer.from(bufferOrB58(tx.chainIdHash))
-    ];
+        fromNumber(type, 32/8),
+        bufferOrB58(tx.chainIdHash),
+    ].map(item => Buffer.from(item));
 
-    let data = Buffer.concat(items.map(item => Buffer.from(item)));
+    let data = Buffer.concat(items);
 
     if (includeSign && typeof tx.sign !== 'undefined') {
         data = Buffer.concat([data, Buffer.from(tx.sign, 'base64')]);
     }
 
     const result = hash(data);
-
-    if (encoding == 'base64') {
-        return Buffer.from(result).toString('base64');
-    } else if (encoding == 'base58') {
-        return encodeTxHash(Buffer.from(result));
-    } else {
+    if (encoding === 'bytes') {
         return result;
     }
+    return encodeByteArray(result, encoding);
 }

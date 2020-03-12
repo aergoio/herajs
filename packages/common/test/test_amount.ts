@@ -1,7 +1,7 @@
 import chai from 'chai';
 const assert = chai.assert;
 
-import Amount from '../src/amount';
+import Amount from '../src/classes/amount';
 
 describe('Amount', () => {
     it('should move decimal point', () => {

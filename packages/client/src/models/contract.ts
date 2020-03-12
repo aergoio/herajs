@@ -1,4 +1,4 @@
-import { ADDRESS_PREFIXES } from '../constants';
+import { constants } from '@herajs/common';
 import bs58check from 'bs58check';
 import { fromNumber } from '@herajs/common';
 import Address from './address';
@@ -276,7 +276,7 @@ class Contract {
     }
 
     static encodeCode(byteArray: Buffer): string {
-        const buf = Buffer.from([ADDRESS_PREFIXES.CONTRACT, ...byteArray]);
+        const buf = Buffer.from([constants.ADDRESS_PREFIXES.CONTRACT, ...byteArray]);
         return bs58check.encode(buf);
     }
 

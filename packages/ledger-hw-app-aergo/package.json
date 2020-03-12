@@ -28,7 +28,8 @@
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
     "@herajs/client": "^0.17.1",
-    "@herajs/crypto": "^0.17.1"
+    "@herajs/crypto": "^0.17.1",
+    "@herajs/common": "^0.17.1"
   },
   "devDependencies": {
     "@ledgerhq/hw-transport": "^5.9.0",

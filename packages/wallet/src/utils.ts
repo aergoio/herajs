@@ -78,11 +78,11 @@ export class HashMap<K, V> {
         this.map.clear();
     }
 
-    values() {
+    values(): IterableIterator<V> {
         return this.map.values();
     }
 
-    keys() {
+    keys(): IterableIterator<string> {
         return this.map.keys();
     }
 

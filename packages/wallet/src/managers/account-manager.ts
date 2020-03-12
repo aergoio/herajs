@@ -2,7 +2,7 @@ import { Wallet } from '../wallet';
 import { Account, AccountSpec, AccountData, CompleteAccountSpec } from '../models/account';
 import { Transaction, TxBody } from '../models/transaction';
 import { serializeAccountSpec, HashMap } from '../utils';
-import { Amount, Address } from '@herajs/client';
+import { Amount, Address } from '@herajs/common';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { PausableTypedEventEmitter } from '../utils';
 import { createIdentity } from '@herajs/crypto';

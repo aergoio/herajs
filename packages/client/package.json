@@ -7,7 +7,7 @@
   "browser": "dist/herajs.js",
   "types": "dist/platforms/node/index.d.ts",
   "scripts": {
-    "test:ts": "run(){ mocha --exit -r babel-register-ts ${1-'test/*.ts'}; }; run",
+    "test:ts": "run(){ nyc mocha --exit -r babel-register-ts ${1-'test/*.ts'}; }; run",
     "test": "yarn run lint && yarn run type-check && yarn run test:ts",
     "dev": "rollup -w -c scripts/config.js --environment TARGET:node-esm",
     "lint": "eslint --fix src scripts test",
@@ -33,8 +33,6 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.9.1",
     "@types/google-protobuf": "^3.2.7",
-    "bs58": "^4.0.1",
-    "bs58check": "^2.1.2",
     "google-protobuf": "^3.6.0",
     "grpc": "^1.13.1",
     "hash.js": "^1.1.7",

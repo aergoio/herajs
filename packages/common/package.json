@@ -13,7 +13,8 @@
     "build": "yarn run lint && yarn run build:types && yarn run build:js",
     "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
-    "test": "yarn run lint && yarn run type-check && nyc mocha -r babel-register-ts test/*.ts"
+    "test:ts": "run(){ nyc mocha --exit -r babel-register-ts ${1-'test/*.ts'}; }; run",
+    "test": "yarn run lint && yarn run type-check && yarn run  test:ts"
   },
   "repository": {
     "type": "git",
@@ -26,8 +27,10 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
+    "create-hash": "^1.2.0",
     "jsbi": "^3.0.0"
   },
   "devDependencies": {
+    "@types/create-hash": "^1.2.2"
   }
 }

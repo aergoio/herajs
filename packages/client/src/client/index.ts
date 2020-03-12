@@ -32,11 +32,11 @@ import {
     AccountAddress,
 } from '../../types/rpc_pb';
 import {
-    Tx, Block, BlockMetadata, Address,
+    Tx, Block, BlockMetadata,
     Peer, State, ChainInfo, Event, StateQueryProof, FilterInfo
 } from '../models';
 import { Abi } from '../models/contract';
-import { AddressInput } from '../models/address';
+import { Address, AddressInput } from '../models/address';
 import { FunctionCall, StateQuery } from '../models/contract';
 import {
     GetTxResult, GetReceiptResult, NameInfoResult, ConsensusInfoResult,

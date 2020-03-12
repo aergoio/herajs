@@ -1,5 +1,5 @@
 import hdkey from '@herajs/hdkey';
-import { WALLET_HDPATH } from './constants';
+import { constants } from '@herajs/common';
 
 // Re-export useful functions from bip39
 import { generateMnemonic as _generateMnemonic, mnemonicToSeed as _mnemonicToSeed } from 'bip39';
@@ -32,7 +32,7 @@ export interface Options {
 }
 
 const defaultOptions = {
-    hdpath: WALLET_HDPATH,
+    hdpath: constants.WALLET_HDPATH,
     count: 1,
 };
 

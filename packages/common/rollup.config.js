@@ -72,16 +72,17 @@ export default [
         file: pkg.module,
         format: 'es',
     }]),
+    /*
     // UMD build with bundled dependencies
     genConfig(true, [{
         file: pkg.browser,
         format: 'umd',
         name,
         exports: 'named',
-    }, /*{
+    }, {
         file: pkg.browser.replace(/\.js$/, '.min.js'),
         format: 'umd',
         name,
         exports: 'named',
-    }*/])
+    }])*/
 ];

@@ -1,8 +1,6 @@
 import { Transaction, SignedTransaction } from './transaction';
 import { Record, Data } from './record';
-//import Tx from '@herajs/client/src/models/tx';
 import { identifyFromPrivateKey, decryptPrivateKey, signTransaction, signMessage } from '@herajs/crypto';
-//import { Amount } from '@herajs/client';
 
 type Encoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'latin1' | 'binary' | 'hex';
 

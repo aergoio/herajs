@@ -1,5 +1,5 @@
 
-import { Address, Amount } from '@herajs/client';
+import { Address, Amount } from '@herajs/common';
 import { Record, Data } from './record';
 
 /**

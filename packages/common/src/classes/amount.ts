@@ -1,6 +1,6 @@
-import { UNITS } from './constants';
+import { UNITS } from '../constants';
+import { fromHexString, toHexString } from '../encoding';
 import JSBI from 'jsbi';
-import { fromHexString, toHexString } from './encoding';
 import { Buffer } from 'buffer';
 
 const DEFAULT_USER_UNIT = 'aergo';

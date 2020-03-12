@@ -9,7 +9,7 @@ import { Transaction, SignedTransaction } from '../models/transaction';
 import { Account, AccountSpec, CompleteAccountSpec } from '../models/account';
 import { Wallet } from '../wallet';
 import { PausableTypedEventEmitter, backoffIntervalStep, HashMap } from '../utils';
-import { Address } from '@herajs/client';
+import { Address } from '@herajs/common';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { GetAccountTxParams } from '../datasources/types';
 

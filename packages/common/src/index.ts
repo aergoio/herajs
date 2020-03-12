@@ -1,4 +1,4 @@
 export * from './encoding';
 export * from './timing';
-export { default as Amount } from './amount';
-export * from './constants';
+export * from './classes';
+export { default as constants } from './constants';

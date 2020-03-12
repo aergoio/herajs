@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",
-    "test": "lerna run test --stream",
+    "test": "lerna run test --ignore @herajs/ledger-hw-app-aergo --stream",
     "lint": "lerna run lint",
     "build": "lerna run build",
     "build-publish": "lerna run build && lerna publish",

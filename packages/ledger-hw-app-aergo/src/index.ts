@@ -1,6 +1,7 @@
 import Transport from '@ledgerhq/hw-transport';
 import { chunkBy, pathToBuffer } from './utils';
-import { Tx, Address } from '@herajs/client';
+import { Address } from '@herajs/common';
+import { Tx } from '@herajs/client';
 
 const CLA = 0xAE;
 

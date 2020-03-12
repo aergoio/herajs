@@ -2,7 +2,8 @@ import { Middleware, MiddlewareFunc } from '../middleware';
 import { Account } from '../models/account';
 import { SignedTransaction } from '../models/transaction';
 import { Wallet } from '../wallet';
-import { Address, Tx } from '@herajs/client';
+import { Tx } from '@herajs/client';
+import { Address } from '@herajs/common';
 import { AccountTransactionsDatasource, GetAccountTxParams } from './types';
 
 

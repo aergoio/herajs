@@ -1,23 +1,18 @@
 import bs58 from './base58';
 import { Buffer } from 'buffer';
 
-export type ByteEncoding = 'base58' | 'bytes' | BufferEncoding;
-export function encodeByteArray(val: Buffer | Uint8Array, enc: ByteEncoding = 'base58'): (string | Buffer) {
-    if (enc === 'bytes') {
-        return Buffer.from(val);
-    }
+export type ByteEncoding = 'base58' | BufferEncoding;
+function encodeByteArray(val: Buffer | Uint8Array, enc: ByteEncoding = 'base58'): string  {
     if (enc === 'base58') {
         return bs58.encode(Buffer.from(val));
     }
     return Buffer.from(val).toString(enc);
 }
+export { encodeByteArray };
 export function decodeToBytes(val: string | Buffer | Uint8Array, enc: ByteEncoding = 'base58'): Buffer {
     if (typeof val === 'string') {
         if (enc === 'base58') {
             return bs58.decode(val);
-        }
-        if (enc === 'bytes') {
-            throw new Error('cannot decode string with encoding bytes, did you mean binary or to pass a byte array?');
         }
         return Buffer.from(val, enc);
     }
@@ -66,7 +61,7 @@ export const fromNumber = (d: number, length = 8): Uint8Array => {
 };
 
 /**
- * TODO: what's this?
+ * TODO: what's this? Is this useful?
  */
 export const toBytesUint32 = (num: number): ArrayBuffer => {
     const arr = new ArrayBuffer(8);
