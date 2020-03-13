@@ -63,7 +63,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     public wallet: Wallet;
     private accounts: HashMap<CompleteAccountSpec, Promise<Account>> = new HashMap();
     private trackers: HashMap<CompleteAccountSpec, AccountTracker> = new HashMap();
-    private loadedFromStore: boolean = false;
+    private loadedFromStore = false;
 
     constructor(wallet: Wallet) {
         super();

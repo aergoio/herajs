@@ -66,7 +66,7 @@ export default class LedgerAppAergo {
     transport: Transport;
     lastAddress?: Address;
 
-    constructor(transport: Transport, scrambleKey: string = 'AERGO') {
+    constructor(transport: Transport, scrambleKey = 'AERGO') {
         this.transport = transport;
         const methods = [
             'getVersion',

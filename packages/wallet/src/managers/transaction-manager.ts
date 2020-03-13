@@ -49,8 +49,8 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
     public transaction: SignedTransaction;
     private manager: TransactionManager;
     private timeoutId?: NodeJS.Timeout;
-    private retryCount: number = 0;
-    private maxRetryCount: number = 10;
+    private retryCount = 0;
+    private maxRetryCount = 10;
     private started: Date;
 
     constructor(manager: TransactionManager, transaction: SignedTransaction) {

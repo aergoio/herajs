@@ -12,13 +12,11 @@
     "target": "es2015",
     "module": "es2015",
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["mocha"]
   },
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "types": [
-    "mocha"
   ]
 }

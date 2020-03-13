@@ -34,7 +34,7 @@ class IDBIndex extends Index {
     storage: IndexedDbStorage;
     name: StoreNames<IdbSchema>;
     db: IDBPDatabase<IdbSchema>;
-    keyPath: string = 'key';
+    keyPath = 'key';
 
     constructor(storage: IndexedDbStorage, name: StoreNames<IdbSchema>) {
         super();
