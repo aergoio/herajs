@@ -76,6 +76,7 @@ class AergoClient {
     accounts: Accounts;
     target: string;
     private chainIdHash?: Uint8Array;
+    // @ts-ignore
     private defaultLimit: number;
     static defaultProviderClass?: { new (...args: any[]): any };
     static platform = '';

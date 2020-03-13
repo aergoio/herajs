@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.settings.json",
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src/**/*.ts"
   ],
   "compilerOptions": {
     "declarationDir": "dist/types"

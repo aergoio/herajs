@@ -1,16 +1,14 @@
 {
+  "extends": "../../tsconfig.settings.json",
   "include": [
-    "src",
-    "test/**/*.ts",
+    "src"
   ],
   "compilerOptions": {
-    "declaration": true,
-    "allowSyntheticDefaultImports": true,
+    "strict": false,
     "declarationDir": "dist",
-    "resolveJsonModule": true,
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "noImplicitAny": false,
     "lib": [
       "es2017",
       "dom"
