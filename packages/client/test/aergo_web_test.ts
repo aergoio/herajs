@@ -7,7 +7,7 @@ import AergoClient from '../src';
 import GrpcWebNodeProvider from '../src/providers/grpc-web-node';
 
 describe('Aergo over grpc-web', () => {
-    const provider = new GrpcWebNodeProvider({url: 'http://127.0.0.1:7845'});
+    const provider = new GrpcWebNodeProvider({ url: 'http://127.0.0.1:7845' });
     const aergo = new AergoClient({}, provider);
 
     describe('getChainInfo()', () => {

@@ -1,5 +1,5 @@
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_web_pb';
-import { grpc } from "@improbable-eng/grpc-web";
+import { grpc } from '@improbable-eng/grpc-web';
 
 interface GrpcWebProviderConfig {
     url?: string;

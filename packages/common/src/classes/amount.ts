@@ -31,7 +31,7 @@ export default class Amount {
     value!: Readonly<JSBI>; // value in base unit
     unit!: string; // unit for displaying
 
-    private static _valueFromString(value: string, unit: string = ''): JSBI {
+    private static _valueFromString(value: string, unit = ''): JSBI {
         if (unit === '') {
             unit = DEFAULT_USER_UNIT;
         }
@@ -138,8 +138,7 @@ export default class Amount {
         str = str.replace(/^\./, '0.');
         return str;
     }
-
-    formatNumber(unit: string = ''): string {
+    formatNumber(unit = ''): string {
         if (unit === '') unit = this.unit;
         if (unit === '') return this.value.toString();
         const prec = getUnitPrecision(unit);

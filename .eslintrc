@@ -52,6 +52,8 @@
         "@typescript-eslint/explicit-function-return-type": [
             "warn",
             { "allowExpressions": true }
-        ]
+        ],
+        "@typescript-eslint/ban-ts-ignore": 0,
+        "@typescript-eslint/no-this-alias": 0
     }
 }

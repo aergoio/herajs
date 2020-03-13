@@ -78,7 +78,7 @@ class AergoClient {
     private chainIdHash?: Uint8Array;
     private defaultLimit: number;
     static defaultProviderClass?: { new (...args: any[]): any };
-    static platform: string = '';
+    static platform = '';
 
     /**
      * Create a new auto-configured client with:
@@ -479,7 +479,7 @@ class AergoClient {
      * @param count number
      * @param id vote identifier, default: voteBP
      */
-    getTopVotes(count: number, id: string = 'voteBP'): Promise<any> {
+    getTopVotes(count: number, id = 'voteBP'): Promise<any> {
         const params = new VoteParams();
         params.setCount(count);
         params.setId(id);
@@ -550,7 +550,7 @@ class AergoClient {
      * @param {number} baseBackoffInterval base time for exponentail backoff
      * @return {Promise<object>} transaction receipt
      */
-    waitForTransactionReceipt(txhash: string, timeout: number = 0, baseBackoffInterval = 500): Promise<GetReceiptResult> {
+    waitForTransactionReceipt(txhash: string, timeout = 0, baseBackoffInterval = 500): Promise<GetReceiptResult> {
         const started = new Date();
         let retryCount = 0;
         const retryLoad = async (): Promise<GetReceiptResult> => {
