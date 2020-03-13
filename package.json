@@ -45,7 +45,7 @@
     "mocha": "^6.1.4",
     "nyc": "^15.0.0",
     "regenerator-runtime": "^0.13.1",
-    "rollup": "^1.29.0",
+    "rollup": "^2.0.0",
     "rollup-plugin-analyzer": "^3.0.0",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-node-builtins": "^2.1.2",
