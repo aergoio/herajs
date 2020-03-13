@@ -1,8 +1,7 @@
 import Tx from './tx';
-import bs58 from 'bs58';
 import { Block as GrpcBlock } from '../../types/blockchain_pb';
 import Address from './address';
-import Amount from './amount';
+import { Amount, base58 } from '@herajs/common';
 import { Buffer } from 'buffer';
 
 export interface BlockHeader {
@@ -67,10 +66,10 @@ export default class Block {
         throw new Error('Not implemented');
     }
     static encodeHash(bytes: Uint8Array): string {
-        return bs58.encode(Buffer.from(bytes));
+        return base58.encode(Buffer.from(bytes));
     }
     static decodeHash(bs58string: string): Uint8Array {
-        return bs58.decode(bs58string);
+        return base58.decode(bs58string);
     }
     static getVoteReward(block: { header?: BlockHeader }): Amount {
         if (block.header && !block.header.rewardaccount.isEmpty()) {

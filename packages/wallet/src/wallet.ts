@@ -15,7 +15,7 @@ interface ChainConfig {
     chainId: string;
     nodeUrl?: string;
     provider?: any;
-};
+}
 
 interface WalletConfig {
     appName: string;
@@ -52,7 +52,7 @@ export class Wallet extends MiddlewareConsumer {
         this.keyManager = new KeyManager(this);
         this.transactionManager = new TransactionManager(this);
         this.accountManager = new AccountManager(this);
-        this.config = {...this.config, ...config};
+        this.config = { ...this.config, ...config };
     }
 
     /**
@@ -61,6 +61,7 @@ export class Wallet extends MiddlewareConsumer {
      * @param value 
      */
     set(configKey: keyof WalletConfig, value: WalletConfig[keyof WalletConfig]): void {
+        // @ts-ignore
         this.config[configKey] = value;
     }
 
@@ -125,7 +126,7 @@ export class Wallet extends MiddlewareConsumer {
         if (!this.clients.has(chainId)) {
             let provider = chainConfig.provider;
             if (typeof provider === 'function') {
-                provider = new provider({url: chainConfig.nodeUrl});
+                provider = new provider({ url: chainConfig.nodeUrl });
             }
             client = new AergoClient({}, provider);
             this.clients.set(chainId, client);
@@ -146,9 +147,9 @@ export class Wallet extends MiddlewareConsumer {
      * @returns prepared and signed transaction
      */
     async prepareTransaction(account: Account | AccountSpec, transaction: Partial<TxBody>): Promise<SignedTransaction> {
-        if (!(<Account>account).data) account = await this.accountManager.getOrAddAccount(<AccountSpec>account);
-        const preparedTx = await this.accountManager.prepareTransaction(<Account>account, transaction);
-        const signedTx = await this.keyManager.signTransaction(<Account>account, preparedTx);
+        if (!(account as Account).data) account = await this.accountManager.getOrAddAccount(account as AccountSpec);
+        const preparedTx = await this.accountManager.prepareTransaction(account as Account, transaction);
+        const signedTx = await this.keyManager.signTransaction(account as Account, preparedTx);
         return signedTx;
     }
 
@@ -232,11 +233,11 @@ export class Wallet extends MiddlewareConsumer {
     /**
      * Shortcut for keyManager.lock()
      */
-    lock () {
+    lock(): void {
         this.keyManager.lock();
     }
 
-    get unlocked () {
+    get unlocked(): boolean {
         return this.keyManager.unlocked;
     }
 

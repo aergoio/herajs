@@ -7,6 +7,8 @@ import json from '@rollup/plugin-json';
 import builtins from 'rollup-plugin-node-builtins';
 import { terser } from 'rollup-plugin-terser';
 import progress from 'rollup-plugin-progress';
+import pkg from '../package.json';
+import { builtinModules } from 'module';
 
 const globals = require('rollup-plugin-node-globals');
 //import typescript from 'rollup-plugin-typescript2';
@@ -24,18 +26,6 @@ const banner =
   ' */';
 
 const resolve = p => _resolve(__dirname, '../', p);
-
-const external = [
-    'grpc',
-    'google-protobuf',
-    'bs58check',
-    'bs58',
-    'buffer',
-    'jsbi',
-    'hash.js/lib/hash/sha/256',
-    '@improbable-eng/grpc-web',
-    '@improbable-eng/grpc-web-node-http-transport'
-];
 
 // Treating these as external as they are runtime requirements for node only
 // Packages from `external` are inlined for the web distribution
@@ -58,7 +48,6 @@ const builds = {
             }),
             //analyze()
         ],
-        external
     },
     // CommonJS build (ES Modules)
     'node-esm': {
@@ -71,7 +60,6 @@ const builds = {
                 extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
             }),
         ],
-        external
     },
     // Development build (Web, for browser or node)
     'web-dev': {
@@ -91,7 +79,6 @@ const builds = {
             
         ],
         context: 'window',
-        external: webExternal
     },
     // Production build (Web, for browser or node)
     'web-prod': {
@@ -112,12 +99,13 @@ const builds = {
             //analyze()
         ],
         context: 'window',
-        external: webExternal
     },
 };
 
 function genConfig (name) {
     const opts = builds[name];
+    const browser = name.match(/web/);
+    const external = browser ? webExternal : Object.keys(pkg.dependencies).concat(...builtinModules);
 
     const namedExports = {
         [resolve('types/rpc_pb.js')]: 'AccountAddress, Empty, Personal, SingleBytes, TxList, TxBody, Tx, CommitStatus, ListParams, Query, Name, PeersParams, VoteParams, NodeReq, KeyParams, BlockMetadata, PageParams, BlockBodyParams'.split(', '),
@@ -126,12 +114,13 @@ function genConfig (name) {
         [resolve('types/account_pb.js')]: 'Account'.split(', '),
         [resolve('../../node_modules/@improbable-eng/grpc-web/dist/grpc-web-client.umd.js')]: 'grpc'.split(','),
         [resolve('../../node_modules/elliptic/lib/elliptic.js')]: 'ec'.split(', '),
-        [resolve('../crypto/dist/herajs-crypto.umd.js')]: 'hash'.split(', '),
+        [resolve('../common/dist/herajs-common.umd.js')]: 'Amount'.split(', '),
+        [resolve('../common/dist/herajs-common.umd.js')]: 'hash'.split(', '),
     };
 
     const config = {
         input: opts.entry,
-        external: opts.external || [],
+        external,
         plugins: [
 
             commonjs({

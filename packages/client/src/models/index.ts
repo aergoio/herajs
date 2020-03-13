@@ -1,5 +1,5 @@
 export { default as Address } from './address';
-export { default as Amount } from './amount';
+export { Amount } from '@herajs/common';
 export { default as Block } from './block';
 export { default as BlockMetadata } from './blockmetadata';
 export { default as ChainInfo } from './chaininfo';

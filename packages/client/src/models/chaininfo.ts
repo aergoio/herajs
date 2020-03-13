@@ -1,5 +1,5 @@
 import { ChainInfo as GrpcChainInfo } from '../../types/rpc_pb';
-import Amount from './amount';
+import { Amount } from '@herajs/common';
 
 export interface ChainId {
     magic: string;

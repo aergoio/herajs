@@ -11,6 +11,7 @@ services:
 
 env:
   matrix:
+    - PACKAGE=@herajs/common
     - PACKAGE=@herajs/client
     - PACKAGE=@herajs/crypto
     - PACKAGE=@herajs/wallet

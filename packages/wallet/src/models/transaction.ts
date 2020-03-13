@@ -1,7 +1,5 @@
-//import Tx from '@herajs/client/src/models/tx';
-//import { signTransaction, hashTransaction } from '@herajs/crypto';
 import { Record, Data } from './record';
-import { Address, Amount } from '@herajs/client';
+import { Address, Amount } from '@herajs/common';
 import { hashTransaction } from '@herajs/crypto';
 
 enum Status {

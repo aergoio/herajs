@@ -1,4 +1,4 @@
-import bs58 from 'bs58';
+import { base58 } from '@herajs/common';
 import { Peer as GrpcPeer } from '../../types/rpc_pb';
 import { PeerRole, PeerRoleMap } from '../../types/node_pb';
 import Block from './block';
@@ -28,7 +28,7 @@ export default class Peer {
             // @ts-ignore
             obj.address = {
                 ...obj.address,
-                peerid: bs58.encode(Buffer.from(address.getPeerid_asU8())),
+                peerid: base58.encode(Buffer.from(address.getPeerid_asU8())),
             };
         }
         return new Peer(obj as Partial<Peer>);

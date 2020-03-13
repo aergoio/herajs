@@ -1,10 +1,9 @@
 {
-  "name": "@herajs/ledger-hw-app-aergo",
+  "name": "@herajs/common",
   "version": "0.17.1",
-  "description": "Ledger Hardware app for Aergo",
-  "main": "dist/herajs-ledger-hw-app-aergo.cjs.js",
-  "module": "dist/herajs-ledger-hw-app-aergo.esm.js",
-  "browser": "dist/herajs-ledger-hw-app-aergo.umd.js",
+  "description": "Herajs common library",
+  "main": "dist/herajs-common.cjs.js",
+  "module": "dist/herajs-common.esm.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -14,7 +13,8 @@
     "build": "yarn run lint && yarn run build:types && yarn run build:js",
     "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
-    "test": "yarn run lint && yarn run type-check && nyc mocha -r babel-register-ts test/*.ts"
+    "test:ts": "run(){ nyc mocha --exit -r babel-register-ts ${1-'test/*.ts'}; }; run",
+    "test": "yarn run lint && yarn run type-check && yarn run  test:ts"
   },
   "repository": {
     "type": "git",
@@ -27,13 +27,10 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
-    "@herajs/client": "^0.17.1",
-    "@herajs/crypto": "^0.17.1",
-    "@herajs/common": "^0.17.1"
+    "create-hash": "^1.2.0",
+    "jsbi": "^3.0.0"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport": "^5.9.0",
-    "@ledgerhq/hw-transport-node-hid": "^5.10.0",
-    "@types/ledgerhq__hw-transport-node-hid": "^4.22.1"
+    "@types/create-hash": "^1.2.2"
   }
 }

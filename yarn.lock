@@ -889,12 +889,11 @@
   resolved "https://registry.yarnpkg.com/@elderapo/typed-event-emitter/-/typed-event-emitter-1.5.1.tgz#63e2b406e9e1dd39950402618fafe194e779e660"
   integrity sha512-jQ1GfrrPmLKlWCd+FfqzaFZ4jErgvnFghu0Oc3QHygmt9LeXZDvq0tbI/2PKlx+NXQJ/tjDUMrj54K+7KXOTEw==
 
-"@herajs/hdkey@^11.1.2":
-  version "11.1.2"
-  resolved "https://registry.yarnpkg.com/@herajs/hdkey/-/hdkey-11.1.2.tgz#01cbf52ec1e9cd304e3a01450365fc626e75e6bf"
-  integrity sha512-U7ukz0GeIDFGPaW3/t+/EFgCYUN1Q+p7v6n5+/WcLT8PQxzImBvu6ETLiztatPtqr3WvLTMGj8G0HUJatDPuow==
+"@herajs/hdkey@^11.2.0":
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/@herajs/hdkey/-/hdkey-11.2.0.tgz#6092b8f160644719905fe0bb9527e7ec530e127d"
+  integrity sha512-fBkvwmaluSu+NYfYTC5Usr7ymbaadzjoXf08wKMteNZco1NrC3sUiD4MARU4pKKU2Q+B47J5ZqA1X7Vv7RouPg==
   dependencies:
-    bs58check "^2.1.2"
     create-hmac "^1.1.7"
     randombytes "^2.1.0"
     safe-buffer "^5.1.1"
@@ -1715,26 +1714,12 @@
   resolved "https://registry.yarnpkg.com/@types/abstract-leveldown/-/abstract-leveldown-5.0.1.tgz#3c7750d0186b954c7f2d2f6acc8c3c7ba0c3412e"
   integrity sha512-wYxU3kp5zItbxKmeRYCEplS2MW7DzyBnxPGj+GJVHZEUZiK/nn5Ei1sUFgURDh+X051+zsGe28iud3oHjrYWQQ==
 
-"@types/base-x@*":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/base-x/-/base-x-3.0.0.tgz#a1365259d1d3fa3ff973ab543192a6bdd4cb2f90"
-  integrity sha512-vnqSlpsv9uFX5/z8GyKWAfWHhLGJDBkrgRRsnxlsX23DHOlNyqP/eHQiv4TwnYcZULzQIxaWA/xRWU9Dyy4qzw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/bn.js@*":
   version "4.11.5"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.5.tgz#40e36197433f78f807524ec623afcf0169ac81dc"
   integrity sha512-AEAZcIZga0JgVMHNtl1CprA/hXX7/wPt79AgR4XqaDt7jyj3QWYw6LPoOiznPtugDmlubUnAahMs2PFxGcQrng==
   dependencies:
     "@types/node" "*"
-
-"@types/bs58@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/bs58/-/bs58-4.0.0.tgz#baec75cb007b419ede3ec6b3410d2c8f14c92fc5"
-  integrity sha512-gYX+MHD4G/R+YGYwdhG5gbJj4LsEQGr3Vg6gVDAbe7xC5Bn8dNNG2Lpo6uDX/rT5dE7VBj0rGEFuV8L0AEx4Rg==
-  dependencies:
-    "@types/base-x" "*"
 
 "@types/chai-as-promised@^7.1.0":
   version "7.1.0"
@@ -1752,6 +1737,13 @@
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+
+"@types/create-hash@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/create-hash/-/create-hash-1.2.2.tgz#e87247083df8478f6b83655592bde0d709028235"
+  integrity sha512-Fg8/kfMJObbETFU/Tn+Y0jieYewryLrbKwLCEIwPyklZZVY2qB+64KFjhplGSw+cseZosfFXctXO+PyIYD8iZQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/elliptic@^6.4.0":
   version "6.4.9"
@@ -2230,13 +2222,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-base-x@^3.0.2:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/base-x/-/base-x-3.0.5.tgz#d3ada59afed05b921ab581ec3112e6444ba0795a"
-  integrity sha512-C3picSgzPSLE+jW3tcBzJoGwitOtazb5B+5YmAxZm2ybmTi9LNgAtDO/jjVEBZwHoXmDBZ9m/IELj3elJVRBcA==
-  dependencies:
-    safe-buffer "^5.0.1"
-
 base@^0.11.1:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/base/-/base-0.11.2.tgz#7bde5ced145b6d551a90db87f83c558b4eb48a8f"
@@ -2423,22 +2408,6 @@ browserslist@^4.6.0:
     caniuse-lite "^1.0.30000967"
     electron-to-chromium "^1.3.133"
     node-releases "^1.1.19"
-
-bs58@^4.0.0, bs58@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
-  integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
-  dependencies:
-    base-x "^3.0.2"
-
-bs58check@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-2.1.2.tgz#53b018291228d82a5aa08e7d796fdafda54aebfc"
-  integrity sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==
-  dependencies:
-    bs58 "^4.0.0"
-    create-hash "^1.1.0"
-    safe-buffer "^5.1.2"
 
 btoa-lite@^1.0.0:
   version "1.0.0"

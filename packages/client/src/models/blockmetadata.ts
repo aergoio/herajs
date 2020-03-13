@@ -2,7 +2,7 @@ import { BlockMetadata as GrpcBlockMetadata } from '../../types/rpc_pb';
 import Address from './address';
 import Block, { BlockHeader } from './block';
 import { Buffer } from 'buffer';
-import Amount from './amount';
+import { Amount } from '@herajs/common';
 
 export default class BlockMetadata {
     hash!: string;

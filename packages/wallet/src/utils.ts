@@ -78,15 +78,15 @@ export class HashMap<K, V> {
         this.map.clear();
     }
 
-    values() {
+    values(): IterableIterator<V> {
         return this.map.values();
     }
 
-    keys() {
+    keys(): IterableIterator<string> {
         return this.map.keys();
     }
 
-    get size() {
+    get size(): number {
         return this.map.size;
     }
 }
@@ -106,7 +106,7 @@ export class PausableTypedEventEmitter<T> extends TypedEventEmitter<T> {
 }
 
 export interface Constructor<T> {
-    new (...args : any[]): T;
+    new (...args: any[]): T;
 }
 
 export function isConstructor<T>(arg: T | Constructor<T>): arg is Constructor<T> {

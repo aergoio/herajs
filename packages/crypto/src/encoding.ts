@@ -1,42 +1,9 @@
-import bs58check from 'bs58check';
-import { ADDRESS_PREFIXES, ACCOUNT_NAME_LENGTH } from './constants';
+import { constants, Address, fromHexString, fromNumber, base58, base58check } from '@herajs/common';
 import JSBI from 'jsbi';
-import bs58 from 'bs58';
 import { Buffer } from 'buffer';
 
-const systemAddresses = ['aergo.system', 'aergo.name', 'aergo.enterprise'];
-function isSystemAddress(address: string): boolean {
-    return systemAddresses.indexOf(address) !== -1;
-}
-
-/**
- * Converts hex string to Uint8Array.
- * @param {string} hexString
- * @return {Uint8Array}
- */
-export function fromHexString(hexString: string): Uint8Array {
-    if (hexString.length % 2 === 1) hexString = '0' + hexString;
-    const m = hexString.match(/.{1,2}/g);
-    if (!m) return new Uint8Array([]);
-    return new Uint8Array(m.map(byte => parseInt(byte, 16)));
-}
-
-/**
- * Converts number to Uint8 array.
- * @param {number} d
- * @param {number} bitLength default 64, can also use 32
- */
-export function fromNumber(d: number, bitLength = 64): Uint8Array {
-    const bytes = bitLength / 8;
-    if (d >= Math.pow(2, bitLength)) {
-        throw new Error('Number exeeds uint64 range');
-    }
-    const arr = new Uint8Array(bytes);
-    for (let i=0, j=1; i<bytes; i++, j *= 0x100) {
-        arr[i] = (d / j) & 0xff;
-    }
-    return arr;
-}
+export { fromHexString };
+export { fromNumber };
 
 /**
  * Converts BigInt to Uint8 array.
@@ -49,14 +16,10 @@ export function fromBigInt(d: JSBI | string | number): Uint8Array {
 /**
  * Encodes address or name from byte array to string.
  * @param {number[]} byteArray
- * @returns {string} base58check encoded address or character bytes of name
+ * @returns {string} base58check encoded address or name
  */
 export function encodeAddress(byteArray: Uint8Array): string {
-    if (byteArray.length <= ACCOUNT_NAME_LENGTH || isSystemAddress(Buffer.from(byteArray).toString())) {
-        return Buffer.from(byteArray).toString();
-    }
-    const buf = Buffer.from([ADDRESS_PREFIXES.ACCOUNT, ...byteArray]);
-    return bs58check.encode(buf);
+    return `${new Address(Buffer.from(byteArray))}`;
 }
 
 /**
@@ -65,10 +28,7 @@ export function encodeAddress(byteArray: Uint8Array): string {
  * @return {number[]} byte array
  */
 export function decodeAddress(address: string): Uint8Array {
-    if (address.length <= ACCOUNT_NAME_LENGTH || isSystemAddress(address)) {
-        return Buffer.from(address);
-    }
-    return bs58check.decode(address).slice(1);
+    return Uint8Array.from(new Address(address).asBytes());
 }
 
 /**
@@ -77,8 +37,8 @@ export function decodeAddress(address: string): Uint8Array {
  * @param {string} address
  */
 export function encodePrivateKey(byteArray: Uint8Array): string {
-    const buf = Buffer.from([ADDRESS_PREFIXES.PRIVATE_KEY, ...byteArray]);
-    return bs58check.encode(buf);
+    const buf = Buffer.from([constants.ADDRESS_PREFIXES.PRIVATE_KEY, ...byteArray]);
+    return base58check.encode(buf);
 }
 
 /**
@@ -87,7 +47,7 @@ export function encodePrivateKey(byteArray: Uint8Array): string {
  * @return {number[]} byte array
  */
 export function decodePrivateKey(key: string): Uint8Array {
-    return bs58check.decode(key).slice(1);
+    return base58check.decode(key).slice(1);
 }
 
 /**
@@ -96,7 +56,7 @@ export function decodePrivateKey(key: string): Uint8Array {
  * @return {string} base58 encoded string
  */
 export function encodeTxHash(bytes: Uint8Array | number[]): string {
-    return bs58.encode(Buffer.from(Uint8Array.from(bytes)));
+    return base58.encode(Buffer.from(Uint8Array.from(bytes)));
 }
 
 /**
@@ -105,5 +65,5 @@ export function encodeTxHash(bytes: Uint8Array | number[]): string {
  * @return {Uint8Array} decoded data
  */
 export function decodeTxHash(bs58string: string): Uint8Array {
-    return bs58.decode(bs58string);
+    return base58.decode(bs58string);
 }
