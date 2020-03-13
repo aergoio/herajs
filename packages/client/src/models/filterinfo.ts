@@ -1,5 +1,5 @@
 import Address from './address';
-import { FilterInfo as GrpcFilterInfo} from '../../types/blockchain_pb';
+import { FilterInfo as GrpcFilterInfo } from '../../types/blockchain_pb';
 import { PrimitiveType } from './contract';
 import { Buffer } from 'buffer';
 

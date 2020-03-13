@@ -1,8 +1,9 @@
 import AergoClient from '../src';
 import { longPolling } from '../src/utils';
-import { GetTxResult } from '../src/client';
 
-export function waitFor(ms) {
+import { GetTxResult } from '../src/client/types';
+
+export function waitFor(ms: number): Promise<void> {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
     });

@@ -1,12 +1,13 @@
 ## 0.18.0 (unreleased)
 - Ledger HW App
-  - New package `@herajs/ledger-hw-app-aergo` with support for [Aergo Ledger App](https://github.com/aergoio/ledger-app-aergo)
+  - New package `@herajs/ledger-hw-app-aergo` with support for [Aergo Ledger App](https://github.com/aergoio/ledger-app-aergo).
 
 - Client
-  - Try to infer correct tx type for contract calls and governance transactions
-  - Improve type safety
-  - Address class has a new property `length` which returns the number of (decoded) bytes
-  - Properly encode all hashes in block header (blocksroothash, txsroothash, receiptsroothash)
+  - Try to infer correct tx type for contract calls and governance transactions.
+  - Address class has a new property `length` which returns the number of (decoded) bytes.
+  - Properly encode all hashes in block header (blocksroothash, txsroothash, receiptsroothash).
+  - Improve type safety.
+  - Extracted some common code into new `@herajs/common` package.
 
 - Crypto
   - Try to infer correct tx type for contract calls and governance transactions
