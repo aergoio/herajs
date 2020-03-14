@@ -27,7 +27,7 @@
     "@rollup/plugin-json": "^4.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "@rollup/plugin-typescript": "^2.1.0",
-    "@types/chai": "^4.1.7",
+    "@types/chai": "4.2.10",
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^7.0.0",
     "@types/node": "^13.9.0",
