@@ -1,6 +1,5 @@
-docs
+*.db
 test
+docs
 coverage
 node_modules
-scripts
-aergo-protobuf
