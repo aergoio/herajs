@@ -85,8 +85,12 @@ describe('Wallet scenarios', async () => {
             nodeUrl: '127.0.0.1:7845'
         });
 
+        assert.isFalse(await wallet.isSetup());
+
         // Set up account and key
         await wallet.setupAndUnlock('password');
+
+        assert.isTrue(await wallet.isSetup());
 
         await wallet.lock();
         await assert.isRejected(

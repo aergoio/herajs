@@ -155,7 +155,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
      * Unlocks keystore by saving passphrase in memory.
      * @param passphrase 
      */
-    async unlock (passphrase: string): Promise<void> {
+    async unlock(passphrase: string): Promise<void> {
         if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
         const encryptedId = await this.wallet.datastore.getIndex('settings').get('encryptedId') as EncryptedIdSetting;
         try {
@@ -172,7 +172,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
      * @param appId string to be saved encrypted with passphrase for later validity check
      * @param passphrase 
      */
-    async setupAndUnlock (appId: string, passphrase: string): Promise<void> {
+    async setupAndUnlock(appId: string, passphrase: string): Promise<void> {
         if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
         // save extension id encrypted using password for a quick check if passphrase is correct later
         const encryptedId = new EncryptedIdSetting('encryptedId', {
@@ -180,6 +180,18 @@ export default class KeyManager extends TypedEventEmitter<Events> {
         });
         await this.wallet.datastore.getIndex('settings').put(encryptedId);
         await this.unlock(passphrase);
+    }
+
+    /**
+     * Checks if wallet is setup with a master passphrase
+     */
+    async isSetup() {
+        if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
+        try {
+            return Boolean(await this.wallet.datastore.getIndex('settings').get('encryptedId'));
+        } catch(e) {
+            return false;
+        }
     }
 
     /**

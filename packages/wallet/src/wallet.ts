@@ -226,8 +226,15 @@ export class Wallet extends MiddlewareConsumer {
      * Shortcut for keyManager.setupAndUnlock()
      * @param passphrase
      */
-    async setupAndUnlock (passphrase: string): Promise<void> {
+    setupAndUnlock (passphrase: string): Promise<void> {
         return this.keyManager.setupAndUnlock(`id-${this.config.instanceId}`, passphrase);
+    }
+
+    /**
+     * Shortcut for keyManager.isSetup()
+     */
+    isSetup(): Promise<boolean> {
+        return this.keyManager.isSetup();
     }
 
     /**
