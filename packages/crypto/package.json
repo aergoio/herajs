@@ -41,5 +41,5 @@
     "rollup-plugin-ignore": "^1.0.5",
     "rollup-plugin-terser": "^5.1.1"
   },
-  "gitHead": "baa13df2f75aeebefc0c9af35151c434008f4c68"
+  "gitHead": "5c14921cf71bcb01d4103dfccba8c6b4ae335fd6"
 }
