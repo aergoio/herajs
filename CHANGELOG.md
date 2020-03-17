@@ -1,4 +1,11 @@
-## 0.18.0 (unreleased)
+## 0.18.2 (March 17, 2020)
+- Ignore more unnecessary files for npm package
+- Crypto: fix path to type def
+
+## 0.18.1 (March 17, 2020)
+- The previous release was botched. Don't use version 0.18.0.
+
+## 0.18.0 (March 17, 2020)
 - Ledger HW App
   - New package `@herajs/ledger-hw-app-aergo` with support for [Aergo Ledger App](https://github.com/aergoio/ledger-app-aergo).
 
@@ -13,6 +20,9 @@
   - Try to infer correct tx type for contract calls and governance transactions
   - Export `encodeTxHash`, `decodeTxHash`, `encodeSignature`
   - `publicKeyFromAddress` can now accept an object of class client.Address
+
+- Wallet
+ - Add wallet.isSetup method
 
 ## 0.17.1 (March 2, 2020)
 - Crypto
