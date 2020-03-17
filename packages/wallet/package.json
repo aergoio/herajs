@@ -34,5 +34,6 @@
     "hashmap": "^2.3.0",
     "idb": "^4.0.0",
     "level": "^6.0.0"
-  }
+  },
+  "gitHead": "baa13df2f75aeebefc0c9af35151c434008f4c68"
 }

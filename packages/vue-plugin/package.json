@@ -9,5 +9,6 @@
   "dependencies": {
     "@herajs/client": "^0.18.0",
     "@herajs/wallet": "^0.18.0"
-  }
+  },
+  "gitHead": "baa13df2f75aeebefc0c9af35151c434008f4c68"
 }

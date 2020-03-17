@@ -35,5 +35,6 @@
     "@ledgerhq/hw-transport": "^5.9.0",
     "@ledgerhq/hw-transport-node-hid": "^5.10.0",
     "@types/ledgerhq__hw-transport-node-hid": "^4.22.1"
-  }
+  },
+  "gitHead": "baa13df2f75aeebefc0c9af35151c434008f4c68"
 }
