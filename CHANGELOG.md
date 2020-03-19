@@ -1,4 +1,4 @@
-## 0.18.3 (March 17, 2020)
+## 0.19.0 (March 19, 2020)
 - Client: sendSignedTransaction() now additionally accepts an array of transcations to send simultaneously.
   If you pass an array, the result will be an array of `{ error?: string, hash?: string }` objects.
 
