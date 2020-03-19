@@ -1,3 +1,7 @@
+## 0.18.3 (March 17, 2020)
+- Client: sendSignedTransaction() now additionally accepts an array of transcations to send simultaneously.
+  If you pass an array, the result will be an array of `{ error?: string, hash?: string }` objects.
+
 ## 0.18.2 (March 17, 2020)
 - Ignore more unnecessary files for npm package
 - Crypto: fix path to type def
