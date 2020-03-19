@@ -6,6 +6,7 @@ import { encodeTxHash } from '../transactions/utils';
 import Address from '../models/address';
 import promisify from '../promisify.js';
 import { errorMessageForCode } from '../utils';
+import { TxBody } from '@herajs/common';
 
 /**
  * Accounts controller. It is exposed at `aergoClient.accounts`.
@@ -132,10 +133,8 @@ class Accounts {
      * @param {Tx} tx transaction data
      * @returns {Promise<string>} transaction hash
      */
-    sendTransaction (tx): Promise<string> {
-        if (!(tx instanceof Tx)) {
-            tx = new Tx(tx);
-        }
+    sendTransaction(_tx: TxBody | Tx): Promise<string> {
+        const tx = (_tx instanceof Tx) ? _tx : new Tx(_tx);
         if (typeof tx.limit === 'undefined' && this.aergo.defaultLimit) {
             tx.limit = this.aergo.defaultLimit;
         }
@@ -154,13 +153,8 @@ class Accounts {
      * @param {Tx} tx transaction data
      * @returns {Promise<Tx>} transaction data including signature
      */
-    signTransaction (_tx: Tx|object): Promise<Tx> {
-        let tx: Tx;
-        if (!(_tx instanceof Tx)) {
-            tx = new Tx(_tx);
-        } else {
-            tx = _tx;
-        }
+    signTransaction(_tx: Tx | TxBody): Promise<Tx> {
+        const tx = (_tx instanceof Tx) ? _tx : new Tx(_tx);
         if (typeof tx.limit === 'undefined' && this.aergo.defaultLimit) {
             tx.limit = this.aergo.defaultLimit;
         }

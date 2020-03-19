@@ -1,4 +1,4 @@
-import Tx from './tx';
+import { SignedTx } from './tx';
 import { Block as GrpcBlock } from '../../types/blockchain_pb';
 import Address from './address';
 import { Amount, base58 } from '@herajs/common';
@@ -20,7 +20,7 @@ export interface BlockHeader {
 }
 
 export interface BlockBody {
-    txsList: Tx[];
+    txsList: SignedTx[];
 }
 
 export default class Block {
@@ -34,10 +34,10 @@ export default class Block {
 
     static fromGrpc(grpcObject: GrpcBlock): Block {
         const obj = grpcObject.toObject();
-        let txsList: Tx[] = [];
+        let txsList: SignedTx[] = [];
         const body = grpcObject.getBody();
         if (obj.body && body) {
-            txsList = body.getTxsList().map(tx => Tx.fromGrpc(tx)) ;
+            txsList = body.getTxsList().map(tx => SignedTx.fromGrpc(tx)) as SignedTx[];
         }
         const header = grpcObject.getHeader();
         return new Block({

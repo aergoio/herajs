@@ -1,6 +1,6 @@
 import { Wallet } from '../wallet';
 import { Account, AccountSpec, AccountData, CompleteAccountSpec } from '../models/account';
-import { Transaction, TxBody } from '../models/transaction';
+import { Transaction, TxBody, CompleteTxBody } from '../models/transaction';
 import { serializeAccountSpec, HashMap } from '../utils';
 import { Amount, Address } from '@herajs/common';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
@@ -308,6 +308,6 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             amount: new Amount(tx.amount).toString(),
             type: 0,
             status: Transaction.Status.Pending
-        }, tx as TxBody);
+        }, tx as CompleteTxBody);
     }
 }

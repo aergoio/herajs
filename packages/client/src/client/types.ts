@@ -1,4 +1,4 @@
-import Tx from '../models/tx';
+import { SignedTx } from '../models/tx';
 import { default as Address } from '../models/address';
 import { Amount } from '@herajs/common';
 import ChainInfo from '../models/chaininfo';
@@ -8,7 +8,7 @@ export interface GetTxResult {
         hash: string;
         idx: number;
     };
-    tx: Tx;
+    tx: SignedTx;
 }
 
 export interface GetReceiptResult {
@@ -53,7 +53,7 @@ export interface BlockBodyPaged {
     size: number;
     offset: number;
     body: {
-        txsList: Tx[];
+        txsList: SignedTx[];
     };
 }
 

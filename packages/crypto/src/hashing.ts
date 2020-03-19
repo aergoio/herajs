@@ -1,5 +1,5 @@
 import { fromNumber, fromBigInt, decodeAddress } from './encoding';
-import { encodeByteArray, decodeToBytes, ByteEncoding } from '@herajs/common';
+import { encodeBuffer, decodeToBytes, ByteEncoding } from '@herajs/common';
 import JSBI from 'jsbi';
 import { Buffer } from 'buffer';
 import { ecdsa } from './ecdsa';
@@ -111,5 +111,5 @@ export async function hashTransaction(tx: TxBody, encoding: ByteEncoding | 'byte
     if (encoding === 'bytes') {
         return result;
     }
-    return encodeByteArray(result, encoding);
+    return encodeBuffer(result, encoding);
 }

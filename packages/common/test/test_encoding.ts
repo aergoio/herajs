@@ -1,7 +1,7 @@
 import chai from 'chai';
 const assert = chai.assert;
 
-import { toHexString, fromHexString, encodeByteArray, decodeToBytes, base58, base58check } from '../src/encoding';
+import { toHexString, fromHexString, encodeBuffer, decodeToBytes, base58, base58check } from '../src/encoding';
 
 describe('toHexString', () => {
     it('should convert byte arrays to plain hex string', () => {
@@ -25,12 +25,12 @@ describe('fromHexString', () => {
         assert.deepEqual(fromHexString(''), Uint8Array.from([]));
     });
 });
-describe('encodeByteArray', () => {
+describe('encodeBuffer', () => {
     it('should encode byte arrays', () => {
-        assert.equal(encodeByteArray(Uint8Array.from([0, 0])), '11');
-        assert.equal(encodeByteArray(Uint8Array.from([0, 0]), 'hex'), '0000');
-        assert.equal(encodeByteArray(Uint8Array.from([0, 0]), 'base64'), 'AAA=');
-        assert.equal(encodeByteArray(Buffer.from([0, 0]), 'base64'), 'AAA=');
+        assert.equal(encodeBuffer(Uint8Array.from([0, 0])), '11');
+        assert.equal(encodeBuffer(Uint8Array.from([0, 0]), 'hex'), '0000');
+        assert.equal(encodeBuffer(Uint8Array.from([0, 0]), 'base64'), 'AAA=');
+        assert.equal(encodeBuffer(Buffer.from([0, 0]), 'base64'), 'AAA=');
     });
 });
 describe('decodeToBytes', () => {

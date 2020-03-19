@@ -29,19 +29,24 @@ export interface TxBody {
     from: string | Address;
     to: string | Address | null;
     amount: string | number | Amount;
-    payload?: string | Uint8Array | null;
+    payload?: string | Uint8Array;
     chainIdHash: string | Uint8Array;
     type?: number;
     limit?: number;
     price?: string | Amount;
 }
+export type CompleteTxBody = TxBody & {
+    nonce: number;
+    sign: string;
+    hash: string;
+};
 
 export class Transaction extends Record<TransactionData> {
     static readonly Status = Status;
-    txBody?: TxBody;
+    txBody?: CompleteTxBody;
     private _unsignedHash?: string;
 
-    constructor(key: string, data: TransactionData, txBody?: TxBody) {
+    constructor(key: string, data: TransactionData, txBody?: CompleteTxBody) {
         super(key, data);
         this.txBody = txBody;
     }
@@ -69,9 +74,9 @@ export class Transaction extends Record<TransactionData> {
 export class SignedTransaction extends Transaction {
     private _signedHash?: string;
     signature: string;
-    txBody!: TxBody;
+    txBody!: CompleteTxBody;
 
-    constructor(key: string, data: TransactionData, txBody: TxBody, signature: string) {
+    constructor(key: string, data: TransactionData, txBody: CompleteTxBody, signature: string) {
         super(key, data);
         this.txBody = txBody;
         if (this.data.hash !== null) {
@@ -109,7 +114,7 @@ export class SignedTransaction extends Transaction {
         return hash;
     }
 
-    static fromTxBody(txBody: TxBody, chainId: string): SignedTransaction {
+    static fromTxBody(txBody: CompleteTxBody, chainId: string): SignedTransaction {
         return new SignedTransaction(txBody.hash ? txBody.hash : '', {
             chainId,
             from: ''+txBody.from,

@@ -6,7 +6,7 @@ import { Buffer } from 'buffer';
 const DEFAULT_USER_UNIT = 'aergo';
 const DEFAULT_NETWORK_UNIT = 'aer';
 
-type AmountArg = Amount | JSBI | number | string;
+export type AmountArg = Amount | JSBI | number | string;
 
 function getUnitPrecision(unit: string): number {
     const units = UNITS.NATIVE_TOKEN.unitSize;

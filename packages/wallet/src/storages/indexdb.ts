@@ -1,5 +1,5 @@
 import { openDB, IDBPDatabase, IDBPTransaction, DBSchema } from 'idb';
-import { Record, BasicType } from '../models/record';
+import { Record, BasicType, Data } from '../models/record';
 import { Storage, Index } from './storage';
 
 type KnownKeys<T> = {
@@ -30,6 +30,10 @@ interface IdbSchema extends DBSchema {
     };
 }
 
+function arrayContains<T extends U, U>(haystack: ReadonlyArray<T>, needle: U): needle is T {
+    return haystack.indexOf(needle as T) !== -1;
+}
+
 class IDBIndex extends Index {
     storage: IndexedDbStorage;
     name: StoreNames<IdbSchema>;
@@ -52,18 +56,12 @@ class IDBIndex extends Index {
     }
     async getAll(indexValue?: BasicType, indexName?: string): Promise<IterableIterator<Record>> {
         const q = typeof indexValue !== 'undefined' ? IDBKeyRange.only(indexValue) : undefined;
-        if (this.name === 'transactions' && typeof indexName !== 'undefined') {
-            indexName = indexName as keyof IdbSchema['transactions']['indexes'];
-            if (['from', 'to'].indexOf(indexName) !== -1) {
-                // @ts-ignore: not sure why this does not type-check
+        if (typeof indexName !== 'undefined') {
+            if (this.name === 'transactions' && arrayContains(['from', 'to'] as const, indexName)) {
                 const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
                 return records[Symbol.iterator]();
             }
-        }
-        if (this.name === 'accounts' && typeof indexName !== 'undefined') {
-            indexName = indexName as keyof IdbSchema['accounts']['indexes'];
-            if (['spec.address'].indexOf(indexName) !== -1) {
-                // @ts-ignore: not sure why this does not type-check
+            if (this.name === 'accounts' && arrayContains(['spec.address'] as const, indexName)) {
                 const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
                 return records[Symbol.iterator]();
             }
@@ -71,7 +69,7 @@ class IDBIndex extends Index {
         const records = await this.db.transaction(this.name).objectStore(this.name).getAll(q);
         return records[Symbol.iterator]();
     }
-    async put(record: Record): Promise<string> {
+    async put<T extends Data = Data>(record: Record<T>): Promise<string> {
         const tx = this.db.transaction(this.name, 'readwrite');
         const validKey = await tx.objectStore(this.name).put(record);
         return validKey.toString();

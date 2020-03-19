@@ -1,15 +1,21 @@
 import bs58 from './base58';
 import { Buffer } from 'buffer';
 
+export type StringOrBuffer = string | Buffer | Uint8Array;
 export type ByteEncoding = 'base58' | BufferEncoding;
-function encodeByteArray(val: Buffer | Uint8Array, enc: ByteEncoding = 'base58'): string  {
+
+export function encodeBuffer(val: Buffer | Uint8Array, enc: ByteEncoding = 'base58'): string  {
     if (enc === 'base58') {
         return bs58.encode(Buffer.from(val));
     }
     return Buffer.from(val).toString(enc);
 }
-export { encodeByteArray };
-export function decodeToBytes(val: string | Buffer | Uint8Array, enc: ByteEncoding = 'base58'): Buffer {
+
+/**
+ * If input is a string, use `enc` to decode string (default: base58).
+ * Otherwise, just return Buffer.
+ */
+export function decodeToBytes(val: StringOrBuffer, enc: ByteEncoding = 'base58'): Buffer {
     if (typeof val === 'string') {
         if (enc === 'base58') {
             return bs58.decode(val);

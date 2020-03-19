@@ -39,7 +39,7 @@ export class NodeTransactionScanner extends Middleware<Wallet> implements Accoun
                 if (!block.body || !block.body.txsList.length) continue;
                 //console.log(`[scan] block ${blockNumber}`);
                 const ownTxs = block.body.txsList.filter(
-                    (tx: Tx) => address.equal(tx.from) || address.equal(tx.to)
+                    (tx: Tx) => address.equal(tx.from) || tx.to && address.equal(tx.to)
                 );
                 for (const tx of ownTxs) {
                     const txObj = SignedTransaction.fromTxBody(tx, accountSpec.chainId);
@@ -83,7 +83,7 @@ export class NodeTransactionScanner extends Middleware<Wallet> implements Accoun
                 if (!block.body || !block.body.txsList.length) continue;
                 //console.log(`[scan] block ${blockNumber}`);
                 const ownTxs = block.body.txsList.filter(
-                    (tx: Tx) => address.equal(tx.from) || address.equal(tx.to)
+                    (tx: Tx) => address.equal(tx.from) || tx.to && address.equal(tx.to)
                 );
                 for (const tx of ownTxs) {
                     const txObj = SignedTransaction.fromTxBody(tx, accountSpec.chainId);

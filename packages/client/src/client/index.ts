@@ -1,7 +1,10 @@
 import { Buffer } from 'buffer';
 import promisify from '../promisify';
 import { errorMessageForCode, waterfall } from '../utils';
-import { fromNumber, backoffIntervalStep, waitFor, encodeByteArray, ByteEncoding, Amount, base58 } from '@herajs/common';
+import {
+    fromNumber, backoffIntervalStep, waitFor, encodeBuffer, ByteEncoding,
+    Amount, base58, SignedAndHashedTxBody,
+} from '@herajs/common';
 import { decodeTxHash, encodeTxHash } from '../transactions/utils';
 import { TransactionError } from '../errors';
 import Accounts from '../accounts';
@@ -34,6 +37,7 @@ import {
     Tx, Block, BlockMetadata,
     Peer, State, ChainInfo, Event, StateQueryProof, FilterInfo
 } from '../models';
+import { SignedTx } from '../models/tx';
 import { Abi } from '../models/contract';
 import { Address, AddressInput } from '../models/address';
 import { FunctionCall, StateQuery } from '../models/contract';
@@ -161,7 +165,7 @@ class AergoClient {
             // Fetch blockchain data to set chainIdHash
             await this.blockchain();
         }
-        return encodeByteArray(this.chainIdHash, enc);
+        return encodeBuffer(this.chainIdHash, enc);
     }
 
     /**
@@ -241,7 +245,7 @@ class AergoClient {
                             reject(err);
                         } else {
                             const res: GetTxResult = {
-                                tx: Tx.fromGrpc(result),
+                                tx: SignedTx.fromGrpc(result) as SignedTx,
                             };
                             resolve(res);
                         }
@@ -252,7 +256,7 @@ class AergoClient {
                             hash: Block.encodeHash(result.getTxidx().getBlockhash_asU8()),
                             idx: result.getTxidx().getIdx(),
                         },
-                        tx: Tx.fromGrpc(result.getTx()),
+                        tx: SignedTx.fromGrpc(result.getTx()) as SignedTx,
                     };
                     resolve(res);
                 }
@@ -455,9 +459,9 @@ class AergoClient {
      * @param {Tx} tx signed transaction or array of multiple signed transactions
      * @returns {Promise<string>} transaction hash
      */
-    sendSignedTransaction(tx: Partial<Tx>): Promise<string>;
-    sendSignedTransaction(tx: Partial<Tx>[]): Promise<BatchTxResult[]>;
-    sendSignedTransaction(tx: Partial<Tx> | Partial<Tx>[]): Promise<string | BatchTxResult[]> {
+    sendSignedTransaction(tx: Tx|SignedAndHashedTxBody): Promise<string>;
+    sendSignedTransaction(tx: (Tx|SignedAndHashedTxBody)[]): Promise<BatchTxResult[]>;
+    sendSignedTransaction(tx: (Tx|SignedAndHashedTxBody) | (Tx|SignedAndHashedTxBody)[]): Promise<string | BatchTxResult[]> {
         return new Promise((resolve, reject) => {
             const txList = new TxList();
             const txs = Array.isArray(tx) ? tx : [tx];

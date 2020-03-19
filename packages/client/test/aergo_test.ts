@@ -383,8 +383,10 @@ describe('Aergo', () => {
             }
             const results = await aergo.sendSignedTransaction(txs);
             assert.equal(results.length, 2);
-            assert.equal(results[1].error, 'TX_HAS_SAME_NONCE: tx with same nonce is already in mempool');
-            const commitedTx = await aergo.getTransaction(results[0].hash);
+            const failedTx = results.find(res => res.error);
+            assert.match(failedTx.error, /already in mempool/);
+            const successTx = results.find(res => res.hash);
+            const commitedTx = await aergo.getTransaction(successTx.hash);
             assert.equal(commitedTx.tx.amount.toString(), txs[0].amount.toString());
         });
     });

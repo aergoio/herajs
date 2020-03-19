@@ -1,7 +1,7 @@
-import { TxBody, Tx as GrpcTx, TxType, TxTypeMap } from '../../types/blockchain_pb';
+import { TxBody as GrpcTxBody, Tx as GrpcTx, TxType, TxTypeMap } from '../../types/blockchain_pb';
 import { encodeTxHash, decodeTxHash } from '../transactions/utils';
 import Address from './address';
-import { Amount } from '@herajs/common';
+import { Amount, TxBody } from '@herajs/common';
 import { Buffer } from 'buffer';
 
 type TxTypeValue = TxTypeMap[keyof TxTypeMap];
@@ -29,7 +29,7 @@ export default class Tx {
     hash?: string /*bytes*/;
     nonce!: number /*uint64*/;
     from!: Address | string /*bytes*/;
-    to!: Address | string /*bytes*/;
+    to!: Address | string | null /*bytes*/;
     amount!: Amount /*bytes*/;
     payload?: Uint8Array | string /*bytes*/;
     sign?: string /*bytes*/;
@@ -38,7 +38,7 @@ export default class Tx {
     price!: Amount /*uint64*/;
     chainIdHash!: string /*bytes*/;
 
-    constructor(data: Partial<Tx>) {
+    constructor(data: TxBody) {
         Object.assign(this, data);
         this.amount = new Amount(this.amount as any || 0);
         this.price = new Amount(this.price as any || 0);
@@ -54,9 +54,7 @@ export default class Tx {
     static fromGrpc(grpcObject: GrpcTx): Tx {
         const body = grpcObject.getBody();
         const hash = Tx.encodeHash(grpcObject.getHash_asU8()); 
-        if (!body) {
-            return new Tx({ hash });
-        }
+        if (!body) throw new Error('tx missing body');
         return new Tx({
             hash,
             nonce: body.getNonce(),
@@ -86,7 +84,7 @@ export default class Tx {
     }
 
     toGrpc(): GrpcTx {
-        const msgtxbody = new TxBody();
+        const msgtxbody = new GrpcTxBody();
 
         msgtxbody.setType(this.type ? this.type : 0);
         msgtxbody.setNonce(this.nonce);
@@ -134,4 +132,9 @@ export default class Tx {
         msgtx.setBody(msgtxbody);
         return msgtx;
     }
+}
+
+export class SignedTx extends Tx {
+    sign: string;
+    hash: string;
 }

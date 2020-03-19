@@ -8,7 +8,7 @@ export interface Data {
  * The data field is serializable and should be compatabile with any kind of storage.
  * Sub-classes can add non-serializable fields.
  */
-export class Record<T = Data> {
+export class Record<T extends {} = Data> {
     key: string;
     data: T;
 
