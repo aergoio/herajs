@@ -40,6 +40,7 @@ import { FunctionCall, StateQuery } from '../models/contract';
 import {
     GetTxResult, GetReceiptResult, NameInfoResult, ConsensusInfoResult,
     ServerInfoResult, BlockBodyPaged, Stream, BasicType, JsonData, BlockchainResult,
+    BatchTxResult,
 } from './types';
 
 export { CommitStatus };
@@ -450,26 +451,45 @@ class AergoClient {
     }
 
     /**
-     * Send a signed transaction to the network.
-     * @param {Tx} tx signed transaction
+     * Send one or more signed transaction to the network.
+     * @param {Tx} tx signed transaction or array of multiple signed transactions
      * @returns {Promise<string>} transaction hash
      */
-    sendSignedTransaction(tx): Promise<string> {
+    sendSignedTransaction(tx: Partial<Tx>): Promise<string>;
+    sendSignedTransaction(tx: Partial<Tx>[]): Promise<BatchTxResult[]>;
+    sendSignedTransaction(tx: Partial<Tx> | Partial<Tx>[]): Promise<string | BatchTxResult[]> {
         return new Promise((resolve, reject) => {
-            const txs = new TxList();
-            if (!(tx instanceof Tx)) {
-                tx = new Tx(tx);
+            const txList = new TxList();
+            const txs = Array.isArray(tx) ? tx : [tx];
+            const txCount = txs.length;
+            for (const [index, _tx] of txs.entries()) {
+                const tx = (_tx instanceof Tx) ? _tx : new Tx(_tx);
+                txList.addTxs(tx.toGrpc(), index);
             }
-            txs.addTxs(tx.toGrpc(), 0);
-            this.client.client.commitTX(txs, (err: Error, result: CommitResultList) => {
-                if (err == null && result.getResultsList()[0].getError()) {
+            this.client.client.commitTX(txList, (err: Error, result: CommitResultList) => {
+                if (err == null && result.getResultsList()[0].getError() && txCount === 1) {
                     const obj = result.getResultsList()[0].toObject();
                     err = new TransactionError(errorMessageForCode(obj.error) + ': ' + obj.detail);
                 }
                 if (err) {
                     reject(new TransactionError(err.message));
                 } else {
-                    resolve(encodeTxHash(result.getResultsList()[0].getHash_asU8()));
+                    const hashes = result.getResultsList().map((res) => {
+                        const error = res.getError();
+                        if (error) {
+                            return {
+                                error: errorMessageForCode(error) + ': ' + res.getDetail(),
+                            };
+                        }
+                        return {
+                            hash: encodeTxHash(res.getHash_asU8()),
+                        };
+                    });
+                    if (txCount === 1) {
+                        resolve(hashes[0].hash);
+                    } else {
+                        resolve(hashes);
+                    }
                 }
             });
         });

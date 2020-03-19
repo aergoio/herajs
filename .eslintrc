@@ -46,6 +46,7 @@
         "prefer-const": "warn",
         "no-var": "error",
         "no-unused-vars": "warn",
+        "no-dupe-class-members": "off",
         "@typescript-eslint/explicit-member-accessibility": 0,
         "@typescript-eslint/no-explicit-any": 0,
         "@typescript-eslint/no-namespace": 0,

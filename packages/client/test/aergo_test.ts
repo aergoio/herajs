@@ -334,11 +334,58 @@ describe('Aergo', () => {
             } as any;
             tx.sign = await signTransaction(tx, identity.keyPair);
             tx.hash = await hashTransaction(tx, 'bytes');
-
             const txhash = await aergo.sendSignedTransaction(tx);
             assert.typeOf(txhash, 'string');
             const commitedTx = await aergo.getTransaction(txhash);
             assert.equal(commitedTx.tx.amount.toString(), tx.amount.toString());
+        });
+        it('should send multiple tx succesfully', async () => {
+            const identity = createIdentity();
+            const tx1 = {
+                nonce: 1,
+                from: identity.address,
+                to: identity.address,
+                amount: '100 aer',
+                chainIdHash: await aergo.getChainIdHash(),
+                sign: null,
+                hash: null,
+            } as any;
+            const tx2 = { ...tx1, nonce: 2 };
+            const txs = [tx1, tx2];
+            for (const tx of txs) {
+                tx.sign = await signTransaction(tx, identity.keyPair);
+                tx.hash = await hashTransaction(tx, 'base58');
+            }
+            const results = await aergo.sendSignedTransaction(txs);
+            assert.equal(results.length, 2);
+            assert.isFalse(results.some(res => res.error), 'there should be no errors');
+            assert.isTrue(results.every(res => res.hash), 'there should be hashes in the result');
+            for (const [index, res] of results.entries()) {
+                assert.equal(txs[index].hash, res.hash);
+            }
+        });
+        it('should send multiple tx with some error', async () => {
+            const identity = createIdentity();
+            const tx1 = {
+                nonce: 1,
+                from: identity.address,
+                to: identity.address,
+                amount: '100 aer',
+                chainIdHash: await aergo.getChainIdHash(),
+                sign: null,
+                hash: null,
+            } as any;
+            const tx2 = { ...tx1 }; // Error: duplicate nonce
+            const txs = [tx1, tx2];
+            for (const tx of txs) {
+                tx.sign = await signTransaction(tx, identity.keyPair);
+                tx.hash = await hashTransaction(tx, 'base58');
+            }
+            const results = await aergo.sendSignedTransaction(txs);
+            assert.equal(results.length, 2);
+            assert.equal(results[1].error, 'TX_HAS_SAME_NONCE: tx with same nonce is already in mempool');
+            const commitedTx = await aergo.getTransaction(results[0].hash);
+            assert.equal(commitedTx.tx.amount.toString(), txs[0].amount.toString());
         });
     });
 

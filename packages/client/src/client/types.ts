@@ -57,6 +57,11 @@ export interface BlockBodyPaged {
     };
 }
 
+export interface BatchTxResult {
+    error?: string;
+    hash?: string;
+}
+
 export interface Stream<T> {
     on(eventName: string, callback: ((obj: T) => void)): void;
     cancel(): void;
