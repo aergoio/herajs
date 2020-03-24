@@ -25,8 +25,8 @@
   "dependencies": {
     "@elderapo/typed-event-emitter": "^1.4.1",
     "@herajs/client": "^0.19.1",
-    "@herajs/common": "^0.19.1",
-    "@herajs/crypto": "^0.19.1",
+    "@herajs/common": "^0.19.0",
+    "@herajs/crypto": "^0.19.0",
     "@herajs/ledger-hw-app-aergo": "^0.19.1",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
