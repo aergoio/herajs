@@ -35,5 +35,8 @@
     "idb": "^4.0.0",
     "level": "^6.0.0"
   },
-  "gitHead": "5c14921cf71bcb01d4103dfccba8c6b4ae335fd6"
+  "gitHead": "5c14921cf71bcb01d4103dfccba8c6b4ae335fd6",
+  "devDependencies": {
+    "@ledgerhq/hw-transport-node-hid": "^5.11.0"
+  }
 }

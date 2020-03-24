@@ -52,18 +52,23 @@ export class Transaction extends Record<TransactionData> {
     }
 
     get unsignedHash(): string {
-        if (typeof this._unsignedHash === 'undefined') {
-            this._unsignedHash = this.getUnsignedHash();
-        }
+        if (typeof this._unsignedHash === 'undefined') throw new Error('transaction is missing hash, either supply or compute with getUnsignedHash()');
         return this._unsignedHash;
     }
 
     /**
      * Calculate the hash excluding any signature
      */
-    getUnsignedHash(): string {
-        // TODO calc hash
-        return '';
+    async getUnsignedHash(): Promise<string> {
+        if (typeof this.txBody === 'undefined') {
+            throw new Error('cannot get hash without txBody');
+        }
+        if (typeof this.txBody.nonce !== 'number') {
+            throw new Error('missing required parameter `nonce`');
+        }
+        const hash = await hashTransaction({ ...this.txBody, nonce: this.txBody.nonce || 0 }, 'base58');
+        this._unsignedHash = hash;
+        return hash;
     }
 
     get amount(): Amount {

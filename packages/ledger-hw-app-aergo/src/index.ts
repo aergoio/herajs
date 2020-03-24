@@ -22,6 +22,7 @@ export const ErrorCodes = {
     ERR_TX_PARSE_INVALID: 0x6720,
     ERR_TX_INVALID: 0x6740,
     ERR_TX_PARSE_SIZE: 0x6700,
+    ERR_TX_UNSUPPORTED_TYPE: 0x6755,
 };
 
 function isErrorRange(e: any, rangeFrom: number): boolean {
@@ -36,10 +37,12 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
             // Retry once
             return await fn();
         }
-        if (isErrorRange(e, ErrorCodes.ERR_TX_PARSE_INVALID)) {
+        if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_TX_UNSUPPORTED_TYPE) {
+            e.message = 'Ledger device: unsupported tx type';
+        } else if (isErrorRange(e, ErrorCodes.ERR_TX_PARSE_INVALID)) {
             e.message = `Ledger device: failed to parse transaction data at field ${e.statusCode - 0x6720} (0x${e.statusCode.toString(16)})`;
         } else if (isErrorRange(e, ErrorCodes.ERR_TX_INVALID)) {
-            e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6700} (0x${e.statusCode.toString(16)})`;
+            e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6740} (0x${e.statusCode.toString(16)})`;
         }
         throw e;
     }
@@ -61,6 +64,8 @@ enum Mode {
     Finish = 0x02,
     Single = 0x03,
 }
+
+const supportedTypes = [Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL] as const;
 
 export default class LedgerAppAergo {
     transport: Transport;
@@ -107,6 +112,9 @@ export default class LedgerAppAergo {
     async signTransaction(tx: any): Promise<SignTxResponse> {
         if (!(tx instanceof Tx)) {
             tx = new Tx(tx);
+        }
+        if (supportedTypes.indexOf(tx.type) === -1) {
+            throw new Error('Aergo Ledger app currently only supports tx types Transfer, Call, and Governance');
         }
         const txGrpc = tx.toGrpc().getBody();
         const data = Buffer.from(txGrpc.serializeBinary());

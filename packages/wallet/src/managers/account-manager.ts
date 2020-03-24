@@ -107,13 +107,13 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     /**
      * Adds account to manager and datastore.
      */
-    addAccount(accountSpec: AccountSpec): Promise<Account> {
+    addAccount(accountSpec: AccountSpec, extraData?: Partial<AccountData>): Promise<Account> {
         const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         if (this.accounts.has(completeAccountSpec)) {
             throw new Error('Account has already been added.');
         }
         // console.log('addAccount', completeAccountSpec);
-        const accountPromise = this.loadAccount(completeAccountSpec);
+        const accountPromise = this.loadAccount(completeAccountSpec, extraData);
         this.accounts.set(completeAccountSpec, accountPromise);
         accountPromise.then(account => {
             this.emit('add', account);
@@ -162,10 +162,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
      * Generates a new account and private key.
      * @param chainId optional, uses default chainId if undefined
      */
-    async createAccount(chainId?: string): Promise<Account> {
+    async createAccount(chainId?: string, extraData?: Partial<AccountData>): Promise<Account> {
         const identity = createIdentity();
         const address = identity.address;
-        const account = await this.addAccount({ address, chainId });
+        const account = await this.addAccount({ address, chainId }, extraData);
         await this.wallet.keyManager.importKey({
             account: account,
             privateKey: identity.privateKey
@@ -194,11 +194,11 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
      * Gets an account and adds it to the manager if not existing.
      * @param accountSpec 
      */
-    async getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec): Promise<Account> {
+    async getOrAddAccount(accountSpec: CompleteAccountSpec | AccountSpec, extraData?: Partial<AccountData>): Promise<Account> {
         const completeAccountSpec = this.getCompleteAccountSpec(accountSpec);
         let account: Account;
         if (!this.accounts.has(completeAccountSpec)) {
-            account = await this.addAccount(completeAccountSpec);
+            account = await this.addAccount(completeAccountSpec, extraData);
         } else {
             account = await this.accounts.get(completeAccountSpec) as Account;
         }
@@ -208,10 +208,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     /**
      * Returns an account tracker.
      */
-    async trackAccount(accountOrSpec: AccountSpec | Account): Promise<AccountTracker> {  
+    async trackAccount(accountOrSpec: AccountSpec | Account, extraData?: Partial<AccountData>): Promise<AccountTracker> {  
         let account: Account;
         if (!(accountOrSpec as Account).data) {
-            account = await this.getOrAddAccount(accountOrSpec as AccountSpec);
+            account = await this.getOrAddAccount(accountOrSpec as AccountSpec, extraData);
         } else {
             account = accountOrSpec as Account;
         }
@@ -229,7 +229,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     /**
      * Initializes account from datastore or with initial values.
      */
-    async loadAccount(accountSpec: CompleteAccountSpec): Promise<Account> {
+    async loadAccount(accountSpec: CompleteAccountSpec, extraData?: Partial<AccountData>): Promise<Account> {
         if (this.wallet.datastore) {
             try {
                 const record = await this.wallet.datastore.getIndex('accounts').get(serializeAccountSpec(accountSpec));
@@ -249,7 +249,10 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
                 balance: '',
                 nonce: 0,
                 name: '',
-                lastSync: null
+                lastSync: null,
+                derivationPath: '',
+                type: '',
+                ...extraData,
             }
         );
     }
@@ -260,7 +263,7 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
      * @param account 
      */
     async getNonceForAccount(account: Account): Promise<number> {
-        // TODO: smart caching of last used nonce
+        // TODO: smart caching of last used nonce so we can create multiple transactions at once
         const client = this.wallet.getClient(account.data.spec.chainId);
         return 1 + await client.getNonce(account.data.spec.address);
     }
@@ -309,5 +312,15 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             type: 0,
             status: Transaction.Status.Pending
         }, tx as CompleteTxBody);
+    }
+
+    /**
+     * Obtain an address from a connected Ledger harware wallet
+     * @param derivationPath BIP39 derivation path, e.g. m/44'/441'/0'/0/1
+     */
+    async getAddressFromLedger(derivationPath: string): Promise<string> {
+        if (!this.wallet.ledger) throw new Error('call wallet.connectLedger before requesting address');
+        const address = await this.wallet.ledger.getWalletAddress(derivationPath);
+        return `${address}`;
     }
 }
