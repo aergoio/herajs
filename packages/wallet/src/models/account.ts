@@ -16,11 +16,15 @@ export interface CompleteAccountSpec {
     chainId: string;
 }
 
+export type AccountType = '' | 'ledger';
+
 export interface AccountData extends Data {
     spec: {
         address: string;
         chainId: string;
     };
+    type: AccountType;
+    derivationPath: string;
     privateKey: number[];
     publicKey: number[];
     balance: string;
@@ -41,5 +45,8 @@ export class Account extends Record<AccountData> {
     }
     get address(): Address {
         return new Address(this.data.spec.address);
+    }
+    get type(): AccountType {
+        return this.data.type || '';
     }
 }

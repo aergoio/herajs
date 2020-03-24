@@ -27,6 +27,7 @@
     "@herajs/client": "^0.19.1",
     "@herajs/common": "^0.19.0",
     "@herajs/crypto": "^0.19.0",
+    "@herajs/ledger-hw-app-aergo": "^0.19.1",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "@types/leveldown": "^4.0.0",
@@ -35,5 +36,8 @@
     "idb": "^4.0.0",
     "level": "^6.0.0"
   },
-  "gitHead": "5c14921cf71bcb01d4103dfccba8c6b4ae335fd6"
+  "gitHead": "5c14921cf71bcb01d4103dfccba8c6b4ae335fd6",
+  "devDependencies": {
+    "@ledgerhq/hw-transport-node-hid": "^5.11.0"
+  }
 }

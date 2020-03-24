@@ -103,13 +103,37 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     }
 
     /**
-     * Signs a transaction using key saved for account
+     * Signs a transaction using key or Ledger saved for account
      * @param account 
      * @param transaction 
      */
     async signTransaction(account: Account, transaction: Transaction): Promise<SignedTransaction> {
+        if (account.type === 'ledger') {
+            return this.signTransactionLedger(account, transaction);
+        }
         const key = await this.getUnlockedKey(account);
         return key.signTransaction(transaction);
+    }
+
+    async signTransactionLedger(account: Account, tx: Transaction): Promise<SignedTransaction> {
+        if (!this.wallet.ledger) {
+            throw new Error('call wallet.connectLedger before signing transaction');
+        }
+        if (typeof tx.txBody === 'undefined') {
+            throw new Error('cannot sign transaction without txBody. Did you use prepareTransaction?');
+        }
+        const presignHash = await tx.getUnsignedHash();
+        // need to call getAddress again to "prime" HW to this account
+        await this.wallet.accountManager.getAddressFromLedger(account.data.derivationPath);
+        const result = await this.wallet.ledger.signTransaction(tx.txBody);
+        if (presignHash !== result.hash) {
+            throw new Error(`presign hash returned by Ledger app does not match locally computed one (${result.hash} != ${presignHash})`);
+        }
+        const signedTx = new SignedTransaction(tx.key, tx.data, { ...tx.txBody }, result.signature);
+        signedTx.txBody.sign = result.signature;
+        // the hash returned by Ledger app is the pre-signature hash, so let's calculate our own now
+        signedTx.txBody.hash = await signedTx.getHash();
+        return signedTx;
     }
 
     /**
@@ -118,6 +142,9 @@ export default class KeyManager extends TypedEventEmitter<Events> {
      * @param transaction 
      */
     async signMessage(account: Account, message: Buffer, enc: Encoding = 'hex'): Promise<string> {
+        if (account.type === 'ledger') {
+            throw new Error('signing arbitrary messages is currently not supported in Aergo Ledger app');
+        }
         const key = await this.getUnlockedKey(account);
         return await key.signMessage(message, enc);
     }
@@ -185,7 +212,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     /**
      * Checks if wallet is setup with a master passphrase
      */
-    async isSetup() {
+    async isSetup(): Promise<boolean> {
         if (!this.wallet.datastore) throw new Error('configure storage before accessing keystore');
         try {
             return Boolean(await this.wallet.datastore.getIndex('settings').get('encryptedId'));

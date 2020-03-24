@@ -8,6 +8,7 @@ import { Account, AccountSpec } from './models/account';
 import { TxBody, SignedTransaction } from './models/transaction';
 import { DEFAULT_CHAIN } from './defaults';
 import { Storage } from './storages/storage';
+import LedgerAppAergo from '@herajs/ledger-hw-app-aergo';
 
 const DB_VERSION = 1;
 
@@ -46,6 +47,7 @@ export class Wallet extends MiddlewareConsumer {
     public keystore?: Storage;
     private clients: Map<string, AergoClient> = new Map();
     public defaultLimit?: number;
+    public ledger?: LedgerAppAergo;
 
     constructor(config?: Partial<WalletConfig>) {
         super();
@@ -258,5 +260,9 @@ export class Wallet extends MiddlewareConsumer {
             await this.datastore.getIndex('transactions').clear();
             await this.datastore.getIndex('settings').clear();
         }
+    }
+
+    connectLedger(transport: any): void {
+        this.ledger = new LedgerAppAergo(transport);
     }
 }

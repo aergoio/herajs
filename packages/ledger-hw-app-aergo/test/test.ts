@@ -119,7 +119,6 @@ describe('sign and send', () => {
         // TODO: result.hash seems to be the signed message, not the finalized tx hash. Not very useful in this case.
         // Let's think about calculating the hash automatically in sendSignedTransaction if missing.
         // ATM, herajs/client does not depend on herajs/crypto. Maybe hashing should be in a 'common' package?
-        // Could also move some utils there, like encoding and polling w exponential backoff.
         // For now, let's calculate the hash here
         tx.hash = await hashTransaction(tx, 'bytes');
         const txHash = await aergo.sendSignedTransaction(tx);
