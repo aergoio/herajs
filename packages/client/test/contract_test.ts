@@ -12,6 +12,8 @@ import contractAbi from './fixtures/contract-inc.abi.json';
 import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
 import Address from '../src/models/address';
+import { identityFromPrivateKey, hashTransaction, signTransaction } from '@herajs/crypto';
+import { Buffer } from 'buffer';
 
 describe('Contracts', () => {
     const aergo = new AergoClient();
@@ -98,6 +100,24 @@ describe('Contracts', () => {
                     from: null,
                 }));
             }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
+        });
+
+        it('should create a locally signed call tx', async () => {
+            // Use a fixed key so we always get the same sign and hash
+            const privKey = Buffer.from([8,2,18,32,181,50,7,214,107,164,248,113,106,185,37,184,128,246,154,14,30,242,56,174,161,62,156,169,90,82,212,188,170,47,67,95]);
+            const identity = identityFromPrivateKey(privKey);
+
+            const contract = Contract.fromAbi(contractAbi).setAddress('AmNwCvHhvyn8tVb6YCftJkqsvkLz2oznSBp9TUc3k2KRZcKX51HX');
+            // @ts-ignore
+            const callTx = contract.inc().asTransaction({
+                from: identity.address,
+                chainIdHash: Buffer.from('test'),
+            });
+
+            callTx.sign = await signTransaction(callTx, identity.keyPair);
+            callTx.hash = await hashTransaction(callTx);
+
+            assert.equal(callTx.hash, 'nSgFf/3nCPmwyhQM8MzHrAEluskGDKIVGP0zlPHH5gA=');
         });
 
         it('should query a smart contract using Getter', async () => {

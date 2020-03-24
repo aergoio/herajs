@@ -60,7 +60,7 @@ export class FunctionCall {
         return {
             to: this.contractInstance.address,
             payload,
-            amount: new Amount(0),
+            amount: new Amount('0 aer'),
             type: Tx.Type.CALL,
             ...extraArgs
         };
