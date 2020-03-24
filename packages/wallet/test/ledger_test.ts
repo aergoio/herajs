@@ -31,7 +31,7 @@ describe('Hardware Wallet support', async () => {
         assert.equal(address[0], 'A');
     });
 
-    it('sends tx (loads key, builds and commits tx, gets status updates)', async () => {
+    it('sends tx (builds and commits tx signed with Ledger)', async () => {
         const wallet = await getWallet();
         const path = 'm/44\'/441\'/0\'/0/' + 1;
         const address = await wallet.accountManager.getAddressFromLedger(path);
