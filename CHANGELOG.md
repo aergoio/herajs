@@ -1,4 +1,4 @@
-## 0.19.1 (March 19, 2020)
+## 0.19.1 (March 24, 2020)
 - Client: fixed a bug in contract function's `asTransaction`. The previously used amount couldn't be used with local signing. #95
 
 ## 0.19.0 (March 19, 2020)
