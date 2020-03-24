@@ -1,5 +1,5 @@
 ## 0.19.1 (March 24, 2020)
-- Client: fixed a bug in contract function's `asTransaction`. The previously used amount couldn't be used with local signing. #95
+- Client: fixed a bug (regression introduced in 0.18) in contract function's `asTransaction`. The previously used amount couldn't be used with local signing. #95
 
 ## 0.19.0 (March 19, 2020)
 - Client: sendSignedTransaction() now additionally accepts an array of transcations to send simultaneously.
