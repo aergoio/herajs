@@ -126,7 +126,8 @@ export default class KeyManager extends TypedEventEmitter<Events> {
             if (!this.useExternalLedger) {
                 throw new Error('call wallet.connectLedger before signing transaction');
             }
-            // This is a big of a hack to be able to provide signatures externally
+            // This is a bit of a hack:
+            // with this, we can use prepareTransaction but still provide signatures externally
             const signedTx = new SignedTransaction(tx.key, tx.data, { ...tx.txBody }, TO_BE_SIGNED_EXTERNALLY);
             signedTx.txBody.sign = TO_BE_SIGNED_EXTERNALLY;
             return signedTx;
