@@ -26,7 +26,7 @@ const namedExports = {
 };
 
 function genConfig(browser = false, output) {
-    const external = browser ? ['@herajs/client'] : Object.keys(pkg.dependencies).concat(...builtinModules);
+    const external = browser ? Object.keys(pkg.dependencies) : Object.keys(pkg.dependencies).concat(...builtinModules);
 
     return {
         input: './src/index.ts',
