@@ -1,3 +1,13 @@
+## 0.19.4 (March 25, 2020)
+- Wallet: allow external signatures when using Ledger
+- Crypto: encodeSignature now also accepts 'base58' as a possible encoding
+
+## 0.19.3 (March 24, 2020)
+- Wallet: fix list of external dependencies
+
+## 0.19.2 (March 24, 2020)
+- Wallet: add experimental support for `@herajs/ledger-hw-app-aergo`
+
 ## 0.19.1 (March 24, 2020)
 - Client: fixed a bug (regression introduced in 0.18) in contract function's `asTransaction`. The previously used amount couldn't be used with local signing. #95
 
