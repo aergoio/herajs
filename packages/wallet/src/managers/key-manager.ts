@@ -31,6 +31,8 @@ interface ImportSpec {
 
 type Encoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'latin1' | 'binary' | 'hex';
 
+const TO_BE_SIGNED_EXTERNALLY = '';
+
 /**
  * KeyManager manages keys for accounts.
  */
@@ -38,6 +40,7 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     public wallet: Wallet;
     private keys: HashMap<string, Key> = new HashMap();
     private masterPassphrase?: string;
+    public useExternalLedger = false;
 
     constructor(wallet: Wallet) {
         super();
@@ -116,11 +119,17 @@ export default class KeyManager extends TypedEventEmitter<Events> {
     }
 
     async signTransactionLedger(account: Account, tx: Transaction): Promise<SignedTransaction> {
-        if (!this.wallet.ledger) {
-            throw new Error('call wallet.connectLedger before signing transaction');
-        }
         if (typeof tx.txBody === 'undefined') {
             throw new Error('cannot sign transaction without txBody. Did you use prepareTransaction?');
+        }
+        if (!this.wallet.ledger) {
+            if (!this.useExternalLedger) {
+                throw new Error('call wallet.connectLedger before signing transaction');
+            }
+            // This is a big of a hack to be able to provide signatures externally
+            const signedTx = new SignedTransaction(tx.key, tx.data, { ...tx.txBody }, TO_BE_SIGNED_EXTERNALLY);
+            signedTx.txBody.sign = TO_BE_SIGNED_EXTERNALLY;
+            return signedTx;
         }
         const presignHash = await tx.getUnsignedHash();
         // need to call getAddress again to "prime" HW to this account

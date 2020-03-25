@@ -6,13 +6,17 @@ import 'regenerator-runtime/runtime';
 
 import { Wallet } from '../src/wallet';
 import { Contract } from '@herajs/client';
-import { createIdentity, encryptPrivateKey, encodePrivateKey } from '@herajs/crypto';
+import {
+    createIdentity, encryptPrivateKey, encodePrivateKey, privateKeyFromMnemonic, identityFromPrivateKey,
+    signTransaction, hashTransaction,
+} from '@herajs/crypto';
 import { NodeTransactionScanner } from '../src/datasources/node-tx-scanner';
 //import MemoryStorage from '../src/storages/memory';
 
 import fs from 'fs';
 import { resolve } from 'path';
 const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.txt')).toString().trim();
+// @ts-ignore
 import contractAbi from './fixtures/contract.abi.json';
 import { SignedTransaction } from '../src/models/transaction';
 import MemoryStorage from '../src/storages/memory';
@@ -124,6 +128,42 @@ describe('Wallet scenarios', async () => {
             txTracker.on('error', reject);
             txTracker.on('timeout', reject);
         });
+    });
+
+    it('uses external signer for tx', async () => {
+        // Setup a fake Ledger-like account
+        const opts = { hdpath: 'm/44\'/441\'/0\'/0/1' };
+        const mnemonic = 'raccoon agent nest round belt cloud first fancy awkward quantum valley scheme';
+        const privateKey = await privateKeyFromMnemonic(mnemonic, opts);
+        const identity = identityFromPrivateKey(privateKey);
+        const wallet = new Wallet();
+        wallet.useStorage(MemoryStorage);
+        wallet.useChain({
+            chainId: 'testnet.localhost',
+            nodeUrl: '127.0.0.1:7845'
+        });
+        const accountSpec = { address: identity.address };
+        const account = await wallet.accountManager.getOrAddAccount(accountSpec, { type: 'ledger', derivationPath: opts.hdpath });
+        const tx = {
+            from: account.address,
+            to: account.address,
+            amount: '1 aergo',
+        };
+        // This should throw because we can't sign a ledger-type account without connecting a device
+        await assert.isRejected(wallet.prepareTransaction(account, tx), 'call wallet.connectLedger before signing transaction');
+        // But with this workaround, we'll make it work by returning an empty signature
+        wallet.keyManager.useExternalLedger = true;
+        const prepared = await wallet.prepareTransaction(account, tx);
+        assert.equal(prepared.signature, '');
+        assert.equal(prepared.hash, '');
+        // sendTransaction should throw
+        await assert.isRejected(wallet.sendTransaction(account, prepared), 'missing signature');
+        // Now let's sign and hash it manually and send it
+        prepared.txBody.sign = await signTransaction(prepared.txBody, identity.keyPair);
+        prepared.txBody.hash = await hashTransaction(prepared.txBody, 'base58');
+        const txTracker = await wallet.sendTransaction(account, prepared);
+        const receipt = await txTracker.getReceipt();
+        assert.equal(receipt.status, 'SUCCESS');
     });
 
     it('adds account and keys and removes them again', async () => {

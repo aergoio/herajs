@@ -299,6 +299,9 @@ export class TransactionManager extends PausableTypedEventEmitter<Events> {
      * @returns transaction tracker
      */
     async sendTransaction(transaction: SignedTransaction): Promise<TransactionTracker> {
+        if (transaction.txBody.sign === '') {
+            throw new Error('Transaction is missing signature. If it passed through prepareTransaction, you have to manually set signature and hash.');
+        }
         const client = this.wallet.getClient(transaction.data.chainId);
         const txhash = await client.sendSignedTransaction(transaction.txBody) as string;
         // eslint-disable-next-line require-atomic-updates
