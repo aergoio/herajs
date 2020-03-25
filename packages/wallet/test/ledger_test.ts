@@ -23,7 +23,7 @@ async function getWallet(): Promise<Wallet> {
 }
 
 describe('Hardware Wallet support', async () => {
-    if (process.env.CI) return; // This test can only be run locally
+    if (process.env.CI) return; // The following tests can only be run locally
     
     it('gets address from Ledger', async () => {
         const wallet = await getWallet();
