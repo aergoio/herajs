@@ -1,6 +1,6 @@
 import Transport from '@ledgerhq/hw-transport';
 import { chunkBy, pathToBuffer } from './utils';
-import { Address } from '@herajs/common';
+import { Address, } from '@herajs/common';
 import { Tx } from '@herajs/client';
 
 const CLA = 0xAE;
@@ -29,6 +29,15 @@ function isErrorRange(e: any, rangeFrom: number): boolean {
     return e && e.statusCode && (e.statusCode & rangeFrom) === rangeFrom;
 }
 
+/**
+ * Error message for errors thrown during tx validation.
+ * For troubleshooting these errors, find the corresponding validation code in the Ledger app's code
+ * at https://github.com/aergoio/ledger-app-aergo/blob/develop/src/transaction.h
+ */
+function errorRangeMessage(text: string, code: number, rangeFrom: number): string {
+    return `Ledger device: ${text} at pos ${code - rangeFrom} (0x${rangeFrom.toString(16)} + ${code - rangeFrom})`;
+}
+
 async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
     try {
         return await fn();
@@ -40,9 +49,9 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_TX_UNSUPPORTED_TYPE) {
             e.message = 'Ledger device: unsupported tx type';
         } else if (isErrorRange(e, ErrorCodes.ERR_TX_PARSE_INVALID)) {
-            e.message = `Ledger device: failed to parse transaction data at field ${e.statusCode - 0x6720} (0x${e.statusCode.toString(16)})`;
+            e.message = errorRangeMessage('failed to parse transaction data', e.statusCode, ErrorCodes.ERR_TX_PARSE_INVALID);
         } else if (isErrorRange(e, ErrorCodes.ERR_TX_INVALID)) {
-            e.message = `Ledger device: transaction data invalid at field ${e.statusCode - 0x6740} (0x${e.statusCode.toString(16)})`;
+            e.message = errorRangeMessage('transaction data invalid', e.statusCode, ErrorCodes.ERR_TX_INVALID);
         }
         throw e;
     }
@@ -65,7 +74,7 @@ enum Mode {
     Single = 0x03,
 }
 
-const supportedTypes = [Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL] as const;
+const supportedTypes = [Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.DEPLOY] as const;
 
 export default class LedgerAppAergo {
     transport: Transport;
@@ -106,6 +115,35 @@ export default class LedgerAppAergo {
         return this.lastAddress;
     }
 
+    private async sendChunkedTxData(data: Buffer, chunkSize = 200, singleChunkSize = 250): Promise<[Buffer, Buffer]> {
+        const TX_REQUEST_NEXT_PART = '9000'; //0x9000
+        //const total = Math.ceil(data.length / chunkSize);
+        //let idx = 0;
+        for (let offset = 0; offset < data.length; offset += chunkSize) {
+            const chunkEnd = Math.min(data.length, offset + chunkSize);
+            const dataChunk = data.slice(offset, chunkEnd);
+            let mode = Mode.Single;
+            if (data.length >= singleChunkSize) {
+                mode = Mode.Begin;
+                if (offset > 0) {
+                    mode = Mode.Part;
+                } else if (chunkEnd === data.length) {
+                    mode = Mode.Finish;
+                }
+            }
+            //console.log(`chunk ${++idx}/${total} (${offset}-${chunkEnd}) request`, Mode[mode], dataChunk);
+            const response = await wrapRetryStillInCall(() =>
+                this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, dataChunk)
+            );
+            //console.log('chunk  ${++idx}/${total} response', response.toString('hex'));
+            if (response.length && response.toString('hex') !== TX_REQUEST_NEXT_PART) {
+                const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
+                return [hash, signature];
+            }
+        }
+        throw new Error('communication error: sent all data but did not receive response');
+    }
+
     /**
      * Sign a transaction. Uses account from last getWalletAddress call.
      */
@@ -114,19 +152,16 @@ export default class LedgerAppAergo {
             tx = new Tx(tx);
         }
         if (supportedTypes.indexOf(tx.type) === -1) {
-            throw new Error('Aergo Ledger app currently only supports tx types Transfer, Call, and Governance');
+            throw new Error('Aergo Ledger app currently only supports tx types Transfer, Call, Governance, and Deploy');
         }
         const txGrpc = tx.toGrpc().getBody();
-        const data = Buffer.from(txGrpc.serializeBinary());
-        if (data.length > 250) {
-            throw new Error('currently only transactions with less than 250 bytes in size are supported');
-            // TODO: Split tx into Mode.Begin -> Mode.Part -> Mode.Finish
-        }
-        const mode = Mode.Single;
-        const response = await wrapRetryStillInCall(() =>
-            this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, data)
-        );
-        const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
+        const serialized = Buffer.from(txGrpc.serializeBinary());
+        const typeSerialized = Uint8Array.from([tx.type]);
+        const data = Buffer.concat([typeSerialized, serialized]);
+
+        const chunkSize = 200;
+        const [hash, signature] = await this.sendChunkedTxData(data, chunkSize);
+        
         return {
             hash: Tx.encodeHash(hash),
             signature: signature.toString('base64'),

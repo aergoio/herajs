@@ -55,20 +55,21 @@ async function signAndVerifyTx(app: LedgerAppAergo, txBody: any): Promise<boolea
     return await verifyTxSignature(txBody, pubkey, result.signature);
 }
 
-describe.skip('signTransaction()', () => {
-    it('should reject too big transactions', async () => {
+describe('signTransaction()', () => {
+    it('should produce a validation error', async () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
         await assert.isRejected(signAndVerifyTx(app, {
             from: address,
             to: address,
+            amount: '1337 aer',
             chainIdHash: hash(Buffer.from('test')),
             type: Tx.Type.CALL,
             nonce: 1,
             limit: 555,
-            payload: Buffer.alloc(250).fill(1),
-        }));
-    });
+            payload: 'invalid payload'
+        }), 'transaction data invalid at pos 3');
+    }).timeout(30000);
     it('should produce a valid transaction signature (type = TRANSFER)', async () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
@@ -98,9 +99,26 @@ describe.skip('signTransaction()', () => {
             }),
         }));
     }).timeout(30000);
+    it('should produce a valid transaction signature (type = CALL, size > 250)', async () => {
+        const app = await getApp();
+        const address = await app.getWalletAddress(WALLET_HDPATH + '0');
+        const payload = JSON.stringify({
+            Name: 'FunctionName',
+            Args: [Buffer.from([...Array(200).keys()]).toString('hex')],
+        });
+        assert.isTrue(await signAndVerifyTx(app, {
+            from: address,
+            to: address,
+            chainIdHash: hash(Buffer.from('test')),
+            type: Tx.Type.CALL,
+            nonce: 1,
+            limit: 555,
+            payload,
+        }));
+    }).timeout(100000);
 });
 
-describe('sign and send', () => {
+describe.skip('sign and send', () => {
     const aergo = new AergoClient();
     it('should sign transaction and send to network', async () => {
         const app = await getApp();
@@ -116,10 +134,10 @@ describe('sign and send', () => {
         } as any;
         const result = await app.signTransaction(tx);
         tx.sign = result.signature;
-        // TODO: result.hash seems to be the signed message, not the finalized tx hash. Not very useful in this case.
+        // TODO: result.hash is the signed message, not the finalized tx hash. Not very useful in this case.
         // Let's think about calculating the hash automatically in sendSignedTransaction if missing.
         // ATM, herajs/client does not depend on herajs/crypto. Maybe hashing should be in a 'common' package?
-        // For now, let's calculate the hash here
+        // For now, let's calculate the hash at the call-site
         tx.hash = await hashTransaction(tx, 'bytes');
         const txHash = await aergo.sendSignedTransaction(tx);
         const txReceipt = await aergo.waitForTransactionReceipt(txHash);
