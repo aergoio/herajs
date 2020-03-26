@@ -3,6 +3,8 @@ import { chunkBy, pathToBuffer } from './utils';
 import { Address, } from '@herajs/common';
 import { Tx } from '@herajs/client';
 
+import { Buffer } from 'buffer';
+
 const CLA = 0xAE;
 
 const INS = {
@@ -156,7 +158,7 @@ export default class LedgerAppAergo {
         }
         const txGrpc = tx.toGrpc().getBody();
         const serialized = Buffer.from(txGrpc.serializeBinary());
-        const typeSerialized = Uint8Array.from([tx.type]);
+        const typeSerialized = Buffer.from(Uint8Array.from([tx.type]));
         const data = Buffer.concat([typeSerialized, serialized]);
 
         const chunkSize = 200;
