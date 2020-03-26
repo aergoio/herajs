@@ -1,3 +1,6 @@
+## 0.19.5 (March 25, 2020)
+- Ledger HW App: support for current spec under development
+
 ## 0.19.4 (March 25, 2020)
 - Wallet: allow external signatures when using Ledger
 - Crypto: encodeSignature now also accepts 'base58' as a possible encoding
