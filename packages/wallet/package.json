@@ -1,6 +1,6 @@
 {
   "name": "@herajs/wallet",
-  "version": "0.19.5",
+  "version": "0.19.6",
   "description": "SDK for making Aergo wallet applications",
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -27,7 +27,7 @@
     "@herajs/client": "^0.19.1",
     "@herajs/common": "^0.19.0",
     "@herajs/crypto": "^0.19.4",
-    "@herajs/ledger-hw-app-aergo": "^0.19.5",
+    "@herajs/ledger-hw-app-aergo": "^0.19.6",
     "@types/google-protobuf": "^3.2.7",
     "@types/hashmap": "^2.0.29",
     "@types/leveldown": "^4.0.0",
