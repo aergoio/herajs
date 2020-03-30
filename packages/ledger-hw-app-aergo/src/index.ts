@@ -76,7 +76,7 @@ enum Mode {
     Single = 0x03,
 }
 
-const supportedTypes = [Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.DEPLOY] as const;
+const supportedTypes = [Tx.Type.NORMAL, Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.DEPLOY, Tx.Type.REDEPLOY] as const;
 
 export default class LedgerAppAergo {
     transport: Transport;
@@ -154,7 +154,7 @@ export default class LedgerAppAergo {
             tx = new Tx(tx);
         }
         if (supportedTypes.indexOf(tx.type) === -1) {
-            throw new Error('Aergo Ledger app currently only supports tx types Transfer, Call, Governance, and Deploy');
+            throw new Error('Transaction type not supported by Aergo Ledger app');
         }
         const txGrpc = tx.toGrpc().getBody();
         const serialized = Buffer.from(txGrpc.serializeBinary());
