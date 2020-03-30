@@ -92,7 +92,7 @@ export class HashMap<K, V> {
 }
 
 export class PausableTypedEventEmitter<T> extends TypedEventEmitter<T> {
-    paused: boolean = true;
+    paused = true;
 
     resume(): void {
         if (!this.paused) return;

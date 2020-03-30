@@ -238,23 +238,13 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
                 // not found
             }
         }
-        return new Account(serializeAccountSpec(accountSpec),
-            {
-                spec: {
-                    chainId: accountSpec.chainId,
-                    address: accountSpec.address.toString()
-                },
-                privateKey: [],
-                publicKey: [],
-                balance: '',
-                nonce: 0,
-                name: '',
-                lastSync: null,
-                derivationPath: '',
-                type: '',
-                ...extraData,
-            }
-        );
+        return new Account(serializeAccountSpec(accountSpec), Account.getDefaultData({
+            spec: {
+                chainId: accountSpec.chainId,
+                address: accountSpec.address.toString()
+            },
+            ...extraData,
+        }));
     }
 
     /**

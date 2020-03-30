@@ -30,6 +30,7 @@ export interface AccountData extends Data {
     balance: string;
     nonce: number;
     name: string;
+    added: string | null;
     lastSync: {
         blockno: number;
         timestamp: number;
@@ -48,5 +49,24 @@ export class Account extends Record<AccountData> {
     }
     get type(): AccountType {
         return this.data.type || '';
+    }
+
+    static getDefaultData(extraData?: Partial<AccountData>): AccountData {
+        return {
+            spec: {
+                chainId: '',
+                address: '',
+            },
+            privateKey: [],
+            publicKey: [],
+            balance: '',
+            nonce: 0,
+            name: '',
+            lastSync: null,
+            derivationPath: '',
+            type: '',
+            added: new Date().toISOString(),
+            ...extraData,
+        };
     }
 }

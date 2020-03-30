@@ -43,6 +43,8 @@ describe('Wallet scenarios', async () => {
             accountTracker.once('update', account => {
                 assert.deepEqual(account.data.spec, testAccountSpec);
                 assert.equal(account.balance.toUnit('aergo').toString(), '20000 aergo');
+                assert.isNotNull(account.data.added);
+                assert.isTrue(+ new Date(account.data.added) - + new Date() < 1000);
                 wallet.accountManager.pause();
                 done();
             });
