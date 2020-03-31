@@ -15,6 +15,7 @@ export interface NameData extends Data {
         name: string;
         chainId: string;
     };
+    accountKey: string;
     added: string | null;
     destination: string;
     owner: string;
@@ -31,6 +32,7 @@ export class Name extends Record<NameData> {
                 name: '',
                 chainId: '',
             },
+            accountKey: '',
             destination: '',
             owner: '',
             lastSync: null,

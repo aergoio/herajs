@@ -20,6 +20,11 @@ interface IdbSchema extends DBSchema {
         value: Record;
         indexes: { 'spec.address': string };
     };
+    'names': {
+        key: string;
+        value: Record;
+        indexes: { 'accountKey': string };
+    };
     'settings': {
         key: string;
         value: Record;
@@ -113,6 +118,11 @@ export default class IndexedDbStorage extends Storage {
                 // @ts-ignore: falls through
                 case 1: {
                     tx.objectStore('accounts').createIndex('spec.address', 'data.spec.address', { unique: false });
+                }
+                // @ts-ignore: falls through
+                case 2: {
+                    db.createObjectStore('names', { keyPath: 'key' });
+                    tx.objectStore('names').createIndex('accountKey', 'data.accountKey', { unique: false });
                 }
             }
         }

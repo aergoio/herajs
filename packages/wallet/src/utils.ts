@@ -51,8 +51,8 @@ export function deserializeAccountSpec(serialized: string): AccountSpec {
         };
     }
     return {
+        chainId: parts[0],
         address: parts[1],
-        chainId: parts[0]
     };
 }
 

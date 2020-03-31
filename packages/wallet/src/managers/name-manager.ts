@@ -1,6 +1,7 @@
 import { Wallet } from '../wallet';
 import { Name, NameSpec, NameData, CompleteNameSpec } from '../models/name';
-import { serializeNameSpec, HashMap } from '../utils';
+import { AccountSpec, CompleteAccountSpec } from '../models/account';
+import { serializeNameSpec, serializeAccountSpec, deserializeAccountSpec, HashMap } from '../utils';
 import { PausableTypedEventEmitter } from '../utils';
 import { TxTypes, Address, Amount } from '@herajs/common';
 import { TxBody } from '../models/transaction';
@@ -9,14 +10,18 @@ export interface Events {
     'add': Name;
     'update': Name;
     'remove': NameSpec;
+    'updateAccount': { accountSpec: AccountSpec; names: Name[] };
 }
+
+type NamesByKey = HashMap<CompleteNameSpec, Promise<Name>>;
+type NamesByAccount = HashMap<CompleteAccountSpec, NamesByKey>;
 
 /**
  * AccountManager manages and tracks single accounts
  */
 export default class NameManager extends PausableTypedEventEmitter<Events> {
     public wallet: Wallet;
-    private names: HashMap<CompleteNameSpec, Promise<Name>> = new HashMap();
+    private namesByAccount: NamesByAccount = new HashMap();
     private loadedFromStore = false;
     private namePriceByChainId: HashMap<string, Amount> = new HashMap();
 
@@ -49,18 +54,34 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
         };
     }
 
+    private getNamesMap(accountSpec: CompleteAccountSpec): NamesByKey {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        if (!this.namesByAccount.has(completeAccountSpec)) {
+            this.namesByAccount.set(completeAccountSpec, new HashMap());
+        }
+        return this.namesByAccount.get(completeAccountSpec) as NamesByKey;
+    }
+
     /**
      * Adds name to manager and datastore.
      */
-    addName(nameSpec: NameSpec, extraData?: Partial<NameData>): Promise<Name> {
-        const completeNameSpec = this.getCompleteNameSpec(nameSpec);
-        if (this.names.has(completeNameSpec)) {
+    addName(accountSpec: AccountSpec, name: string, extraData?: Partial<NameData>): Promise<Name> {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        const names = this.getNamesMap(completeAccountSpec);
+        const completeNameSpec = { name, chainId: completeAccountSpec.chainId };
+        if (names.has(completeNameSpec)) {
             throw new Error('Name has already been added.');
         }
-        const namePromise = this.loadName(completeNameSpec, extraData);
-        this.names.set(completeNameSpec, namePromise);
+        const namePromise = this.loadName(completeNameSpec, {
+            ...extraData,
+            accountKey: serializeAccountSpec(completeAccountSpec),
+        });
+        names.set(completeNameSpec, namePromise);
         namePromise.then(name => {
             this.emit('add', name);
+            Promise.all(names.values()).then(names => {
+                this.emit('updateAccount', { accountSpec: completeAccountSpec, names });
+            });
             this.wallet.datastore && this.wallet.datastore.getIndex('names').put(name);
         });
         return namePromise;
@@ -69,26 +90,30 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
     /**
      * Removes name from manager and datastore.
      */
-    async removeName(nameSpec: NameSpec): Promise<void> {
-        const completeNameSpec = this.getCompleteNameSpec(nameSpec);
-        if (this.names.has(completeNameSpec)) {
+    async removeName(accountSpec: AccountSpec, name: string, fromStore = true): Promise<void> {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        const names = this.getNamesMap(completeAccountSpec);
+        const completeNameSpec = { name, chainId: completeAccountSpec.chainId };
+        if (names.has(completeNameSpec)) {
             // Remove name from local cache
-            this.names.delete(completeNameSpec);
+            names.delete(completeNameSpec);
         }
-        if (this.wallet.datastore) {
+        if (this.wallet.datastore && fromStore) {
             // Remove account from store
             const index = this.wallet.datastore.getIndex('names');
             await index.delete(serializeNameSpec(completeNameSpec));
         }
         this.emit('remove', completeNameSpec);
+        Promise.all(names.values()).then(names => {
+            this.emit('updateAccount', { accountSpec: completeAccountSpec, names });
+        });
     }
 
     /**
-     * Remove all accounts from manager and datastore.
-     * Does not delete keys, call keyManager.clearKeys() for that.
+     * Remove all names from manager and datastore.
      */
     async clearNames(): Promise<void> {
-        this.names.clear();
+        this.namesByAccount.clear();
         if (this.wallet.datastore) {
             await this.wallet.datastore.getIndex('names').clear();
         }
@@ -98,14 +123,16 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
      * Generate a partial tx body for a Name Create transaction
      */
     async getCreateNameTransaction(
-        nameSpec: CompleteNameSpec | NameSpec,
-        extraData: { from: string | Address } & Partial<TxBody>,
+        accountSpec: CompleteAccountSpec | AccountSpec,
+        name: string,
+        extraData?: Partial<TxBody>,
     ): Promise<Partial<TxBody>> {
-        const completeNameSpec = this.getCompleteNameSpec(nameSpec);
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
         return {
+            from: completeAccountSpec.address,
             to: 'aergo.name',
-            amount: (await this.getNamePrice(completeNameSpec.chainId)).toString(),
-            payload: JSON.stringify({ Name: 'v1createName', Args: [completeNameSpec.name] }),
+            amount: (await this.getNamePrice(completeAccountSpec.chainId)).toString(),
+            payload: JSON.stringify({ Name: 'v1createName', Args: [name] }),
             limit: 0,
             type: TxTypes.Governance,
             ...extraData,
@@ -116,15 +143,17 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
      * Generate a partial tx body for a Name Create transaction
      */
     async getUpdateNameTransaction(
-        nameSpec: CompleteNameSpec | NameSpec,
-        extraData: { from: string | Address } & Partial<TxBody>,
+        accountSpec: CompleteAccountSpec | AccountSpec,
+        name: string,
         newDestination: string | Address,
+        extraData?: Partial<TxBody>,
     ): Promise<Partial<TxBody>> {
-        const completeNameSpec = this.getCompleteNameSpec(nameSpec);
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
         return {
+            from: completeAccountSpec.address,
             to: 'aergo.name',
-            amount: (await this.getNamePrice(completeNameSpec.chainId)).toString(),
-            payload: JSON.stringify({ Name: 'v1updateName', Args: [completeNameSpec.name, `${newDestination}`] }),
+            amount: (await this.getNamePrice(completeAccountSpec.chainId)).toString(),
+            payload: JSON.stringify({ Name: 'v1updateName', Args: [name, `${newDestination}`] }),
             limit: 0,
             type: TxTypes.Governance,
             ...extraData,
@@ -134,33 +163,39 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
     /**
      * Returns list of all accounts. Loads data persisted in datastore.
      */
-    async getNames(): Promise<Name[]> {
+    async getNames(accountSpec: AccountSpec): Promise<Name[]> {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        const namesMap = this.getNamesMap(completeAccountSpec);
         if (!this.loadedFromStore && this.wallet.datastore) {
-            const records = Array.from(await this.wallet.datastore.getIndex('names').getAll());
+            const records = Array.from(await this.wallet.datastore.getIndex('names').getAll(serializeAccountSpec(completeAccountSpec), 'accountKey'));
             const names = records.map(record => new Name(record.key, record.data as NameData));
             for (const name of names) {
-                this.names.set(this.getCompleteNameSpec(name.data.spec), Promise.resolve(name));
+                namesMap.set(this.getCompleteNameSpec(name.data.spec), Promise.resolve(name));
             }
             this.loadedFromStore = true;
             return names;
         }
-        const promises = await this.names.values();
-        return Promise.all(promises);
+        return Promise.all(namesMap.values()).then(names => {
+            this.emit('updateAccount', { accountSpec: completeAccountSpec, names });
+            return names;
+        });
     }
 
     /**
      * Gets a name and adds it to the manager if not existing.
      * @param nameSpec 
      */
-    async getOrAddName(nameSpec: CompleteNameSpec | NameSpec, extraData?: Partial<NameData>): Promise<Name> {
-        const completeNameSpec = this.getCompleteNameSpec(nameSpec);
-        let name: Name;
-        if (!this.names.has(completeNameSpec)) {
-            name = await this.addName(completeNameSpec, extraData);
+    async getOrAddName(accountSpec: CompleteAccountSpec | AccountSpec, name: string, extraData?: Partial<NameData>): Promise<Name> {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        const namesMap = this.getNamesMap(completeAccountSpec);
+        const completeNameSpec = { name, chainId: completeAccountSpec.chainId };
+        let nameObj: Name;
+        if (!namesMap.has(completeNameSpec)) {
+            nameObj = await this.addName(accountSpec, name, extraData);
         } else {
-            name = await this.names.get(completeNameSpec) as Name;
+            nameObj = await namesMap.get(completeNameSpec) as Name;
         }
-        return name;
+        return nameObj;
     }
 
     /**
@@ -169,7 +204,7 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
     async loadName(nameSpec: CompleteNameSpec, extraData?: Partial<NameData>): Promise<Name> {
         if (this.wallet.datastore) {
             try {
-                const record = await this.wallet.datastore.getIndex('accounts').get(serializeNameSpec(nameSpec));
+                const record = await this.wallet.datastore.getIndex('names').get(serializeNameSpec(nameSpec));
                 return new Name(record.key, record.data as NameData);
             } catch (e) {
                 // not found
@@ -184,23 +219,48 @@ export default class NameManager extends PausableTypedEventEmitter<Events> {
         }));
     }
 
+    moveNameToAccount(oldAccountSpec: CompleteAccountSpec, newAccountSpec: CompleteAccountSpec, name: Name): void {
+        const nameSpec = this.getCompleteNameSpec(name.data.spec);
+        const oldNamesMap = this.getNamesMap(oldAccountSpec);
+        if (oldNamesMap.has(nameSpec)) {
+            oldNamesMap.delete(nameSpec);
+        }
+        const newNamesMap = this.getNamesMap(newAccountSpec);
+        newNamesMap.set(nameSpec, Promise.resolve(name));
+        Promise.all(oldNamesMap.values()).then(names => {
+            this.emit('updateAccount', { accountSpec: oldAccountSpec, names });
+        });
+        Promise.all(newNamesMap.values()).then(names => {
+            this.emit('updateAccount', { accountSpec: newAccountSpec, names });
+        });
+    }
+
     /**
      * Update name info from blockchain
      * @param nameSpec 
      */
-    async updateName(nameSpec: CompleteNameSpec | NameSpec): Promise<Name> {
-        const name = await this.getOrAddName(nameSpec);
-        const client = this.wallet.getClient(nameSpec.chainId);
+    async updateName(accountSpec: AccountSpec, name: string): Promise<Name> {
+        const completeAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(accountSpec);
+        const nameObj = await this.getOrAddName(completeAccountSpec, name);
+        const client = this.wallet.getClient(completeAccountSpec.chainId);
         const { bestHeight } = await client.blockchain();
-        const nameInfo = await client.getNameInfo(nameSpec.name, bestHeight);
-        name.data.destination = `${nameInfo.destination}`;
-        name.data.owner = `${nameInfo.owner}`;
-        name.data.lastSync = {
+        const nameInfo = await client.getNameInfo(name, bestHeight);
+        nameObj.data.destination = `${nameInfo.destination}`;
+        nameObj.data.owner = `${nameInfo.owner}`;
+        nameObj.data.lastSync = {
             blockno: bestHeight,
             timestamp: +new Date(),
         };
-        this.emit('update', name);
-        this.wallet.datastore && this.wallet.datastore.getIndex('names').put(name);
-        return name;
+        // If the owner changed, also update the associated account and namesMap
+        const oldAccountKey = nameObj.data.accountKey;
+        const newAccountSpec = this.wallet.accountManager.getCompleteAccountSpec({ chainId: completeAccountSpec.chainId, address: `${nameInfo.owner}` });
+        nameObj.data.accountKey = serializeAccountSpec(newAccountSpec);
+        if (oldAccountKey !== nameObj.data.accountKey) {
+            const oldAccountSpec = this.wallet.accountManager.getCompleteAccountSpec(deserializeAccountSpec(oldAccountKey));
+            this.moveNameToAccount(oldAccountSpec, newAccountSpec, nameObj);
+        }
+        this.emit('update', nameObj);
+        this.wallet.datastore && this.wallet.datastore.getIndex('names').put(nameObj);
+        return nameObj;
     }
 }
