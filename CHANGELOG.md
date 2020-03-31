@@ -1,3 +1,6 @@
+## 0.20.1 (March 31, 2020)
+- Wallet: Name Manager keeps names keyed by account. Add database migration for IndexedDbStorage version 3.
+
 ## 0.20.0 (March 31, 2020)
 - Wallet: Add Name Manager
 - Client: add argument blockno to getNameInfo (default 0 = current block)
