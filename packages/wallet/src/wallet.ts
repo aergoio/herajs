@@ -2,6 +2,7 @@ import { MiddlewareConsumer } from './middleware';
 import KeyManager from './managers/key-manager';
 import AccountManager from './managers/account-manager';
 import { TransactionTracker, TransactionManager } from './managers/transaction-manager';
+import NameManager from './managers/name-manager';
 import { AergoClient } from '@herajs/client';
 import { HashMap, isConstructor, Constructor } from './utils';
 import { Account, AccountSpec } from './models/account';
@@ -30,18 +31,10 @@ interface WalletConfig {
 export class Wallet extends MiddlewareConsumer {
     public defaultChainId: string = DEFAULT_CHAIN;
     private chainConfigs: HashMap<string, ChainConfig> = new HashMap();
-    /**
-     * Used to access key manager instance
-     */
     public keyManager: KeyManager;
-    /**
-     * Used to access transaction manager instance
-     */
     public transactionManager: TransactionManager;
-    /**
-     * Used to access account manager instance
-     */
     public accountManager: AccountManager;
+    public nameManager: NameManager;
     private config: WalletConfig = { appName: 'herajs-wallet', appVersion: 1, instanceId: '' };
     public datastore?: Storage;
     public keystore?: Storage;
@@ -54,6 +47,7 @@ export class Wallet extends MiddlewareConsumer {
         this.keyManager = new KeyManager(this);
         this.transactionManager = new TransactionManager(this);
         this.accountManager = new AccountManager(this);
+        this.nameManager = new NameManager(this);
         this.config = { ...this.config, ...config };
     }
 

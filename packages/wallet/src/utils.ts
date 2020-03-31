@@ -1,4 +1,5 @@
 import { AccountSpec } from './models/account';
+import { NameSpec } from './models/name';
 import { TypedEventEmitter } from '@elderapo/typed-event-emitter';
 
 /**
@@ -24,6 +25,15 @@ export function serializeAccountSpec(accountSpec: AccountSpec): string {
 }
 
 /**
+ * Serializes nameSpec, e.g. { chainId: 'foo', name: 'bar' } => foo/bar
+ * @param nameSpec 
+ */
+export function serializeNameSpec(nameSpec: NameSpec): string {
+    const chainId = typeof nameSpec.chainId === 'undefined' ? '' : nameSpec.chainId;
+    return `${chainId}/${nameSpec.name}`;
+}
+
+/**
  * Deserializes accountSpec, e.g. foo/bar => { chainId: 'foo', address: 'bar' }.
  * If string has no /, uses whole string as address with empty chainId.
  * @param accountSpec 
@@ -43,6 +53,19 @@ export function deserializeAccountSpec(serialized: string): AccountSpec {
     return {
         address: parts[1],
         chainId: parts[0]
+    };
+}
+
+/**
+ * Deserializes nameSpec, e.g. foo/bar => { chainId: 'foo', name: 'bar' }.
+ * If string has no /, uses whole string as name with empty chainId.
+ * @param nameSpec 
+ */
+export function deserializeNameSpec(serialized: string): NameSpec {
+    const accountSpec = deserializeAccountSpec(serialized);
+    return {
+        chainId: accountSpec.chainId,
+        name: accountSpec.address as string,
     };
 }
 

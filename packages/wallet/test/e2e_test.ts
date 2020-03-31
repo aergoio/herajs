@@ -371,8 +371,41 @@ describe('Wallet scenarios', async () => {
             amount: '123 aer'
         });
         txhash = txTracker.transaction.hash;
-        console.log(`Waiting for tx hash ${txhash} to be confirmed and tracked...`);
         await txTracker.getReceipt();
         return p;
     }).timeout(30000);
+
+    it('saves names (send create name tx, send update name tx, loads name info)', async () => {
+        const wallet = new Wallet();
+        wallet.useChain({
+            chainId: 'testnet.localhost',
+            nodeUrl: '127.0.0.1:7845'
+        });
+        const account = await wallet.accountManager.createAccount();
+        const nameName = '' + (Math.random() * 99999999999 + 100000000000).toFixed(0);
+
+        // Create name
+        const tx = await wallet.nameManager.getCreateNameTransaction({
+            name: nameName,
+        }, {
+            from: account.address,
+        });
+        const txTracker = await wallet.sendTransaction(account, tx);
+        await txTracker.getReceipt();
+        await wallet.nameManager.addName({ name: nameName });
+        const name = await wallet.nameManager.updateName({ name: nameName });
+        assert.equal(name.data.destination, `${account.address}`);
+
+        // Update name
+        const account2 = await wallet.accountManager.createAccount();
+        const tx2 = await wallet.nameManager.getUpdateNameTransaction({
+            name: nameName,
+        }, {
+            from: account.address,
+        }, account2.address);
+        const txTracker2 = await wallet.sendTransaction(account, tx2);
+        await txTracker2.getReceipt();
+        const name2 = await wallet.nameManager.updateName({ name: nameName });
+        assert.equal(name2.data.destination, `${account2.address}`);
+    }).timeout(10000);
 });
