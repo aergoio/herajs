@@ -1,4 +1,4 @@
-## 0.19.9 (March 31, 2020)
+## 0.20.0 (March 31, 2020)
 - Wallet: Add Name Manager
 - Client: add argument blockno to getNameInfo (default 0 = current block)
 
