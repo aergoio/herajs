@@ -725,9 +725,10 @@ class AergoClient {
      * Return information for account name
      * @param name 
      */
-    getNameInfo(name: string): Promise<NameInfoResult> {
+    getNameInfo(name: string, blockno = 0): Promise<NameInfoResult> {
         const nameObj = new Name();
         nameObj.setName(name);
+        nameObj.setBlockno(blockno);
         return promisify(this.client.client.getNameInfo, this.client.client)(nameObj).then(
             (grpcObject: NameInfo): NameInfoResult => {
                 const obj = grpcObject.toObject();
