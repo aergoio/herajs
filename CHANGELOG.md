@@ -1,3 +1,16 @@
+## 0.19.9 (March 31, 2020)
+- Wallet: Add Name Manager
+- Client: add argument blockno to getNameInfo (default 0 = current block)
+
+## 0.19.8 (March 30, 2020)
+- Ledger HW App: update supported tx types
+
+## 0.19.7 (March 30, 2020)
+- Wallet: add field 'added' to account
+
+## 0.19.6 (March 26, 2020)
+- Ledger HW App: fix browser compatability
+
 ## 0.19.5 (March 25, 2020)
 - Ledger HW App: support for current spec under development
 
