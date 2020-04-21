@@ -38,8 +38,10 @@ describe('Wallet scenarios', async () => {
 
         (async () => {
             const testAccountSpec = { chainId: 'testnet.localhost', address: 'AmQLSEi7oeW9LztxGa8pXKQDrenzK2JdDrXsJoCAh6PXyzdBtnVJ' };
-            wallet.accountManager.addAccount(testAccountSpec);
-            const accountTracker = await wallet.accountManager.trackAccount(testAccountSpec);
+            await wallet.accountManager.addAccount(testAccountSpec);
+            const accounts = await wallet.accountManager.getAccounts();
+            assert.equal(accounts[0].data.spec.address, testAccountSpec.address);
+            const accountTracker = await wallet.accountManager.trackAccount({ address: testAccountSpec.address });
             accountTracker.once('update', account => {
                 assert.deepEqual(account.data.spec, testAccountSpec);
                 assert.equal(account.balance.toUnit('aergo').toString(), '20000 aergo');
@@ -106,6 +108,9 @@ describe('Wallet scenarios', async () => {
         await wallet.unlock('password');
         const account = await wallet.accountManager.createAccount();
         await wallet.lock();
+
+        const accounts = await wallet.accountManager.getAccounts();
+        assert.equal(accounts[0].data.spec.address, account.data.spec.address);
 
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
@@ -299,12 +304,7 @@ describe('Wallet scenarios', async () => {
         });
 
         // Send a tx from another account
-        const account2 = await wallet.accountManager.addAccount({ address: address2 });
-        await wallet.keyManager.importKey({
-            account: account2,
-            b58encrypted: encprivkey2,
-            password: ''
-        });
+        const account2 = await wallet.accountManager.importAccount(ids[1].privateKey);
         const txTracker = await wallet.sendTransaction(account2, { 
             from: address2,
             to: address,

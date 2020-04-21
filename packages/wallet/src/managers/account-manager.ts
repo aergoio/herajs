@@ -5,7 +5,8 @@ import { serializeAccountSpec, HashMap } from '../utils';
 import { Amount, Address } from '@herajs/common';
 import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { PausableTypedEventEmitter } from '../utils';
-import { createIdentity } from '@herajs/crypto';
+import { createIdentity, identifyFromPrivateKey } from '@herajs/crypto';
+import { Identity } from '@herajs/crypto/dist/types/keys';
 
 export interface Events {
     'add': Account;
@@ -161,14 +162,29 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     /**
      * Generates a new account and private key.
      * @param chainId optional, uses default chainId if undefined
+     * @param extraData optional, extra data to be saved with account
      */
     async createAccount(chainId?: string, extraData?: Partial<AccountData>): Promise<Account> {
         const identity = createIdentity();
+        return this.importAndAddIdentity(identity, chainId, extraData);
+    }
+
+    /**
+     * Import an account by private key.
+     * @param chainId optional, uses default chainId if undefined
+     * @param extraData optional, extra data to be saved with account
+     */
+    async importAccount(privateKey: Buffer|Uint8Array, chainId?: string, extraData?: Partial<AccountData>): Promise<Account> {
+        const identity = identifyFromPrivateKey(privateKey);
+        return this.importAndAddIdentity(identity, chainId, extraData);
+    }
+
+    private async importAndAddIdentity(identity: Identity, chainId?: string, extraData?: Partial<AccountData>): Promise<Account> {
         const address = identity.address;
         const account = await this.addAccount({ address, chainId }, extraData);
         await this.wallet.keyManager.importKey({
             account: account,
-            privateKey: identity.privateKey
+            privateKey: identity.privateKey,
         });
         return account;
     }
