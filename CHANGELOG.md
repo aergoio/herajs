@@ -1,3 +1,6 @@
+## 0.20.2 (April 22, 2020)
+- Wallet: Add accountManager.importAccount method
+
 ## 0.20.1 (March 31, 2020)
 - Wallet: Name Manager keeps names keyed by account. Add database migration for IndexedDbStorage version 3.
 
