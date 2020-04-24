@@ -70,6 +70,10 @@ class IDBIndex extends Index {
                 const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
                 return records[Symbol.iterator]();
             }
+            if (this.name === 'names' && arrayContains(['accountKey'] as const, indexName)) {
+                const records = await this.db.transaction(this.name).objectStore(this.name).index(indexName).getAll(q);
+                return records[Symbol.iterator]();
+            }
         }
         const records = await this.db.transaction(this.name).objectStore(this.name).getAll(q);
         return records[Symbol.iterator]();
