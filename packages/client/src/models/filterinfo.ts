@@ -8,7 +8,7 @@ function isArgMap(obj: any): obj is Map<number | string, PrimitiveType> {
 }
 
 export default class FilterInfo {
-    address!: Address;
+    address!: Address | string;
     args?: PrimitiveType[] | Map<number | string, PrimitiveType>;
     eventName?: string;
     blockfrom?: number = 0;
@@ -17,7 +17,6 @@ export default class FilterInfo {
 
     constructor(data: Partial<FilterInfo>) {
         Object.assign(this, data);
-        this.address = new Address(this.address as any);
     }
     static fromGrpc(grpcObject: GrpcFilterInfo): FilterInfo {
         return new FilterInfo({
@@ -31,7 +30,7 @@ export default class FilterInfo {
     }
     toGrpc(): GrpcFilterInfo {
         const fi = new GrpcFilterInfo();
-        fi.setContractaddress(this.address.asBytes());
+        fi.setContractaddress(new Address(this.address as any).asBytes());
         if (this.args) {
             // The RPC handler only understands maps, not simple arrays
             // The advantage of this is that you can query positional arguments directly
