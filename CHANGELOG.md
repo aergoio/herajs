@@ -1,3 +1,8 @@
+## 0.20.3 (April 24, 2020)
+- Wallet: Name manager did not correctly load persisted names due to a missing indexdb method
+- Wallet: Correctly set transaction.data.type
+- Client: getEvents FilterInfo: address can be a string 
+
 ## 0.20.2 (April 22, 2020)
 - Wallet: Add accountManager.importAccount method
 
