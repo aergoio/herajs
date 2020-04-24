@@ -315,8 +315,8 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
             blockhash: null,
             blockno: null,
             amount: new Amount(tx.amount).toString(),
-            type: 0,
-            status: Transaction.Status.Pending
+            type: tx.type || 0,
+            status: Transaction.Status.Pending,
         }, tx as CompleteTxBody);
     }
 
