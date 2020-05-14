@@ -11,6 +11,7 @@ const INS = {
     GET_VERSION: 0x01,
     GET_PUBLIC_KEY: 0x02,
     SIGN_TX: 0x04,
+    SIGN_MSG: 0x08,
 };
 
 export const ErrorCodes = {
@@ -115,6 +116,20 @@ export default class LedgerAppAergo {
         const [pubkey] = chunkBy(response, [33]);
         this.lastAddress = new Address(pubkey);
         return this.lastAddress;
+    }
+
+    /**
+     * Sign a raw message. Uses account from last getWalletAddress call.
+     */
+    async signMessage(data: Buffer, displayAsHex = false): Promise<string> {
+        if (data.length > 250) {
+            throw new Error('only messages upto 250 bytes are supported');
+        }
+        const response = await wrapRetryStillInCall(() =>
+            this.transport.send(CLA, INS.SIGN_MSG, displayAsHex ? 0x08 : 0x00, 0x00, data)
+        );
+        const [signature] = chunkBy(response, [response.length-2]);
+        return signature.toString('base64');
     }
 
     private async sendChunkedTxData(data: Buffer, chunkSize = 200, singleChunkSize = 250): Promise<[Buffer, Buffer]> {
