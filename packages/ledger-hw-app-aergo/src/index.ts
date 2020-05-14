@@ -121,15 +121,18 @@ export default class LedgerAppAergo {
     /**
      * Sign a raw message. Uses account from last getWalletAddress call.
      */
-    async signMessage(data: Buffer, displayAsHex = false): Promise<string> {
+    async signMessage(data: Buffer, displayAsHex = false): Promise<SignTxResponse> {
         if (data.length > 250) {
             throw new Error('only messages upto 250 bytes are supported');
         }
         const response = await wrapRetryStillInCall(() =>
             this.transport.send(CLA, INS.SIGN_MSG, displayAsHex ? 0x08 : 0x00, 0x00, data)
         );
-        const [signature] = chunkBy(response, [response.length-2]);
-        return signature.toString('base64');
+        const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
+        return {
+            hash: Tx.encodeHash(hash),
+            signature: signature.toString('base64'),
+        };
     }
 
     private async sendChunkedTxData(data: Buffer, chunkSize = 200, singleChunkSize = 250): Promise<[Buffer, Buffer]> {

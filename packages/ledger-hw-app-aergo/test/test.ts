@@ -51,9 +51,11 @@ describe('signMessage()', () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
         const msg = Buffer.from('test');
-        const signature = await app.signMessage(msg);
+        const expectedHash = hash(msg);
+        const result = await app.signMessage(msg);
+        assert.equal(result.hash, Tx.encodeHash(expectedHash));
         const pubkey = publicKeyFromAddress(address);
-        assert.isTrue(await verifySignature(msg, pubkey, signature));
+        assert.isTrue(await verifySignature(expectedHash, pubkey, result.signature));
     }).timeout(10000);
 });
 
