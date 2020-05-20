@@ -9,7 +9,7 @@ const assert = chai.assert;
 const BIP44_ID = 441;
 const WALLET_HDPATH = `m/44'/${BIP44_ID}'/0'/0/`;
 
-import { hash, verifyTxSignature, publicKeyFromAddress, hashTransaction } from '@herajs/crypto';
+import { hash, verifyTxSignature, verifySignature, publicKeyFromAddress, hashTransaction } from '@herajs/crypto';
 import AergoClient, { Tx } from '@herajs/client';
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import Transport from '@ledgerhq/hw-transport';
@@ -42,6 +42,20 @@ describe('getWalletAddress()', () => {
             // eslint-disable-next-line no-console
             console.log(path, address.toString());
         }
+    }).timeout(10000);
+});
+
+
+describe('signMessage()', () => {
+    it('should produce a valid msg signature', async () => {
+        const app = await getApp();
+        const address = await app.getWalletAddress(WALLET_HDPATH + '0');
+        const msg = Buffer.from('test');
+        const expectedHash = hash(msg);
+        const result = await app.signMessage(msg);
+        assert.equal(result.hash, Tx.encodeHash(expectedHash));
+        const pubkey = publicKeyFromAddress(address);
+        assert.isTrue(await verifySignature(expectedHash, pubkey, result.signature));
     }).timeout(10000);
 });
 
