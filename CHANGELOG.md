@@ -1,3 +1,6 @@
+## 0.20.4 (May 20, 2020)
+- Ledger HW App: support for signMessage
+
 ## 0.20.3 (April 24, 2020)
 - Wallet: Name manager did not correctly load persisted names due to a missing indexdb method
 - Wallet: Correctly set transaction.data.type
