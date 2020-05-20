@@ -1,6 +1,6 @@
 {
   "name": "@herajs/ledger-hw-app-aergo",
-  "version": "0.20.3",
+  "version": "0.20.4",
   "description": "Ledger Hardware app for Aergo",
   "main": "dist/herajs-ledger-hw-app-aergo.cjs.js",
   "module": "dist/herajs-ledger-hw-app-aergo.esm.js",
