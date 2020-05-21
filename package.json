@@ -32,7 +32,7 @@
     "@types/mocha": "^7.0.0",
     "@types/node": "^13.9.0",
     "@types/rollup-plugin-json": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/eslint-plugin": "^3.0.0",
     "@typescript-eslint/parser": "^2.23.0",
     "async-sema": "^3.0.0",
     "babel-register-ts": "^7.0.0",
