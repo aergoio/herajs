@@ -37,6 +37,7 @@ export {
     privateKeysFromSeed,
     privateKeyFromMnemonic,
     privateKeysFromMnemonic,
+    validateMnemonic,
 } from './seed';
 
 export {

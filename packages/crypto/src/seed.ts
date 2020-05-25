@@ -2,7 +2,13 @@ import hdkey from '@herajs/hdkey';
 import { constants } from '@herajs/common';
 
 // Re-export useful functions from bip39
-import { generateMnemonic as _generateMnemonic, mnemonicToSeed as _mnemonicToSeed } from 'bip39';
+import {
+    generateMnemonic as _generateMnemonic,
+    mnemonicToSeed as _mnemonicToSeed,
+    validateMnemonic,
+} from 'bip39';
+
+export { validateMnemonic };
 
 /**
  * Generate random mnemonic

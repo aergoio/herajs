@@ -16,7 +16,7 @@ import {
     publicKeyFromAddress,
     signMessage, verifySignature,
     generateMnemonic, privateKeyFromMnemonic, privateKeyFromSeed, mnemonicToSeed,
-    privateKeysFromSeed, privateKeysFromMnemonic,
+    privateKeysFromSeed, privateKeysFromMnemonic, validateMnemonic,
     identityFromKeystore, keystoreFromPrivateKey,
     encodeAddress,
 } from '../src';
@@ -256,6 +256,17 @@ describe('seed', () => {
         assert.equal(privateKey.toString(), privateKey2.toString());
         const identity = identityFromPrivateKey(privateKey);
         assert.equal(identity.address, 'AmMDKHZeSBHrJpNzGGcCQMaRRZMCn99BRB2kq9NHUuFjab7WvNkA');
+    });
+
+    it('should throw validation error', async () => {
+        const mnemonic = 'dust sister misery any capital scrap country various quantum ocean pill around';
+        const mnemonic2 = 'random random random random random random random random random random random random';
+
+        assert.isTrue(validateMnemonic(mnemonic));
+        assert.isFalse(validateMnemonic(mnemonic2));
+
+        // Even if invalid, should still be usable
+        await privateKeyFromMnemonic(mnemonic2);
     });
 });
 
