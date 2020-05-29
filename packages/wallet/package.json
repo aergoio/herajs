@@ -38,6 +38,6 @@
   },
   "gitHead": "97d1b15d147bb1bbff6d70dbe4bb06a60a881bc1",
   "devDependencies": {
-    "@ledgerhq/hw-transport-node-hid": "^5.11.0"
+    "@ledgerhq/hw-transport-node-hid": "^5.16.0"
   }
 }
