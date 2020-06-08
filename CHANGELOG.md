@@ -1,3 +1,9 @@
+## 0.20.6 (June 8, 2020)
+- Ledger HW App: support for displayAccount
+
+## 0.20.5 (May 25, 2020)
+- Crypto: export validateMnemonic
+
 ## 0.20.4 (May 20, 2020)
 - Ledger HW App: support for signMessage
 
