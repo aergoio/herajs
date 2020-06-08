@@ -10,6 +10,7 @@ const CLA = 0xAE;
 const INS = {
     GET_VERSION: 0x01,
     GET_PUBLIC_KEY: 0x02,
+    DISPLAY_ACCOUNT: 0x03,
     SIGN_TX: 0x04,
     SIGN_MSG: 0x08,
 };
@@ -102,6 +103,16 @@ export default class LedgerAppAergo {
         );
         const [major, minor] = response;
         return { major, minor };
+    }
+
+    /**
+     * Display currently selected account on device
+     */
+    async displayAccount(): Promise<void> {
+        await wrapRetryStillInCall(() =>
+            this.transport.send(CLA, INS.DISPLAY_ACCOUNT, 0x00, 0x00)
+        );
+        return;
     }
 
     /**

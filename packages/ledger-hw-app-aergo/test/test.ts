@@ -158,3 +158,11 @@ describe.skip('sign and send', () => {
         assert.equal(txReceipt.status, 'SUCCESS');
     }).timeout(30000);
 });
+
+describe('displayAccount', () => {
+    it('should display selected account', async () => {
+        const app = await getApp();
+        await app.getWalletAddress(WALLET_HDPATH + '0');
+        await app.displayAccount();
+    }).timeout(30000);
+});
