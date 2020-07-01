@@ -78,7 +78,11 @@ enum Mode {
     Single = 0x03,
 }
 
-const supportedTypes = [Tx.Type.NORMAL, Tx.Type.TRANSFER, Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.DEPLOY, Tx.Type.REDEPLOY] as const;
+const supportedTypes = [
+    Tx.Type.NORMAL, Tx.Type.TRANSFER,
+    Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.FEEDELEGATION,
+    Tx.Type.DEPLOY, Tx.Type.REDEPLOY
+] as const;
 
 export default class LedgerAppAergo {
     transport: Transport;
