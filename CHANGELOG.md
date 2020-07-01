@@ -1,3 +1,6 @@
+## 0.20.7 (July 1, 2020)
+- Ledger HW App: support for tx type FeeDelegation
+
 ## 0.20.6 (June 8, 2020)
 - Ledger HW App: support for displayAccount
 
