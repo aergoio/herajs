@@ -117,8 +117,11 @@ describe('signTransaction()', () => {
         const app = await getApp();
         const address = await app.getWalletAddress(WALLET_HDPATH + '0');
         const payload = JSON.stringify({
-            Name: 'FunctionName',
-            Args: [Buffer.from([...Array(200).keys()]).toString('hex')],
+            Name: 'vote',
+            Args: [
+                '1d00dbc3f17b300e2957de59dc60da66235a2503cbf19ae316cb5238e403c13d',
+                '1d00dbc3f17b300e2957de59dc60da66235a2503cbf19ae316cb5238e403c13d'
+            ]
         });
         assert.isTrue(await signAndVerifyTx(app, {
             from: address,

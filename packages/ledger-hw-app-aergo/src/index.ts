@@ -150,27 +150,25 @@ export default class LedgerAppAergo {
         };
     }
 
-    private async sendChunkedTxData(data: Buffer, chunkSize = 200, singleChunkSize = 250): Promise<[Buffer, Buffer]> {
+    private async sendChunkedTxData(data: Buffer, chunkSize = 250): Promise<[Buffer, Buffer]> {
         const TX_REQUEST_NEXT_PART = '9000'; //0x9000
         //const total = Math.ceil(data.length / chunkSize);
         //let idx = 0;
         for (let offset = 0; offset < data.length; offset += chunkSize) {
             const chunkEnd = Math.min(data.length, offset + chunkSize);
             const dataChunk = data.slice(offset, chunkEnd);
-            let mode = Mode.Single;
-            if (data.length >= singleChunkSize) {
-                mode = Mode.Begin;
-                if (offset > 0) {
-                    mode = Mode.Part;
-                } else if (chunkEnd === data.length) {
-                    mode = Mode.Finish;
-                }
+            let mode = Mode.Part;
+            if (offset === 0) {
+                mode |= Mode.Begin;
             }
-            //console.log(`chunk ${++idx}/${total} (${offset}-${chunkEnd}) request`, Mode[mode], dataChunk);
+            if (chunkEnd === data.length) {
+                mode |= Mode.Finish;
+            }
+            // Mode.Single = Mode.Begin | Mode.Finish
+            //console.log(`chunk ${++idx}/${total} (${offset}-${chunkEnd}) request with mode`, Mode[mode], dataChunk);
             const response = await wrapRetryStillInCall(() =>
                 this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, dataChunk)
             );
-            //console.log('chunk  ${++idx}/${total} response', response.toString('hex'));
             if (response.length && response.toString('hex') !== TX_REQUEST_NEXT_PART) {
                 const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
                 return [hash, signature];
@@ -194,7 +192,7 @@ export default class LedgerAppAergo {
         const typeSerialized = Buffer.from(Uint8Array.from([tx.type]));
         const data = Buffer.concat([typeSerialized, serialized]);
 
-        const chunkSize = 200;
+        const chunkSize = 250;
         const [hash, signature] = await this.sendChunkedTxData(data, chunkSize);
         
         return {
