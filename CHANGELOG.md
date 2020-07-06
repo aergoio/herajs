@@ -1,3 +1,6 @@
+## 0.20.8 (July 1, 2020)
+- Ledger HW App: fix sending tx chunks (did not apply Mode.Finish)
+
 ## 0.20.7 (July 1, 2020)
 - Ledger HW App: support for tx type FeeDelegation
 
