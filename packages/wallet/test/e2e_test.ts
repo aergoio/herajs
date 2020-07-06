@@ -110,6 +110,7 @@ describe('Wallet scenarios', async () => {
         await wallet.lock();
 
         const accounts = await wallet.accountManager.getAccounts();
+        assert.equal(accounts.length, 1);
         assert.equal(accounts[0].data.spec.address, account.data.spec.address);
 
         // eslint-disable-next-line no-async-promise-executor

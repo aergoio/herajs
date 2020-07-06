@@ -182,10 +182,16 @@ export default class AccountManager extends PausableTypedEventEmitter<Events> {
     private async importAndAddIdentity(identity: Identity, chainId?: string, extraData?: Partial<AccountData>): Promise<Account> {
         const address = identity.address;
         const account = await this.addAccount({ address, chainId }, extraData);
-        await this.wallet.keyManager.importKey({
-            account: account,
-            privateKey: identity.privateKey,
-        });
+        try {
+            await this.wallet.keyManager.importKey({
+                account: account,
+                privateKey: identity.privateKey,
+            });
+        } catch (e) {
+            // Rollback
+            await this.removeAccount({ address, chainId });
+            throw e;
+        }
         return account;
     }
 
