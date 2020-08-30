@@ -582,7 +582,8 @@ class AergoClient {
             try {
                 return await this.getTransactionReceipt(txhash);
             } catch(e) {
-                if (!(e.details as string).match(/tx not found/)) {
+                const details = `${(e.details as string || e.message as string)}`;
+                if (!details.match(/tx not found/)) {
                     throw e;
                 }
                 const interval = backoffIntervalStep(retryCount++, baseBackoffInterval);
