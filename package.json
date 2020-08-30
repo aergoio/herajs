@@ -50,7 +50,7 @@
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "rollup-plugin-progress": "^1.1.0",
+    "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-visualizer": "^3.3.0",
     "ts-protoc-gen": "^0.10.0",
