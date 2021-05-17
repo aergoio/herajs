@@ -530,9 +530,9 @@ class AergoClient {
      * @param {string} address Account address encoded in Base58check
      */
     getStaking(address: AddressInput): Promise<Staking.AsObject> {
-        const singleBytes = new SingleBytes();
-        singleBytes.setValue(Uint8Array.from((new Address(address)).asBytes()));
-        return promisify(this.client.client.getStaking, this.client.client)(singleBytes).then(
+        const accountAddress = new AccountAddress();
+        accountAddress.setValue(Uint8Array.from((new Address(address)).asBytes()));
+        return promisify(this.client.client.getStaking, this.client.client)(accountAddress).then(
             (grpcObject: Staking) => {
                 return {
                     amount: new Amount(grpcObject.getAmount_asU8()),
