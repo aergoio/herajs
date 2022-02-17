@@ -1,4 +1,5 @@
 import { SignedTx } from '../models/tx';
+import { default as Event } from '../models/event';
 import { default as Address } from '../models/address';
 import { Amount } from '@herajs/common';
 import ChainInfo from '../models/chaininfo';
@@ -21,6 +22,7 @@ export interface GetReceiptResult {
     blockhash: string;
     feeDelegation: boolean;
     gasused: number;
+    events: Event[];
 }
 
 export interface NameInfoResult {

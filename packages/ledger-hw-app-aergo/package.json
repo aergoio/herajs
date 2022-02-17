@@ -1,6 +1,6 @@
 {
   "name": "@herajs/ledger-hw-app-aergo",
-  "version": "0.21.1",
+  "version": "1.0.0",
   "description": "Ledger Hardware app for Aergo",
   "main": "dist/herajs-ledger-hw-app-aergo.cjs.js",
   "module": "dist/herajs-ledger-hw-app-aergo.esm.js",
@@ -27,14 +27,13 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
-    "@herajs/client": "^0.21.1",
-    "@herajs/common": "^0.21.0",
-    "@herajs/crypto": "^0.21.0"
+    "@herajs/client": "^1.0.0",
+    "@herajs/common": "^1.0.0",
+    "@herajs/crypto": "^1.0.0"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport": "^5.9.0",
-    "@ledgerhq/hw-transport-node-hid": "^5.10.0",
-    "@types/ledgerhq__hw-transport-node-hid": "^4.22.1"
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@ledgerhq/hw-transport-node-hid": "^6.24.1"
   },
   "gitHead": "97d1b15d147bb1bbff6d70dbe4bb06a60a881bc1"
 }

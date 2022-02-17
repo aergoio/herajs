@@ -100,7 +100,7 @@ export class TransactionTracker extends PausableTypedEventEmitter<TrackerEvents>
                 this.cancel();
                 return;
             }
-        } catch (e) {
+        } catch (e: any) {
             this.emit('error', e);
             this.cancel();
             return;

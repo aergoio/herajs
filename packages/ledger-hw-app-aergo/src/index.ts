@@ -45,7 +45,7 @@ function errorRangeMessage(text: string, code: number, rangeFrom: number): strin
 async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
     try {
         return await fn();
-    } catch (e) {
+    } catch (e: any) {
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_STILL_IN_CALL) {
             // Retry once
             return await fn();
