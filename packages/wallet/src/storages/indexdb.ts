@@ -1,13 +1,6 @@
-import { openDB, IDBPDatabase, IDBPTransaction, DBSchema } from 'idb';
+import { openDB, IDBPDatabase, OpenDBCallbacks, StoreNames, DBSchema } from 'idb';
 import { Record, BasicType, Data } from '../models/record';
 import { Storage, Index } from './storage';
-
-type KnownKeys<T> = {
-    [K in keyof T]: string extends K ? never : number extends K ? never : K
-} extends { [_ in keyof T]: infer U } ? U : never
-
-type StoreNames<DBTypes extends DBSchema | unknown> =
-  DBTypes extends DBSchema ? KnownKeys<DBTypes> : string;
 
 interface IdbSchema extends DBSchema {
     'transactions': {
@@ -108,7 +101,7 @@ export default class IndexedDbStorage extends Storage {
     async open(): Promise<this> {
         if (typeof this.db !== 'undefined') return this;
 
-        function upgrade(db: IDBPDatabase<IdbSchema>, oldVersion: number, _newVersion: number, tx: IDBPTransaction<IdbSchema>): void {
+        const upgrade: OpenDBCallbacks<IdbSchema>['upgrade'] = (db, oldVersion, _newVersion, tx) => {
             switch (oldVersion) {
                 // @ts-ignore: falls through
                 case 0: {
@@ -129,7 +122,7 @@ export default class IndexedDbStorage extends Storage {
                     tx.objectStore('names').createIndex('accountKey', 'data.accountKey', { unique: false });
                 }
             }
-        }
+        };
 
         this.db = await openDB<IdbSchema>(this.name, this.version, { upgrade });
         return this;

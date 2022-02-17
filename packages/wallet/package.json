@@ -33,11 +33,11 @@
     "@types/leveldown": "^4.0.0",
     "@types/levelup": "^3.1.0",
     "hashmap": "^2.3.0",
-    "idb": "^4.0.0",
+    "idb": "^7.0.0",
     "level": "^6.0.0"
   },
   "gitHead": "97d1b15d147bb1bbff6d70dbe4bb06a60a881bc1",
   "devDependencies": {
-    "@ledgerhq/hw-transport-node-hid": "^5.11.0"
+    "@ledgerhq/hw-transport-node-hid": "^6.24.1"
   }
 }

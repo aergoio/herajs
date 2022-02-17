@@ -32,9 +32,8 @@
     "@herajs/crypto": "^0.21.0"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport": "^5.9.0",
-    "@ledgerhq/hw-transport-node-hid": "^5.10.0",
-    "@types/ledgerhq__hw-transport-node-hid": "^4.22.1"
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@ledgerhq/hw-transport-node-hid": "^6.24.1"
   },
   "gitHead": "97d1b15d147bb1bbff6d70dbe4bb06a60a881bc1"
 }

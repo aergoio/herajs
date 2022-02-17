@@ -45,7 +45,7 @@
         "prefer-arrow-callback": "warn",
         "prefer-const": "warn",
         "no-var": "error",
-        "no-unused-vars": "warn",
+        "no-unused-vars": "off",
         "no-dupe-class-members": "off",
         "@typescript-eslint/explicit-member-accessibility": 0,
         "@typescript-eslint/no-explicit-any": 0,
@@ -55,6 +55,7 @@
             { "allowExpressions": true }
         ],
         "@typescript-eslint/ban-ts-ignore": 0,
+        "@typescript-eslint/ban-ts-comment": 0,
         "@typescript-eslint/no-this-alias": 0
     }
 }

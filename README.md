@@ -27,7 +27,7 @@ yarn
 Run tests (requires a local Aergo node running in `--testmode`, listening on port `7845`).
 
 ```console
-yarn run build
+yarn build
 ```
 ```console
 yarn test
@@ -36,8 +36,8 @@ yarn test
 Regenerate GRPC type definitions
 
 ```console
-yarn run lerna run grpc --scope=@herajs/client
+yarn lerna run grpc --scope=@herajs/client
 ```
 ```console
-yarn run build [--scope=@herajs/client]
+yarn build [--scope=@herajs/client]
 ```

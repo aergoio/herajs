@@ -349,7 +349,7 @@ describe('Wallet scenarios', async () => {
         };
         wallet.use(NodeTransactionScanner);
         const accountTxTracker = wallet.transactionManager.trackAccount(account);
-        const p = new Promise(resolve => {
+        const p = new Promise<void>(resolve => {
             accountTxTracker.on('transaction', (tx: SignedTransaction) => {
                 console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
                 if (tx.hash === txhash) {

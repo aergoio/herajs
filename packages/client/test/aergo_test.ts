@@ -144,7 +144,7 @@ describe('Aergo', () => {
         });
         it('should throw error when block not found by number', async () => {
             return assert.isRejected(
-                aergo.getBlock(0xFFFFFFFFFFFFFFF),
+                aergo.getBlock(0xFFFFFFFFFFFFFFF), // eslint-disable-line
                 Error,
                 '13 INTERNAL: block not found: blockNo=1152921504606846976'
             );
@@ -158,7 +158,7 @@ describe('Aergo', () => {
         });
         it('should throw error when number out of range', () => {
             return assert.isRejected(
-                aergo.getBlock(0xFFFFFFFFFFFFFFFF),
+                aergo.getBlock(0xFFFFFFFFFFFFFFFF), // eslint-disable-line
                 Error,
                 'Number exeeds range'
             );
