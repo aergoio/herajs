@@ -129,7 +129,7 @@ class AergoClient {
         return false;
     }
 
-    grpcMethod<I, O>(method: Function): (request: I) => Promise<O> {
+    grpcMethod<I, O>(method: (...args: any) => any): (request: I) => Promise<O> {
         return (request: I) => promisify(method, this.client.client)(request);
     }
 
@@ -562,6 +562,7 @@ class AergoClient {
                 blockhash: Block.encodeHash(grpcObject.getBlockhash_asU8()),
                 feeDelegation: obj.feedelegation,
                 gasused: obj.gasused,
+                events: grpcObject.getEventsList().map(item => Event.fromGrpc(item)),
             };
             return ret;
         });

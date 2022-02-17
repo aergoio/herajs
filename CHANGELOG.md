@@ -1,3 +1,7 @@
+## 1.0.0 (February 17, 2022)
+- Updated dependencies and Typescript version
+- Client: getTransactionReceipt return value now contains `events`
+
 ## 0.20.8 (July 1, 2020)
 - Ledger HW App: fix sending tx chunks (did not apply Mode.Finish)
 

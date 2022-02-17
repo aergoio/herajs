@@ -56,7 +56,6 @@ describe('Contracts', () => {
                     name: func.name,
                     arguments: func.arguments,
                 })),
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 state_variables: abi.state_variables.map((variable: any) => ({
                     name: variable.name,
                     type: variable.type,
@@ -88,6 +87,19 @@ describe('Contracts', () => {
                 await aergo.getTransactionReceipt(calltxhash)
             );
             assert.equal(calltxreceipt.status, 'SUCCESS', `Call failed with error: ${calltxreceipt.result}`);
+
+            assert.deepEqual(calltxreceipt.events as any, [
+                {
+                    address: contractAddress,
+                    args: [10, 11],
+                    eventName: 'incremented',
+                    eventidx: 0,
+                    blockhash: calltxreceipt.blockhash,
+                    txhash: calltxhash,
+                    blockno: calltxreceipt.blockno,
+                    txidx: 0,
+                }
+            ]);
 
             // Test missing from address
             assert.throws(() => {
