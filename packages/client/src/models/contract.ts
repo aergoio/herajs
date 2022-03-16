@@ -1,6 +1,6 @@
 import { Address, Amount, constants, fromNumber, base58check } from '@herajs/common';
 import Tx from './tx';
-import { Function, StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
+import { StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
 
 type _PrimitiveType = string | number | boolean;
