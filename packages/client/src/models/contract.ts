@@ -21,11 +21,11 @@ export type Abi = Partial<ABI.AsObject> & { functions: any; state_variables: any
  * can be passed to the client.
  */
 export class FunctionCall {
-    definition: Function.AsObject;
+    definition: { name: string };
     args: PrimitiveType[];
-    contractInstance: Contract;
+    contractInstance: { address: Address };
 
-    constructor(contractInstance: Contract, definition: Function.AsObject, args: PrimitiveType[]) {
+    constructor(contractInstance: { address: Address }, definition: { name: string }, args: PrimitiveType[]) {
         this.definition = definition;
         this.args = args;
         this.contractInstance = contractInstance;
@@ -233,7 +233,9 @@ class Contract {
      */
     loadAbi(abi: Abi): Contract {
         for (const definition of abi.functions) {
-            this.functions[definition.name] = (...args: PrimitiveType[]) => new FunctionCall(this, definition, args);
+            this.functions[definition.name] = (...args: PrimitiveType[]) => new FunctionCall({
+                address: this.address,
+            }, definition, args);
         }
         return this;
     }

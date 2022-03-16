@@ -159,6 +159,11 @@ describe('Contracts', () => {
             assert.equal(result2, 12);
         }).timeout(3000);
 
+        it('should query a smart contract without ABI', async () => {
+            const result1 = await aergo.queryContract(contractAddress, 'query', 'key1');
+            assert.equal(result1, 12);
+        }).timeout(3000);
+
         it('should query a smart contract using state', async () => {
             // Setup address and ABI
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
