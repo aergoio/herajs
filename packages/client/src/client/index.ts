@@ -606,22 +606,22 @@ class AergoClient {
     /**
      * Query contract, either through ABI or manually.
      * Either pass a FunctionCall object (created through contract interface)
-     * or a manual call (address, name, args).
+     * or a manual call (address, name, ...args).
      * @returns {Promise<object>} result of query
      */
     queryContract(functionCall: FunctionCall): Promise<any>;
     queryContract(address: string | Address, functionName: string, ...args: PrimitiveType[]): Promise<any>;
     queryContract(...args: [FunctionCall] | [string | Address, string, ...PrimitiveType[]] ): Promise<any> {
         let functionCall: FunctionCall;
-        if (args[0] instanceof FunctionCall) {
-            functionCall = args[0];
-        } else {
+        if (args[0] instanceof Address || typeof args[0] === 'string') {
             const [address, name, ...callArgs] = args;
             functionCall = new FunctionCall({
                 address: new Address(address),
             }, {
                 name
             }, callArgs);
+        } else {
+            functionCall = args[0];
         }
         const query = functionCall.toGrpc();
         return promisify(this.client.client.queryContract, this.client.client)(query).then(

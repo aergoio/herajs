@@ -1,3 +1,6 @@
+## 1.1.0 (March 16, 2022)
+- Client: queryContract now accepts an alternative calling signature: `queryContract(address, functionName, ...args)`
+
 ## 1.0.0 (February 17, 2022)
 - Updated dependencies and Typescript version
 - Client: getTransactionReceipt return value now contains `events`
