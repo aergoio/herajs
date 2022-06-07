@@ -171,10 +171,10 @@ export default class LedgerAppAergo {
                 this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, dataChunk)
             );
             if (response.length) {
-                var hex_response = response.toString('hex');
-                if (hex_response === TX_REQUEST_FIRST_PART) {
+                const hexResponse = response.toString('hex');
+                if (hexResponse === TX_REQUEST_FIRST_PART) {
                     offset = -chunkSize;
-                } else if (hex_response !== TX_REQUEST_NEXT_PART) {
+                } else if (hexResponse !== TX_REQUEST_NEXT_PART) {
                     const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
                     return [hash, signature];
                 }
