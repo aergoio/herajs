@@ -80,7 +80,7 @@ enum Mode {
 
 const supportedTypes = [
     Tx.Type.NORMAL, Tx.Type.TRANSFER,
-    Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.FEEDELEGATION,
+    Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.FEEDELEGATION, Tx.Type.MULTICALL,
     Tx.Type.DEPLOY, Tx.Type.REDEPLOY
 ] as const;
 
