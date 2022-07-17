@@ -7087,7 +7087,8 @@ proto.types.TxType = {
   FEEDELEGATION: 3,
   TRANSFER: 4,
   CALL: 5,
-  DEPLOY: 6
+  DEPLOY: 6,
+  MULTICALL: 7
 };
 
 goog.object.extend(exports, proto.types);

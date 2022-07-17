@@ -931,6 +931,7 @@ export interface TxTypeMap {
   TRANSFER: 4;
   CALL: 5;
   DEPLOY: 6;
+  MULTICALL: 7;
 }
 
 export const TxType: TxTypeMap;

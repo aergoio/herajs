@@ -80,7 +80,7 @@ enum Mode {
 
 const supportedTypes = [
     Tx.Type.NORMAL, Tx.Type.TRANSFER,
-    Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.FEEDELEGATION,
+    Tx.Type.GOVERNANCE, Tx.Type.CALL, Tx.Type.FEEDELEGATION, Tx.Type.MULTICALL,
     Tx.Type.DEPLOY, Tx.Type.REDEPLOY
 ] as const;
 
@@ -152,6 +152,7 @@ export default class LedgerAppAergo {
 
     private async sendChunkedTxData(data: Buffer, chunkSize = 250): Promise<[Buffer, Buffer]> {
         const TX_REQUEST_NEXT_PART = '9000'; //0x9000
+        const TX_REQUEST_FIRST_PART = '9001'; //0x9001
         //const total = Math.ceil(data.length / chunkSize);
         //let idx = 0;
         for (let offset = 0; offset < data.length; offset += chunkSize) {
@@ -169,9 +170,14 @@ export default class LedgerAppAergo {
             const response = await wrapRetryStillInCall(() =>
                 this.transport.send(CLA, INS.SIGN_TX, mode, 0x00, dataChunk)
             );
-            if (response.length && response.toString('hex') !== TX_REQUEST_NEXT_PART) {
-                const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
-                return [hash, signature];
+            if (response.length) {
+                const hexResponse = response.toString('hex');
+                if (hexResponse === TX_REQUEST_FIRST_PART) {
+                    offset = -chunkSize;
+                } else if (hexResponse !== TX_REQUEST_NEXT_PART) {
+                    const [hash, signature] = chunkBy(response, [32, response.length - 32 - 2]);
+                    return [hash, signature];
+                }
             }
         }
         throw new Error('communication error: sent all data but did not receive response');
