@@ -10,6 +10,7 @@ export enum TxTypes {
   Transfer = 4,
   Call = 5,
   Deploy = 6,
+  MultiCall = 7,
 }
 
 /**
