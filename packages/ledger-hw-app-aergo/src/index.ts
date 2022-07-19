@@ -27,6 +27,7 @@ export const ErrorCodes = {
     ERR_TX_INVALID: 0x6740,
     ERR_TX_PARSE_SIZE: 0x6700,
     ERR_TX_UNSUPPORTED_TYPE: 0x6755,
+    ERR_RESEND_FIRST_PART: 0x9001,
 };
 
 function isErrorRange(e: any, rangeFrom: number): boolean {
@@ -46,6 +47,9 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
     try {
         return await fn();
     } catch (e: any) {
+        if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_RESEND_FIRST_PART) {
+            return e.statusCode;
+        }
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_STILL_IN_CALL) {
             // Retry once
             return await fn();
