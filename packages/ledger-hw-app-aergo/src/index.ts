@@ -48,7 +48,7 @@ async function wrapRetryStillInCall<T>(fn: (() => Promise<T>)): Promise<T> {
         return await fn();
     } catch (e: any) {
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_RESEND_FIRST_PART) {
-            return e.statusCode;
+            return Buffer.from(e.statusCode.toString(16), 'hex') as any;
         }
         if (e && e.statusCode && e.statusCode === ErrorCodes.ERR_STILL_IN_CALL) {
             // Retry once
