@@ -373,6 +373,7 @@ describe('Wallet scenarios', async () => {
         });
         txhash = txTracker.transaction.hash;
         await txTracker.getReceipt();
+        accountTxTracker.load();
         return p;
     }).timeout(30000);
 
