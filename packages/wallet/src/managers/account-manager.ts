@@ -3,7 +3,7 @@ import { Account, AccountSpec, AccountData, CompleteAccountSpec } from '../model
 import { Transaction, TxBody, CompleteTxBody } from '../models/transaction';
 import { serializeAccountSpec, HashMap } from '../utils';
 import { Amount, Address } from '@herajs/common';
-import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
+//import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { PausableTypedEventEmitter } from '../utils';
 import { createIdentity, identifyFromPrivateKey } from '@herajs/crypto';
 import { Identity } from '@herajs/crypto/dist/types/keys';
@@ -45,9 +45,11 @@ class AccountTracker extends PausableTypedEventEmitter<TrackerEvents> {
     resume(): void {
         this.load();
         this.pause();
+        /*
         this.intervalId = setInterval(() => {
             this.load();
         }, ACCOUNT_UPDATE_INTERVAL);
+        */
     }
 
     pause(): void {

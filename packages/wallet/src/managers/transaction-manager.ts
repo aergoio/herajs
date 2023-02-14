@@ -10,7 +10,7 @@ import { Account, AccountSpec, CompleteAccountSpec } from '../models/account';
 import { Wallet } from '../wallet';
 import { PausableTypedEventEmitter, backoffIntervalStep, HashMap } from '../utils';
 import { Address } from '@herajs/common';
-import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
+//import { ACCOUNT_UPDATE_INTERVAL } from '../defaults';
 import { GetAccountTxParams } from '../datasources/types';
 
 export interface Events {
@@ -173,9 +173,11 @@ class AccountTransactionTracker extends PausableTypedEventEmitter<AccountTracker
             //console.error('Loading account tx failed, pausing tracker', e);
             this.pause();
         });
+        /*
         this.intervalId = setInterval(() => {
             this.load();
         }, ACCOUNT_UPDATE_INTERVAL);
+        */
     }
 
     pause(): void {
