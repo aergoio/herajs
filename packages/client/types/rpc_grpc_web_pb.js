@@ -266,6 +266,15 @@ AergoRPCService.ExportAccount = {
   responseType: rpc_pb.SingleBytes
 };
 
+AergoRPCService.ExportAccountKeystore = {
+  methodName: "ExportAccountKeystore",
+  service: AergoRPCService,
+  requestStream: false,
+  responseStream: false,
+  requestType: rpc_pb.Personal,
+  responseType: rpc_pb.SingleBytes
+};
+
 AergoRPCService.QueryContract = {
   methodName: "QueryContract",
   service: AergoRPCService,
@@ -363,15 +372,6 @@ AergoRPCService.GetConsensusInfo = {
   responseStream: false,
   requestType: rpc_pb.Empty,
   responseType: rpc_pb.ConsensusInfo
-};
-
-AergoRPCService.ChangeMembership = {
-  methodName: "ChangeMembership",
-  service: AergoRPCService,
-  requestStream: false,
-  responseStream: false,
-  requestType: raft_pb.MembershipChange,
-  responseType: raft_pb.MembershipChangeReply
 };
 
 AergoRPCService.GetEnterpriseConfig = {
@@ -1283,6 +1283,37 @@ AergoRPCServiceClient.prototype.exportAccount = function exportAccount(requestMe
   };
 };
 
+AergoRPCServiceClient.prototype.exportAccountKeystore = function exportAccountKeystore(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(AergoRPCService.ExportAccountKeystore, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
 AergoRPCServiceClient.prototype.queryContract = function queryContract(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
@@ -1606,37 +1637,6 @@ AergoRPCServiceClient.prototype.getConsensusInfo = function getConsensusInfo(req
     callback = arguments[1];
   }
   var client = grpc.unary(AergoRPCService.GetConsensusInfo, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          var err = new Error(response.statusMessage);
-          err.code = response.status;
-          err.metadata = response.trailers;
-          callback(err, null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-  return {
-    cancel: function () {
-      callback = null;
-      client.close();
-    }
-  };
-};
-
-AergoRPCServiceClient.prototype.changeMembership = function changeMembership(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  var client = grpc.unary(AergoRPCService.ChangeMembership, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
