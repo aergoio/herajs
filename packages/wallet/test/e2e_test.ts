@@ -373,7 +373,9 @@ describe('Wallet scenarios', async () => {
                     resolve();
                 }
             });
-            accountTxTracker.load();
+            setTimeout(() => {
+                accountTxTracker.load();
+            }, 3000);
         });
     }).timeout(30000);
 
