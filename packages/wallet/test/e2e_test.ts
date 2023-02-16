@@ -349,15 +349,6 @@ describe('Wallet scenarios', async () => {
         };
         wallet.use(NodeTransactionScanner);
         const accountTxTracker = wallet.transactionManager.trackAccount(account);
-        const p = new Promise<void>(resolve => {
-            accountTxTracker.on('transaction', (tx: SignedTransaction) => {
-                console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
-                if (tx.hash === txhash) {
-                    accountTxTracker.pause();
-                    resolve();
-                }
-            });
-        });
 
         // Send a tx from another account
         const account2 = await wallet.accountManager.addAccount({ address: address2 });
@@ -373,7 +364,19 @@ describe('Wallet scenarios', async () => {
         });
         txhash = txTracker.transaction.hash;
         await txTracker.getReceipt();
-        return p;
+        
+        return new Promise<void>(resolve => {
+            accountTxTracker.on('transaction', (tx: SignedTransaction) => {
+                console.log(`${tx.data.from}  [${tx.data.blockno}]  ->  ${tx.data.to}  ${tx.hash}  ${tx.amount}`);
+                if (tx.hash === txhash) {
+                    accountTxTracker.pause();
+                    resolve();
+                }
+            });
+            setTimeout(() => {
+                accountTxTracker.load();
+            }, 3000);
+        });
     }).timeout(30000);
 
     it('saves names (send create name tx, send update name tx, loads name info)', async () => {

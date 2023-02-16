@@ -771,6 +771,11 @@ export class ImportFormat extends jspb.Message {
   getNewpass(): string;
   setNewpass(value: string): void;
 
+  hasKeystore(): boolean;
+  clearKeystore(): void;
+  getKeystore(): SingleBytes | undefined;
+  setKeystore(value?: SingleBytes): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ImportFormat.AsObject;
   static toObject(includeInstance: boolean, msg: ImportFormat): ImportFormat.AsObject;
@@ -786,6 +791,7 @@ export namespace ImportFormat {
     wif?: SingleBytes.AsObject,
     oldpass: string,
     newpass: string,
+    keystore?: SingleBytes.AsObject,
   }
 }
 
