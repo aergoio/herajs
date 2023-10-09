@@ -1,0 +1,53 @@
+name: Node CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - '@herajs/common'
+          - '@herajs/client'
+          - '@herajs/crypto'
+          - '@herajs/wallet'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    
+    - name: Cache node modules
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Install Yarn
+      run: |
+        curl -o- -L https://yarnpkg.com/install.sh | bash -s
+        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+
+    - name: Start Docker services
+      run: |
+        docker run -d -p 7845:7845 --name aergosvr aergo/node:2.2 aergosvr --config /aergo/testmode.toml
+
+    - name: Run Lerna pre-scripts
+      run: |
+        yarn run lerna run prepublish
+        yarn run lerna run build
+        sleep 10
+
+    - name: Run Lerna test
+      run: yarn run lerna run test --scope ${{ matrix.package }} --stream
+    
+    - name: Show Docker logs on failure
+      if: failure()
+      run: docker logs aergosvr
