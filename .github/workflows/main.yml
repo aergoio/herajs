@@ -35,6 +35,9 @@ jobs:
         curl -o- -L https://yarnpkg.com/install.sh | bash -s
         echo "$HOME/.yarn/bin" >> $GITHUB_PATH
 
+    - name: Install dependencies
+      run: yarn
+
     - name: Start Docker services
       run: |
         docker run -d -p 7845:7845 --name aergosvr aergo/node:2.2 aergosvr --config /aergo/testmode.toml
