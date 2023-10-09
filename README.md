@@ -1,6 +1,6 @@
 # herajs - Javascript SDK for aergo
 
-[![Travis_ci](https://travis-ci.org/aergoio/herajs.svg?branch=master)](https://travis-ci.org/aergoio/herajs) [![Greenkeeper badge](https://badges.greenkeeper.io/aergoio/herajs.svg)](https://greenkeeper.io/)
+[![CI Status](https://github.com/aergoio/herajs/workflows/Build CI/badge.svg)](https://github.com/aergoio/herajs/actions)
 
 Tested with aergo server version 1.3 - 2.0.
 
