@@ -1,6 +1,6 @@
 # herajs - Javascript SDK for aergo
 
-[![CI Status](https://github.com/aergoio/herajs/workflows/Build CI/badge.svg)](https://github.com/aergoio/herajs/actions)
+[![CI Status](https://github.com/aergoio/herajs/workflows/Build%20CI/badge.svg)](https://github.com/aergoio/herajs/actions)
 
 Tested with aergo server version 1.3 - 2.0.
 
