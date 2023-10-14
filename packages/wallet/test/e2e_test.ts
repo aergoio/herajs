@@ -15,7 +15,7 @@ import { NodeTransactionScanner } from '../src/datasources/node-tx-scanner';
 
 import fs from 'fs';
 import { resolve } from 'path';
-const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.txt')).toString().trim();
+const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract.lua')).toString().trim();
 // @ts-ignore
 import contractAbi from './fixtures/contract.abi.json';
 import { SignedTransaction } from '../src/models/transaction';

@@ -1,4 +1,4 @@
-import { Address, Amount, constants, fromNumber, base58check } from '@herajs/common';
+import { Address, Amount, fromNumber } from '@herajs/common';
 import Tx from './tx';
 import { StateQuery as GrpcStateQuery, Query, ABI } from '../../types/blockchain_pb';
 import sha256 from 'hash.js/lib/hash/sha/256';
@@ -184,13 +184,12 @@ class Contract {
 
     /**
      * Create contract instance from code
-     * @param {string} bs58checkCode base58-check encoded code
-     * @return {Contract} contract instance
+     * @param {string} sourceCode contract source code
+     * @return {Contract} contract object instance
      */
-    static fromCode(bs58checkCode: string): Contract {
-        const decoded = Contract.decodeCode(bs58checkCode);
+    static fromCode(sourceCode: string): Contract {
         return new Contract({
-            code: decoded
+            code: Buffer.from(sourceCode)
         });
     }
 
@@ -273,14 +272,6 @@ class Contract {
         return new StateQuery(this, keyArray as any, compressed, root);
     }
 
-    static encodeCode(byteArray: Buffer): string {
-        const buf = Buffer.from([constants.ADDRESS_PREFIXES.CONTRACT, ...byteArray]);
-        return base58check.encode(buf);
-    }
-
-    static decodeCode(bs58checkCode: string): Buffer {
-        return base58check.decode(bs58checkCode).slice(1);
-    }
 }
 
 export default Contract;

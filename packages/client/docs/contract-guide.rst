@@ -14,11 +14,7 @@ Deployment
 To interact with a smart contract, it needs to be deployed on the blockchain.
 To deploy a contract, you send a transaction with the contract code as the payload to the null (empty) account.
 
-1. Compile your contract source code into the payload format.
-   This is not supported by Herajs, please refer to the `Aergo documentation <https://docs.aergo.io>`__.
-   For example, you can run the command :code:`aergoluac --payload contract.lua > contract.txt`.
-
-2. Setup the contract object and build a deployment transaction:
+1. Setup the contract object with the source code of your smart contract and build a deployment transaction:
 
 .. code-block:: javascript
 
@@ -26,7 +22,7 @@ To deploy a contract, you send a transaction with the contract code as the paylo
     const aergo = new AergoClient();
 
     const myAddress = 'Am....'; // Enter your account address or name
-    const contractCode = 'output from aergoluac --payload';
+    const contractCode = 'source code of your smart contract';
     const contract = Contract.fromCode(contractCode);
     const tx = {
         from: myAddress,
@@ -34,7 +30,7 @@ To deploy a contract, you send a transaction with the contract code as the paylo
         payload: contract.asPayload(),
     };
 
-3. Unlock account and deploy contract:
+2. Unlock account and deploy contract:
 
 .. code-block:: javascript
 
@@ -42,7 +38,7 @@ To deploy a contract, you send a transaction with the contract code as the paylo
 
     const deployTxhash = await aergo.accounts.sendTransaction(tx);
 
-4. Check the transaction receipt for the created contract address or any error:
+3. Check the transaction receipt for the created contract address or any error:
 
 .. code-block:: javascript
 
