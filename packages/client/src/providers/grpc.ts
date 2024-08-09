@@ -1,5 +1,5 @@
 import { AergoRPCServiceClient } from '../../types/rpc_grpc_pb';
-import grpc from 'grpc';
+import * as grpc from '@grpc/grpc-js';
 
 interface GrpcProviderConfig {
     url?: string;

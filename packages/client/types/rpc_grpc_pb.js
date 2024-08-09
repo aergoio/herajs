@@ -1,7 +1,7 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 'use strict';
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 var rpc_pb = require('./rpc_pb.js');
 var blockchain_pb = require('./blockchain_pb.js');
 var account_pb = require('./account_pb.js');
