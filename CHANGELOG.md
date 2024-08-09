@@ -1,3 +1,6 @@
+## 2.1.0 (August 09, 2024)
+- Client: Update grpc-js
+
 ## 1.1.0 (March 16, 2022)
 - Client: queryContract now accepts an alternative calling signature: `queryContract(address, functionName, ...args)`
 
