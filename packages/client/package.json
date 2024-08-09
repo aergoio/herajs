@@ -1,6 +1,6 @@
 {
   "name": "@herajs/client",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Javascript client framework for aergo",
   "main": "dist/herajs.common.js",
   "module": "dist/herajs.esm.js",
@@ -31,11 +31,11 @@
   },
   "homepage": "https://github.com/aergoio/herajs#readme",
   "dependencies": {
-    "@herajs/common": "^2.0.1",
+    "@grpc/grpc-js": "^1.11.1",
+    "@herajs/common": "^2.1.0",
     "@improbable-eng/grpc-web": "^0.9.1",
     "@types/google-protobuf": "^3.2.7",
     "google-protobuf": "^3.21.2",
-    "grpc": "^1.24.3",
     "hash.js": "^1.1.7",
     "jsbi": "^3.0.0"
   },
