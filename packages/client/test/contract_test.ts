@@ -13,13 +13,15 @@ import Contract from '../src/models/contract';
 import { longPolling } from '../src/utils';
 import Address from '../src/models/address';
 import { identityFromPrivateKey, hashTransaction, signTransaction } from '@herajs/crypto';
+import fs from 'fs';
+import { resolve } from 'path';
 import { Buffer } from 'buffer';
 
 describe('Contracts', () => {
     const aergo = new AergoClient();
 
     describe('deploy, call, query a simple contract', () => {
-        const contractCode = 'RT4ybGApGoUrNWoisFAAnc1K8gGGd8VCdbbnXBYgpRyd87CWuj3krKobcV7B8vyY15XbHobWEZBX1drFDTU62ufapcP9u1PmibQiXt1FY3YS3v5ZYuH1vuekEWBES4yoWzhJoPFLDCZWdmxYM2manPHLJwefSb6WnYrcmT3Cbpf9266E3eQjsEhbKrZ3CX5FuU8v4MQbsmFhhBfB5S57T3EnzfHTcbSLFwLgvH5DSxEBYoDh2hLcs7e5As6qHvbL8yAQMp7Tz9KH8METfb63ywvGbBPLYQfgdg2kC2DbKdtNroX8seVzznC5SCFPLU6aZAcQnuLuApfcBntEQwsvf5HpEFyJjqEZAhwDSHo3EP8hG1LuKANe5mqCEW9nEVsyV9mGnpAz1Y9eXcQbAgvyVfyvZETpb78h5hZuwNXi2UQh53SKBRyTnc5JS33dTZNR1SRitfX9rZHcowF6pK4a6iptdBwZTu4LcrRC64rqxB928pxYC7Ejh6pLgd7H1GP9v3FmD64Zhy2fEYKMS2jkFCFESYX4gP17Sm4xMw7H8fUDCwcGovTDSd4kkwq8p5HhMpVt9AZMzR7e5vpGJTa9XAve8LjxRbJH4y683Nt1NbEPQWnR9QuJUyQv5SUKi9t9R3rpNvAzmeLNXnmH8qifrZwmpuHhKvG6E7CZ4fe59aBLwabUAEZ8woJ1RXupqDAm69Y7pqZST6Fk5tT4PTspnWir15MiZAgDFKb59vAdUrJso6FLvDTmBWzZBp9MHaQ8DP5E11aEBLzvyas75pYT8ZBiLYbnYcSHfVwmavDGHPx7bp8xtt2vgw7pN';
+        const contractCode = fs.readFileSync(resolve(__dirname, 'fixtures/contract-inc.lua')).toString().trim();
         let contractAddress: Address;
         let testAddress: Address;
         let deployTxhash: string;
