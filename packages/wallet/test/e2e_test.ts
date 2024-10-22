@@ -283,7 +283,7 @@ describe('Wallet scenarios', async () => {
         console.log('contract deployed at', receipt.contractaddress.toString());
         assert.equal(receipt.status, 'CREATED', `failed with error: ${receipt.result}`);
         contract.setAddress(receipt.contractaddress);
-        const contractId = receipt.contractaddress.value.toString();
+        const contractId = receipt.contractaddress.toString();
         
         // Call contract
         // @ts-ignore
