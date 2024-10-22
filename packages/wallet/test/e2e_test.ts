@@ -283,7 +283,7 @@ describe('Wallet scenarios', async () => {
         console.log('contract deployed at', receipt.contractaddress.toString());
         assert.equal(receipt.status, 'CREATED', `failed with error: ${receipt.result}`);
         contract.setAddress(receipt.contractaddress);
-        const contractId = receipt.contractaddress.value.toString('hex');
+        const contractId = receipt.contractaddress.toString();
         
         // Call contract
         // @ts-ignore
@@ -293,7 +293,7 @@ describe('Wallet scenarios', async () => {
         const callTxTracker = await wallet.sendTransaction(account, callTx);
         const callTxReceipt = await callTxTracker.getReceipt();
         assert.equal(callTxReceipt.status, 'ERROR');
-        assert.equal(callTxReceipt.result, `[string "${contractId}"]:0: failed as expected`);
+        assert.equal(callTxReceipt.result, `${contractId}:0: failed as expected`);
     }).timeout(5000);
 
     it.skip('get account transactions', async () => {
