@@ -14,6 +14,7 @@ describe('Aergo over grpc-web', () => {
         it('should return basic chain information', async () => {
             const info = await aergo.getChainInfo();
             assert.equal(info.chainid.magic, 'dev.chain');
+            assert.isNumber(info.chainid.version);
         });
     });
 });

@@ -6,6 +6,7 @@ export interface ChainId {
     public: boolean;
     mainnet: boolean;
     consensus: string;
+    version: number;
 }
 
 export default class ChainInfo {
@@ -31,9 +32,14 @@ export default class ChainInfo {
                 magic: chainid.getMagic(),
                 public: chainid.getPublic(),
                 mainnet: chainid.getMainnet(),
-                consensus: chainid.getConsensus()
+                consensus: chainid.getConsensus(),
+                version: chainid.getVersion()
             } : {
-                magic: 'unknown', public: false, mainnet: false, consensus: 'unknown',
+                magic: 'unknown',
+                public: false,
+                mainnet: false,
+                consensus: 'unknown',
+                version: 0
             },
             bpnumber: grpcObject.getBpnumber(),
             maxblocksize: grpcObject.getMaxblocksize(),
