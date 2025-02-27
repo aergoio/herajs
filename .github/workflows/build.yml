@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        node-version: ['18', '20']
         package:
           - '@herajs/common'
           - '@herajs/client'
@@ -22,7 +23,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '12'
+        node-version: ${{ matrix.node-version }}
     
     - name: Cache node modules
       uses: actions/cache@v2
