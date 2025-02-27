@@ -53,6 +53,7 @@ function genConfig(browser = false, output) {
             const ignoredCircular = ['elliptic', 'readable-stream', 'rimraf',];
             if (
                 warning.code === 'CIRCULAR_DEPENDENCY' &&
+                warning.importer &&
                 ignoredCircular.some(d => warning.importer.includes(d))
             ) {
                 return;

@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "rollup -c",
+    "build:js": "rollup -c --bundleConfigAsCjs",
     "build": "yarn run lint && yarn run build:types && yarn run build:js",
     "release": "bash release.sh",
     "lint": "eslint --fix src/**/*.ts test/**/*.ts",
