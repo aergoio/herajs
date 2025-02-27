@@ -57,5 +57,13 @@
         "@typescript-eslint/ban-ts-ignore": 0,
         "@typescript-eslint/ban-ts-comment": 0,
         "@typescript-eslint/no-this-alias": 0
-    }
+    },
+    "overrides": [
+        {
+            "files": ["**/*.test.ts", "**/test/**/*.ts"],
+            "rules": {
+                "no-console": "off"
+            }
+        }
+    ]
 }
