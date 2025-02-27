@@ -74,6 +74,7 @@ function genConfig(browser = false, output) {
             ];
             if (
                 warning.code === 'CIRCULAR_DEPENDENCY' &&
+                warning.importer &&
                 ignoredCircular.some(d => warning.importer.includes(d))
             ) {
                 return;
