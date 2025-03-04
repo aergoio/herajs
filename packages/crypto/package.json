@@ -1,6 +1,6 @@
 {
   "name": "@herajs/crypto",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Cryptography tools for aergo",
   "main": "dist/herajs-crypto.cjs.js",
   "module": "dist/herajs-crypto.esm.js",
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/aergoio/herajs-crypto#readme",
   "dependencies": {
-    "@herajs/common": "^2.1.1",
+    "@herajs/common": "^2.1.2",
     "@herajs/hdkey": "^11.2.0",
     "@types/elliptic": "^6.4.0",
     "aes-js": "^3.1.1",
