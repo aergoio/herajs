@@ -75,7 +75,23 @@ export class Wallet extends MiddlewareConsumer {
             throw new Error('supply nodeUrl in chain config or instantiate provider manually');
         }
 
+        // Check if the existing chain exists.
+        if (this.chainConfigs.has(chainConfig.chainId)) {
+            const existingConfig = this.chainConfigs.get(chainConfig.chainId);
+        
+            if (existingConfig) {
+                if (existingConfig.nodeUrl !== chainConfig.nodeUrl) {
+                    this.chainConfigs.set(chainConfig.chainId, { 
+                        ...existingConfig, 
+                        nodeUrl: chainConfig.nodeUrl 
+                    });
+                }
+                return;
+            }
+        }
+
         this.chainConfigs.set(chainConfig.chainId, chainConfig);
+
         if (
             this.chainConfigs.size === 1 &&
             this.defaultChainId === DEFAULT_CHAIN &&
@@ -116,9 +132,11 @@ export class Wallet extends MiddlewareConsumer {
         if (!this.chainConfigs.has(chainId)) {
             throw new Error(`trying to use not configured chainId ${chainId}`);
         }
+    
         const chainConfig = this.chainConfigs.get(chainId) as ChainConfig;
         let client: AergoClient;
-
+    
+        // If the client does not exist, create a new one.
         if (!this.clients.has(chainId)) {
             let provider = chainConfig.provider;
             if (typeof provider === 'function') {
@@ -127,14 +145,33 @@ export class Wallet extends MiddlewareConsumer {
             client = new AergoClient({}, provider);
             this.clients.set(chainId, client);
         } else {
+            // If the client already exists, compare nodeUrl and update if necessary.
             client = this.clients.get(chainId) as AergoClient;
+            let existingNodeUrl;
+            if (client && (client as any).config && (client as any).config.url) {
+                existingNodeUrl = (client as any).config.url;
+            } else {
+                existingNodeUrl = undefined;
+            }
+    
+            if (existingNodeUrl !== chainConfig.nodeUrl) {
+                // Create a new `AergoClient` and replace the existing one.
+                let provider = chainConfig.provider;
+                if (typeof provider === 'function') {
+                    provider = new provider({ url: chainConfig.nodeUrl });
+                }
+                client = new AergoClient({}, provider);
+                this.clients.set(chainId, client);
+            }
         }
+    
         if (this.defaultLimit) {
             client.setDefaultLimit(this.defaultLimit);
         }
+    
         return client;
     }
-
+    
     /**
      * Prepare a transaction from given account specified by simple TxBody.
      * Completes missing information (chainIdHash, nonce) and signs tx using key of account.
