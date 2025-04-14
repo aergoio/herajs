@@ -150,6 +150,27 @@ We can directly read the value of a contract state variable without having to ca
     const result = await aergo.queryContractState(contractAddress, 'stateVariableName');
     console.log(result);
 
+If the variable is an array, we can specify the index of the element we want to read inside brackets.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'list[1]');
+    console.log(result);
+
+Similarly, if the variable is a map, we can specify the key we want to read inside brackets.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'items[key1]');
+    console.log(result);
+
+It is possible to read many state variables at once by passing an array.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, ['price', 'list[1]', 'items[key1]']);
+    console.log(result);
+
 Query a contract state variable with proof
 ------------------------------------------
 
@@ -157,7 +178,7 @@ We can also request a proof for the value stored in a state variable.
 
 .. code-block:: javascript
 
-    const result = await aergo.queryContractStateProof(contractAddress, 'stateVariableName');
+    const result = await aergo.queryContractStateProof(contractAddress, 'balance[Am....]');
     console.log(result);
 
 Events
