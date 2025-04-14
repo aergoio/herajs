@@ -12,7 +12,7 @@ Deployment
 ----------
 
 To interact with a smart contract, it needs to be deployed on the blockchain.
-To deploy a contract, you send a transaction with the contract code as the payload to the null (empty) account.
+To deploy a contract, you send a transaction of type DEPLOY with the contract code as the payload.
 
 1. Setup the contract object with the source code of your smart contract and build a deployment transaction:
 
@@ -25,6 +25,7 @@ To deploy a contract, you send a transaction with the contract code as the paylo
     const contractCode = 'source code of your smart contract';
     const contract = Contract.fromCode(contractCode);
     const tx = {
+        type: 6,  // DEPLOY
         from: myAddress,
         to: null,
         payload: contract.asPayload(),
@@ -61,6 +62,7 @@ Example:
 .. code-block:: javascript
 
     const tx = {
+        type: 6,  // DEPLOY
         from: myAddress,
         to: null,
         payload: contract.asPayload([1, 2, 3]),
