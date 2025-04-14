@@ -38,9 +38,8 @@ import {
     Peer, State, ChainInfo, Event, StateQueryProof, FilterInfo
 } from '../models';
 import { SignedTx } from '../models/tx';
-import { Abi, PrimitiveType } from '../models/contract';
+import Contract, { Abi, PrimitiveType, StateQuery, FunctionCall, BufferLike } from '../models/contract';
 import { Address, AddressInput } from '../models/address';
-import { FunctionCall, StateQuery } from '../models/contract';
 import {
     GetTxResult, GetReceiptResult, NameInfoResult, ConsensusInfoResult,
     ServerInfoResult, BlockBodyPaged, Stream, BasicType, JsonData, BlockchainResult,
@@ -636,7 +635,17 @@ class AergoClient {
      * @param {StateQuery} stateQuery query details obtained from contract.queryState()
      * @returns {Promise<JsonData>} result of query: single value if requesting one key, list of values when requesting multiple keys.
      */
-    queryContractState(stateQuery: StateQuery): Promise<JsonData | BasicType> {
+    queryContractState(stateQuery: StateQuery): Promise<JsonData | BasicType>;
+    queryContractState(address: string | Address, keys: string | BufferLike | string[] | BufferLike[], compressed?: boolean, root?: Uint8Array): Promise<JsonData | BasicType>;
+    queryContractState(...args: [StateQuery] | [string | Address, string | BufferLike | string[] | BufferLike[], boolean?, Uint8Array?]): Promise<JsonData | BasicType> {
+        let stateQuery: StateQuery;
+        if (args[0] instanceof StateQuery) {
+            stateQuery = args[0];
+        } else {
+            const [address, keys, compressed, root] = args;
+            const contract = Contract.atAddress(new Address(address));
+            stateQuery = new StateQuery(contract, keys, compressed, root);
+        }
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: GrpcStateQueryProof) => {
@@ -672,7 +681,17 @@ class AergoClient {
      * @param {StateQuery} stateQuery query details obtained from contract.queryState()
      * @returns {Promise<StateQueryProof>} result of query, including account and var proofs
      */
-    queryContractStateProof(stateQuery: StateQuery): Promise<StateQueryProof> {
+    queryContractStateProof(stateQuery: StateQuery): Promise<StateQueryProof>;
+    queryContractStateProof(address: string | Address, keys: string | BufferLike | string[] | BufferLike[], compressed?: boolean, root?: Uint8Array): Promise<StateQueryProof>;
+    queryContractStateProof(...args: [StateQuery] | [string | Address, string | BufferLike | string[] | BufferLike[], boolean?, Uint8Array?]): Promise<StateQueryProof> {
+        let stateQuery: StateQuery;
+        if (args[0] instanceof StateQuery) {
+            stateQuery = args[0];
+        } else {
+            const [address, keys, compressed, root] = args;
+            const contract = Contract.atAddress(new Address(address));
+            stateQuery = new StateQuery(contract, keys, compressed, root);
+        }
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
             (grpcObject: GrpcStateQueryProof) => StateQueryProof.fromGrpc(grpcObject)

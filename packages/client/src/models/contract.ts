@@ -6,7 +6,7 @@ import sha256 from 'hash.js/lib/hash/sha/256';
 type _PrimitiveType = string | number | boolean;
 export type PrimitiveType = _PrimitiveType | _PrimitiveType[];
 
-type BufferLike = number[] | Uint8Array | Buffer;
+export type BufferLike = number[] | Uint8Array | Buffer;
 
 interface QueryInfo {
     Name: string;

@@ -166,9 +166,9 @@ describe('Contracts', () => {
             assert.equal(result1, 12);
         }).timeout(3000);
 
-        it('should query a smart contract using state', async () => {
-            // Setup address and ABI
-            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+        it('should query a smart contract state variable', async () => {
+            // Setup address
+            const contract = Contract.atAddress(contractAddress);
             // Query contract state by different types
             const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
             for (const variable of variables) {
@@ -178,13 +178,36 @@ describe('Contracts', () => {
             }
         });
 
-        it('should query a smart contract using state and proof', async () => {
-            // Setup address and ABI
-            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+        it('should query a smart contract state variable without ABI', async () => {
+            // Query contract state by different types
+            const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
+            for (const variable of variables) {
+                // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+                const result = await aergo.queryContractState(contractAddress, variable as any);
+                assert.equal(result, 12, `state of ${variable} is wrong`);
+            }
+        });
+
+        it('should query a smart contract state variable returning proof', async () => {
+            // Setup address
+            const contract = Contract.atAddress(contractAddress);
             // Query contract state by different types
             const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
             // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
             const result = await aergo.queryContractStateProof(contract.queryState(variables as any[]));
+            for (const proof of result.varProofs) {
+                assert.equal(proof.value, 12, `state of ${proof.key} is wrong`);
+                assert.equal(proof.inclusion, true, 'key inclusion should be true');
+            }
+            assert.equal(result.contractProof.inclusion, true, 'contract inclusion should be true');
+            assert.deepEqual(result.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+        });
+
+        it('should query a smart contract state variable without ABI returning proof', async () => {
+            // Query contract state by different types
+            const variables = ['_sv_Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
+            // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+            const result = await aergo.queryContractStateProof(contractAddress, variables as any[]);
             for (const proof of result.varProofs) {
                 assert.equal(proof.value, 12, `state of ${proof.key} is wrong`);
                 assert.equal(proof.inclusion, true, 'key inclusion should be true');
