@@ -644,7 +644,9 @@ class AergoClient {
         } else {
             const [address, keys, compressed, root] = args;
             const contract = Contract.atAddress(new Address(address));
-            stateQuery = new StateQuery(contract, keys, compressed, root);
+            // Convert single key to array if needed
+            const keyArray = Array.isArray(keys) ? keys : [keys];
+            stateQuery = new StateQuery(contract, keyArray, compressed, root);
         }
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
@@ -690,7 +692,9 @@ class AergoClient {
         } else {
             const [address, keys, compressed, root] = args;
             const contract = Contract.atAddress(new Address(address));
-            stateQuery = new StateQuery(contract, keys, compressed, root);
+            // Convert single key to array if needed
+            const keyArray = Array.isArray(keys) ? keys : [keys];
+            stateQuery = new StateQuery(contract, keyArray, compressed, root);
         }
         const query = stateQuery.toGrpc();
         return promisify(this.client.client.queryContractState, this.client.client)(query).then(
