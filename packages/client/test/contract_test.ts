@@ -328,7 +328,7 @@ describe('Contracts', () => {
             await assert.isRejected(
                 aergo.queryContractState(contract.queryState('blahblah')),
                 Error,
-                `queried variable 0x${Buffer.from('blahblah').toString('hex')} does not exist in state at address ${contractAddress}`
+                `queried variable 0x${Buffer.from('_sv_blahblah').toString('hex')} does not exist in state at address ${contractAddress}`
             );
 
             const contract2 = Contract.fromAbi(contractAbi).setAddress('foo.bar');
