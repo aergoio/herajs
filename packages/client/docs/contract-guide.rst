@@ -128,7 +128,34 @@ Thus, they don't require a transaction.
 
 .. code-block:: javascript
 
-    const result = await aergo.queryContract(contract.someContractMethod());
+    const result = await aergo.queryContract(contractAddress, 'someContractMethod', arg1, arg2);
+    console.log(result);
+
+There is an alternative way to query a contract by directly calling the contract method.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContract(contract.someContractMethod(arg1, arg2));
+    console.log(result);
+
+Query a contract state variable
+-------------------------------
+
+We can directly read the value of a contract state variable without having to call a contract method.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'stateVariableName');
+    console.log(result);
+
+Query a contract state variable with proof
+------------------------------------------
+
+We can also request a proof for the value stored in a state variable.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractStateProof(contractAddress, 'stateVariableName');
     console.log(result);
 
 Events
