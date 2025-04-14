@@ -121,7 +121,24 @@ describe('Contracts', () => {
             }, Error, 'Missing required transaction parameter \'from\'. Call with asTransaction({from: ...})');
         });
 
-        it('should call a smart contract with arguments', async () => {
+        it('should call a smart contract with 1 argument', async () => {
+            // Setup address and ABI
+            const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
+
+            // Call contract
+            // @ts-ignore
+            const callTx = contract.getItem(1).asTransaction({
+                from: testAddress,
+                chainIdHash: await aergo.getChainIdHash(),
+            });
+            const calltxhash = await aergo.accounts.sendTransaction(callTx);
+            const calltxreceipt = await longPolling(async () =>
+                await aergo.getTransactionReceipt(calltxhash)
+            );
+            assert.equal(calltxreceipt.status, 'SUCCESS', `Call failed with error: ${calltxreceipt.result}`);
+        });
+
+        it('should call a smart contract with 2 arguments', async () => {
             // Setup address and ABI
             const contract = Contract.fromAbi(contractAbi).setAddress(contractAddress);
 
@@ -136,18 +153,6 @@ describe('Contracts', () => {
                 await aergo.getTransactionReceipt(calltxhash)
             );
             assert.equal(calltxreceipt.status, 'SUCCESS', `Call failed with error: ${calltxreceipt.result}`);
-
-            // Call contract again (add item)
-            // @ts-ignore
-            const callTx2 = contract.addItem('item1').asTransaction({
-                from: testAddress,
-                chainIdHash: await aergo.getChainIdHash(),
-            });
-            const calltxhash2 = await aergo.accounts.sendTransaction(callTx2);
-            const calltxreceipt2 = await longPolling(async () =>
-                await aergo.getTransactionReceipt(calltxhash2)
-            );
-            assert.equal(calltxreceipt2.status, 'SUCCESS', `Call failed with error: ${calltxreceipt2.result}`);
         });
 
         it('should create a locally signed call tx', async () => {
@@ -213,22 +218,28 @@ describe('Contracts', () => {
         it('should query a smart contract state variable', async () => {
             // Setup address
             const contract = Contract.atAddress(contractAddress);
-            // Query contract state using different types, all at once
-            const variables = ['Items[key1]', Buffer.from('List[1]'), Array.from(Buffer.from('Value'))];
+            // Query 3 variables at once
+            let variables = ['Value', 'List[1]', 'Items[key1]'];
             // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
             const results = await aergo.queryContractState(contract.queryState(variables as any));
             assert.notEqual(results, null);
             assert.equal(results.length, 3);
-            assert.equal(results[0], 'value1');
+            assert.equal(results[0], 12);
             assert.equal(results[1], 'item1');
-            assert.equal(results[2], 12);
-            // now query each variable individually
+            assert.equal(results[2], 'value1');
+            // Now query each variable individually
             const result1 = await aergo.queryContractState(contract.queryState('Value' as any));
             assert.equal(result1, 12);
             const result2 = await aergo.queryContractState(contract.queryState('Items[key1]' as any));
             assert.equal(result2, 'value1');
             const result3 = await aergo.queryContractState(contract.queryState('List[1]' as any));
             assert.equal(result3, 'item1');
+            // Query contract state using different types
+            const variables2 = [Buffer.from('_sv_List-1'), Array.from(Buffer.from('_sv_Items-key1'))];
+            const results2 = await aergo.queryContractState(contract.queryState(variables2 as any));
+            assert.equal(results2.length, 2);
+            assert.equal(results2[0], 'item1');
+            assert.equal(results2[1], 'value1');
         });
 
         it('should query a smart contract state variable without ABI', async () => {
