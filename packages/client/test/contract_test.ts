@@ -127,7 +127,7 @@ describe('Contracts', () => {
 
             // Call contract
             // @ts-ignore
-            const callTx = contract.getItem(1).asTransaction({
+            const callTx = contract.addItem('item1').asTransaction({
                 from: testAddress,
                 chainIdHash: await aergo.getChainIdHash(),
             });
@@ -243,20 +243,35 @@ describe('Contracts', () => {
         });
 
         it('should query a smart contract state variable without ABI', async () => {
-            // Query contract state by different types
-            const variables = ['Value', Buffer.from('Value'), Array.from(Buffer.from('Value'))];
-            for (const variable of variables) {
-                // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
-                const result = await aergo.queryContractState(contractAddress, variable as any);
-                assert.equal(result, 12, `state of ${variable} is wrong`);
-            }
+            // Query 3 variables at once
+            let variables = ['Value', 'List[1]', 'Items[key1]'];
+            // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
+            const results = await aergo.queryContractState(contractAddress, variables as any);
+            assert.notEqual(results, null);
+            assert.equal(results.length, 3);
+            assert.equal(results[0], 12);
+            assert.equal(results[1], 'item1');
+            assert.equal(results[2], 'value1');
+            // Now query each variable individually
+            const result1 = await aergo.queryContractState(contractAddress, 'Value' as any);
+            assert.equal(result1, 12);
+            const result2 = await aergo.queryContractState(contractAddress, 'Items[key1]' as any);
+            assert.equal(result2, 'value1');
+            const result3 = await aergo.queryContractState(contractAddress, 'List[1]' as any);
+            assert.equal(result3, 'item1');
+            // Query contract state using different types
+            const variables2 = [Buffer.from('_sv_List-1'), Array.from(Buffer.from('_sv_Items-key1'))];
+            const results2 = await aergo.queryContractState(contractAddress, variables2 as any);
+            assert.equal(results2.length, 2);
+            assert.equal(results2[0], 'item1');
+            assert.equal(results2[1], 'value1');
         });
 
         it('should query a smart contract state variable returning proof', async () => {
             // Setup address
             const contract = Contract.atAddress(contractAddress);
             // Query contract state by different types
-            const variables = ['Value', Buffer.from('Value'), Array.from(Buffer.from('Value'))];
+            const variables = ['Value', Buffer.from('_sv_Value'), Array.from(Buffer.from('_sv_Value'))];
             // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
             const result = await aergo.queryContractStateProof(contract.queryState(variables as any[]));
             for (const proof of result.varProofs) {
@@ -268,16 +283,44 @@ describe('Contracts', () => {
         });
 
         it('should query a smart contract state variable without ABI returning proof', async () => {
-            // Query contract state by different types
-            const variables = ['Value', Buffer.from('Value'), Array.from(Buffer.from('Value'))];
+            // Query 3 variables at once
+            let variables = ['Value', 'List[1]', 'Items[key1]'];
             // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
-            const result = await aergo.queryContractStateProof(contractAddress, variables as any[]);
-            for (const proof of result.varProofs) {
-                assert.equal(proof.value, 12, `state of ${proof.key} is wrong`);
-                assert.equal(proof.inclusion, true, 'key inclusion should be true');
-            }
-            assert.equal(result.contractProof.inclusion, true, 'contract inclusion should be true');
-            assert.deepEqual(result.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+            const results = await aergo.queryContractStateProof(contractAddress, variables as any);
+            assert.notEqual(results, null);
+            assert.equal(results.varProofs.length, 3);
+            assert.equal(results.varProofs[0].inclusion, true);
+            assert.equal(results.varProofs[0].value, 12);
+            assert.equal(results.varProofs[1].inclusion, true);
+            assert.equal(results.varProofs[1].value, 'item1');
+            assert.equal(results.varProofs[2].inclusion, true);
+            assert.equal(results.varProofs[2].value, 'value1');
+            assert.equal(results.contractProof.inclusion, true, 'contract inclusion should be true');
+            assert.deepEqual(results.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+            // Now query each variable individually
+            const result1 = await aergo.queryContractStateProof(contractAddress, 'Value' as any);
+            assert.equal(result1.varProofs[0].inclusion, true);
+            assert.equal(result1.varProofs[0].value, 12);
+            assert.equal(result1.contractProof.inclusion, true, 'contract inclusion should be true');
+            assert.deepEqual(result1.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+            const result2 = await aergo.queryContractStateProof(contractAddress, 'Items[key1]' as any);
+            assert.equal(result2.varProofs[0].inclusion, true);
+            assert.equal(result2.varProofs[0].value, 'value1');
+            assert.equal(result2.contractProof.inclusion, true, 'contract inclusion should be true');
+            assert.deepEqual(result2.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+            const result3 = await aergo.queryContractStateProof(contractAddress, 'List[1]' as any);
+            assert.equal(result3.varProofs[0].inclusion, true);
+            assert.equal(result3.varProofs[0].value, 'item1');
+            assert.equal(result3.contractProof.inclusion, true, 'contract inclusion should be true');
+            assert.deepEqual(result3.contractProof.key, (new Address(contractAddress)).asBytes(), 'contract key should match decoded address');
+            // Query contract state using different types
+            const variables2 = [Buffer.from('_sv_List-1'), Array.from(Buffer.from('_sv_Items-key1'))];
+            const results2 = await aergo.queryContractStateProof(contractAddress, variables2 as any);
+            assert.equal(results2.varProofs.length, 2);
+            assert.equal(results2.varProofs[0].inclusion, true);
+            assert.equal(results2.varProofs[0].value, 'item1');
+            assert.equal(results2.varProofs[1].inclusion, true);
+            assert.equal(results2.varProofs[1].value, 'value1');
         });
 
         it('should throw when quering non existing state', async () => {
