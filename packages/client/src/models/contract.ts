@@ -6,7 +6,7 @@ import sha256 from 'hash.js/lib/hash/sha/256';
 type _PrimitiveType = string | number | boolean;
 export type PrimitiveType = _PrimitiveType | _PrimitiveType[];
 
-type BufferLike = number[] | Uint8Array | Buffer;
+export type BufferLike = number[] | Uint8Array | Buffer;
 
 interface QueryInfo {
     Name: string;
@@ -33,9 +33,9 @@ export class FunctionCall {
 
     /**
      * Generate transaction object that can be passed to :meth:`aergoClient.accounts.sendTrasaction`
-     * 
+     *
      * .. code-block:: javascript
-     * 
+     *
      *     import { Contract } from '@herajs/client';
      *     const contract = Contract.fromAbi(abi).atAddress(address);
      *     const functionCall = contract.someAbiFunction();
@@ -68,16 +68,16 @@ export class FunctionCall {
     /**
      * Generate query info that can be passed to the API.
      * You usually do not need to call this function yourself, :meth:`AergoClient.queryContract` takes care of that.
-     * 
+     *
      * .. code-block:: javascript
-     * 
+     *
      *     import { Contract } from '@herajs/client';
      *     const contract = Contract.fromAbi(abi).atAddress(address);
      *     const functionCall = contract.someAbiFunction();
      *     aergo.queryContract(functionCall).then(result => {
      *         console.log(result);
      *     })
-     * 
+     *
      * @return {obj} queryInfo data
      */
     asQueryInfo(): QueryInfo {
@@ -100,9 +100,9 @@ export class FunctionCall {
 
 /**
  * Query contract state directlty without using ABI methods.
- * 
+ *
  * .. code-block:: javascript
- * 
+ *
  *     import { Contract } from '@herajs/client';
  *     const contract = Contract.fromAbi(abi).atAddress(address);
  *     const query = contract.queryState('stateVariableName');
@@ -148,15 +148,15 @@ export class StateQuery {
  * Most of the instance methods return the contract so they can be chained.
  * When an ABI is loaded, its functions will be added to the instance and can be called directly.
  * ABI functions return `FunctionCall` objects that can be queried or called.
- * 
+ *
  * .. code-block:: javascript
- * 
+ *
  *     import { Contract } from '@herajs/client';
  *     const contract = Contract.fromAbi(abi).setAddress(address);
  *     aergo.queryContract(contract.someAbiFunction()).then(result => {
  *         console.log(result);
  *     })
- * 
+ *
  */
 class Contract {
     code?: Buffer;
@@ -195,8 +195,8 @@ class Contract {
 
     /**
      * Create contract instance and set address
-     * @param {Address} address 
-     * @return {Contract} contract instance 
+     * @param {Address} address
+     * @return {Contract} contract instance
      */
     static atAddress(address: Address): Contract {
         const contract = new Contract({});
@@ -217,7 +217,7 @@ class Contract {
 
     /**
      * Set address of contract instance
-     * @param {Address|string} address 
+     * @param {Address|string} address
      * @return {Contract} contract instance
      */
     setAddress(address: Address|string): Contract {
@@ -268,8 +268,27 @@ class Contract {
             return keys instanceof Buffer || keys instanceof Uint8Array || arr.length > 0 && typeof arr[0] === 'number';
         }
         const keyArray = (typeof keys === 'string' || isBufferLike(keys)) ? [keys] : keys;
+        // Transform keys: add "_sv_" prefix and handle array notation
+        const transformedKeys = keyArray.map(key => {
+            if (typeof key === 'string') {
+                let transformedKey = "_sv_" + key;
+                // Check if the key contains array notation
+                if (transformedKey.includes("[")) {
+                    // Ensure the key ends with "]"
+                    if (!transformedKey.endsWith("]")) {
+                        throw new Error(`Invalid key format: ${key}. Array notation must end with "]"`);
+                    }
+                    // Remove the last "]" character
+                    transformedKey = transformedKey.slice(0, -1);
+                    // Replace the first "[" with "-"
+                    transformedKey = transformedKey.replace("[", "-");
+                }
+                return transformedKey;
+            }
+            return key; // Return unchanged if not a string
+        });
         // `as any` is needed b/c https://github.com/microsoft/TypeScript/issues/14107#issuecomment-483995795
-        return new StateQuery(this, keyArray as any, compressed, root);
+        return new StateQuery(this, transformedKeys as any, compressed, root);
     }
 
 }
