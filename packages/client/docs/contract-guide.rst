@@ -12,7 +12,7 @@ Deployment
 ----------
 
 To interact with a smart contract, it needs to be deployed on the blockchain.
-To deploy a contract, you send a transaction with the contract code as the payload to the null (empty) account.
+To deploy a contract, you send a transaction of type DEPLOY with the contract code as the payload.
 
 1. Setup the contract object with the source code of your smart contract and build a deployment transaction:
 
@@ -25,6 +25,7 @@ To deploy a contract, you send a transaction with the contract code as the paylo
     const contractCode = 'source code of your smart contract';
     const contract = Contract.fromCode(contractCode);
     const tx = {
+        type: 6,  // DEPLOY
         from: myAddress,
         to: null,
         payload: contract.asPayload(),
@@ -61,6 +62,7 @@ Example:
 .. code-block:: javascript
 
     const tx = {
+        type: 6,  // DEPLOY
         from: myAddress,
         to: null,
         payload: contract.asPayload([1, 2, 3]),
@@ -128,7 +130,55 @@ Thus, they don't require a transaction.
 
 .. code-block:: javascript
 
-    const result = await aergo.queryContract(contract.someContractMethod());
+    const result = await aergo.queryContract(contractAddress, 'someContractMethod', arg1, arg2);
+    console.log(result);
+
+There is an alternative way to query a contract by directly calling the contract method.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContract(contract.someContractMethod(arg1, arg2));
+    console.log(result);
+
+Query a contract state variable
+-------------------------------
+
+We can directly read the value of a contract state variable without having to call a contract method.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'stateVariableName');
+    console.log(result);
+
+If the variable is an array, we can specify the index of the element we want to read inside brackets.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'list[1]');
+    console.log(result);
+
+Similarly, if the variable is a map, we can specify the key we want to read inside brackets.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, 'items[key1]');
+    console.log(result);
+
+It is possible to read many state variables at once by passing an array.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractState(contractAddress, ['price', 'list[1]', 'items[key1]']);
+    console.log(result);
+
+Query a contract state variable with proof
+------------------------------------------
+
+We can also request a proof for the value stored in a state variable.
+
+.. code-block:: javascript
+
+    const result = await aergo.queryContractStateProof(contractAddress, 'balance[Am....]');
     console.log(result);
 
 Events

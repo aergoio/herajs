@@ -1,6 +1,6 @@
 {
   "name": "@herajs/common",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Herajs common library",
   "main": "dist/herajs-common.cjs.js",
   "module": "dist/herajs-common.esm.js",

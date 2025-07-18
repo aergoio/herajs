@@ -1,3 +1,11 @@
+## 2.1.3 (July 11, 2025)
+
+- Client: Update support simplified array-style access for querying contract state variables.
+
+## 2.1.2 (March 04, 2025)
+
+- Client: Update Wallet to refresh chainConfig and recreate AergoClient when nodeUrl changes.
+
 ## 2.1.1 (October 22, 2024)
 
 - Client: Update deploy contracts as plain code
