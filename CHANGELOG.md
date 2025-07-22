@@ -1,3 +1,8 @@
+## 2.1.3 (July 22, 2025) 
+
+- Client: Simplify `queryContractState()` method to accept both single key (as string) and multiple keys (as array).  
+  Now supports flexible input: `queryContractState(addr, "balanceOf")` and `queryContractState(addr, ["balanceOf", "totalSupply"])`.
+
 ## 2.1.2 (March 04, 2025) 
 
 - Client: Update Wallet to refresh chainConfig and recreate AergoClient when nodeUrl changes.
