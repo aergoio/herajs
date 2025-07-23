@@ -41,7 +41,7 @@ jobs:
 
     - name: Start Docker services
       run: |
-        docker run -d -p 7845:7845 --name aergosvr aergo/node:2.7.0 aergosvr --config /aergo/testmode.toml
+        docker run -d -p 7845:7845 --name aergosvr aergo/node:2.8.0 aergosvr --config /aergo/testmode.toml
 
     - name: Run Lerna pre-scripts
       run: |
